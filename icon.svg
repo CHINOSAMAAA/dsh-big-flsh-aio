@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="20" fill="#edf1ff"/><g stroke="#4b70e2" stroke-width="2.6" stroke-linejoin="round"><path d="M44 32C37 17 19 17 9 32c10 15 28 15 35 0Zm0 0 10-10v20L44 32Z"/><path d="m27 19 7-6 5 10M27 45l7 6 5-10" stroke-linecap="round"/></g><circle cx="21" cy="29" r="2.3" fill="#4b70e2"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <title>大肥鱼</title>
+  <rect width="64" height="64" rx="20" fill="#edf3ff"/>
+  <g transform="translate(7 7) scale(1.6)" stroke="#617bd0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12c-3 3-3 9 1 12 5 5 15 4 19-2 2-2 3-6 2-8 3 0 4-3 3-6-2 0-4 1-5 3-1-2-3-3-5-3-4-1-9 0-12 2" fill="#dce6ff"/>
+    <path d="M4 18c2 6 9 8 14 6l-4-5M12 6V3m0 3-3-2m3 2 3-2"/>
+    <circle cx="19" cy="15" r="1.2" fill="#617bd0" stroke="none"/>
+  </g>
+</svg>

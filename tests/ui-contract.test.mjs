@@ -29,6 +29,13 @@ test('六入口支持图标、键盘切换及已访问面板保留', () => {
   const render = () => { index = 0; return walk(Page()) }
   let tree = render(), tabs = tree.filter(n => n.props?.role === 'tab')
   assert.deepEqual(tabs.map(t => t.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源'])
+  const overview = tree.find(n => n.props?.id === 'fish-panel-0').children[0]
+  const images = walk(overview.type(overview.props)).filter(n => n.type === 'img')
+  assert.equal(images.length, 1, '总览只放一张角色图')
+  assert.equal(images[0].props.src, '/dsh-feiyu-mood/welcome.png')
+  assert.equal(images[0].props.width, images[0].props.height, '保留方形原图比例')
+  assert.ok(images[0].props.alt)
+
   tabs[1].props.onClick()
   tree = render()
   assert.equal(tree.filter(n => n.props?.role === 'tabpanel').length, 2)

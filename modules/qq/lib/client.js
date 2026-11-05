@@ -26,24 +26,24 @@ window.__ModuleLoader__.load({
 
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
-      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
       hint: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)', marginTop: 8, lineHeight: 1.75 },
-      input: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
-      small: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
-      wide: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
-      ta: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
+      input: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
+      small: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
+      wide: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
+      ta: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
       ok: { color: 'var(--fish-success)', fontSize: 'var(--fish-small)' },
-      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: 16, marginBottom: 16 },
+      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: 16, marginBottom: 16 },
       已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
       未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
-      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 12, border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
-      btn: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
-      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 'var(--fish-radius-mid)', border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
+      btn: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
       grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
@@ -52,11 +52,11 @@ window.__ModuleLoader__.load({
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
       表头: {}, 表格行: {}, 空间表头: {}, 空间行: {},
       表头字: { fontSize: 'var(--fish-small)', color: 'var(--fish-muted)' },
-      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: '12px 16px', fontSize: 'var(--fish-small)' },
-      清单: { border: '1px solid var(--fish-border)', borderRadius: 8, marginTop: 12, maxHeight: 320, overflowY: 'auto' },
+      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: '12px 16px', fontSize: 'var(--fish-small)' },
+      清单: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', marginTop: 12, maxHeight: 320, overflowY: 'auto' },
       会话行: { display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid var(--fish-line)' },
       会话行勾上: { background: 'var(--fish-accent-soft)', fontWeight: 550 },
-      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 4, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
+      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 20, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
     }
 
     const 提示 = (文本) => h('div', { style: S.hint }, 文本)
@@ -431,7 +431,7 @@ window.__ModuleLoader__.load({
                       h('span', { style: S.dim }, '仅接收点名消息'))
                   : null),
               i === 人设行
-                ? h('div', { style: { margin: '0 0 8px', padding: '6px 8px', background: 'rgba(127,127,127,.06)', borderRadius: 4 } },
+                ? h('div', { style: { margin: '0 0 8px', padding: '6px 8px', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)' } },
                     h('div', { style: { ...S.dim, marginBottom: 4 } }, '独立角色设定（留空使用全局设定）'),
                     h('textarea', {'aria-label': '输入此会话的角色设定。',
                       style: { ...S.input, display: 'block', width: '100%', height: 72, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
@@ -545,7 +545,7 @@ window.__ModuleLoader__.load({
               // —— 下载进度条（模型 230MB，得让人看见下了多少）——
               asr && asr.下载
                 ? h('div', { style: { marginTop: 8 } },
-                  h('div', { style: { height: 8, borderRadius: 6, background: 'rgba(128,128,128,.25)', overflow: 'hidden' } },
+                  h('div', { style: { height: 8, borderRadius: 6, background: 'var(--fish-line)', overflow: 'hidden' } },
                     h('div', {
                       style: {
                         height: '100%', width: String(asr.下载.百分比 || 0) + '%',

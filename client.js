@@ -1,6 +1,6 @@
 // 自动生成：修改 src/panel.js 或 modules/*/lib/client.js 后运行 npm run build。
 window.__ModuleLoader__.load({ id: "dsh-big-flsh-aio", factory(require) {
-const FISH_THEME_CSS = "/* 大肥鱼 · scoped design tokens. DSH owns the body attribute. */\n.big-fish,.big-fish-notice{\n --fish-bg:#faf9f5;--fish-surface:#fffefa;--fish-soft:#f5f4ed;--fish-hover:#eeede5;--fish-text:#30302b;--fish-muted:#68685f;--fish-border:#deddd3;--fish-line:#e9e8df;--fish-accent:#c96442;--fish-action:#a9472a;--fish-on-accent:#fff;--fish-accent-soft:#f5e8df;--fish-success:#367052;--fish-warning:#8a561a;--fish-danger:#b0443c;--fish-info:#426b83;--fish-shadow:0 8px 28px #27251f0d;\n --fish-title:Georgia,'Songti SC','STSong',serif;--fish-font:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;--fish-body:16px;--fish-small:14px;--fish-label:14px;--fish-radius:12px;--fish-gap:24px;--fish-motion:180ms;\n --dsw-alias-bg-base:var(--fish-bg);--dsw-alias-bg-layer-1:var(--fish-surface);--dsw-alias-bg-layer-2:var(--fish-soft);--dsw-alias-label-primary:var(--fish-text);--dsw-alias-label-secondary:var(--fish-muted);--dsw-alias-label-tertiary:var(--fish-muted);--dsw-alias-border-l1:var(--fish-line);--dsw-alias-border-l2:var(--fish-border);--dsw-alias-state-business-primary:var(--fish-action);--dsw-alias-interactive-bg-hover:var(--fish-hover);\n color-scheme:light;color:var(--fish-text);font:var(--fish-body)/1.75 var(--fish-font)\n}\nbody[data-ds-dark-theme] .big-fish,body[data-ds-dark-theme] .big-fish-notice{\n --fish-bg:#262624;--fish-surface:#2d2d2a;--fish-soft:#1f1f1e;--fish-hover:#373732;--fish-text:#eeeee6;--fish-muted:#b8b8ac;--fish-border:#4b4b43;--fish-line:#3d3d37;--fish-accent:#dc9475;--fish-action:#c96442;--fish-on-accent:#171712;--fish-accent-soft:#3c2c24;--fish-success:#a1c7ab;--fish-warning:#e2ba80;--fish-danger:#f0a29a;--fish-info:#9bbfd3;--fish-shadow:0 8px 28px #0003;color-scheme:dark\n}\n.big-fish{box-sizing:border-box;container-type:inline-size;width:100%;height:100%;flex:1;min-width:0;min-height:0;overflow:auto;background:var(--fish-bg);padding-top:var(--dsh-frame-top-clearance,0px)}\n.big-fish *,.big-fish-notice *{box-sizing:border-box}\n.big-fish [hidden]:not([hidden=\"until-found\"]){display:none!important}\n.big-fish .fish-shell{display:grid;grid-template-columns:192px minmax(0,1fr);min-height:100%;max-width:1600px;margin:auto}\n.big-fish .fish-sidebar{padding:32px 16px 24px;background:var(--fish-soft);border-right:1px solid var(--fish-border);display:flex;flex-direction:column;gap:32px}\n.big-fish .fish-brand{display:flex;align-items:center;gap:12px;padding:0 8px;color:var(--fish-text)}\n.big-fish .fish-brand-name{font:600 24px/1.4 var(--fish-title)}\n.big-fish .fish-logo{color:var(--fish-accent);display:flex;flex:none}\n.big-fish .fish-nav{display:flex;flex-direction:column;gap:8px}\n.big-fish .fish-nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:8px;background:transparent;color:var(--fish-muted);padding:12px;text-align:left;white-space:nowrap}\n.big-fish .fish-nav button[aria-selected=true]{background:var(--fish-accent-soft);color:var(--fish-action);font-weight:600}\n.big-fish .fish-sidebar-note{margin-top:auto;padding:0 8px;font-size:12px;color:var(--fish-muted)}\n.big-fish .fish-workspace{min-width:0;padding:32px clamp(20px,4cqi,64px) 24px}\n.big-fish .fish-page-header{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:32px;border-bottom:1px solid var(--fish-border);padding-bottom:24px}\n.big-fish h1{font:400 clamp(28px,3.2cqi,36px)/1.4 var(--fish-title);letter-spacing:0;margin:0}\n.big-fish h2{font:600 22px/1.4 var(--fish-title);letter-spacing:0;margin:0 0 8px}\n.big-fish h3{font-size:16px;line-height:1.7;margin:0 0 8px}\n.big-fish p{margin:8px 0;max-width:70ch;overflow-wrap:anywhere}\n.big-fish .fish-muted{color:var(--fish-muted);font-size:var(--fish-small)}\n.big-fish .fish-icon,.big-fish-notice .fish-icon{width:20px;height:20px;flex:none;display:inline-block;vertical-align:middle}\n.big-fish button,.big-fish input,.big-fish select,.big-fish textarea,.big-fish-notice button{font-family:var(--fish-font);font-size:var(--fish-label);max-width:100%;line-height:1.6}\n.big-fish button,.big-fish-notice button{cursor:pointer;letter-spacing:.02em;transition:background var(--fish-motion),box-shadow var(--fish-motion);white-space:normal}\n.big-fish button:not([role=tab]),.big-fish-notice button{min-height:40px}\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]),.big-fish select,.big-fish textarea{border:1px solid var(--fish-border);border-radius:8px;padding:8px 12px;background:var(--fish-surface);color:var(--fish-text);min-width:0}\n.big-fish input[type=checkbox],.big-fish input[type=radio]{width:18px;height:18px;accent-color:var(--fish-action);vertical-align:middle;flex:none}\n.big-fish input[type=range],.big-fish progress{accent-color:var(--fish-action);max-width:100%}\n.big-fish select option{background:var(--fish-surface);color:var(--fish-text)}\n.big-fish textarea{resize:vertical;overflow-wrap:anywhere}\n.big-fish :disabled,.big-fish-notice :disabled{cursor:not-allowed;opacity:.55}\n.big-fish :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible,.big-fish-notice button:focus-visible{outline:2px solid var(--fish-accent);outline-offset:3px}\n.big-fish .fish-button,.big-fish-notice button{border:1px solid var(--fish-border);border-radius:8px;padding:8px 16px;background:var(--fish-surface);color:var(--fish-text)}\n.big-fish .fish-primary{background:var(--fish-action);color:var(--fish-on-accent);border-color:var(--fish-action)}\n.big-fish .fish-badge{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--fish-border);border-radius:24px;color:var(--fish-muted);font-size:12px;white-space:nowrap}\n.big-fish .fish-hero{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:32px 0 40px;margin-bottom:24px;border-bottom:1px solid var(--fish-border)}\n.big-fish .fish-hero h2{font:400 clamp(26px,3.5cqi,40px)/1.4 var(--fish-title);margin:12px 0}\n.big-fish .fish-eyebrow{font-size:12px;letter-spacing:.08em;color:var(--fish-action)}\n.big-fish .fish-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--fish-border);border-radius:12px;background:var(--fish-surface);margin-bottom:32px}\n.big-fish .fish-stats .fish-card{border:0;border-radius:0;background:none;padding:24px;border-bottom:1px solid var(--fish-line)}\n.big-fish .fish-value{font:400 28px/1.4 var(--fish-title);margin:8px 0;color:var(--fish-text)}\n.big-fish .fish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}\n.big-fish .fish-card{min-width:0;padding:24px;border:1px solid var(--fish-border);border-radius:12px;background:var(--fish-surface)}\n.big-fish .fish-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}\n.big-fish .fish-start{padding:24px 0;margin-top:24px;border-top:1px solid var(--fish-border)}\n.big-fish .fish-table{border-collapse:collapse;width:100%;min-width:850px;font-size:14px}\n.big-fish .fish-table th,.big-fish .fish-table td{vertical-align:top;text-align:left;padding:16px;border-bottom:1px solid var(--fish-line)}\n.big-fish .fish-table th{font-weight:600;background:var(--fish-soft);color:var(--fish-muted)}\n.big-fish a{color:var(--fish-action);text-decoration:none;overflow-wrap:anywhere}\n.big-fish .fish-message{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0;color:var(--fish-warning)}\n.big-fish .fish-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--fish-border);color:var(--fish-muted);font-size:12px}\n.big-fish .fish-module{min-width:0;overflow-wrap:anywhere}\n.big-fish .fish-section-title{font:600 20px/1.5 var(--fish-title)}\n.big-fish .fish-form-row{display:flex;flex-wrap:wrap;gap:16px;padding:12px 0;border-bottom:1px solid var(--fish-line);align-items:flex-start}\n.big-fish .fish-control{min-width:0;flex:1 1 260px}\n.big-fish .fish-form-label{flex:0 1 200px;font-weight:550}\n.big-fish .fish-subnav{display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;padding:0 0 16px;margin-bottom:24px;border-bottom:1px solid var(--fish-border)}\n.big-fish .fish-subnav button{flex:none}\n.big-fish .fish-log{overflow-wrap:anywhere;white-space:pre-wrap}\n.big-fish .fish-diagnostics{margin-top:24px;color:var(--fish-muted);font-size:var(--fish-small);overflow-wrap:anywhere}\n.big-fish .fish-binding-row{display:grid;grid-template-columns:80px minmax(100px,1fr) minmax(120px,1.5fr) 44px 76px 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-schedule-row{display:grid;grid-template-columns:120px 140px minmax(60px,1fr) 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record{padding:16px 0}\n.big-fish .fish-memory .fish-record-row{gap:12px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record-note{padding:4px 0;color:var(--fish-muted);font-size:14px}\n.big-fish .fish-memory .fish-link{border:0;padding:4px 0;background:transparent;text-align:left;text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-memory details{border:1px solid var(--fish-border);border-radius:12px;padding:16px 20px;background:var(--fish-surface)}\n.big-fish summary{cursor:pointer;font-weight:600;min-height:40px}\n.big-fish .fish-embedding label{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}\n.big-fish .fish-embedding button{margin:4px 8px 4px 0;border:1px solid var(--fish-border);background:var(--fish-soft);color:var(--fish-text);border-radius:8px;padding:8px 12px}\n.big-fish .fish-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px}\n.big-fish .fish-dimension-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}\n.big-fish .fish-dimension-track{height:8px;background:var(--fish-line);border-radius:4px;overflow:hidden}\n.big-fish .fish-dimension-track span{display:block;height:100%;background:var(--fish-accent)}\n.big-fish-notice{position:fixed;right:20px;bottom:24px;z-index:1000;pointer-events:auto;max-width:min(420px,calc(100vw - 40px));padding:20px;border:1px solid var(--fish-border);border-radius:12px;background:var(--fish-surface);box-shadow:var(--fish-shadow)}\n@media(hover:hover){.big-fish button:not(:disabled):hover,.big-fish-notice button:not(:disabled):hover{box-shadow:inset 0 0 0 999px #80808012}.big-fish .fish-nav button:hover{background:var(--fish-hover);color:var(--fish-text)}.big-fish a:hover{text-decoration:underline}}\n@container(max-width:860px){.big-fish .fish-shell{grid-template-columns:minmax(0,1fr)}.big-fish .fish-sidebar{border-right:0;border-bottom:1px solid var(--fish-border);padding:20px;gap:16px}.big-fish .fish-nav{flex-direction:row;overflow-x:auto}.big-fish .fish-nav button{width:auto;flex:none}.big-fish .fish-sidebar-note{display:none}.big-fish .fish-workspace{padding:24px}.big-fish .fish-page-header{gap:16px}.big-fish .fish-binding-row,.big-fish .fish-schedule-row{grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid var(--fish-border)}.big-fish .fish-binding-head{display:none}}\n@container(max-width:520px){.big-fish .fish-workspace{padding:24px 16px}.big-fish .fish-sidebar{padding:16px}.big-fish .fish-page-header{align-items:flex-start;flex-direction:column;margin-bottom:16px}.big-fish .fish-hero{padding:16px 0 24px;align-items:flex-start;flex-direction:column}.big-fish .fish-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-stats .fish-card{padding:16px}.big-fish .fish-grid,.big-fish .fish-dimensions{grid-template-columns:1fr}.big-fish .fish-card{padding:20px}.big-fish .fish-form-label{flex-basis:100%}.big-fish button:not([role=tab]){min-height:44px}.big-fish .fish-value{font-size:24px}}\n@media(prefers-reduced-motion:reduce){.big-fish *,.big-fish-notice *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}\n.big-fish .fish-library-row{background:var(--fish-surface);padding:20px;border:1px solid var(--fish-border);border-radius:8px;margin:12px 0}\n.big-fish .fish-memory [role=button]{cursor:pointer}\n.big-fish .fish-memory [role=button]:hover{text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-qq .fish-subnav{flex-wrap:nowrap}\n";
+const FISH_THEME_CSS = "/* 大肥鱼 · scoped design tokens. DSH owns the body attribute. */\n.big-fish,.big-fish-notice{\n --fish-bg:#edf3ff;--fish-surface:#f8fbff;--fish-soft:#e8efff;--fish-hover:#dce7ff;--fish-text:#172d69;--fish-muted:#53658e;--fish-border:#c3d3f4;--fish-line:#d6e2f8;--fish-accent:#617bd0;--fish-action:#3e5cb0;--fish-on-accent:#fff;--fish-accent-soft:#dce6ff;--fish-success:#246b57;--fish-warning:#89571c;--fish-danger:#ae3f50;--fish-info:#3e5cb0;--fish-shadow:0 6px 24px #274b9010,0 2px 3px #274b9008;--fish-workspace:#ffffffc9;--fish-wave:#d6e2ff;--fish-wave-back:#e3edff;--fish-control-border:#7188b8;\n --fish-title:var(--fish-font);--fish-font:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;--fish-body:16px;--fish-small:14px;--fish-label:14px;--fish-radius:24px;--fish-radius-sm:10px;--fish-radius-mid:16px;--fish-gap:24px;--fish-motion:180ms;\n --dsw-alias-bg-base:var(--fish-bg);--dsw-alias-bg-layer-1:var(--fish-surface);--dsw-alias-bg-layer-2:var(--fish-soft);--dsw-alias-label-primary:var(--fish-text);--dsw-alias-label-secondary:var(--fish-muted);--dsw-alias-label-tertiary:var(--fish-muted);--dsw-alias-border-l1:var(--fish-line);--dsw-alias-border-l2:var(--fish-border);--dsw-alias-state-business-primary:var(--fish-action);--dsw-alias-interactive-bg-hover:var(--fish-hover);\n color-scheme:light;color:var(--fish-text);font:var(--fish-body)/1.75 var(--fish-font)\n}\nbody[data-ds-dark-theme] .big-fish,body[data-ds-dark-theme] .big-fish-notice{\n --fish-bg:#101a32;--fish-surface:#182741;--fish-soft:#1d2f50;--fish-hover:#293f66;--fish-text:#e2ecff;--fish-muted:#b0c1e0;--fish-border:#344a70;--fish-line:#2d4264;--fish-accent:#a6bbff;--fish-action:#a6bbff;--fish-on-accent:#142442;--fish-accent-soft:#2c426c;--fish-success:#93d1bb;--fish-warning:#eac28c;--fish-danger:#ffacbb;--fish-info:#a6bbff;--fish-shadow:0 6px 24px #030b1b26;--fish-workspace:#14213a;--fish-wave:#203659;--fish-wave-back:#1b2e4e;--fish-control-border:#718bb7;color-scheme:dark\n}\n.big-fish{box-sizing:border-box;container-type:inline-size;width:100%;height:100%;flex:1;min-width:0;min-height:0;overflow:auto;background:linear-gradient(145deg,var(--fish-soft),var(--fish-bg) 48%,var(--fish-soft)),var(--fish-bg);padding:calc(16px + var(--dsh-frame-top-clearance,0px)) 16px 16px}\n.big-fish *,.big-fish-notice *{box-sizing:border-box}\n.big-fish [hidden]:not([hidden=\"until-found\"]){display:none!important}\n.big-fish .fish-shell{display:grid;grid-template-columns:192px minmax(0,1fr);gap:16px;min-height:100%;max-width:1600px;margin:auto;align-items:start}\n.big-fish .fish-sidebar{padding:28px 12px 20px;background:var(--fish-surface);border:1px solid var(--fish-border);border-radius:var(--fish-radius);box-shadow:var(--fish-shadow);display:flex;flex-direction:column;gap:28px;min-height:calc(100dvh - 104px - var(--dsh-frame-top-clearance,0px));position:sticky;top:var(--dsh-frame-top-clearance,0px)}\n.big-fish .fish-brand{display:flex;align-items:center;gap:8px;padding:0 4px;color:var(--fish-text)}\n.big-fish .fish-brand-name{font:700 24px/1.4 var(--fish-title)}\n.big-fish .fish-logo{color:var(--fish-accent);display:flex;flex:none}\n.big-fish .fish-nav{display:flex;flex-direction:column;gap:8px}\n.big-fish .fish-nav button{display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--fish-text);padding:12px;text-align:left;white-space:nowrap}\n.big-fish .fish-nav button[aria-selected=true]{background:var(--fish-accent-soft);border-color:var(--fish-border);color:var(--fish-text);font-weight:700}\n.big-fish .fish-sidebar-note{margin-top:auto;padding:0 8px;font-size:12px;color:var(--fish-muted)}\n.big-fish .fish-workspace{min-width:0;padding:28px clamp(20px,3cqi,40px) 24px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-workspace);box-shadow:var(--fish-shadow)}\n.big-fish .fish-page-header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px;border-bottom:1px solid var(--fish-line);padding-bottom:20px}\n.big-fish h1{font:700 clamp(26px,2.8cqi,32px)/1.4 var(--fish-title);letter-spacing:0;margin:0}\n.big-fish h2{font:700 20px/1.4 var(--fish-title);letter-spacing:0;margin:0 0 8px}\n.big-fish h3{font-size:16px;line-height:1.7;margin:0 0 8px}\n.big-fish p{margin:8px 0;max-width:70ch;overflow-wrap:anywhere}\n.big-fish .fish-muted{color:var(--fish-muted);font-size:var(--fish-small)}\n.big-fish .fish-icon,.big-fish-notice .fish-icon{width:20px;height:20px;flex:none;display:inline-block;vertical-align:middle}\n.big-fish button,.big-fish input,.big-fish select,.big-fish textarea,.big-fish-notice button{font-family:var(--fish-font);font-size:var(--fish-label);max-width:100%;line-height:1.6}\n.big-fish button,.big-fish-notice button{cursor:pointer;letter-spacing:.02em;transition:box-shadow var(--fish-motion),transform var(--fish-motion);white-space:normal}\n.big-fish button:not([role=tab]),.big-fish-notice button{min-height:40px}\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]),.big-fish select,.big-fish textarea{border:1px solid var(--fish-control-border);border-radius:var(--fish-radius-sm);padding:8px 12px;background:var(--fish-surface);color:var(--fish-text);min-width:0}\n.big-fish input[type=checkbox],.big-fish input[type=radio]{width:18px;height:18px;accent-color:var(--fish-action);vertical-align:middle;flex:none}\n.big-fish input[type=range],.big-fish progress{accent-color:var(--fish-action);max-width:100%}\n.big-fish select option{background:var(--fish-surface);color:var(--fish-text)}\n.big-fish textarea{resize:vertical;overflow-wrap:anywhere}\n.big-fish :disabled,.big-fish-notice :disabled{cursor:not-allowed;opacity:.55}\n.big-fish :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible,.big-fish-notice button:focus-visible{outline:2px solid var(--fish-accent);outline-offset:3px}\n.big-fish .fish-button,.big-fish-notice button{border:1px solid var(--fish-border);border-radius:12px;padding:8px 16px;background:var(--fish-surface);color:var(--fish-text)}\n.big-fish .fish-primary{background:var(--fish-action);color:var(--fish-on-accent);border-color:var(--fish-action)}\n.big-fish .fish-badge{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--fish-border);border-radius:24px;background:var(--fish-soft);color:var(--fish-action);font-size:12px;white-space:nowrap}\n.big-fish .fish-hero{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:center;gap:16px;padding:24px 28px;margin-bottom:20px;min-height:240px;background:linear-gradient(115deg,var(--fish-surface),var(--fish-soft) 70%);border:1px solid var(--fish-border);border-radius:var(--fish-radius);overflow:hidden}\n.big-fish .fish-hero-copy{min-width:0;position:relative;z-index:1}\n.big-fish .fish-hero h2{font:700 clamp(25px,2.8cqi,34px)/1.4 var(--fish-title);margin:12px 0;max-width:19em;text-wrap:balance}\n.big-fish .fish-hero .fish-actions{margin-top:16px}\n.big-fish .fish-welcome{display:grid;place-items:center;min-width:0;margin:0;position:relative;z-index:1}\n.big-fish .fish-welcome img{display:block;width:auto;height:auto;max-width:220px;max-height:230px;object-fit:contain}\n.big-fish .fish-waves{position:absolute;bottom:0;left:0;width:100%;height:80px;z-index:-1;pointer-events:none}\n.big-fish .fish-wave-back{fill:var(--fish-wave-back)}.big-fish .fish-wave-front{fill:var(--fish-wave)}\n.big-fish .fish-hero::after{content:'';position:absolute;right:28px;top:20px;width:12px;height:12px;border:2px solid var(--fish-border);border-radius:50%;pointer-events:none}\n.big-fish .fish-eyebrow{font-size:12px;letter-spacing:.08em;color:var(--fish-action)}\n.big-fish .fish-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-surface);margin-bottom:20px;overflow:hidden;box-shadow:var(--fish-shadow)}\n.big-fish .fish-stats .fish-card{border:0;border-radius:0;background:none;padding:16px 20px;border-bottom:1px solid var(--fish-line);box-shadow:none}\n.big-fish .fish-value{font:700 26px/1.4 var(--fish-title);margin:4px 0;color:var(--fish-text)}\n.big-fish .fish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}\n.big-fish .fish-card{min-width:0;padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-surface);box-shadow:var(--fish-shadow)}\n.big-fish .fish-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}\n.big-fish .fish-start{padding:24px 0;margin-top:24px;border-top:1px solid var(--fish-border)}\n.big-fish .fish-table{border-collapse:collapse;width:100%;min-width:850px;font-size:14px}\n.big-fish .fish-table th,.big-fish .fish-table td{vertical-align:top;text-align:left;padding:16px;border-bottom:1px solid var(--fish-line)}\n.big-fish .fish-table th{font-weight:600;background:var(--fish-soft);color:var(--fish-muted)}\n.big-fish a{color:var(--fish-action);text-decoration:none;overflow-wrap:anywhere}\n.big-fish .fish-message{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0;color:var(--fish-warning)}\n.big-fish .fish-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--fish-border);color:var(--fish-muted);font-size:12px}\n.big-fish .fish-module{min-width:0;overflow-wrap:anywhere}\n.big-fish .fish-section-title{font:600 20px/1.5 var(--fish-title)}\n.big-fish .fish-form-row{display:flex;flex-wrap:wrap;gap:16px;padding:12px 0;border-bottom:1px solid var(--fish-line);align-items:flex-start}\n.big-fish .fish-control{min-width:0;flex:1 1 260px}\n.big-fish .fish-form-label{flex:0 1 200px;font-weight:550}\n.big-fish .fish-subnav{display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;padding:0 0 16px;margin-bottom:24px;border-bottom:1px solid var(--fish-border)}\n.big-fish .fish-subnav button{flex:none}\n.big-fish .fish-log{overflow-wrap:anywhere;white-space:pre-wrap}\n.big-fish .fish-diagnostics{margin-top:24px;color:var(--fish-muted);font-size:var(--fish-small);overflow-wrap:anywhere}\n.big-fish .fish-binding-row{display:grid;grid-template-columns:80px minmax(100px,1fr) minmax(120px,1.5fr) 44px 76px 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-schedule-row{display:grid;grid-template-columns:120px 140px minmax(60px,1fr) 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record{padding:16px 0}\n.big-fish .fish-memory .fish-record-row{gap:12px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record-note{padding:4px 0;color:var(--fish-muted);font-size:14px}\n.big-fish .fish-memory .fish-link{border:0;padding:4px 0;background:transparent;text-align:left;text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-memory details{border:1px solid var(--fish-border);border-radius:var(--fish-radius);padding:16px 20px;background:var(--fish-surface)}\n.big-fish summary{cursor:pointer;font-weight:600;min-height:40px}\n.big-fish .fish-embedding label{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}\n.big-fish .fish-embedding button{margin:4px 8px 4px 0;border:1px solid var(--fish-border);background:var(--fish-soft);color:var(--fish-text);border-radius:8px;padding:8px 12px}\n.big-fish .fish-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px}\n.big-fish .fish-dimension-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}\n.big-fish .fish-dimension-track{height:8px;background:var(--fish-line);border-radius:4px;overflow:hidden}\n.big-fish .fish-dimension-track span{display:block;height:100%;background:var(--fish-accent)}\n.big-fish-notice{position:fixed;right:20px;bottom:24px;z-index:1000;pointer-events:auto;max-width:min(420px,calc(100vw - 40px));padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-surface);box-shadow:var(--fish-shadow)}\n@media(hover:hover){.big-fish button:not(:disabled):hover,.big-fish-notice button:not(:disabled):hover{box-shadow:inset 0 0 0 999px #617bd015}.big-fish .fish-nav button:hover{background:var(--fish-hover);color:var(--fish-text)}.big-fish a:hover{text-decoration:underline}}\n@container(max-width:860px){.big-fish .fish-shell{grid-template-columns:minmax(0,1fr);gap:12px}.big-fish .fish-sidebar{padding:16px;gap:12px;min-height:0;position:static}.big-fish .fish-brand-name{font-size:20px}.big-fish .fish-nav{flex-direction:row;overflow-x:auto}.big-fish .fish-nav button{width:auto;flex:none;padding:10px 12px}.big-fish .fish-sidebar-note{display:none}.big-fish .fish-workspace{padding:24px}.big-fish .fish-page-header{gap:16px}.big-fish .fish-binding-row,.big-fish .fish-schedule-row{grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid var(--fish-border)}.big-fish .fish-binding-head{display:none}}\n@container(max-width:600px){.big-fish .fish-hero{grid-template-columns:minmax(0,1fr) 120px;padding:20px;min-height:200px;gap:8px}.big-fish .fish-welcome img{max-width:120px;max-height:140px}.big-fish .fish-hero h2{font-size:24px}.big-fish .fish-grid{grid-template-columns:1fr}}\n@container(max-width:520px){.big-fish .fish-workspace{padding:20px 16px}.big-fish .fish-sidebar{padding:16px}.big-fish .fish-page-header{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:16px}.big-fish .fish-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-stats .fish-card{padding:16px 12px}.big-fish .fish-dimensions{grid-template-columns:1fr}.big-fish .fish-card{padding:20px}.big-fish .fish-form-label{flex-basis:100%}.big-fish button:not([role=tab]){min-height:44px}.big-fish .fish-value{font-size:24px}.big-fish .fish-nav{gap:4px}}\n@container(max-width:420px){.big-fish .fish-hero{grid-template-columns:minmax(0,1fr);min-height:0}.big-fish .fish-welcome{display:none}}\n@media(prefers-reduced-motion:reduce){.big-fish *,.big-fish-notice *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}\n.big-fish .fish-library-row{background:var(--fish-surface);padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius-mid);margin:12px 0}\n.big-fish .fish-memory [role=button]{cursor:pointer}\n.big-fish .fish-memory [role=button]:hover{text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-qq .fish-subnav{flex-wrap:nowrap}\n\n.big-fish .fish-feature-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}.big-fish .fish-feature-heading h2{margin:0}.big-fish .fish-feature-icon{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--fish-border);border-radius:14px;background:var(--fish-soft);color:var(--fish-action);flex:none}.big-fish .fish-stats .fish-card:not(:nth-child(3n)){border-right:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-child(-n+3){border-bottom:0}\n@container(max-width:520px){.big-fish .fish-stats .fish-card:not(:nth-child(3n)){border-right:0}.big-fish .fish-stats .fish-card:nth-child(odd){border-right:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-child(-n+3){border-bottom:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-child(-n+2){border-bottom:0}}\n";
 const components = {};
 const moduleLoader = { load({id, factory}) { components[id] = factory(require) } };
 // 大肥鱼整合修改：供主界面直接挂载，更新入口统一到「更新与来源」。
@@ -31,24 +31,24 @@ moduleLoader.load({
 
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
-      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
       hint: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)', marginTop: 8, lineHeight: 1.75 },
-      input: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
-      small: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
-      wide: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
-      ta: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
+      input: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
+      small: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
+      wide: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
+      ta: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
       ok: { color: 'var(--fish-success)', fontSize: 'var(--fish-small)' },
-      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: 16, marginBottom: 16 },
+      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: 16, marginBottom: 16 },
       已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
       未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
-      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 12, border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
-      btn: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
-      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 'var(--fish-radius-mid)', border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
+      btn: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
       grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
@@ -57,11 +57,11 @@ moduleLoader.load({
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
       表头: {}, 表格行: {}, 空间表头: {}, 空间行: {},
       表头字: { fontSize: 'var(--fish-small)', color: 'var(--fish-muted)' },
-      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: '12px 16px', fontSize: 'var(--fish-small)' },
-      清单: { border: '1px solid var(--fish-border)', borderRadius: 8, marginTop: 12, maxHeight: 320, overflowY: 'auto' },
+      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: '12px 16px', fontSize: 'var(--fish-small)' },
+      清单: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', marginTop: 12, maxHeight: 320, overflowY: 'auto' },
       会话行: { display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid var(--fish-line)' },
       会话行勾上: { background: 'var(--fish-accent-soft)', fontWeight: 550 },
-      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 4, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
+      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 20, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
     }
 
     const 提示 = (文本) => h('div', { style: S.hint }, 文本)
@@ -436,7 +436,7 @@ moduleLoader.load({
                       h('span', { style: S.dim }, '仅接收点名消息'))
                   : null),
               i === 人设行
-                ? h('div', { style: { margin: '0 0 8px', padding: '6px 8px', background: 'rgba(127,127,127,.06)', borderRadius: 4 } },
+                ? h('div', { style: { margin: '0 0 8px', padding: '6px 8px', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)' } },
                     h('div', { style: { ...S.dim, marginBottom: 4 } }, '独立角色设定（留空使用全局设定）'),
                     h('textarea', {'aria-label': '输入此会话的角色设定。',
                       style: { ...S.input, display: 'block', width: '100%', height: 72, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
@@ -550,7 +550,7 @@ moduleLoader.load({
               // —— 下载进度条（模型 230MB，得让人看见下了多少）——
               asr && asr.下载
                 ? h('div', { style: { marginTop: 8 } },
-                  h('div', { style: { height: 8, borderRadius: 6, background: 'rgba(128,128,128,.25)', overflow: 'hidden' } },
+                  h('div', { style: { height: 8, borderRadius: 6, background: 'var(--fish-line)', overflow: 'hidden' } },
                     h('div', {
                       style: {
                         height: '100%', width: String(asr.下载.百分比 || 0) + '%',
@@ -884,7 +884,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       dim: { color: 'var(--dsw-alias-label-tertiary, #8a8a8a)' },
-      h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 600, lineHeight: 1.5 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 700, lineHeight: 1.5 },
       // ⚠注意：2026-09-23（她的反馈：「右边堆的东西太多，左边的文字成了竖着的一条」）：
       //   这一行**必须能换行** ✗
       //   原来没有 flexWrap —— 行里全是 flex:'none' 的牌子/列（日期、鲜活度、重要度、原文、改、删…），
@@ -900,18 +900,18 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       row: { padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 10, rowGap: 2, alignItems: 'baseline' },
       // 「一整条」的分隔线：**连着下面那几行小字一起**框住
       条: { borderBottom: '1px solid var(--fish-line)' },
-      btn: { padding: '8px 12px', borderRadius: 6, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
-      inp: { width: 72, padding: '8px 12px', borderRadius: 5, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)' },
+      btn: { padding: '8px 12px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
+      inp: { width: 88, padding: '8px 12px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-control-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)' },
       link: { color: 'var(--dsw-alias-label-secondary, var(--fish-info))', cursor: 'pointer', textDecoration: 'underline' },
-      confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid rgba(200,120,120,.35)', fontSize: 'var(--fish-small)' },
+      confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-danger)', fontSize: 'var(--fish-small)' },
       // 注意：flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
-      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' },
-      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)' },
-      askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid rgba(224,176,112,.4)', fontSize: 'var(--fish-small)' },
-      barOut: { height: 10, borderRadius: 5, background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid rgba(128,128,128,.25)' },
+      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' },
+      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)' },
+      askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-warning)', fontSize: 'var(--fish-small)' },
+      barOut: { height: 10, borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid var(--fish-border)' },
       barIn: { height: '100%', background: 'var(--fish-accent)' },
-      area: { width: '100%', boxSizing: 'border-box', padding: '12px 16px', borderRadius: 5, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)', lineHeight: 1.7, fontFamily: 'inherit', resize: 'vertical' },
-      btnDanger: { padding: '8px 12px', borderRadius: 6, border: '1px solid rgba(200,120,120,.6)', background: 'var(--fish-soft)', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
+      area: { width: '100%', boxSizing: 'border-box', padding: '12px 16px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-control-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)', lineHeight: 1.7, fontFamily: 'inherit', resize: 'vertical' },
+      btnDanger: { padding: '8px 12px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-danger)', background: 'var(--fish-soft)', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
       ok: { color: 'var(--fish-success)' },
       drop: { color: 'var(--fish-danger)' },
       warn: { color: 'var(--fish-warning)' },
@@ -1378,7 +1378,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 ? React.createElement(
                     'div',
                     {
-                      style: { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10, padding: '1px 6px', borderRadius: 8, background: 'rgba(224,176,112,.18)', color: 'var(--fish-warning)', overflowWrap: 'anywhere' },
+                      style: { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10, padding: '1px 6px', borderRadius: 8, background: 'var(--fish-soft)', color: 'var(--fish-warning)', overflowWrap: 'anywhere' },
                       title: (m.已被取代.为什么 || '') + '（' + rel(m.已被取代.作废于, now) + '）—— 它不再被注入，但东西还在',
                     },
                     '已被取代',
@@ -1463,7 +1463,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       // 注意：pre-wrap 只在空格/换行处断，长串（网址、长英文）照样横向撑破面板 —— 得补这两条
                       overflowWrap: 'anywhere',
                       wordBreak: 'break-word',
-                      borderLeft: '2px solid rgba(224,176,112,.5)',
+                      borderLeft: '2px solid var(--fish-warning)',
                       paddingLeft: 8,
                     }),
                   },
@@ -1488,7 +1488,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   React.createElement(
                     'span',
                     {
-                      style: { padding: '1px 6px', borderRadius: 8, background: 'rgba(120,170,220,.16)', color: 'var(--fish-info)', overflowWrap: 'anywhere' },
+                      style: { padding: '1px 6px', borderRadius: 8, background: 'var(--fish-soft)', color: 'var(--fish-info)', overflowWrap: 'anywhere' },
                       title:
                         '这条讲的是「' + m.事实键 + '」这件事。' +
                         '讲同一件事的记忆只留最新那条 —— 旧的收起来了（还能恢复）',
@@ -2703,8 +2703,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 style: Object.assign({}, S.dim, {
                   margin: '6px 0 8px',
                   padding: '6px 10px',
-                  borderRadius: 6,
-                  background: 'rgba(128,128,128,.08)',
+                  borderRadius: 'var(--fish-radius-sm)',
+                  background: 'var(--fish-soft)',
                   borderLeft: '2px solid var(--fish-border)',
                 }),
               },
@@ -2737,9 +2737,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   style: {
                     margin: '0 0 8px',
                     padding: '6px 10px',
-                    borderRadius: 6,
-                    background: 'rgba(128,128,128,.08)',
-                    border: '1px solid rgba(128,128,128,.2)',
+                    borderRadius: 'var(--fish-radius-sm)',
+                    background: 'var(--fish-soft)',
+                    border: '1px solid var(--fish-border)',
                     fontSize: 'var(--fish-small)',
                   },
                 },
@@ -2880,7 +2880,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             小件.push(
               React.createElement(
                 'div',
-                { key: 'names', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
+                { key: 'names', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                 找名字.ok === false
                   ? React.createElement('div', { style: S.drop }, '失败：' + (找名字.message || '找不了'))
                   : React.createElement(
@@ -2926,7 +2926,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             小件.push(
               React.createElement(
                 'div',
-                { key: 'dirs', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
+                { key: 'dirs', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                 impDirs.ok === false
                   ? React.createElement('div', { style: S.drop }, '失败：' + (impDirs.message || '列不了'))
                   : React.createElement(
@@ -3112,7 +3112,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
           React.createElement(
             'div',
-            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'rgba(127,127,127,.05)' } },
+            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'var(--fish-soft)' } },
             React.createElement(
               'div',
               { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
@@ -3892,7 +3892,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           生成选目录 && 生成目录列
                             ? React.createElement(
                                 'div',
-                                { style: { margin: '4px 0 0', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
+                                { style: { margin: '4px 0 0', padding: '6px 10px', borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                                 React.createElement(
                                   'div',
                                   { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginBottom: 4 } },
@@ -4090,7 +4090,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               'div',
                               {
                                 key: 'g' + i,
-                                style: { marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(128,128,128,.18)' },
+                                style: { marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--fish-line)' },
                               },
                               [
                                 React.createElement(
@@ -5007,29 +5007,29 @@ moduleLoader.load({
 
     const CSS = `
 .big-fish [data-fm-wrap]{display:flex;flex-direction:column;gap:24px;min-width:0;padding-bottom:24px}
-.big-fish [data-fm-hero]{display:flex;align-items:center;gap:24px;padding:24px;background:var(--fish-surface);border:1px solid var(--fish-border);border-radius:12px;flex-wrap:wrap}
+.big-fish [data-fm-hero]{display:flex;align-items:center;gap:24px;padding:24px;background:var(--fish-surface);border:1px solid var(--fish-border);border-radius:var(--fish-radius);box-shadow:var(--fish-shadow);flex-wrap:wrap}
 .big-fish [data-fm-face]{width:112px;height:auto;aspect-ratio:448/352;object-fit:contain;flex:none}
-.big-fish [data-fm-big]{font:400 32px/1.4 var(--fish-title)}
+.big-fish [data-fm-big]{font:700 32px/1.4 var(--fish-title)}
 .big-fish [data-fm-sub],.big-fish [data-fm-note]{font-size:14px;line-height:1.75;color:var(--fish-muted);overflow-wrap:anywhere}
 .big-fish [data-fm-sec]{display:flex;flex-direction:column;gap:16px;padding:8px 0 24px;border-bottom:1px solid var(--fish-border)}
-.big-fish [data-fm-h]{font:600 20px/1.5 var(--fish-title);margin-bottom:4px}
+.big-fish [data-fm-h]{font:700 20px/1.5 var(--fish-title);margin-bottom:4px}
 .big-fish [data-fm-row]{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:8px 0}
 .big-fish [data-fm-grow]{flex:1 1 220px;min-width:0}
 .big-fish [data-fm-label]{font-size:16px}
-.big-fish [data-fm-input]{padding:8px 12px;border-radius:8px;border:1px solid var(--fish-border);background:var(--fish-surface);color:var(--fish-text);font-size:14px;max-width:100%;min-width:0}
+.big-fish [data-fm-input]{padding:8px 12px;border-radius:var(--fish-radius-sm);border:1px solid var(--fish-control-border);background:var(--fish-surface);color:var(--fish-text);font-size:14px;max-width:100%;min-width:0}
 .big-fish [data-fm-num]{width:104px}
-.big-fish [data-fm-btn],.big-fish [data-fm-pick]{padding:8px 16px;border-radius:8px;border:1px solid var(--fish-border);background:var(--fish-surface);color:var(--fish-text);font-size:14px;cursor:pointer}
+.big-fish [data-fm-btn],.big-fish [data-fm-pick]{padding:8px 16px;border-radius:var(--fish-radius-sm);border:1px solid var(--fish-border);background:var(--fish-surface);color:var(--fish-text);font-size:14px;cursor:pointer}
 .big-fish [data-fm-msg]{font-size:14px;min-height:24px;color:var(--fish-text)}
 .big-fish [data-fm-tabs]{display:flex;gap:8px;overflow-x:auto;padding-bottom:16px;border-bottom:1px solid var(--fish-border)}
-.big-fish [data-fm-tab]{padding:8px 16px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--fish-muted);font-size:14px;white-space:nowrap;flex:none}
+.big-fish [data-fm-tab]{padding:8px 16px;border-radius:var(--fish-radius-sm);border:1px solid transparent;background:transparent;color:var(--fish-muted);font-size:14px;white-space:nowrap;flex:none}
 .big-fish [data-fm-on]{background:var(--fish-accent-soft);border-color:var(--fish-border);color:var(--fish-action);font-weight:600}
 .big-fish [data-fm-pane]{display:flex;flex-direction:column;gap:24px;min-width:0}
-.big-fish [data-fm-slot]{display:flex;flex-direction:column;gap:16px;padding:24px;border:1px solid var(--fish-border);border-radius:12px;background:var(--fish-surface)}
+.big-fish [data-fm-slot]{display:flex;flex-direction:column;gap:16px;padding:24px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);box-shadow:var(--fish-shadow);background:var(--fish-surface)}
 .big-fish [data-fm-sess]{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0}
 .big-fish [data-fm-sessname]{flex:1;min-width:0;font-size:14px;overflow-wrap:anywhere}
 .big-fish [data-fm-faces]{display:flex;gap:24px;flex-wrap:wrap}
 .big-fish [data-fm-faces] img{width:84px;height:auto;aspect-ratio:448/352;object-fit:contain;display:block}
-.big-fish [data-fm-quote]{font-size:16px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;padding:24px;border-radius:8px;background:var(--fish-soft)}
+.big-fish [data-fm-quote]{font-size:16px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;padding:24px;border-radius:var(--fish-radius-sm);background:var(--fish-soft)}
 .big-fish [data-fm-quote][data-fm-dim]{color:var(--fish-muted)}
 .big-fish [data-fm-tl]{display:flex;flex-direction:column;max-height:400px;overflow:auto}
 .big-fish [data-fm-tlrow]{display:grid;grid-template-columns:136px 40px 48px minmax(0,1fr);gap:12px;padding:16px 0;border-bottom:1px solid var(--fish-line);font-size:14px;line-height:1.75}
@@ -5037,7 +5037,7 @@ moduleLoader.load({
 .big-fish [data-fm-mood]{font-weight:600}
 .big-fish [data-fm-delta]{color:var(--fish-action)}
 .big-fish [data-fm-reason]{overflow-wrap:anywhere}
-.big-fish [data-fm-ver]{display:flex;align-items:center;gap:16px;padding:16px;border-radius:8px;background:var(--fish-soft)}
+.big-fish [data-fm-ver]{display:flex;align-items:center;gap:16px;padding:16px;border-radius:var(--fish-radius-sm);background:var(--fish-soft)}
 @container(max-width:520px){.big-fish [data-fm-tlrow]{grid-template-columns:minmax(0,1fr) 40px 48px}.big-fish [data-fm-reason]{grid-column:1/-1}.big-fish [data-fm-slot]{padding:16px}}
 `
 
@@ -5564,24 +5564,24 @@ moduleLoader.load({
     // 样式贴着主题变量走，换皮肤/换深浅色都跟着变（照 dsh-write 的做法）
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
-      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
       hint: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)', marginTop: 8, lineHeight: 1.75 },
-      input: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
-      small: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
-      wide: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
-      ta: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
+      input: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
+      small: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
+      wide: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
+      ta: { border: '1px solid var(--fish-control-border)', borderRadius: 'var(--fish-radius-sm)', padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
       ok: { color: 'var(--fish-success)', fontSize: 'var(--fish-small)' },
-      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: 16, marginBottom: 16 },
+      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: 16, marginBottom: 16 },
       已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
       未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
-      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 12, border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
-      btn: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
-      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 'var(--fish-radius-mid)', border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
+      btn: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
       grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
@@ -5590,11 +5590,11 @@ moduleLoader.load({
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
       表头: {}, 表格行: {}, 空间表头: {}, 空间行: {},
       表头字: { fontSize: 'var(--fish-small)', color: 'var(--fish-muted)' },
-      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: '12px 16px', fontSize: 'var(--fish-small)' },
-      清单: { border: '1px solid var(--fish-border)', borderRadius: 8, marginTop: 12, maxHeight: 320, overflowY: 'auto' },
+      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: '12px 16px', fontSize: 'var(--fish-small)' },
+      清单: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', marginTop: 12, maxHeight: 320, overflowY: 'auto' },
       会话行: { display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid var(--fish-line)' },
       会话行勾上: { background: 'var(--fish-accent-soft)', fontWeight: 550 },
-      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 4, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
+      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 20, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
     }
 
     // ---------- 小控件 ----------
@@ -6131,9 +6131,9 @@ const css = FISH_THEME_CSS
 
 function FishIcon({ size = 24 }) {
   return h('svg', { width: size, height: size, viewBox: '0 0 32 32', fill: 'none', 'aria-hidden': true },
-    h('path', { d: 'M24 16c-4-9-15-9-21 0 6 9 17 9 21 0Zm0 0 5-6v12l-5-6Z', stroke: 'currentColor', strokeWidth: 1.8, strokeLinejoin: 'round' }),
-    h('circle', { cx: 10, cy: 14, r: 1.5, fill: 'currentColor' }),
-    h('path', { d: 'm14 8 4-4 3 6M14 24l4 4 3-6', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' }))
+    h('path', { d: 'M5 12c-3 3-3 9 1 12 5 5 15 4 19-2 2-2 3-6 2-8 3 0 4-3 3-6-2 0-4 1-5 3-1-2-3-3-5-3-4-1-9 0-12 2', fill: 'var(--fish-accent-soft, #dce6ff)', stroke: 'currentColor', strokeWidth: 1.6, strokeLinejoin: 'round' }),
+    h('path', { d: 'M4 18c2 6 9 8 14 6l-4-5M12 6V3m0 3-3-2m3 2 3-2', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+    h('circle', { cx: 19, cy: 15, r: 1.2, fill: 'currentColor' }))
 }
 
 function NavIcon({ index }) {
@@ -6171,25 +6171,30 @@ function Overview({ navigate }) {
     ['主动搭话', !state.speak ? '—' : state.speak.配置?.总开关 ? state.speak.配置?.试运行 ? '试运行' : '已开启' : '已关闭', '复用目标会话的人格、历史、工具和记忆'],
   ]
   return h('div', null,
-    h('section', { className: 'fish-hero' }, h('div', null,
-      h('div', { className: 'fish-eyebrow' }, '大肥鱼 · 伙伴工作台'),
-      h('h2', null, '把日常，慢慢记在心上。'),
-      h('p', { className: 'fish-muted' }, '连接 QQ、照看记忆与心情，让伙伴主动来找你。')),
-      button(busy ? '读取中…' : '刷新状态', refresh, false, busy)),
+    h('section', { className: 'fish-hero' },
+      h('div', { className: 'fish-hero-copy' },
+        h('span', { className: 'fish-badge fish-eyebrow' }, '大肥鱼 · 伙伴工作台'),
+        h('h2', null, '把日常，慢慢记在心上。'),
+        h('p', { className: 'fish-muted' }, '连接 QQ、照看记忆与心情，让伙伴主动来找你。'),
+        h('div', { className: 'fish-actions' }, button(busy ? '读取中…' : '刷新状态', refresh, false, busy))),
+      h('figure', { className: 'fish-welcome' }, h('img', { src: '/dsh-feiyu-mood/welcome.png', alt: '大肥鱼挥手欢迎你', width: 1254, height: 1254, decoding: 'async' })),
+      h('svg', { className: 'fish-waves', viewBox: '0 0 1000 100', preserveAspectRatio: 'none', 'aria-hidden': true },
+        h('path', { className: 'fish-wave-back', d: 'M0 46Q125 8 250 48T500 44T750 40T1000 46V100H0Z' }),
+        h('path', { className: 'fish-wave-front', d: 'M0 70Q150 30 300 65T600 64T1000 62V100H0Z' }))),
     state.errors?.length ? h('p', { className: 'fish-message', role: 'alert' }, state.errors.join('\n')) : null,
     h('div', { className: 'fish-stats' }, ...stats.map(([label, value, hint]) => h('article', { className: 'fish-card', key: label },
       h('div', { className: 'fish-muted' }, label), h('div', { className: 'fish-value' }, value), h('div', { className: 'fish-muted' }, hint)))),
     h('div', { className: 'fish-grid' },
-      h('article', { className: 'fish-card' }, h('span', { className: 'fish-badge' }, '01 · 连接'), h('h2', { style: { marginTop: 18 } }, 'QQ 互通'),
+      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, 'QQ 互通'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 1 }))),
         h('p', { className: 'fish-muted' }, '统一设置后端连接、私聊与群聊绑定、回复策略。历史记录按段整理后写入目标会话记忆。'),
         h('div', { className: 'fish-actions' }, button('管理 QQ 与历史导入 →', () => navigate(1)))),
-      h('article', { className: 'fish-card' }, h('span', { className: 'fish-badge' }, '02 · 记忆'), h('h2', { style: { marginTop: 18 } }, '长期记忆'),
+      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, '长期记忆'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 2 }))),
         h('p', { className: 'fish-muted' }, '浏览与编辑记忆，整理档案，配置遗忘与召回。Qwen 语义检索按需启用，保留原有来源隔离。'),
         h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2)))),
-      h('article', { className: 'fish-card' }, h('h2', null, '鱼的心情'),
+      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, '鱼的心情'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 3 }))),
         h('p', { className: 'fish-muted' }, '自动判断心情、查看情绪时间线，管理会话或工作区绑定与挂饰。'),
         h('div', { className: 'fish-actions' }, button('照看心情 →', () => navigate(3)))),
-      h('article', { className: 'fish-card' }, h('h2', null, '主动搭话'),
+      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, '主动搭话'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 4 }))),
         h('p', { className: 'fish-muted' }, '配置空闲触发、时段与目标会话，先演练，再按需启用真发。'),
         h('div', { className: 'fish-actions' }, button('管理主动搭话 →', () => navigate(4))))),
     h('p', { className: 'fish-start fish-muted' }, '首次使用：配置 QQ 后端与会话绑定 → 启用目标会话记忆 → 按需导入历史。历史整理会调用目标会话模型并消耗额度。'))

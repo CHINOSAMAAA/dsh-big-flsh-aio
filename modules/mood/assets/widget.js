@@ -22,7 +22,7 @@
   }
 
   var css = [
-    '.fm-widget{--fm-paper:#fffefa;--fm-text:#30302b;--fm-muted:#68685f;--fm-border:#deddd3;--fm-soft:#f5f4ed;--fm-accent:#a9472a;--fm-green:#367052;--fm-blue:#426b83;--fm-pink:#995a7a;--fm-amber:#8a561a;--fm-purple:#80548e;color-scheme:light}body[data-ds-dark-theme] .fm-widget{--fm-paper:#262624;--fm-text:#eeeee6;--fm-muted:#b8b8ac;--fm-border:#4b4b43;--fm-soft:#1f1f1e;--fm-accent:#dc9475;--fm-green:#a1c7ab;--fm-blue:#9bbfd3;--fm-pink:#e5a9c8;--fm-amber:#e2ba80;--fm-purple:#caa8dc;color-scheme:dark}',
+    '.fm-widget{--fm-paper:#f8fbff;--fm-text:#172d69;--fm-muted:#53658e;--fm-border:#c3d3f4;--fm-soft:#e8efff;--fm-accent:#3e5cb0;--fm-green:#246b57;--fm-blue:#3e5cb0;--fm-pink:#995a7a;--fm-amber:#8a561a;--fm-purple:#80548e;color-scheme:light}body[data-ds-dark-theme] .fm-widget{--fm-paper:#182741;--fm-text:#e2ecff;--fm-muted:#b0c1e0;--fm-border:#344a70;--fm-soft:#1d2f50;--fm-accent:#a6bbff;--fm-green:#93d1bb;--fm-blue:#a6bbff;--fm-pink:#e5a9c8;--fm-amber:#eac28c;--fm-purple:#caa8dc;color-scheme:dark}',
     // ⭐ 0.8.0：尺寸可自己调（面板里那个「大小」滑杆），--fm-scale 就是倍数
     '.fm-widget{position:fixed;right:18px;bottom:18px;z-index:99990;--fm-scale:1;',
     'width:calc(180px * var(--fm-scale));height:calc(180px * var(--fm-scale));',
@@ -34,26 +34,26 @@
     // 面板：基础定位（JS positionPanel 会按屏幕边适配再调）
     '.fm-widget .fm-panel{position:absolute;left:0;bottom:calc(100% + 10px);width:320px;max-width:calc(100vw - 32px);max-height:62vh;',
     'overflow:auto;background:var(--fm-paper);color:var(--fm-text);border:1px solid var(--fm-border);',
-    'border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);padding:14px;display:none;',
-    'font-size:13px;line-height:1.6;cursor:auto;',
+    'border-radius:24px;box-shadow:0 8px 28px #14356626;padding:16px;display:none;',
+    'font-size:14px;line-height:1.7;cursor:auto;',
     'font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}',
     '.fm-widget .fm-panel img{pointer-events:none;-webkit-user-drag:none}',
     '.fm-widget .fm-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}',
     '.fm-widget .fm-face{width:64px;height:64px;object-fit:contain;flex:none}',
-    '.fm-widget .fm-big{font-size:22px;font-weight:600;line-height:1.15}',
+    '.fm-widget .fm-big{font-size:22px;font-weight:600;line-height:1.4}',
     '.fm-widget .fm-reason{color:var(--fm-muted);margin:6px 0 10px;overflow-wrap:anywhere}',
     '.fm-widget .fm-dim{display:flex;align-items:center;gap:8px;margin:4px 0}',
     '.fm-widget .fm-dimlabel{width:34px;flex:none;color:var(--fm-muted)}',
-    '.fm-widget .fm-bar{flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.2);overflow:hidden}',
+    '.fm-widget .fm-bar{flex:1;height:7px;border-radius:4px;background:var(--fm-soft);overflow:hidden}',
     '.fm-widget .fm-bar i{display:block;height:100%}',
     '.fm-widget .fm-val{width:28px;text-align:right;color:var(--fm-muted);flex:none}',
-    '.fm-widget .fm-btn{margin-top:12px;display:block;width:100%;padding:7px 0;border:1px solid rgba(128,128,128,.35);',
-    'border-radius:8px;background:transparent;color:inherit;cursor:pointer;font-size:13px;text-align:center;font-family:inherit}',
-    '.fm-widget .fm-btn:hover{background:rgba(128,128,128,.12)}',
+    '.fm-widget .fm-btn{margin-top:12px;display:block;width:100%;padding:7px 0;border:1px solid var(--fm-border);',
+    'border-radius:12px;background:transparent;color:inherit;cursor:pointer;font-size:13px;text-align:center;font-family:inherit}',
+    '.fm-widget .fm-btn:hover{background:var(--fm-soft)}',
     '.fm-widget .fm-h{font-weight:600;margin:10px 0 6px;color:var(--fm-text)}',
     '.fm-widget .fm-back{color:var(--fm-accent);cursor:pointer;font-size:13px;margin-bottom:6px;display:inline-block}',
     '.fm-widget .fm-back:hover{text-decoration:underline}',
-    '.fm-widget .fm-tlrow{display:flex;gap:6px;padding:3px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:baseline}',
+    '.fm-widget .fm-tlrow{display:flex;gap:6px;padding:3px 0;border-bottom:1px solid var(--fm-border);align-items:baseline}',
     '.fm-widget .fm-tltime{flex:none;width:50px;color:var(--fm-muted)}',
     '.fm-widget .fm-tlmood{flex:none;width:32px;font-weight:600}',
     '.fm-widget .fm-tldelta{flex:none;width:44px;text-align:left;font-size:12px}',
@@ -66,15 +66,15 @@
     'box-shadow:none}',
     '.fm-widget.fm-col>img{display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,.45))}',
     '.fm-widget .fm-col-num{display:none;position:absolute;right:-4px;bottom:-4px;width:24px;height:24px;',
-    'border-radius:50%;background:var(--fm-paper);border:1px solid rgba(128,128,128,.4);',
+    'border-radius:50%;background:var(--fm-paper);border:1px solid var(--fm-border);',
     'align-items:center;justify-content:center;',
     'font:700 11px/1 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--fm-text)}',
     '.fm-widget.fm-col .fm-col-num{display:flex}',
     // 面板里的「最小化」（像窗口那样，做在面板边框里面）
     '.fm-widget .fm-mini{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:6px;display:flex;',
     'align-items:center;justify-content:center;font:600 15px/1 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;',
-    'color:var(--fm-muted);cursor:pointer;background:rgba(128,128,128,.14);border:1px solid rgba(128,128,128,.25);z-index:2}',
-    '.fm-widget .fm-mini:hover{background:rgba(128,128,128,.3);color:var(--fm-text)}',
+    'color:var(--fm-muted);cursor:pointer;background:var(--fm-soft);border:1px solid var(--fm-border);z-index:2}',
+    '.fm-widget .fm-mini:hover{background:var(--fm-soft);color:var(--fm-text)}',
     '.fm-widget .fm-head{padding-right:26px}'
     ,'@media(prefers-reduced-motion:reduce){.fm-widget,.fm-widget *{transition:none!important}}.fm-widget :is(button,input,[tabindex]):focus-visible{outline:2px solid var(--fm-accent);outline-offset:3px}'
   ].join('')

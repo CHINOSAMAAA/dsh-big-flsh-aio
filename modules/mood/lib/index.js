@@ -1948,6 +1948,7 @@ export function apply(ctx) {
   // 5.5) 图片（形象图 + 五档表情）
   try {
     const IMAGE_FILES = [
+      'welcome.png', // 总览欢迎图，沿用固定图片白名单。
       'feiyu.png',   // 3 档（普通）—— 也是原来的形象图，别删，老版本还在用这个路径
       'feiyu-great.png', 'feiyu-good.png', 'feiyu-worry.png', 'feiyu-sad.png',
       'face-great.png', 'face-good.png', 'face-ok.png', 'face-worry.png', 'face-sad.png',

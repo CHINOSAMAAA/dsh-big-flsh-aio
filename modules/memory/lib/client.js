@@ -139,7 +139,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       dim: { color: 'var(--dsw-alias-label-tertiary, #8a8a8a)' },
-      h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 600, lineHeight: 1.5 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 700, lineHeight: 1.5 },
       // ⚠注意：2026-09-23（她的反馈：「右边堆的东西太多，左边的文字成了竖着的一条」）：
       //   这一行**必须能换行** ✗
       //   原来没有 flexWrap —— 行里全是 flex:'none' 的牌子/列（日期、鲜活度、重要度、原文、改、删…），
@@ -155,18 +155,18 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       row: { padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 10, rowGap: 2, alignItems: 'baseline' },
       // 「一整条」的分隔线：**连着下面那几行小字一起**框住
       条: { borderBottom: '1px solid var(--fish-line)' },
-      btn: { padding: '8px 12px', borderRadius: 6, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
-      inp: { width: 72, padding: '8px 12px', borderRadius: 5, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)' },
+      btn: { padding: '8px 12px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
+      inp: { width: 88, padding: '8px 12px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-control-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)' },
       link: { color: 'var(--dsw-alias-label-secondary, var(--fish-info))', cursor: 'pointer', textDecoration: 'underline' },
-      confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid rgba(200,120,120,.35)', fontSize: 'var(--fish-small)' },
+      confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-danger)', fontSize: 'var(--fish-small)' },
       // 注意：flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
-      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' },
-      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)' },
-      askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid rgba(224,176,112,.4)', fontSize: 'var(--fish-small)' },
-      barOut: { height: 10, borderRadius: 5, background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid rgba(128,128,128,.25)' },
+      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' },
+      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)' },
+      askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-soft)', border: '1px solid var(--fish-warning)', fontSize: 'var(--fish-small)' },
+      barOut: { height: 10, borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid var(--fish-border)' },
       barIn: { height: '100%', background: 'var(--fish-accent)' },
-      area: { width: '100%', boxSizing: 'border-box', padding: '12px 16px', borderRadius: 5, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)', lineHeight: 1.7, fontFamily: 'inherit', resize: 'vertical' },
-      btnDanger: { padding: '8px 12px', borderRadius: 6, border: '1px solid rgba(200,120,120,.6)', background: 'var(--fish-soft)', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
+      area: { width: '100%', boxSizing: 'border-box', padding: '12px 16px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-control-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)', lineHeight: 1.7, fontFamily: 'inherit', resize: 'vertical' },
+      btnDanger: { padding: '8px 12px', borderRadius: 'var(--fish-radius-sm)', border: '1px solid var(--fish-danger)', background: 'var(--fish-soft)', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
       ok: { color: 'var(--fish-success)' },
       drop: { color: 'var(--fish-danger)' },
       warn: { color: 'var(--fish-warning)' },
@@ -633,7 +633,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 ? React.createElement(
                     'div',
                     {
-                      style: { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10, padding: '1px 6px', borderRadius: 8, background: 'rgba(224,176,112,.18)', color: 'var(--fish-warning)', overflowWrap: 'anywhere' },
+                      style: { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10, padding: '1px 6px', borderRadius: 8, background: 'var(--fish-soft)', color: 'var(--fish-warning)', overflowWrap: 'anywhere' },
                       title: (m.已被取代.为什么 || '') + '（' + rel(m.已被取代.作废于, now) + '）—— 它不再被注入，但东西还在',
                     },
                     '已被取代',
@@ -718,7 +718,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       // 注意：pre-wrap 只在空格/换行处断，长串（网址、长英文）照样横向撑破面板 —— 得补这两条
                       overflowWrap: 'anywhere',
                       wordBreak: 'break-word',
-                      borderLeft: '2px solid rgba(224,176,112,.5)',
+                      borderLeft: '2px solid var(--fish-warning)',
                       paddingLeft: 8,
                     }),
                   },
@@ -743,7 +743,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   React.createElement(
                     'span',
                     {
-                      style: { padding: '1px 6px', borderRadius: 8, background: 'rgba(120,170,220,.16)', color: 'var(--fish-info)', overflowWrap: 'anywhere' },
+                      style: { padding: '1px 6px', borderRadius: 8, background: 'var(--fish-soft)', color: 'var(--fish-info)', overflowWrap: 'anywhere' },
                       title:
                         '这条讲的是「' + m.事实键 + '」这件事。' +
                         '讲同一件事的记忆只留最新那条 —— 旧的收起来了（还能恢复）',
@@ -1958,8 +1958,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 style: Object.assign({}, S.dim, {
                   margin: '6px 0 8px',
                   padding: '6px 10px',
-                  borderRadius: 6,
-                  background: 'rgba(128,128,128,.08)',
+                  borderRadius: 'var(--fish-radius-sm)',
+                  background: 'var(--fish-soft)',
                   borderLeft: '2px solid var(--fish-border)',
                 }),
               },
@@ -1992,9 +1992,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   style: {
                     margin: '0 0 8px',
                     padding: '6px 10px',
-                    borderRadius: 6,
-                    background: 'rgba(128,128,128,.08)',
-                    border: '1px solid rgba(128,128,128,.2)',
+                    borderRadius: 'var(--fish-radius-sm)',
+                    background: 'var(--fish-soft)',
+                    border: '1px solid var(--fish-border)',
                     fontSize: 'var(--fish-small)',
                   },
                 },
@@ -2135,7 +2135,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             小件.push(
               React.createElement(
                 'div',
-                { key: 'names', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
+                { key: 'names', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                 找名字.ok === false
                   ? React.createElement('div', { style: S.drop }, '失败：' + (找名字.message || '找不了'))
                   : React.createElement(
@@ -2181,7 +2181,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             小件.push(
               React.createElement(
                 'div',
-                { key: 'dirs', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
+                { key: 'dirs', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                 impDirs.ok === false
                   ? React.createElement('div', { style: S.drop }, '失败：' + (impDirs.message || '列不了'))
                   : React.createElement(
@@ -2367,7 +2367,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
           React.createElement(
             'div',
-            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'rgba(127,127,127,.05)' } },
+            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'var(--fish-soft)' } },
             React.createElement(
               'div',
               { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
@@ -3147,7 +3147,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           生成选目录 && 生成目录列
                             ? React.createElement(
                                 'div',
-                                { style: { margin: '4px 0 0', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
+                                { style: { margin: '4px 0 0', padding: '6px 10px', borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                                 React.createElement(
                                   'div',
                                   { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginBottom: 4 } },
@@ -3345,7 +3345,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               'div',
                               {
                                 key: 'g' + i,
-                                style: { marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(128,128,128,.18)' },
+                                style: { marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--fish-line)' },
                               },
                               [
                                 React.createElement(
