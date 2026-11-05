@@ -18,7 +18,7 @@
 
 本项目派生自下列 Yuuyuko-uu 源仓库，原作者 **Yuuyuko-uu**；由 **CHINOSAMAAA** 维护衍生整合版。继续采用 **[Yuuyuko-uu 插件许可 1.2](LICENSE)**，完整许可、署名和第三方声明见 [LICENSE.md](LICENSE.md)。
 
-| 项目 | 原作者 | 源仓库 | 我的 Fork 仓库 | 许可 |
+| 项目 | 原作者 | 源仓库 | 本项目的子仓库 | 许可 |
 | :--- | :--- | :--- | :--- | :--- |
 | 通到 QQ | [Yuuyuko-uu](https://github.com/Yuuyuko-uu) | [dsh-qq-link](https://github.com/Yuuyuko-uu/dsh-qq-link) | [dsh-qq-link-plus](https://github.com/CHINOSAMAAA/dsh-qq-link-plus) | [插件许可 1.2](modules/qq/LICENSE) |
 | 鱼的记忆 | [Yuuyuko-uu](https://github.com/Yuuyuko-uu) | [dsh-fish-memory](https://github.com/Yuuyuko-uu/dsh-fish-memory) | [dsh-fish-memory-plus](https://github.com/CHINOSAMAAA/dsh-fish-memory-plus) | [插件许可 1.2](modules/memory/LICENSE) |
