@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import childProcess from 'node:child_process'
 import { cmpVer, createSelfUpdate } from '../../../lib/selfupdate.mjs'
 
 test('修订号按 SemVer 顺序比较，忽略构建元数据', () => {
@@ -16,7 +17,7 @@ test('修订号按 SemVer 顺序比较，忽略构建元数据', () => {
   assert.equal(cmpVer('1.5.2-1', '1.5.1-99'), 1)
 })
 
-test('仅检查 大肥鱼 main，支持缓存和刷新；安装不沿用旧仓库或固定提交', async () => {
+test('仅检查 大肥鱼 main，支持缓存和刷新；安装不沿用旧仓库或固定提交', async t => {
   const home = mkdtempSync(join(tmpdir(), 'qq-update-'))
   const originalHome = process.env.DSH_HOME, originalFetch = globalThis.fetch
   try {
@@ -49,6 +50,7 @@ test('仅检查 大肥鱼 main，支持缓存和刷新；安装不沿用旧仓�
     const ctx = { pluginManager: { installBundle: async spec => { installed.push(spec); return { applied: true } } } }
     assert.equal((await updater.install(ctx)).ok, true)
     assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-flsh-aio#' + 'a'.repeat(40)])
+    t.mock.method(childProcess, 'execFile', (_command, _args, _options, callback) => callback(new Error('模拟 Git 不可达')))
     globalThis.fetch = async () => ({ ok: false, status: 503 })
     const failed = await updater.check(true)
     assert.equal(failed.ok, false)

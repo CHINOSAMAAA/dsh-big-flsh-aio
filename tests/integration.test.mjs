@@ -4,6 +4,7 @@ import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import vm from 'node:vm'
+import childProcess from 'node:child_process'
 import { createSelfUpdate } from '../lib/selfupdate.mjs'
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -110,4 +111,26 @@ test('Host 统一加载两个子插件并注册整合包更新路由', async () 
     assert.deepEqual(routes, ['/dsh-big-flsh-aio/update', '/dsh-big-flsh-aio/install'])
     assert.ok(host.inject.includes('llm') && host.inject.includes('attachments'))
   } finally { if (previous === undefined) delete process.env.DSH_HOME; else process.env.DSH_HOME = previous; rmSync(home, { recursive: true, force: true }) }
+})
+
+test('GitHub API 限流时使用 Git 解析本仓库 main，仍校验固定提交的包元信息', async t => {
+  const originalFetch = globalThis.fetch
+  const requests = []
+  const sha = 'c'.repeat(40)
+  t.mock.method(childProcess, 'execFile', (command, args, options, callback) => {
+    assert.equal(command, 'git')
+    assert.deepEqual(args, ['ls-remote', '--exit-code', 'https://github.com/CHINOSAMAAA/dsh-big-flsh-aio.git', 'refs/heads/main'])
+    assert.equal(options.env.GIT_TERMINAL_PROMPT, '0')
+    callback(null, sha + '\trefs/heads/main\n')
+  })
+  globalThis.fetch = async url => {
+    requests.push(url)
+    return String(url).includes('api.github.com') ? { ok: false, status: 403 } : { ok: true, json: async () => ({ name: 'dsh-big-flsh-aio', version: '0.2.0' }) }
+  }
+  try {
+    const result = await createSelfUpdate({ packageRoot: new URL('../', import.meta.url).pathname }).check(true)
+    assert.equal(result.ok, true)
+    assert.equal(result.latestCommit, sha)
+    assert.equal(requests[1], `https://raw.githubusercontent.com/CHINOSAMAAA/dsh-big-flsh-aio/${sha}/package.json`)
+  } finally { globalThis.fetch = originalFetch }
 })
