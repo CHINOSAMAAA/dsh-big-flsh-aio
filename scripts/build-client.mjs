@@ -10,5 +10,6 @@ const output = `// 自动生成：修改 src/panel.js 或 modules/*/lib/client.j
   read('modules/qq/lib/client.js').replace('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
   read('modules/memory/lib/client.js').replace('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
   `const META = ${JSON.stringify({ name: meta.name, version: meta.version, upstreamCompatibility: meta.upstreamCompatibility })};\n` +
+  read('src/update-notifier.js') + '\n' +
   read('src/panel.js') + '\n} });\n'
 writeFileSync(new URL('client.js', root), output)

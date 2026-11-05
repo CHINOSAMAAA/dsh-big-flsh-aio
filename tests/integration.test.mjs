@@ -12,13 +12,13 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 test('整合包只注册一个侧栏和主面板，四个入口直接挂载原功能组件', () => {
   let plugin, index = 0
   const states = [0, [0, 1, 2, 3]]
-  const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: () => [states[index++], () => {}] }
+  const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: () => [states[index++], () => {}], useEffect() {} }
   vm.runInNewContext(read('../client.js'), { window: { __ModuleLoader__: { load: ({ id, factory }) => {
     assert.equal(id, 'dsh-big-flsh-aio'); plugin = factory(() => React)
   } } } })
   const registrations = []
   plugin.apply({ get: () => ({ inject: (_, fn) => fn(), register: (slot, component) => registrations.push({ slot, component }) }) })
-  assert.deepEqual(registrations.map(r => r.slot.name), ['sidebar.panellist', 'main'])
+  assert.deepEqual(registrations.map(r => r.slot.name), ['sidebar.panellist', 'main', 'shell.overlay'])
   assert.equal(registrations[0].slot.id, registrations[1].slot.key)
   const tree = registrations[1].component()
   const nodes = []

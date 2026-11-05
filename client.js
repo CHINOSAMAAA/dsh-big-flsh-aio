@@ -5007,6 +5007,57 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
 })
 
 const META = {"name":"dsh-big-flsh-aio","version":"0.0.1","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"}]};
+let NativeToast = null
+try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
+
+let openUpdatesRequested = false
+let showUpdates = null
+
+function UpdateNotifier({ open }) {
+  const [notice, setNotice] = React.useState(null)
+  React.useEffect(() => {
+    let stopped = false, running = false, checkedAt = 0, active = null
+    const notified = new Set()
+    const check = async () => {
+      if (stopped || running || (checkedAt && Date.now() - checkedAt < 5 * 60000)) return
+      running = true; checkedAt = Date.now()
+      const controller = new AbortController()
+      active = controller
+      const timeout = setTimeout(() => controller.abort(), 15000)
+      try {
+        const result = await request('/dsh-big-flsh-aio/update?channel=mirror&refresh=1', { signal: controller.signal })
+        if (!stopped && result.hasUpdate && !notified.has(result.latest)) {
+          notified.add(result.latest)
+          setNotice(result.latest)
+        }
+      } catch { /* 后台查询失败不打扰用户，下一次检查重试。 */ }
+      finally { clearTimeout(timeout); active = null; running = false }
+    }
+    const onVisible = () => { if (document.visibilityState !== 'hidden') void check() }
+    void check()
+    const interval = setInterval(check, 30 * 60000)
+    window.addEventListener('focus', onVisible)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      stopped = true; active?.abort(); clearInterval(interval)
+      window.removeEventListener('focus', onVisible)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [])
+  if (!notice) return null
+  const view = () => { open(); setNotice(null) }
+  const text = '大肥鱼 v' + notice + ' 已发布，可更新插件。'
+  if (NativeToast) return h(NativeToast, { key: notice, text, holdMs: 12000, onDone: () => setNotice(null), actions: [{ prefix: ' ', label: '查看更新', onClick: view }] })
+  return h('aside', { role: 'alert', 'aria-label': '大肥鱼更新提醒', style: {
+    position: 'fixed', right: 20, bottom: 24, zIndex: 1000, pointerEvents: 'auto',
+    maxWidth: 'min(420px, calc(100vw - 40px))', padding: 16, borderRadius: 12,
+    color: 'var(--dsw-alias-label-primary, #202535)', background: 'var(--dsw-alias-bg-layer-1, #fff)',
+    border: '1px solid var(--dsw-alias-border-l2, #dfe3eb)', boxShadow: '0 8px 32px #0002', font: '13px/1.6 system-ui',
+  } }, h('div', null, text), h('div', { style: { display: 'flex', gap: 12, marginTop: 8 } },
+    h('button', { type: 'button', onClick: view }, '查看更新'),
+    h('button', { type: 'button', onClick: () => setNotice(null), 'aria-label': '关闭更新提醒' }, '稍后')))
+}
+
 const React = require('react')
 const h = React.createElement
 const QQ = components['dsh-qq-link-plus'].Section
@@ -5094,7 +5145,7 @@ function Updates() {
     finally { setBusy(false) }
   }
   React.useEffect(() => { void check(false) }, [channel])
-  const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
+  const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
   return h('div', null,
     h('section', { className: 'fish-card' },
       h('span', { className: 'fish-badge' }, 'RELEASE / v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
@@ -5121,9 +5172,15 @@ function Updates() {
 }
 
 function Page() {
-  const [tab, setTab] = React.useState(0)
-  const [visited, setVisited] = React.useState([0])
+  const initialTab = openUpdatesRequested ? 3 : 0
+  const [tab, setTab] = React.useState(initialTab)
+  const [visited, setVisited] = React.useState([initialTab])
   const navigate = id => { setTab(id); setVisited(old => old.includes(id) ? old : [...old, id]) }
+  React.useEffect(() => {
+    openUpdatesRequested = false
+    showUpdates = () => navigate(3)
+    return () => { showUpdates = null }
+  }, [])
   const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Updates)]
   return h('div', { className: 'big-fish' }, h('style', null, css), h('div', { className: 'fish-content' },
     h('header', null,
@@ -5147,6 +5204,11 @@ return {
     if (!slots) return
     slots.inject('sidebar.panellist', () => slots.register({ name: 'sidebar.panellist', id: PANEL_ID, order: 20, label: () => '大肥鱼' }, FishIcon))
     slots.inject('main', () => slots.register({ name: 'main', key: PANEL_ID }, Page))
+    slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'big-flsh-update-notice' }, () => h(UpdateNotifier, { open: () => {
+      openUpdatesRequested = true
+      ctx.get('layout')?.selectPanel(PANEL_ID)
+      showUpdates?.()
+    } })))
   },
 }
 

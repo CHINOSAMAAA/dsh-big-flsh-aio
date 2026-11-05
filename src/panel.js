@@ -85,7 +85,7 @@ function Updates() {
     finally { setBusy(false) }
   }
   React.useEffect(() => { void check(false) }, [channel])
-  const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
+  const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
   return h('div', null,
     h('section', { className: 'fish-card' },
       h('span', { className: 'fish-badge' }, 'RELEASE / v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
@@ -112,9 +112,15 @@ function Updates() {
 }
 
 function Page() {
-  const [tab, setTab] = React.useState(0)
-  const [visited, setVisited] = React.useState([0])
+  const initialTab = openUpdatesRequested ? 3 : 0
+  const [tab, setTab] = React.useState(initialTab)
+  const [visited, setVisited] = React.useState([initialTab])
   const navigate = id => { setTab(id); setVisited(old => old.includes(id) ? old : [...old, id]) }
+  React.useEffect(() => {
+    openUpdatesRequested = false
+    showUpdates = () => navigate(3)
+    return () => { showUpdates = null }
+  }, [])
   const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Updates)]
   return h('div', { className: 'big-fish' }, h('style', null, css), h('div', { className: 'fish-content' },
     h('header', null,
@@ -138,5 +144,10 @@ return {
     if (!slots) return
     slots.inject('sidebar.panellist', () => slots.register({ name: 'sidebar.panellist', id: PANEL_ID, order: 20, label: () => '大肥鱼' }, FishIcon))
     slots.inject('main', () => slots.register({ name: 'main', key: PANEL_ID }, Page))
+    slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'big-flsh-update-notice' }, () => h(UpdateNotifier, { open: () => {
+      openUpdatesRequested = true
+      ctx.get('layout')?.selectPanel(PANEL_ID)
+      showUpdates?.()
+    } })))
   },
 }

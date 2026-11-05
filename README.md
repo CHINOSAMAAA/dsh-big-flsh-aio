@@ -26,13 +26,13 @@
 3. 在安装来源中粘贴下面的**国内镜像安装包地址**：
 
 ```text
-https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz
+https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-0.0.1.tgz
 ```
 
 4. 确认安装并启用，按宿主提示重载或重启 DSH。
 5. 点击左侧栏的 **大肥鱼**。首次使用时配置 QQ 后端与会话绑定，再启用需要的记忆功能。
 
-这里的 `1.5.1-1` 是已发布的历史编号，链接保留用于安装旧版；AIO 当前源码已改用独立版本 `0.0.1`，这不表示 npm 已发布该新编号。安装其他版本时，将地址中的版本号替换为镜像已同步的版本；可从 [国内镜像版本信息](https://registry.npmmirror.com/dsh-big-flsh-aio/latest) 查看当前 latest 的 `version` 字段。
+这里的 `0.0.1` 是固定安装版本。安装其他版本时，将地址中的版本号替换为镜像已同步的版本；可从 [国内镜像版本信息](https://registry.npmmirror.com/dsh-big-flsh-aio/latest) 查看当前 latest 的 `version` 字段。
 
 如果已经下载了 `.tgz` 文件，也可以在插件管理器填写该文件的**绝对路径**进行本地安装。开发目录通过 link 安装的副本不支持页面一键更新；切换到发行包时，先停用或移除旧 link 条目，再安装发行包，保留 `DSH_HOME` 中的数据。
 
@@ -41,7 +41,7 @@ https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz
 在终端执行：
 
 ```bash
-dsh plugin --profile web add https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz --registry=https://registry.npmmirror.com/
+dsh plugin --profile web add https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-0.0.1.tgz --registry=https://registry.npmmirror.com/
 ```
 
 安装后重载或重启对应的 DSH Web 实例。`web` 按实际 profile 名称替换；**desktop profile 由桌面应用管理，请使用桌面版插件管理器**。
@@ -63,6 +63,10 @@ dsh plugin --profile web add github:CHINOSAMAAA/dsh-big-flsh-aio#main
 ```
 
 ## 更新已安装的插件
+
+DSH 界面启动后会自动检查 npm 国内镜像，此后每 30 分钟检查一次；回到窗口或恢复可见时补查，两次后台请求至少间隔 5 分钟。检查挂在全局界面上，不需要先打开大肥鱼页面。没有打开 DSH 界面或应用退出时，不运行此客户端检查。
+
+发现比当前安装版本更新的包后，优先使用 DSH 自带 `Toast` 提示，点击「查看更新」直接打开「更新与来源」。同一版本在当前界面会话中只提示一次；旧宿主没有 Toast 时显示兼容提示条。后台网络失败不弹窗打扰，后续自动重试；不会自动安装。
 
 1. 打开 **大肥鱼 → 更新与来源**。
 2. 将「更新渠道」选为 **国内镜像 · npmmirror**。
@@ -89,7 +93,7 @@ dsh plugin --profile web add github:CHINOSAMAAA/dsh-big-flsh-aio#main
 
 AIO 从 **0.0.1** 开始独立迭代，不与 QQ Link、Fish Memory 或两个 Plus 仓库共用版本号。只有发布新的 npm 包才递增，默认依次为 `0.0.1`、`0.0.2`、`0.0.3`；普通代码修改、文档维护和 GitHub 提交推送不升级版本。详细约定见 [AGENTS.md](AGENTS.md)。
 
-旧编号 `1.5.1-1` 保留为历史发布记录。版本重设后，已安装旧编号的用户不能依靠版本大小比较识别新系列升级，需要在新编号发布后手动安装一次对应安装包。兼容表中的上游版本仍按模块实际来源单独记录。
+旧编号 `1.5.1-1` 保留为历史发布记录。新版检查器将历史编号视为迁移前版本，不会把镜像里残留的旧编号误报为新版本；仍运行旧检查器的用户，需先手动安装一次新系列安装包。兼容表中的上游版本仍按模块实际来源单独记录。
 
 ## 版本对应与兼容范围
 
