@@ -1,6 +1,6 @@
 {
   "name": "dsh-big-flsh-aio",
-  "version": "1.5.1-1",
+  "version": "0.0.1",
   "description": "大肥鱼：在 DSH 主界面统一管理 QQ 互通、历史导入、长期记忆与插件更新。",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Yuuyuko-uu (https://github.com/Yuuyuko-uu)",
@@ -106,9 +106,5 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/",
     "tag": "latest"
-  },
-  "upstreamVersionBase": {
-    "project": "dsh-qq-link",
-    "version": "1.5.1"
   }
 }

@@ -11,17 +11,17 @@ test('国内检查与安装全程使用镜像，校验安装包并清理临时�
   const originalFetch = globalThis.fetch
   try {
     const root = join(home, 'node_modules', 'dsh-big-flsh-aio'); mkdirSync(root, { recursive: true })
-    writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'dsh-big-flsh-aio', version: '0.1.1' }))
+    writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'dsh-big-flsh-aio', version: '0.0.1' }))
     const bytes = Buffer.from('模拟完整安装包')
     const integrity = 'sha512-' + createHash('sha512').update(bytes).digest('base64')
-    let remote = { name: 'dsh-big-flsh-aio', version: '1.5.1-1', dist: { integrity, tarball: 'https://other.invalid/package.tgz' } }
+    let remote = { name: 'dsh-big-flsh-aio', version: '0.0.2', dist: { integrity, tarball: 'https://other.invalid/package.tgz' } }
     let corrupt = false, oversized = false, missing = false
     const requests = [], installed = []
     globalThis.fetch = async url => {
       requests.push(url)
       assert.ok(String(url).startsWith('https://registry.npmmirror.com/'))
       if (String(url).endsWith('/latest')) return missing ? new Response('', { status: 404 }) : Response.json(remote)
-      assert.equal(url, 'https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz')
+      assert.equal(url, 'https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-0.0.2.tgz')
       return new Response(corrupt ? Buffer.from('损坏文件') : bytes, { headers: oversized ? { 'content-length': String(17 * 1024 * 1024) } : {} })
     }
     const updater = createSelfUpdate({ packageRoot: root })
@@ -46,7 +46,7 @@ test('国内检查与安装全程使用镜像，校验安装包并清理临时�
     assert.match((await updater.check(true)).error, /包名/)
     remote = { ...remote, name: 'dsh-big-flsh-aio', version: 'broken-version' }
     assert.match((await updater.check(true)).error, /SemVer/)
-    remote = { ...remote, version: '1.5.1-1', dist: {} }
+    remote = { ...remote, version: '0.0.2', dist: {} }
     assert.match((await updater.check(true)).error, /SHA-512/)
     missing = true
     assert.match((await updater.check(true)).error, /尚无本项目安装包/)

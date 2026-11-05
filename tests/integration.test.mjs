@@ -92,7 +92,7 @@ test('统一更新拒绝错误包、无效版本、未鉴权和跨站请求；�
     }
     managerResult = { changed: true, application: 'restart-required', stage: 'enable', target: remote.name }
     assert.equal((await call('install')).result.ok, true)
-    remote.version = '0.1.0'
+    remote.version = JSON.parse(read('../package.json')).version
     const before = installed.length
     assert.equal((await call('install')).result.ok, false)
     assert.equal(installed.length, before)
