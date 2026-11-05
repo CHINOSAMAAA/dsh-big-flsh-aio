@@ -1,0 +1,64 @@
+{
+  "name": "dsh-qq-link-plus",
+  "version": "1.5.1-3",
+  "description": "派生自 Yuuyuko-uu/dsh-qq-link：QQ 双向互通、会话映射及 QQ 历史分段阅读与鱼的记忆对接。",
+  "scripts": {
+    "test": "node --test tests/*.mjs"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.2"
+  },
+  "type": "module",
+  "main": "lib/host.js",
+  "exports": {
+    ".": "./lib/host.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "tools"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "slots"
+      ],
+      "external": [
+        "react"
+      ]
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.1-rc.3": "compatible"
+      }
+    }
+  },
+  "author": "Yuuyuko-uu (https://github.com/Yuuyuko-uu)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CHINOSAMAAA/dsh-qq-link-plus.git"
+  },
+  "homepage": "https://github.com/CHINOSAMAAA/dsh-qq-link-plus#readme",
+  "bugs": {
+    "url": "https://github.com/CHINOSAMAAA/dsh-qq-link-plus/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin"
+  ]
+}

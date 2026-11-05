@@ -1,0 +1,13 @@
+node_modules/
+.DS_Store
+*.log
+*.tgz
+.env
+.env.*
+.local-backups/
+artifacts/
+qq-history-imports/
+qq-bridge-*.json
+fish-memory*/
+*.bak
+*.bak.*

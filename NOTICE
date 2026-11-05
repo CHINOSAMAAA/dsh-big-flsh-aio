@@ -1,0 +1,17 @@
+大肥鱼（dsh-big-flsh-aio）
+派生自 Yuuyuko-uu/dsh-qq-link 与 Yuuyuko-uu/dsh-fish-memory。
+原作者 Yuuyuko-uu，版权所有 (c) 2026 Yuuyuko-uu。
+https://github.com/Yuuyuko-uu/dsh-qq-link
+https://github.com/Yuuyuko-uu/dsh-fish-memory
+
+输入版本：CHINOSAMAAA/dsh-qq-link-plus 1.5.1-3；CHINOSAMAAA/dsh-fish-memory-plus 1.5.4。
+CHINOSAMAAA：Plus 扩展、主界面整合、统一更新与发布配置。
+本项目整体继续采用 Yuuyuko-uu 插件许可 1.2，完整正文见 LICENSE；署名首页见 LICENSE.md。
+
+dsh-memory-rag：Copyright 2026 aonysen，Apache-2.0。
+源码参考：https://github.com/Aonysen/dsh-memory-rag
+原 NOTICE 与完整许可见 modules/memory/lib/notices/。
+
+jieba：Copyright (c) 2013 Sun Junyi，MIT。
+词典来源：https://github.com/fxsjy/jieba
+词条和词频处理说明见 modules/memory/lib/词典-来源.txt；完整许可见 modules/memory/lib/notices/jieba-LICENSE。
