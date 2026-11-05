@@ -17,7 +17,7 @@
 
 ## 安装与已有数据
 
-要求 **Node.js ≥ 22，DSH ≥ 0.2.1-rc.2**。安装公开 GitHub 仓库即可，**无需 npm 发布**。
+要求 **Node.js ≥ 22，DSH ≥ 0.2.1-rc.2**。可从 GitHub 安装；国内镜像更新需先完成下文的 npm 发布。
 
 1. 在 DSH 插件管理器停用原来的侧栏模板、`dsh-qq-link` / `dsh-qq-link-plus`、`dsh-fish-memory` / `dsh-fish-memory-plus`。不要删除插件数据。
 2. 安装 `github:CHINOSAMAAA/dsh-big-flsh-aio#main`，按宿主提示重载或重启。
@@ -37,35 +37,53 @@ QQ 历史整理会把文本发送到目标会话的模型服务并消耗额度�
 
 ## 更新与发布
 
-沿用原作者的 `pluginManager.installBundle` 方案：解析本仓库 `main` 的最新提交，读取该提交的 `package.json` 比较版本，点击「一键更新整合包」后安装 `github:CHINOSAMAAA/dsh-big-flsh-aio#<最新提交号>`。使用最新提交号可避免同一 `#main` 被宿主当成重复安装或复用旧缓存。GitHub API 限流或不可达时回退到 `git ls-remote`，无需 GitHub Token；此回退要求已安装 Git。检查缓存 6 小时，手动检查绕过缓存。网络失败如实报错；本地 link 开发副本禁用自动安装，以免覆盖工作目录。安装后以宿主的重载/重启提示为准，页面不会在后台静默安装。
+更新页默认使用 **npmmirror 国内镜像**，也可切换 GitHub。两个渠道均由原作者采用的宿主 `pluginManager.installBundle` 完成安装，本地 link 开发副本禁用自动安装。
 
-后续每次功能修改：
+| 渠道 | 检查与安装方式 |
+| --- | --- |
+| 国内镜像（默认） | 从 `registry.npmmirror.com/dsh-big-flsh-aio/latest` 读取版本，下载该版本的镜像 tarball，核验 SHA-512 后交给宿主安装；不依赖 GitHub、Git 或原作者的 npm 包。 |
+| GitHub | 解析本仓库 main 的提交，读取固定提交的 package.json 并安装；API 失败时用 Git 查询提交。 |
 
-1. 修改代码；**在根 package.json 提升整合包版本**。同步上游时，还需更新 `upstreamCompatibility` 的版本及提交号；它是更新页的唯一版本清单。
-2. 更新中文 `CHANGELOG.md`，运行 `npm run build`、`npm test`、`npm pack --dry-run`。`client.js` 是生成产物，也必须提交。
-3. 使用中文提交并推送，例如：
+检查缓存按渠道分开保存 6 小时，手动检查绕过缓存。镜像未同步、下载失败、校验失败均明确报错，不会静默切回 GitHub 或显示为已更新。安装后按宿主提示重载或重启。镜像可访问和延迟以实际网络为准，不能保证所有地区速度一致。
+
+### 首次发布与旧版接入
+
+先在项目目录完成检查和发布：
 
 ```bash
-git add .
-git commit -m '0.1.1：修复历史导入状态提示'
-git push origin main
+npm login --registry=https://registry.npmjs.org/
+npm run build
+npm test
+npm pack --dry-run
+npm publish --access public --tag latest --registry=https://registry.npmjs.org/
 ```
 
-推送后即可在安装版中检查更新。不会从原作者的 npm 包或 GitHub 仓库安装代码。GitHub 安装还需要机器可访问 GitHub，且宿主提供插件管理接口；缺失时页面明确提示使用宿主插件管理器手动更新。
+`1.5.1-1` 属于 SemVer 预发布格式，发布时显式指定 `--tag latest`，国内更新器才能通过 latest 标签找到本项目。首次发布需 npm 账号和交互验证；不要将令牌提交到仓库。镜像同步存在延迟，只有镜像返回本项目版本后，国内渠道才可用。
 
-**可选 npm 发布**：并非当前更新链路必需。若要在 npm 上额外分发，先确认包名归属，执行 `npm login` → `npm pack --dry-run` → `npm publish --access public`，按 npm 提示完成验证。npm 发布不会改变本项目的 GitHub 更新来源。不要把账号令牌提交到仓库。
+仍在使用旧版更新页、且 GitHub 不可达时，先在 DSH 插件管理器安装本次 `npm pack` 生成的本地 `.tgz` 文件并重载，即可使用新更新页。也可在镜像同步后安装以下地址（版本号按实际发布替换）：
+
+```text
+https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz
+```
+
+### 后续修改
+
+1. 根版本按 `dsh-qq-link` 的实际同步基线加修订号递增，例如 `1.5.1-2`。同步上游时更新 `upstreamVersionBase` 与 `upstreamCompatibility`，各模块适配基线分别记录。
+2. 更新中文 CHANGELOG，执行 `npm run build`、`npm test` 和 `npm pack --dry-run`，提交生成的 client.js。
+3. 使用「版本号：中文改动说明」自动提交并推送 origin/main，再执行上述 npm 发布命令，让国内镜像获得新版。仅推送 GitHub 不会发布到 npm。
 
 ## 版本对应与兼容范围
 
-大肥鱼 **0.1.1** 的可复现来源如下；“对应”表示实际整合基线，不是保证兼容所有上游新版，也不是要求再安装这些插件。
+大肥鱼 **1.5.1-1** 的可复现来源如下；“对应”表示实际整合基线，不是保证兼容所有上游新版，也不是要求再安装这些插件。
 
-| 项目 | 作者 / 维护者 | 对应版本 | 提交 |
+| 项目名称 | 本项目子仓库 | 原作者仓库 | 适配的原仓库版本 |
 | --- | --- | --- | --- |
-| [dsh-qq-link](https://github.com/Yuuyuko-uu/dsh-qq-link) | Yuuyuko-uu | 1.5.1 | `fba7e3e` |
-| [dsh-fish-memory](https://github.com/Yuuyuko-uu/dsh-fish-memory) | Yuuyuko-uu | 1.5.2 | `5124cc1` |
-| [dsh-qq-link-plus](https://github.com/CHINOSAMAAA/dsh-qq-link-plus) | Yuuyuko-uu；CHINOSAMAAA 扩展 | 1.5.1-3 | `1d49ee0` |
-| [dsh-fish-memory-plus](https://github.com/CHINOSAMAAA/dsh-fish-memory-plus) | Yuuyuko-uu；CHINOSAMAAA 扩展 | 1.5.4 | `10b5765` |
-| [dsh-memory-rag](https://github.com/Aonysen/dsh-memory-rag) | aonysen | Embedding 源码参考，非运行依赖 | `9527a91` |
+| 通到 QQ | [dsh-qq-link-plus](https://github.com/CHINOSAMAAA/dsh-qq-link-plus) | [Yuuyuko-uu/dsh-qq-link](https://github.com/Yuuyuko-uu/dsh-qq-link) | 1.5.1 |
+| 鱼的记忆 | [dsh-fish-memory-plus](https://github.com/CHINOSAMAAA/dsh-fish-memory-plus) | [Yuuyuko-uu/dsh-fish-memory](https://github.com/Yuuyuko-uu/dsh-fish-memory) | 1.5.2 |
+
+第四列只表示本项目目前适配的原仓库版本，不代表源仓库的最新版本。实际内置 QQ Plus 1.5.1-3（1d49ee0）、记忆 Plus 1.5.4（10b5765）；后续独立仓库的文档及版本修正不改变本包已复制代码的版本记录。
+
+Embedding 实现参考 [Aonysen/dsh-memory-rag](https://github.com/Aonysen/dsh-memory-rag/tree/9527a91f49863e7f16e109335e44b137e436dc41)，Copyright 2026 aonysen，Apache-2.0；参考项目不是内置子插件，许可和 NOTICE 保留于 `modules/memory/lib/notices/`。
 
 2026-11-05 核对原作者仓库：QQ 仍为 1.5.1，记忆已为 1.5.5。记忆上游 1.5.5 未包含在本整合版本中。
 

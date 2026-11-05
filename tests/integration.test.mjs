@@ -30,10 +30,10 @@ test('整合包只注册一个侧栏和主面板，四个入口直接挂载原�
   assert.equal(panels[1].children[0].type.name, 'Section')
   assert.equal(panels[2].children[0].type.name, 'Section')
   const updates = panels[3].children[0].type
-  const compatReact = [null, false, '']; index = 0; React.useState = () => [compatReact[index++], () => {}]; React.useEffect = () => {}
+  const compatReact = [null, false, '', 'mirror']; index = 0; React.useState = () => [compatReact[index++], () => {}]; React.useEffect = () => {}
   const htmlTree = JSON.stringify(updates())
   const meta = JSON.parse(read('../package.json'))
-  for (const source of meta.upstreamCompatibility) { assert.ok(htmlTree.includes(source.url)); assert.ok(htmlTree.includes(source.version)) }
+  for (const source of meta.upstreamCompatibility) { assert.ok(htmlTree.includes(source.url)); assert.ok(htmlTree.includes(source.forkUrl)); assert.ok(htmlTree.includes(source.version)) }
   const overviewStates = [{ memory: { sessions: [{ id: 'a', storeId: 'shared', count: 3 }, { id: 'b', storeId: 'shared', count: 3 }] } }, false]
   index = 0; React.useState = () => [overviewStates[index++], () => {}]
   const overview = JSON.stringify(panels[0].children[0].type({ navigate() {} }))
@@ -47,8 +47,8 @@ test('作者许可原文完整保留，兼容清单和包内模块版本一致',
   assert.equal(license, read('../modules/memory/LICENSE'))
   const meta = JSON.parse(read('../package.json'))
   for (const [module, name] of [['qq', 'dsh-qq-link-plus'], ['memory', 'dsh-fish-memory-plus']]) {
-    const source = meta.upstreamCompatibility.find(s => s.url.endsWith('/' + name))
-    assert.equal(source.version, JSON.parse(read(`../modules/${module}/package.json`)).version)
+    const source = meta.upstreamCompatibility.find(s => s.forkUrl.endsWith('/' + name))
+    assert.equal(source.forkVersion, JSON.parse(read(`../modules/${module}/package.json`)).version)
   }
   assert.ok(read('../README.md').slice(0, 900).includes('原作者 **Yuuyuko-uu**'))
   assert.ok(read('../LICENSE.md').slice(0, 900).includes('Yuuyuko-uu'))
@@ -63,17 +63,17 @@ test('统一更新拒绝错误包、无效版本、未鉴权和跨站请求；�
     const updater = createSelfUpdate({ packageRoot: root })
     let remote = { name: 'wrong-plugin', version: '99.0.0' }
     globalThis.fetch = async url => ({ ok: true, json: async () => String(url).includes('api.github.com') ? { sha: 'b'.repeat(40) } : remote })
-    assert.match((await updater.check(true)).error, /包名/)
+    assert.match((await updater.check(true, 'github')).error, /包名/)
     remote = { name: 'dsh-big-flsh-aio', version: 'not-semver' }
-    assert.match((await updater.check(true)).error, /SemVer/)
-    remote.version = '0.2.0'
+    assert.match((await updater.check(true, 'github')).error, /SemVer/)
+    remote.version = '2.0.0'
     const handlers = {}, installed = []
     let rejection, managerResult = { applied: true }
     const ctx = { pluginManager: { installBundle: async spec => { installed.push(spec); return managerResult } }, get: () => ({ requestRejection: () => rejection }), effect: fn => fn(), webServer: { register: o => { handlers[o.path] = o.handler } } }
     updater.register(ctx, '/dsh-big-flsh-aio')
     const call = async (path, req = {}) => {
       let code, result
-      await handlers['/dsh-big-flsh-aio/' + path]({ method: 'POST', url: '/' + path, headers: { host: 'localhost', 'content-type': 'application/json' }, ...req }, { writeHead: n => { code = n }, end: s => { result = JSON.parse(s) } })
+      await handlers['/dsh-big-flsh-aio/' + path]({ method: 'POST', url: '/' + path + '?channel=github', headers: { host: 'localhost', 'content-type': 'application/json' }, ...req }, { writeHead: n => { code = n }, end: s => { result = JSON.parse(s) } })
       return { code, result }
     }
     rejection = 401; assert.equal((await call('install')).code, 401)
@@ -125,10 +125,10 @@ test('GitHub API 限流时使用 Git 解析本仓库 main，仍校验固定提�
   })
   globalThis.fetch = async url => {
     requests.push(url)
-    return String(url).includes('api.github.com') ? { ok: false, status: 403 } : { ok: true, json: async () => ({ name: 'dsh-big-flsh-aio', version: '0.2.0' }) }
+    return String(url).includes('api.github.com') ? { ok: false, status: 403 } : { ok: true, json: async () => ({ name: 'dsh-big-flsh-aio', version: '2.0.0' }) }
   }
   try {
-    const result = await createSelfUpdate({ packageRoot: new URL('../', import.meta.url).pathname }).check(true)
+    const result = await createSelfUpdate({ packageRoot: new URL('../', import.meta.url).pathname }).check(true, 'github')
     assert.equal(result.ok, true)
     assert.equal(result.latestCommit, sha)
     assert.equal(requests[1], `https://raw.githubusercontent.com/CHINOSAMAAA/dsh-big-flsh-aio/${sha}/package.json`)

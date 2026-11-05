@@ -5006,7 +5006,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
   },
 })
 
-const META = {"name":"dsh-big-flsh-aio","version":"0.1.1","upstreamCompatibility":[{"name":"通到 QQ · dsh-qq-link","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","role":"原作者功能基线"},{"name":"鱼的记忆 · dsh-fish-memory","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","role":"原作者功能基线"},{"name":"通到 QQ Plus · dsh-qq-link-plus","author":"Yuuyuko-uu；CHINOSAMAAA 扩展","url":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","version":"1.5.1-3","commit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4","role":"实际整合版本"},{"name":"鱼的记忆 Plus · dsh-fish-memory-plus","author":"Yuuyuko-uu；CHINOSAMAAA 扩展","url":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","version":"1.5.4","commit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7","role":"实际整合版本"},{"name":"dsh-memory-rag","author":"aonysen","url":"https://github.com/Aonysen/dsh-memory-rag","version":"源码参考","commit":"9527a91f49863e7f16e109335e44b137e436dc41","role":"Embedding 参考，非运行依赖"}]};
+const META = {"name":"dsh-big-flsh-aio","version":"1.5.1-1","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"}]};
 const React = require('react')
 const h = React.createElement
 const QQ = components['dsh-qq-link-plus'].Section
@@ -5078,26 +5078,29 @@ function Updates() {
   const [update, setUpdate] = React.useState(null)
   const [busy, setBusy] = React.useState(false)
   const [message, setMessage] = React.useState('')
+  const [channel, setChannel] = React.useState('mirror')
   const check = async (force = true) => {
     setBusy(true)
-    try { setUpdate(await request('/dsh-big-flsh-aio/update' + (force ? '?refresh=1' : ''))); setMessage('') }
+    try { setUpdate(await request('/dsh-big-flsh-aio/update?channel=' + channel + (force ? '&refresh=1' : ''))); setMessage('') }
     catch (e) { setUpdate(null); setMessage(e.message) }
     finally { setBusy(false) }
   }
   const install = async () => {
     setBusy(true); setMessage('正在安装大肥鱼整合包…')
     try {
-      await request('/dsh-big-flsh-aio/install', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+      await request('/dsh-big-flsh-aio/install?channel=' + channel, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
       setMessage('安装已完成。请按宿主提示重载或重启 DSH，使新版本生效。')
     } catch (e) { setMessage('安装未完成：' + e.message) }
     finally { setBusy(false) }
   }
-  React.useEffect(() => { void check(false) }, [])
+  React.useEffect(() => { void check(false) }, [channel])
   const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
   return h('div', null,
     h('section', { className: 'fish-card' },
       h('span', { className: 'fish-badge' }, 'RELEASE / v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
-      h('p', null, status), h('p', { className: 'fish-muted' }, '从本项目 main 分支检查版本，由 DSH 插件管理器安装整个整合包。原作者项目仅用于来源说明，不会单独覆盖整合模块。'),
+      h('p', null, status),
+      h('label', null, '更新渠道 ', h('select', { 'aria-label': '更新渠道', className: 'fish-button', value: channel, disabled: busy, onChange: e => { setUpdate(null); setMessage(''); setChannel(e.target.value) } },
+        h('option', { value: 'mirror' }, '国内镜像 · npmmirror'), h('option', { value: 'github' }, 'GitHub 仓库'))),
       h('p', null, link('https://github.com/CHINOSAMAAA/dsh-big-flsh-aio', 'CHINOSAMAAA/dsh-big-flsh-aio ↗')),
       h('div', { className: 'fish-actions' }, button(busy ? '处理中…' : '检查更新', () => check(true), false, busy),
         button('一键更新整合包', install, true, busy || !update?.hasUpdate || !update?.canInstall)),
@@ -5105,14 +5108,16 @@ function Updates() {
       h('div', { className: 'fish-message', role: 'status', 'aria-live': 'polite' }, message)),
     h('section', { className: 'fish-card', style: { marginTop: 20 } },
       h('h2', null, '原作者、项目来源与版本对应'),
-      h('p', { className: 'fish-muted' }, '下表是大肥鱼 v' + META.version + ' 实际使用的版本基线，不表示兼容上游所有新版本。两个 Plus 模块已包含在整合包内，请勿重复启用原插件。'),
       h('div', { style: { overflowX: 'auto' } }, h('table', { className: 'fish-table' },
-        h('thead', null, h('tr', null, ...['项目 / GitHub', '原作者 / 维护者', '对应版本', '用途'].map(x => h('th', { key: x, scope: 'col' }, x)))),
+        h('thead', null, h('tr', null,
+          ...['项目名称', '本项目子仓库', '原作者仓库'].map(x => h('th', { key: x, scope: 'col' }, x)),
+          h('th', { scope: 'col' }, '适配的原仓库版本', h('div', { className: 'fish-muted', style: { fontWeight: 400, minWidth: 170 } }, '仅表示本项目目前适配的原仓库版本，不代表源仓库的最新版本')))),
         h('tbody', null, ...META.upstreamCompatibility.map(item => h('tr', { key: item.url },
-          h('td', null, link(item.url, item.name), h('div', { className: 'fish-muted' }, item.url.replace('https://github.com/', ''))),
-          h('td', null, item.author), h('td', null, item.version, h('div', null, link(item.url + '/commit/' + item.commit, item.commit.slice(0, 7)))), h('td', null, item.role)))))),
-      h('p', { className: 'fish-muted' }, '运行要求：Node.js ≥ 22，DSH ≥ 0.2.1-rc.2。QQ 与记忆功能派生自 Yuuyuko-uu；整合与 Plus 扩展由 CHINOSAMAAA 维护。原许可全文及第三方声明随包分发。'),
-      h('p', null, link('https://github.com/CHINOSAMAAA/dsh-big-flsh-aio/blob/main/LICENSE.md', '许可与署名'), ' · ', link('https://github.com/CHINOSAMAAA/dsh-big-flsh-aio/blob/main/README.md', '安装与发布步骤'))))
+          h('td', null, item.name),
+          h('td', null, link(item.forkUrl, item.forkName), h('div', { className: 'fish-muted' }, item.forkUrl.replace('https://github.com/', ''))),
+          h('td', null, link(item.url, item.url.replace('https://github.com/', ''))),
+          h('td', null, item.version))))))))
+
 }
 
 function Page() {
@@ -5122,7 +5127,7 @@ function Page() {
   const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Updates)]
   return h('div', { className: 'big-fish' }, h('style', null, css), h('div', { className: 'fish-content' },
     h('header', null,
-      h('div', { className: 'fish-brand' }, h('div', { className: 'fish-logo' }, h(FishIcon, { size: 32 })), h('div', null, h('h1', null, '大肥鱼'), h('div', { className: 'fish-muted' }, 'QQ 与记忆，汇在一处。'))),
+      h('div', { className: 'fish-brand' }, h('div', { className: 'fish-logo' }, h(FishIcon, { size: 32 })), h('div', null, h('h1', null, '大肥鱼'))),
       h('span', { className: 'fish-badge' }, 'v' + META.version + ' / ALL IN ONE')),
     h('nav', { className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist' }, ...tabs.map((label, id) => h('button', {
       type: 'button', key: label, role: 'tab', id: 'fish-tab-' + id, 'aria-selected': tab === id, 'aria-controls': 'fish-panel-' + id,

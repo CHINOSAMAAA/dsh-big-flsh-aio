@@ -37,29 +37,29 @@ test('仅检查 大肥鱼 main，支持缓存和刷新；安装不沿用旧仓�
       return { ok: true, json: async () => String(url).includes('api.github.com') ? { sha: 'a'.repeat(40) } : { name: 'dsh-big-flsh-aio', version: '1.5.1-10' } }
     }
     const updater = createSelfUpdate({ packageRoot: root })
-    const result = await updater.check(true)
+    const result = await updater.check(true, 'github')
     assert.equal(result.hasUpdate, true)
     assert.equal(result.repoUrl, 'https://github.com/CHINOSAMAAA/dsh-big-flsh-aio')
     assert.equal(result.from, 'GitHub')
     assert.deepEqual(urls, ['https://api.github.com/repos/CHINOSAMAAA/dsh-big-flsh-aio/commits/main', 'https://raw.githubusercontent.com/CHINOSAMAAA/dsh-big-flsh-aio/' + 'a'.repeat(40) + '/package.json'])
-    assert.equal((await updater.check(false)).cached, true)
+    assert.equal((await updater.check(false, 'github')).cached, true)
     assert.equal(urls.length, 2)
-    await updater.check(true)
+    await updater.check(true, 'github')
     assert.equal(urls.length, 4)
     const installed = []
     const ctx = { pluginManager: { installBundle: async spec => { installed.push(spec); return { applied: true } } } }
-    assert.equal((await updater.install(ctx)).ok, true)
+    assert.equal((await updater.install(ctx, 'github')).ok, true)
     assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-flsh-aio#' + 'a'.repeat(40)])
     t.mock.method(childProcess, 'execFile', (_command, _args, _options, callback) => callback(new Error('模拟 Git 不可达')))
     globalThis.fetch = async () => ({ ok: false, status: 503 })
-    const failed = await updater.check(true)
+    const failed = await updater.check(true, 'github')
     assert.equal(failed.ok, false)
     assert.equal(failed.latest, null)
     assert.match(failed.error, /503/)
     const devRoot = join(home, 'dev-copy')
     mkdirSync(devRoot)
     writeFileSync(join(devRoot, 'package.json'), JSON.stringify({ name: 'dsh-big-flsh-aio' }))
-    assert.equal((await createSelfUpdate({ packageRoot: devRoot }).install(ctx)).ok, false)
+    assert.equal((await createSelfUpdate({ packageRoot: devRoot }).install(ctx, 'github')).ok, false)
     assert.equal(installed.length, 1)
   } finally {
     globalThis.fetch = originalFetch
