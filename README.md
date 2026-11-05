@@ -2,7 +2,7 @@
 
 本项目派生自 [Yuuyuko-uu/dsh-qq-link](https://github.com/Yuuyuko-uu/dsh-qq-link) 与 [Yuuyuko-uu/dsh-fish-memory](https://github.com/Yuuyuko-uu/dsh-fish-memory)，原作者 **Yuuyuko-uu**。整合输入为 CHINOSAMAAA 的 [QQ Plus](https://github.com/CHINOSAMAAA/dsh-qq-link-plus) 和 [记忆 Plus](https://github.com/CHINOSAMAAA/dsh-fish-memory-plus)。继续使用原作者许可，完整保留 [LICENSE](LICENSE)，署名首页见 [LICENSE.md](LICENSE.md)。
 
-**本项目改动：**将侧栏模板改为「大肥鱼」主内容区工作台，内置 QQ 互通、历史导入和长期记忆模块；统一检查与安装更新，改从本仓库获取整合包；加入来源、版本对应表和整合测试。Plus 的历史导入、QQ 来源分库和 Qwen 语义召回一并保留。本项目是衍生整合版本，不代表原作者出品。
+**本项目改动：**将侧栏模板改为「大肥鱼」主内容区工作台，内置 QQ 互通、历史导入和长期记忆模块；统一检查与安装更新，提供本项目的国内镜像和 GitHub 两种渠道；加入来源、版本对应表和整合测试。Plus 的历史导入、QQ 来源分库和 Qwen 语义召回一并保留。本项目是衍生整合版本，不代表原作者出品。
 
 ## 主界面
 
@@ -15,62 +15,75 @@
 
 切换工作台页签会保留已打开页面的状态。离开整个工作台或重载仍会结束页面中的历史导入控制，已写入记忆不撤回；可按原流程恢复导入任务。
 
-## 安装与已有数据
+## 在 DSH 中安装
 
-要求 **Node.js ≥ 22，DSH ≥ 0.2.1-rc.2**。可从 GitHub 安装；国内镜像更新需先完成下文的 npm 发布。
+要求 **Node.js ≥ 22，DSH ≥ 0.2.1-rc.2**。AIO 已包含 QQ 与记忆模块，安装一份即可。
 
-1. 在 DSH 插件管理器停用原来的侧栏模板、`dsh-qq-link` / `dsh-qq-link-plus`、`dsh-fish-memory` / `dsh-fish-memory-plus`。不要删除插件数据。
-2. 安装 `github:CHINOSAMAAA/dsh-big-flsh-aio#main`，按宿主提示重载或重启。
-3. 点击 DSH 左侧栏「大肥鱼」。先配置 QQ 后端与会话绑定，再启用记忆；新环境仍沿用 QQ 总开关关闭、试运行开启、Embedding 关闭的默认值。
+### 桌面版：使用插件管理器
 
-Web profile 的命令行安装（profile 参数按环境替换；desktop 由桌面应用管理）：
-
-```bash
-dsh plugin --profile web add github:CHINOSAMAAA/dsh-big-flsh-aio#main
-```
-
-已有数据继续使用原 `DSH_HOME`（默认 `~/.dsh`）目录：`qq-bridge-config.json`、`qq-history-imports/`、`fish-memory-config.json`、`fish-memory/` 等。改包名不迁移、不删除这些文件。保留 `/dsh-qq-bridge/*` 与 `/dsh-fish-memory/*` 协议供模块互通，所以**不能同时启用旧插件**。不要在导入或模型写入过程中切换插件。
-
-本地开发安装可指向本项目绝对路径；若旧模板以 link 方式安装，文件夹改名后应在 DSH 插件管理器移除旧模板条目并重新安装本目录。
-
-QQ 历史整理会把文本发送到目标会话的模型服务并消耗额度；启用 Embedding 后，正文和查询会发送到配置的云端。来源隔离及导入限制沿用 Plus 实现。详细功能说明保留在 [QQ 模块文档](modules/qq/README.md) 与 [记忆模块文档](modules/memory/README.md)；其中旧包单独安装及独立更新步骤由本页替代。
-
-## 更新与发布
-
-更新页默认使用 **npmmirror 国内镜像**，也可切换 GitHub。两个渠道均由原作者采用的宿主 `pluginManager.installBundle` 完成安装，本地 link 开发副本禁用自动安装。
-
-| 渠道 | 检查与安装方式 |
-| --- | --- |
-| 国内镜像（默认） | 从 `registry.npmmirror.com/dsh-big-flsh-aio/latest` 读取版本，下载该版本的镜像 tarball，核验 SHA-512 后交给宿主安装；不依赖 GitHub、Git 或原作者的 npm 包。 |
-| GitHub | 解析本仓库 main 的提交，读取固定提交的 package.json 并安装；API 失败时用 Git 查询提交。 |
-
-检查缓存按渠道分开保存 6 小时，手动检查绕过缓存。镜像未同步、下载失败、校验失败均明确报错，不会静默切回 GitHub 或显示为已更新。安装后按宿主提示重载或重启。镜像可访问和延迟以实际网络为准，不能保证所有地区速度一致。
-
-### 首次发布与旧版接入
-
-先在项目目录完成检查和发布：
-
-```bash
-npm login --registry=https://registry.npmjs.org/
-npm run build
-npm test
-npm pack --dry-run
-npm publish --access public --tag latest --registry=https://registry.npmjs.org/
-```
-
-`1.5.1-1` 属于 SemVer 预发布格式，发布时显式指定 `--tag latest`，国内更新器才能通过 latest 标签找到本项目。首次发布需 npm 账号和交互验证；不要将令牌提交到仓库。镜像同步存在延迟，只有镜像返回本项目版本后，国内渠道才可用。
-
-仍在使用旧版更新页、且 GitHub 不可达时，先在 DSH 插件管理器安装本次 `npm pack` 生成的本地 `.tgz` 文件并重载，即可使用新更新页。也可在镜像同步后安装以下地址（版本号按实际发布替换）：
+1. 打开 DSH **设置 → 插件 → 安装**。
+2. 停用旧侧栏模板、单独的 QQ / 记忆插件或旧版 Plus，保留已有数据。
+3. 在安装来源中粘贴下面的**国内镜像安装包地址**：
 
 ```text
 https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz
 ```
 
-### 后续修改
+4. 确认安装并启用，按宿主提示重载或重启 DSH。
+5. 点击左侧栏的 **大肥鱼**。首次使用时配置 QQ 后端与会话绑定，再启用需要的记忆功能。
 
-1. 根版本按 `dsh-qq-link` 的实际同步基线加修订号递增，例如 `1.5.1-2`。同步上游时更新 `upstreamVersionBase` 与 `upstreamCompatibility`，各模块适配基线分别记录。
-2. 更新中文 CHANGELOG，执行 `npm run build`、`npm test` 和 `npm pack --dry-run`，提交生成的 client.js。
-3. 使用「版本号：中文改动说明」自动提交并推送 origin/main，再执行上述 npm 发布命令，让国内镜像获得新版。仅推送 GitHub 不会发布到 npm。
+这里的 `1.5.1-1` 是固定安装版本。安装其他版本时，将地址中的版本号替换为镜像已同步的版本；可从 [国内镜像版本信息](https://registry.npmmirror.com/dsh-big-flsh-aio/latest) 查看当前 latest 的 `version` 字段。
+
+如果已经下载了 `.tgz` 文件，也可以在插件管理器填写该文件的**绝对路径**进行本地安装。开发目录通过 link 安装的副本不支持页面一键更新；切换到发行包时，先停用或移除旧 link 条目，再安装发行包，保留 `DSH_HOME` 中的数据。
+
+### Web 版：使用命令行
+
+在终端执行：
+
+```bash
+dsh plugin --profile web add https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-1.5.1-1.tgz --registry=https://registry.npmmirror.com/
+```
+
+安装后重载或重启对应的 DSH Web 实例。`web` 按实际 profile 名称替换；**desktop profile 由桌面应用管理，请使用桌面版插件管理器**。
+
+插件需要安装到 DSH 对应的 profile；在普通项目目录执行 `npm install` 或全局 `npm install -g` 不会自动启用 DSH 插件。
+
+### 其他安装来源
+
+网络可访问 GitHub 时，也可在插件管理器安装：
+
+```text
+github:CHINOSAMAAA/dsh-big-flsh-aio#main
+```
+
+或者使用 Web profile 命令：
+
+```bash
+dsh plugin --profile web add github:CHINOSAMAAA/dsh-big-flsh-aio#main
+```
+
+## 更新已安装的插件
+
+1. 打开 **大肥鱼 → 更新与来源**。
+2. 将「更新渠道」选为 **国内镜像 · npmmirror**。
+3. 点击 **检查更新**；发现新版本后点击 **一键更新整合包**。
+4. 安装完成后，按宿主提示重载或重启，再检查页面版本号。
+
+| 渠道 | 检查与安装方式 |
+| --- | --- |
+| 国内镜像（默认） | 从本项目的 npmmirror 包获取版本和安装包，核验 SHA-512 后交给宿主安装，不需要访问 GitHub。 |
+| GitHub | 读取本仓库 main 的最新提交，校验该提交的包版本后安装，需要能访问 GitHub。 |
+
+两个渠道都沿用宿主的 `pluginManager.installBundle` 安装机制。检查结果按渠道缓存 6 小时，手动点击「检查更新」会绕过缓存。镜像同步可能有延迟；未同步、下载失败或校验失败时页面会明确报错，不会显示为已更新。
+
+**旧界面没有国内渠道，或 GitHub 更新一直失败：**先按上面的桌面版 / Web 版安装步骤，使用国内镜像 `.tgz` 地址或本地安装包更新一次；重载后即可使用新更新页。
+
+## 已有数据与使用注意
+
+- 同一环境不要同时启用原版、Plus 和 AIO，它们共用部分接口与数据路径。不要在历史导入或模型写入过程中切换插件。
+- 已有数据继续使用原 `DSH_HOME`（默认 `~/.dsh`）中的 `qq-bridge-config.json`、`qq-history-imports/`、`fish-memory-config.json`、`fish-memory/` 等位置；改包名不会迁移或删除这些文件。
+- 新环境沿用 QQ 总开关关闭、试运行开启、Embedding 关闭的默认值。QQ 历史整理会调用目标会话的模型服务并消耗额度；启用 Embedding 后，正文和查询会发送到配置的云端。
+- 详细功能说明保留在 [QQ 模块文档](modules/qq/README.md) 与 [记忆模块文档](modules/memory/README.md)。其中旧包的单独安装和独立更新步骤由本页替代。
 
 ## 版本对应与兼容范围
 
