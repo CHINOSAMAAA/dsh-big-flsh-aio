@@ -16,6 +16,7 @@ for (const native of [true, false]) test(native ? '使用宿主 Toast，后台�
   const events = target => ({ addEventListener: (name, fn) => target.set(name, fn), removeEventListener: name => target.delete(name) })
   const nativeToast = function Toast() {}
   const sandbox = {
+    FISH_THEME_CSS: '',
     require: () => { if (!native) throw new Error('旧宿主没有该模块'); return { Toast: nativeToast } },
     React: { useState: () => [notice, value => { notice = value }], useEffect: effect => { if (!cleanup) cleanup = effect() } },
     h: (type, props, ...children) => ({ type, props, children }), Date: { now: () => time }, AbortController,

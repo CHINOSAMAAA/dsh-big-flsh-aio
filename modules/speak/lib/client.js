@@ -3,10 +3,10 @@
 // 只干一件事：在 **DSH 设置** 左侧栏加一项「主动搭话」，
 // 把那 7 组设置全摆出来，外加两个安全的试法（演练 / 真发一次）和一份最近掷骰记录。
 //
-// ⚠ 这里**不碰会话、不发消息**，只是往宿主那几条 /dsh-speak-up/* 路由上读写。
+// 注意：这里**不碰会话、不发消息**，只是往宿主那几条 /dsh-speak-up/* 路由上读写。
 //   真正的掷骰和 followup 都在宿主半边（lib/host.js），这样只有一份逻辑。
 //
-// ⚠ 槽位名 'settings.section' 跟 dsh-write / dsh-fish-memory 用的是同一个，
+// 注意：槽位名 'settings.section' 跟 dsh-write / dsh-fish-memory 用的是同一个，
 //   是在这个环境里已经跑通的路子（不确定换 DSH 版本会不会变，见 README）。
 
 window.__ModuleLoader__.load({
@@ -33,154 +33,38 @@ window.__ModuleLoader__.load({
 
     // 样式贴着主题变量走，换皮肤/换深浅色都跟着变（照 dsh-write 的做法）
     const S = {
-      wrap: {
-        padding: '12px 14px 24px',
-        fontSize: 13,
-        lineHeight: 1.7,
-        background: 'var(--dsw-alias-bg-layer-1, rgba(255,255,255,.92))',
-        border: '1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.08))',
-        borderRadius: 12,
-      },
-      h: { fontSize: 14, fontWeight: 600, margin: '16px 0 8px' },
-      dim: { opacity: 0.62, fontSize: 12 },
-      card: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 8,
-        padding: '10px 12px',
-        marginBottom: 10,
-        background: 'var(--dsw-alias-bg-layer-1)',
-      },
-      row: { display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 8, flexWrap: 'wrap' },
-      lab: { minWidth: 190, paddingTop: 3, fontSize: 12.5 },
-      ctl: { flex: '1 1 260px', minWidth: 220 },
-      hint: { opacity: 0.6, fontSize: 11.5, marginTop: 2 },
-      input: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '4px 8px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12.5,
-        width: '100%',
-        boxSizing: 'border-box',
-      },
-      small: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '4px 8px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12.5,
-        width: 110,
-        boxSizing: 'border-box',
-      },
-      ta: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '8px 10px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12.5,
-        width: '100%',
-        boxSizing: 'border-box',
-        lineHeight: 1.7,
-        fontFamily: 'inherit',
-        minHeight: 56,
-      },
-      btn: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '5px 12px',
-        background: 'transparent',
-        color: 'inherit',
-        cursor: 'pointer',
-        fontSize: 12.5,
-      },
-      btnOn: {
-        border: '1px solid var(--dsw-alias-state-business-primary)',
-        borderRadius: 6,
-        padding: '5px 12px',
-        background: 'var(--dsw-alias-state-business-primary)',
-        color: '#fff',
-        cursor: 'pointer',
-        fontSize: 12.5,
-      },
-      warn: {
-        border: '1px solid #c0392b',
-        borderRadius: 8,
-        padding: '8px 10px',
-        marginBottom: 10,
-        fontSize: 12,
-        lineHeight: 1.7,
-        color: '#c0392b',
-      },
-      ok: { color: 'var(--dsw-alias-state-business-primary)', fontSize: 12 },
-      已同步: {
-        margin: '6px 0 10px',
-        fontSize: 12,
-        color: 'var(--dsw-alias-state-business-primary)',
-      },
-      未保存: {
-        margin: '6px 0 10px',
-        fontSize: 12,
-        color: '#c0392b',
-        fontWeight: 600,
-      },
-      /**
-       * 悬浮的保存条（只在「有改动还没保存」时渲染）。
-       * ⚠ sticky 而不是 fixed：它属于这张设置页，滚动到哪都贴在**这一页**的底部；
-       *   页面上没有改动时它压根不渲染，所以平时不占地方、不挡内容。
-       */
-      悬浮保存条: {
-        position: 'sticky',
-        bottom: 0,
-        marginTop: 12,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        flexWrap: 'wrap',
-        padding: '8px 12px',
-        borderRadius: 10,
-        border: '1px solid var(--dsw-alias-border-l2)',
-        background: 'var(--dsw-alias-bg-layer-1, rgba(255,255,255,.95))',
-        boxShadow: '0 -6px 18px rgba(0,0,0,.18)',
-        zIndex: 5,
-      },
-      已勾: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '5px 8px',
-        fontSize: 12,
-        lineHeight: 1.6,
-      },
-      清单: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        marginTop: 4,
-        maxHeight: 260,
-        overflowY: 'auto',
-      },
-      会话行: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '5px 8px',
-        cursor: 'pointer',
-        borderBottom: '1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.06))',
-      },
-      会话行勾上: {
-        background: 'var(--dsw-alias-interactive-bg-hover, rgba(0,0,0,.04))',
-        fontWeight: 600,
-      },
-      tag: {
-        display: 'inline-block',
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 4,
-        padding: '0 6px',
-        fontSize: 11,
-        marginRight: 6,
-        opacity: 0.9,
-      },
-      日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 11.5, whiteSpace: 'pre-wrap' },
+      wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 },
+      dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)' },
+      row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
+      lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
+      ctl: { flex: '1 1 260px', minWidth: 0 },
+      hint: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)', marginTop: 8, lineHeight: 1.75 },
+      input: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
+      small: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
+      wide: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
+      ta: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
+      ok: { color: 'var(--fish-success)', fontSize: 'var(--fish-small)' },
+      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: 16, marginBottom: 16 },
+      已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
+      未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
+      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 12, border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
+      btn: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
+      stack: { display: 'grid', gap: 20 },
+      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
+      group: { borderTop: '1px solid var(--fish-border)', padding: '20px 0' },
+      summary: { fontWeight: 600, fontSize: 16, cursor: 'pointer', padding: '8px 0 16px' },
+      日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
+      表头: {}, 表格行: {}, 空间表头: {}, 空间行: {},
+      表头字: { fontSize: 'var(--fish-small)', color: 'var(--fish-muted)' },
+      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: '12px 16px', fontSize: 'var(--fish-small)' },
+      清单: { border: '1px solid var(--fish-border)', borderRadius: 8, marginTop: 12, maxHeight: 320, overflowY: 'auto' },
+      会话行: { display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid var(--fish-line)' },
+      会话行勾上: { background: 'var(--fish-accent-soft)', fontWeight: 550 },
+      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 4, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
     }
 
     // ---------- 小控件 ----------
@@ -189,9 +73,9 @@ window.__ModuleLoader__.load({
     const 行 = (标签, 控件, 说明) =>
       h(
         'div',
-        { style: S.row },
-        h('div', { style: S.lab }, 标签),
-        h('div', { style: S.ctl }, 控件, 说明 ? 提示(说明) : null),
+        { className: 'fish-form-row', style: S.row },
+        h('div', { className: 'fish-form-label', style: S.lab }, 标签),
+        h('div', { className: 'fish-control', style: S.ctl }, (['input', 'select', 'textarea'].includes(控件?.type) ? React.cloneElement(控件, { 'aria-label': 标签 }) : 控件), 说明 ? 提示(说明) : null),
       )
     const 按钮 = (文字, onClick, 亮, 关) =>
       h(
@@ -200,9 +84,9 @@ window.__ModuleLoader__.load({
         文字,
       )
     const 勾 = (值, onChange) =>
-      h('input', { type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+      h('input', {'aria-label': '设置值',  type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
     const 数 = (值, onChange, 步) =>
-      h('input', {
+      h('input', {'aria-label': '设置值',
         type: 'number',
         value: 值 === undefined || 值 === null ? '' : 值,
         step: 步 || 1,
@@ -241,7 +125,7 @@ window.__ModuleLoader__.load({
       React.useEffect(() => { 拉() }, [拉])
 
       if (!态 || !态.配置) {
-        return h('div', { style: S.wrap }, h('div', { style: S.h }, '主动搭话'), h('div', { style: S.dim }, '读取中…'))
+        return h('div', { className: 'fish-module fish-speak', style: S.wrap }, h('div', { className: 'fish-section-title', style: S.h }, '主动搭话'), h('div', { style: S.dim }, '读取中…'))
       }
 
       const 配置 = 态.配置
@@ -264,10 +148,10 @@ window.__ModuleLoader__.load({
 
       /**
        * 勾上/取消 → **立刻自动保存**（她原话：「有打勾不就完了嘛」）。
-       * ⚠ 这是踩过坑改的：最早那版是「填进输入框 → 再按下面的『保存设置』」，
+       * 注意：这是踩过坑改的：最早那版是「填进输入框 → 再按下面的『保存设置』」，
        *   结果她填了没按保存（按钮在另一张卡片里、页面上也没有任何"还没保存"的提示），
        *   host 一直报「还没配目标会话」。勾选这类核心设置就该点一下就落盘。
-       * ⚠ 自动存只把「目标会话」这一个补丁发上去（host 的 /save 是合并语义），
+       * 注意：自动存只把「目标会话」这一个补丁发上去（host 的 /save 是合并语义），
        *   所以不会覆盖她在别的字段里还没保存的改动。
        */
       const 切换 = (id, 勾上) => {
@@ -283,7 +167,7 @@ window.__ModuleLoader__.load({
         设同步话('保存中…')
         const r = await post('/save', 补丁)
         if (r && r.ok) {
-          // ⚠ 只把「服务端算出来的东西」刷回来，**不整体替换 配置** ——
+          // 注意：只把「服务端算出来的东西」刷回来，**不整体替换 配置** ——
           //   否则她在别的字段里还没保存的改动会被这次自动保存悄悄抹掉。
           设态((旧) => ({
             ...旧,
@@ -292,7 +176,7 @@ window.__ModuleLoader__.load({
             目标活着: r.目标活着,
             活着的会话: r.活着的会话,
           }))
-          设同步话('已保存 ✓')
+          设同步话('已保存')
         } else {
           设同步话('保存失败 ✗')
         }
@@ -307,7 +191,7 @@ window.__ModuleLoader__.load({
           设态(r)
           设手填(null)
           设脏(false)
-          设同步话('已保存 ✓')
+          设同步话('已保存')
           设说(r.说 || '保存好了')
         } else {
           设说((r && r.说) || '保存失败')
@@ -360,9 +244,9 @@ window.__ModuleLoader__.load({
               String(s.id) +
               (s.标题来源 ? '｜标题来源：' + String(s.标题来源) : '') +
               (s.有agent ? '' : '（这个会话现在没有活着的 agent，掷中时会跳过它）') +
-              (s.归档 ? '（⚠ 这个会话已经归档了，建议取消勾选）' : ''),
+              (s.归档 ? '（注意：这个会话已经归档了，建议取消勾选）' : ''),
           },
-          h('input', {
+          h('input', {'aria-label': 题(s),
             type: 'checkbox',
             checked: 已勾(s.id),
             onChange: (e) => 切换(s.id, e.target.checked),
@@ -377,21 +261,20 @@ window.__ModuleLoader__.load({
 
       return h(
         'div',
-        { style: S.wrap },
+        { className: 'fish-module fish-speak', style: S.wrap },
 
-        h('div', { style: S.h }, '主动搭话'),
+        h('div', { className: 'fish-section-title', style: S.h }, '主动搭话'),
         h(
           'div',
           { style: S.dim },
           '没人在跟她说话的时候，她也有可能先开口：按下面的间隔掷一次骰子（纯本地随机，不花模型），' +
-            '掷中了才往「目标会话」里送一句话，让 DSH 自己开一轮（人格、历史、工具、记忆都是她自己的）。' +
-            '版本 ' + String(态.版本 || '?') + '｜配置文件：' + String(态.配置文件 || ''),
+            '掷中了才往「目标会话」里送一句话，让 DSH 自己开一轮（人格、历史、工具、记忆都是她自己的）。',
         ),
 
-        // ⚠ 「填了不按保存等于没填」这件事必须写在脸上（踩过坑：她在输入框里填了 id
+        // 注意：「填了不按保存等于没填」这件事必须写在脸上（踩过坑：她在输入框里填了 id
         //   却没按保存，host 一直报「还没配目标会话」，而她不知道差在哪一步）
         h('div', { style: 脏 ? S.未保存 : S.已同步 },
-          (脏 ? '⚠ 上面有改动还没保存 —— 数字/文案改完要点「保存设置」' : '设置' + (同步话 || '已同步 ✓')) +
+          (脏 ? '有未保存的改动，请保存设置' : '设置' + (同步话 || '已同步')) +
             '（勾选会话不用点保存，点一下立刻生效）'),
 
         // —— 总开关 + 试运行 ——
@@ -407,7 +290,7 @@ window.__ModuleLoader__.load({
 
         // —— 骰子 ——
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '骰子'),
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '触发频率与安静时段'),
           h('div', { style: S.dim },
             '每轮掷一个 0~100 的数，比命中线小就开口。命中线 =（峰时或谷时的那格命中线）× 时机因子，再加上攒下来的没中加成。'),
           行('掷骰子间隔（分钟）', 数(配置.间隔分钟, (v) => 改('间隔分钟', v)), '默认 30。范围 1~1440；改完保存，下一轮就按新间隔走（不用重启）。'),
@@ -435,15 +318,15 @@ window.__ModuleLoader__.load({
             '这两格只影响自动的定时掷骰；手动按钮（演练/真发）不掷骰子，也不动这个计数器。',
           ),
           h('div', { style: { ...S.dim, marginTop: 2 } },
-            '⚠ 「连着没中」这个数只记在内存里：DSH 一重启就回到 0。',
+            '注意：「连着没中」这个数只记在内存里：DSH 一重启就回到 0。',
           ),
           行(
             '安静时段（起 / 止，小时）',
             h('div', null, 数(配置.安静起, (v) => 改('安静起', v)), h('span', { style: S.dim }, ' 点 ~ '), 数(配置.安静止, (v) => 改('安静止', v)), h('span', { style: S.dim }, ' 点')),
             '默认 1 ~ 8 点不掷（含 1 点、不含 8 点）。跨午夜也行（比如 23 ~ 7）。',
           ),
-          // ⚠ 这条她特意提过两次，所以从上面那句里拎出来单独成一行、用红字（不新造颜色，复用 S.未保存）
-          h('div', { style: S.未保存 }, '⚠ 两个数字填成一样（比如 8 和 8）= 不启用安静时段：整天都可能掷骰子'),
+          // 注意：这条她特意提过两次，所以从上面那句里拎出来单独成一行、用红字（不新造颜色，复用 S.未保存）
+          h('div', { style: S.未保存 }, '注意：两个数字填成一样（比如 8 和 8）= 不启用安静时段：整天都可能掷骰子'),
         ),
 
         // —— 时机因子 ——
@@ -463,7 +346,7 @@ window.__ModuleLoader__.load({
         ),
 
         // —— 峰谷分时（贵的时候少开口，便宜的时候多开口）——
-        // ⚠ 时段是**写死的**（不给格子填），这里只有两个命中线数字 —— 她的要求。
+        // 注意：时段是**写死的**（不给格子填），这里只有两个命中线数字 —— 她的要求。
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '峰谷分时（贵的时候少开口，便宜的时候多开口）'),
           h('div', { style: S.dim }, '时段是固定的，不用你填；只有这两个数字要你定：'),
@@ -480,7 +363,7 @@ window.__ModuleLoader__.load({
           ),
           行(
             '按哪个时区算峰谷',
-            h('input', {
+            h('input', {'aria-label': '峰谷时区',
               style: S.small,
               placeholder: '留空 = 本机时区；北京填 Asia/Shanghai',
               value: String(配置.峰谷时区 || ''),
@@ -492,9 +375,9 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.dim, marginTop: 4 } },
             '最终命中线 = 这格（看是峰时还是谷时）× 时机因子 + 攒下来的没中加成（最后夹在 0~100）。',
           ),
-          h('div', { style: S.未保存 }, '⚠ 两个数字填成一样 = 不分峰谷，全天一个命中线'),
+          h('div', { style: S.未保存 }, '注意：两个数字填成一样 = 不分峰谷，全天一个命中线'),
           h('div', { style: S.未保存 },
-            '⚠ 注意：安静时段会盖住谷时 —— 你现在安静时段是 ' +
+            '注意：注意：安静时段会盖住谷时 —— 你现在安静时段是 ' +
               String(配置.安静起) + '~' + String(配置.安静止) +
               ' 点，那段时间根本不掷，谷时命中线再高也用不上。',
           ),
@@ -504,7 +387,7 @@ window.__ModuleLoader__.load({
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '目标会话'),
           h('div', { style: S.dim }, '勾了谁，她就会在谁的会话里自己开口。勾几个都行；一次掷中只在其中一个里开口（随机挑一个活着、又不忙的）。'),
-          h('div', { style: { ...S.dim, marginTop: 2, fontWeight: 600 } }, '✓ 勾选/取消一点就生效（自动保存，不用再按保存）'),
+          h('div', { style: { ...S.dim, marginTop: 2, fontWeight: 600 } }, '勾选/取消一点就生效（自动保存，不用再按保存）'),
           h('div', { style: { marginTop: 4 } },
             目标们.length
               ? h('div', { style: S.已勾 },
@@ -514,7 +397,7 @@ window.__ModuleLoader__.load({
                       : '') +
                     (目标情况.length ? '。其中 ' + 目标活着数 + ' 个现在活着' + (目标活着数 === 0 ? ' —— 掷中也会跳过，先把它打开' : '') : ''),
                 )
-              : h('div', { style: { ...S.dim, color: '#c0392b' } }, '现在一个都没勾 —— 掷中了也不会开口。'),
+              : h('div', { style: { ...S.dim, color: 'var(--fish-danger)' } }, '现在一个都没勾 —— 掷中了也不会开口。'),
           ),
 
           会话们.length
@@ -523,7 +406,7 @@ window.__ModuleLoader__.load({
                 h('div', { style: S.清单 }, 会话们.map(会话行)),
                 h('div', { style: { ...S.dim, marginTop: 4 } },
                   '已归档的会话不再列出来（它们掷中也会被 DSH 拦掉）；' +
-                    '只有你已经勾着的归档会话还会显示，带「⚠ 已归档」——看到就取消勾选。' +
+                    '只有你已经勾着的归档会话还会显示，带「注意：已归档」——看到就取消勾选。' +
                     '没起名字的会话显示「（还没起名）」+ 短 id，照样能勾；' +
                     '标着「没活着」的是现在没打开的会话，勾上也没用（掷中会跳过它）。',
                 ),
@@ -533,14 +416,14 @@ window.__ModuleLoader__.load({
           h('div', { style: { marginTop: 8 } },
             按钮('刷新清单', 拉, false, 忙),
             h('span', { style: S.dim }, '　'),
-            按钮('新建一个小屋会话，并自动勾上', 新建小屋, false, 忙),
+            按钮('新建并选中会话', 新建小屋, false, 忙),
           ),
 
           // 次要路径：手填 / 粘贴 id（她要求「不再是主路径」，但留着）
           h('div', { style: { marginTop: 10, borderTop: '1px solid var(--dsw-alias-border-l2)', paddingTop: 8 } },
             h('div', { style: S.dim }, '也可以直接手填 / 粘贴会话 id（逗号分隔）—— 手填的必须点保存才生效：'),
             h('div', { style: { marginTop: 4 } },
-              h('input', {
+              h('input', {'aria-label': 'session-xxxxxxxx-…, session-yyyyyyyy-…',
                 type: 'text',
                 style: S.input,
                 value: 手填文本,
@@ -557,7 +440,7 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '触发文案'),
           行(
             '掷中之后送出去的那句话',
-            h('textarea', {
+            h('textarea', {'aria-label': '触发文案',
               style: S.ta,
               value: 配置.触发文案 === undefined ? '' : String(配置.触发文案),
               onChange: (e) => 改('触发文案', e.target.value),
@@ -571,7 +454,7 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '触发消息的角色'),
           行(
             '角色',
-            h('select', {
+            h('select', {'aria-label': '角色',
               style: S.input,
               value: 配置.角色,
               onChange: (e) => 改('角色', e.target.value),
@@ -585,7 +468,7 @@ window.__ModuleLoader__.load({
 
         // —— 动作 ——
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '自己的动作'),
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '保存与手动操作'),
           h('div', null,
             按钮('保存设置', 存, true, 忙),
             h('span', { style: S.dim }, '　'),
@@ -602,7 +485,7 @@ window.__ModuleLoader__.load({
               '「演练一次」会完整走一遍判断（安静时段、概率、因子都跳过，一定走到最后一步），但绝不真发，' +
                 '只告诉你「本来要发什么」。「真发一次」会当场真的送出去一轮，用于验证能不能跑通。'),
           ),
-          说 ? h('div', { style: { ...S.ok, marginTop: 6 } }, 说) : null,
+          说 ? h('div', { role: 'status', 'aria-live': 'polite', style: { ...S.ok, color: 'var(--fish-text)', marginTop: 6 } }, 说) : null,
         ),
 
         // —— 记录 ——
@@ -611,23 +494,27 @@ window.__ModuleLoader__.load({
           h('div', { style: S.dim }, '定时器每轮都会留一条：没掷中也留（好确认它到底有没有在跑）。'),
           h('div', { style: { marginTop: 6, maxHeight: 260, overflowY: 'auto' } },
             日志.length === 0
-              ? h('div', { style: S.dim }, '还没有记录。')
+              ? h('div', { style: S.dim }, '暂无运行记录，启用后可在这里查看每次判断。')
               : 日志.map((条, i) => h('div', { key: i, style: S.日志行 }, 条.时间 + '　' + 条.文本)),
           ),
         ),
 
         h('div', { style: S.dim },
-          '⚠ 掷骰子是纯本地随机，不花模型；只有「掷中之后真发」才会走 DSH 的一轮（会花 token）。',
+          '注意：掷骰子是纯本地随机，不花模型；只有「掷中之后真发」才会走 DSH 的一轮（会花 token）。',
         ),
+
+        h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
+          h('p', null, '模块版本 ' + String(态.版本 || '?')),
+          h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),
 
         // —— 悬浮的保存条：**只要有没保存的改动，就贴在底下冒出来** ——
         // 她原话：「只要上面有改动，那个按钮就会在下面弹出来，就不用每次往下面翻了」。
-        // ⚠ 用 position: sticky + bottom: 0（不是 fixed）：它只在这张设置页里浮着，
+        // 注意：用 position: sticky + bottom: 0（不是 fixed）：它只在这张设置页里浮着，
         //   不会跑到别的设置页上去。没改动（脏=false）就完全不渲染 —— 不挡视线。
         脏
           ? h('div', { style: S.悬浮保存条 },
-              h('span', { style: { fontWeight: 600, color: '#c0392b' } }, '⚠ 有改动还没保存'),
-              h('span', { style: S.dim }, '数字 / 文案 / 开关改完，点这里就行'),
+              h('span', { style: { fontWeight: 600, color: 'var(--fish-danger)' } }, '有未保存的改动'),
+              h('span', { style: S.dim }, '保存后生效'),
               按钮('保存设置', 存, true, 忙),
             )
           : null,

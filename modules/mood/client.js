@@ -63,53 +63,39 @@ window.__ModuleLoader__.load({
     }
 
     const CSS = `
-[data-fm-wrap]{display:flex;flex-direction:column;gap:14px;padding:4px 2px 24px;}
-[data-fm-hero]{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;background:rgba(127,127,127,.08);}
-[data-fm-face]{width:84px;height:66px;object-fit:contain;border-radius:10px;flex:0 0 auto;background:rgba(127,127,127,.10);}
-[data-fm-big]{font-size:30px;font-weight:600;line-height:1;}
-[data-fm-sub]{font-size:12px;opacity:.7;margin-top:4px;}
-[data-fm-sec]{display:flex;flex-direction:column;gap:8px;}
-[data-fm-h]{font-size:13px;font-weight:600;opacity:.85;padding-top:6px;border-top:1px solid rgba(127,127,127,.18);}
-[data-fm-note]{font-size:12px;opacity:.62;line-height:1.5;}
-[data-fm-row]{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-[data-fm-grow]{flex:1;min-width:180px;}
-[data-fm-label]{font-size:13px;}
-[data-fm-input]{padding:6px 9px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-size:13px;min-width:120px;}
-/* ⭐ 0.7.2（issue #5）：深色主题下**原生 select 的弹出层是系统白底**，
-   而文字继承了主题的浅色 → 白字白底，选项「看得见但认不出」。
-   用系统色（Canvas / CanvasText）让弹出层跟它自己的底色一起变，
-   深色主题深底浅字、浅色主题白底黑字，两边都不会再撞。 */
-[data-fm-wrap]{color-scheme:light dark;}
-[data-fm-wrap] select{background:Canvas;color:CanvasText;}
-[data-fm-wrap] select option{background:Canvas;color:CanvasText;}
-[data-fm-wrap] select:disabled{opacity:.6;}
-[data-fm-num]{width:88px;min-width:88px;}
-[data-fm-btn]{padding:6px 12px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-size:13px;cursor:pointer;}
-[data-fm-btn]:hover{background:rgba(127,127,127,.12);}
-[data-fm-btn][disabled]{opacity:.5;cursor:default;}
-[data-fm-msg]{font-size:12px;opacity:.8;min-height:16px;}
-[data-fm-tabs]{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid rgba(127,127,127,.2);}
-[data-fm-tab]{padding:5px 12px;border-radius:7px;border:1px solid transparent;background:transparent;color:inherit;font-size:13px;cursor:pointer;opacity:.72;}
-[data-fm-tab]:hover{background:rgba(127,127,127,.10);opacity:1;}
-[data-fm-tab][data-fm-on]{background:rgba(127,127,127,.16);border-color:rgba(127,127,127,.28);opacity:1;font-weight:600;}
-[data-fm-pick]{padding:5px 14px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-size:13px;cursor:pointer;opacity:.8;}
-[data-fm-pick]:hover{background:rgba(127,127,127,.10);opacity:1;}
-[data-fm-pick][data-fm-on]{background:rgba(127,127,127,.18);border-color:rgba(127,127,127,.5);opacity:1;font-weight:600;}
-[data-fm-pane]{display:flex;flex-direction:column;gap:14px;}
-[data-fm-slot]{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:rgba(127,127,127,.06);}
-[data-fm-sess]{display:flex;align-items:center;gap:8px;padding:2px 0;}
-[data-fm-sessname]{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-[data-fm-faces]{display:flex;gap:10px;flex-wrap:wrap;}
-[data-fm-faces] img{width:84px;height:66px;object-fit:contain;border-radius:10px;background:rgba(127,127,127,.10);}
-[data-fm-quote]{font-size:13px;line-height:1.65;white-space:pre-wrap;padding:10px 12px;border-radius:9px;background:rgba(127,127,127,.10);border-left:3px solid rgba(127,127,127,.35);}
-[data-fm-quote][data-fm-dim]{opacity:.62;}
-[data-fm-tl]{display:flex;flex-direction:column;gap:2px;max-height:280px;overflow:auto;}
-[data-fm-tlrow]{display:flex;gap:8px;font-size:12px;line-height:1.6;}
-[data-fm-time]{opacity:.55;width:78px;flex:0 0 78px;}
-[data-fm-mood]{opacity:.85;width:34px;flex:0 0 34px;}
-[data-fm-delta]{width:40px;flex:0 0 40px;opacity:.8;}
-[data-fm-reason]{opacity:.85;}
-[data-fm-ver]{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(127,127,127,.06);}
+.big-fish [data-fm-wrap]{display:flex;flex-direction:column;gap:24px;min-width:0;padding-bottom:24px}
+.big-fish [data-fm-hero]{display:flex;align-items:center;gap:24px;padding:24px;background:var(--fish-surface);border:1px solid var(--fish-border);border-radius:12px;flex-wrap:wrap}
+.big-fish [data-fm-face]{width:112px;height:auto;aspect-ratio:448/352;object-fit:contain;flex:none}
+.big-fish [data-fm-big]{font:400 32px/1.4 var(--fish-title)}
+.big-fish [data-fm-sub],.big-fish [data-fm-note]{font-size:14px;line-height:1.75;color:var(--fish-muted);overflow-wrap:anywhere}
+.big-fish [data-fm-sec]{display:flex;flex-direction:column;gap:16px;padding:8px 0 24px;border-bottom:1px solid var(--fish-border)}
+.big-fish [data-fm-h]{font:600 20px/1.5 var(--fish-title);margin-bottom:4px}
+.big-fish [data-fm-row]{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:8px 0}
+.big-fish [data-fm-grow]{flex:1 1 220px;min-width:0}
+.big-fish [data-fm-label]{font-size:16px}
+.big-fish [data-fm-input]{padding:8px 12px;border-radius:8px;border:1px solid var(--fish-border);background:var(--fish-surface);color:var(--fish-text);font-size:14px;max-width:100%;min-width:0}
+.big-fish [data-fm-num]{width:104px}
+.big-fish [data-fm-btn],.big-fish [data-fm-pick]{padding:8px 16px;border-radius:8px;border:1px solid var(--fish-border);background:var(--fish-surface);color:var(--fish-text);font-size:14px;cursor:pointer}
+.big-fish [data-fm-msg]{font-size:14px;min-height:24px;color:var(--fish-text)}
+.big-fish [data-fm-tabs]{display:flex;gap:8px;overflow-x:auto;padding-bottom:16px;border-bottom:1px solid var(--fish-border)}
+.big-fish [data-fm-tab]{padding:8px 16px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--fish-muted);font-size:14px;white-space:nowrap;flex:none}
+.big-fish [data-fm-on]{background:var(--fish-accent-soft);border-color:var(--fish-border);color:var(--fish-action);font-weight:600}
+.big-fish [data-fm-pane]{display:flex;flex-direction:column;gap:24px;min-width:0}
+.big-fish [data-fm-slot]{display:flex;flex-direction:column;gap:16px;padding:24px;border:1px solid var(--fish-border);border-radius:12px;background:var(--fish-surface)}
+.big-fish [data-fm-sess]{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0}
+.big-fish [data-fm-sessname]{flex:1;min-width:0;font-size:14px;overflow-wrap:anywhere}
+.big-fish [data-fm-faces]{display:flex;gap:24px;flex-wrap:wrap}
+.big-fish [data-fm-faces] img{width:84px;height:auto;aspect-ratio:448/352;object-fit:contain;display:block}
+.big-fish [data-fm-quote]{font-size:16px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;padding:24px;border-radius:8px;background:var(--fish-soft)}
+.big-fish [data-fm-quote][data-fm-dim]{color:var(--fish-muted)}
+.big-fish [data-fm-tl]{display:flex;flex-direction:column;max-height:400px;overflow:auto}
+.big-fish [data-fm-tlrow]{display:grid;grid-template-columns:136px 40px 48px minmax(0,1fr);gap:12px;padding:16px 0;border-bottom:1px solid var(--fish-line);font-size:14px;line-height:1.75}
+.big-fish [data-fm-time]{color:var(--fish-muted)}
+.big-fish [data-fm-mood]{font-weight:600}
+.big-fish [data-fm-delta]{color:var(--fish-action)}
+.big-fish [data-fm-reason]{overflow-wrap:anywhere}
+.big-fish [data-fm-ver]{display:flex;align-items:center;gap:16px;padding:16px;border-radius:8px;background:var(--fish-soft)}
+@container(max-width:520px){.big-fish [data-fm-tlrow]{grid-template-columns:minmax(0,1fr) 40px 48px}.big-fish [data-fm-reason]{grid-column:1/-1}.big-fish [data-fm-slot]{padding:16px}}
 `
 
     function Panel() {
@@ -222,7 +208,7 @@ window.__ModuleLoader__.load({
       if (!cfg) return h('div', { 'data-fm-wrap': '' }, h('div', { 'data-fm-note': '' }, '读取中…'))
 
       const sw = (key, label) => h('input', {
-        type: 'checkbox',
+        type: 'checkbox', 'aria-label': label,
         checked: Boolean(cfg[key]),
         onChange: (e) => patch({ [key]: e.target.checked }, label),
       })
@@ -232,7 +218,7 @@ window.__ModuleLoader__.load({
           h('div', { 'data-fm-label': '' }, label),
           note ? h('div', { 'data-fm-note': '' }, note) : null),
         h('input', {
-          'data-fm-input': '', 'data-fm-num': '', type: 'number', min, max,
+          'data-fm-input': '', 'data-fm-num': '', type: 'number', min, max, 'aria-label': label,
           value: String(cfg[key] ?? ''),
           onChange: (e) => setCfg((c) => ({ ...c, [key]: e.target.value })),
           onBlur: () => {
@@ -250,7 +236,7 @@ window.__ModuleLoader__.load({
             h('div', { 'data-fm-h': '' }, '这是哪一份心情'),
             h('div', { 'data-fm-note': '' },
               '现在有 ' + (st.slots || []).length + ' 份，各自绑各自的会话、互不影响。这里只切换「看」哪一份，不改任何设置。'),
-            h('select', {
+            h('select', {'aria-label': '选择心情',
               'data-fm-input': '', value: 看哪份 || (st.key || ''),
               onChange: 切份,
             },
@@ -269,7 +255,17 @@ window.__ModuleLoader__.load({
                   ? '　· 心情不告诉它'
                   : (st.injectable ? '　· 这条还没跟它说' : '　· 这条已经说过了'))
                 : ''))),
-          h('button', { 'data-fm-btn': '', disabled: busy === 'reset', onClick: onReset }, '重置到基线')))
+          h('button', {type: 'button',  'data-fm-btn': '', disabled: busy === 'reset', onClick: onReset }, '重置到基线')))
+        项.push(h('div', { key: 'dimensions', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '七维情绪'),
+          h('div', { className: 'fish-dimensions' },
+            [['happy', '开心'], ['calm', '踏实'], ['sweet', '甜蜜'], ['heartache', '心疼'], ['worry', '担心'], ['sad', '难过'], ['jealous', '吃醋']].map(([key, label]) => {
+              const dimension = (st?.dims || []).find(item => item.key === key)
+              const value = Number(dimension?.value)
+              const available = dimension && Number.isFinite(value)
+              return h('div', { key }, h('div', { className: 'fish-dimension-label' }, h('span', null, label), h('span', null, available ? value + ' / 100' : '暂无数据')),
+                h('div', { className: 'fish-dimension-track', 'aria-hidden': true }, h('span', { style: { width: available ? Math.max(0, Math.min(100, value)) + '%' : '0%' } })))
+            }))))
         项.push(h('div', { key: 'preview', 'data-fm-sec': '' },
           h('div', { 'data-fm-h': '' }, '它会听到的那句话'),
           (st && st.injectPreview && st.injectPreview.state === 'off')
@@ -337,7 +333,7 @@ window.__ModuleLoader__.load({
       }
       const 绑定页 = (() => {
         const 项 = []
-        const 模式钮 = (id, 名) => h('button', {
+        const 模式钮 = (id, 名) => h('button', {type: 'button',
           key: id,
           'data-fm-pick': '',
           'data-fm-on': 模式 === id ? '' : undefined,
@@ -369,13 +365,13 @@ window.__ModuleLoader__.load({
             sl.sessions.length
               ? sl.sessions.map((sid) => h('div', { key: sid, 'data-fm-sess': '' },
                 h('span', { 'data-fm-sessname': '', title: sid }, 会话名(sid)),
-                h('button', {
-                  'data-fm-btn': '', style: { padding: '2px 8px', fontSize: '12px', flex: '0 0 auto' },
+                h('button', {type: 'button',
+                  'data-fm-btn': '', style: { padding: '2px 8px', fontSize: 'var(--fish-small)', flex: '0 0 auto' },
                   onClick: () => 改份(i, { sessions: sl.sessions.filter((x) => x !== sid) }),
                 }, '删掉')))
               : h('div', { 'data-fm-note': '' }, '还没绑会话 —— 从下面加一个。'),
             h('div', { style: { marginTop: '6px' } },
-              h('select', {
+              h('select', {'aria-label': '添加绑定会话',
                 'data-fm-input': '', value: '',
                 onChange: (e) => {
                   const v = e.target.value
@@ -387,7 +383,7 @@ window.__ModuleLoader__.load({
           // 工作区模式：这一份只填一个工作区（工作区里所有会话都归它）
           const 工作区块 = h('div', {},
             h('div', { 'data-fm-row': '' },
-              h('select', {
+              h('select', {'aria-label': '绑定工作区',
                 'data-fm-input': '', 'data-fm-grow': '', value: sl.工作区 || '',
                 onChange: (e) => 改份(i, { 工作区: e.target.value }),
               },
@@ -398,7 +394,7 @@ window.__ModuleLoader__.load({
                 sl.工作区 && !(工作区们 || []).some((w) => w.name === sl.工作区)
                   ? h('option', { value: sl.工作区 }, sl.工作区 + '（不在清单里，可能是别的机器上的）')
                   : null),
-              h('button', { 'data-fm-btn': '', onClick: 刷新工作区, style: { flex: '0 0 auto' } }, '刷新')),
+              h('button', {type: 'button',  'data-fm-btn': '', onClick: 刷新工作区, style: { flex: '0 0 auto' } }, '刷新')),
             h('div', { 'data-fm-note': '' },
               sl.工作区
                 ? (这块工作区
@@ -407,19 +403,19 @@ window.__ModuleLoader__.load({
                 : '选一个工作区；选好以后这个工作区里的会话都归这一份。'))
           项.push(h('div', { key: 'slot' + i, 'data-fm-slot': '' },
             h('div', { 'data-fm-row': '' },
-              h('div', { 'data-fm-grow': '', style: { fontWeight: 600, fontSize: '13px' } },
+              h('div', { 'data-fm-grow': '', style: { fontWeight: 600, fontSize: 'var(--fish-small)' } },
                 标题 + (模式 === 'workspace'
                   ? (sl.工作区 ? ' · ' + 工作区显示(sl.工作区) : ' · 还没选工作区')
                   : (sl.sessions.length ? ' · ' + sl.sessions.length + ' 个会话' : ' · 还没绑会话'))),
-              h('button', {
-                'data-fm-btn': '', style: { padding: '2px 8px', fontSize: '12px' },
+              h('button', {type: 'button',
+                'data-fm-btn': '', style: { padding: '2px 8px', fontSize: 'var(--fish-small)' },
                 onClick: () => patch({ slots: 份列表.filter((_, j) => j !== i) }, '删掉这一份'),
               }, '删掉')),
             h('div', { 'data-fm-row': '' },
               h('div', { 'data-fm-grow': '' },
-                h('div', { 'data-fm-label': '', style: { fontSize: '12px' } },
+                h('div', { 'data-fm-label': '', style: { fontSize: 'var(--fish-small)' } },
                   '这份叫什么（只是用来区分，不是称呼）')),
-              h('input', {
+              h('input', {'aria-label': '心情名称',
                 'data-fm-input': '', value: sl.label || '', placeholder: '比如：这份叫大肥鱼，那份叫修路的',
                 onChange: (e) => {
                   const v = e.target.value
@@ -431,7 +427,7 @@ window.__ModuleLoader__.load({
         })
         项.push(份列表.length < 6
           ? h('div', { key: 'add', 'data-fm-row': '' },
-            h('button', {
+            h('button', {type: 'button',
               'data-fm-btn': '',
               onClick: () => patch({ slots: [...份列表, { id: '', label: '', selfName: '', ownerName: '', 工作区: '', sessions: [] }] }, '再加一份心情'),
             }, '+ 再加一份心情'))
@@ -451,7 +447,7 @@ window.__ModuleLoader__.load({
           h('div', { 'data-fm-note': '' }, '这两个名字会写进判断提示词；换了名字，心情描述里也跟着换。'),
           h('div', { 'data-fm-row': '' },
             h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'TA 叫什么（被关心的那个人）')),
-            h('input', {
+            h('input', {'aria-label': '对方的称呼',
               'data-fm-input': '', value: cfg.ownerName || '',
               placeholder: '用户',
               onChange: (e) => setCfg((c) => ({ ...c, ownerName: e.target.value })),
@@ -459,7 +455,7 @@ window.__ModuleLoader__.load({
             })),
           h('div', { 'data-fm-row': '' },
             h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'TA 自己叫什么（有心情的那个人）')),
-            h('input', {
+            h('input', {'aria-label': '伙伴的称呼',
               'data-fm-input': '', value: cfg.selfName || '',
               placeholder: '伙伴',
               onChange: (e) => setCfg((c) => ({ ...c, selfName: e.target.value })),
@@ -469,7 +465,7 @@ window.__ModuleLoader__.load({
             h('div', { 'data-fm-grow': '' },
               h('div', { 'data-fm-label': '' }, 'TA 平时怎么叫你（昵称）'),
               h('div', { 'data-fm-note': '' }, '逗号分隔，写成 TA 平时怎么喊你，比如：小鱼,宝贝,亲爱的。判断时会把这些词当成「在叫你」，不会把「宝宝视频」当成一个东西')),
-            h('input', {
+            h('input', {'aria-label': '伙伴的昵称',
               'data-fm-input': '', value: cfg.selfAliases || '',
               placeholder: '小鱼,宝贝,亲爱的',
               onChange: (e) => setCfg((c) => ({ ...c, selfAliases: e.target.value })),
@@ -480,7 +476,7 @@ window.__ModuleLoader__.load({
             h('div', { 'data-fm-grow': '' },
               h('div', { 'data-fm-label': '' }, 'TA 自称什么'),
               h('div', { 'data-fm-note': '' }, '心情描述里它管自己叫什么。默认「我」；跑角色设定重的模型、它平时说「本小姐」「在下」，就填进去')),
-            h('input', {
+            h('input', {'aria-label': '伙伴的自称',
               'data-fm-input': '', value: cfg.selfPronoun || '我',
               placeholder: '我',
               onChange: (e) => setCfg((c) => ({ ...c, selfPronoun: e.target.value })),
@@ -490,8 +486,8 @@ window.__ModuleLoader__.load({
           h('div', { 'data-fm-h': '' }, '判断用哪个模型'),
           h('div', { 'data-fm-note': '' }, '心情判断是一次很短的小调用。想更准就指到更强的模型，想省钱就指到便宜的；留空 = 跟着当前会话的模型走。'),
           h('div', { 'data-fm-row': '' },
-            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'provider（厂商）')),
-            h('select', {
+            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, '模型提供方')),
+            h('select', {'aria-label': '模型提供方',
               'data-fm-input': '', value: cfg.judgeProvider || '',
               onChange: (e) => {
                 const v = e.target.value
@@ -507,8 +503,8 @@ window.__ModuleLoader__.load({
                 ? h('option', { value: cfg.judgeProvider }, cfg.judgeProvider)
                 : null)),
           h('div', { 'data-fm-row': '' },
-            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'model（型号）')),
-            h('select', {
+            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, '模型型号')),
+            h('select', {'aria-label': '模型型号',
               'data-fm-input': '', value: cfg.judgeModel || '', disabled: !cfg.judgeProvider,
               onChange: (e) => { const v = e.target.value; setCfg((c) => ({ ...c, judgeModel: v })); patch({ judgeModel: v }, '判断模型') },
             },
@@ -529,7 +525,7 @@ window.__ModuleLoader__.load({
             h('div', { 'data-fm-grow': '' },
               h('div', { 'data-fm-label': '' }, '心情怎么告诉它'),
               h('div', { 'data-fm-note': '' }, '影响它说话口气的唯一开关。选「说心情和那件事」时，它看到的是两行：第一行是这一刻的心情底子，第二行是这段时间发生了什么 —— 底子会真的影响它怎么说话，那件事只是来历。')),
-            h('select', {
+            h('select', {'aria-label': '心情注入方式',
               'data-fm-input': '', value: cfg.injectMode || 'event',
               onChange: (e) => patch({ injectMode: e.target.value }, '心情怎么告诉它'),
             },
@@ -544,7 +540,7 @@ window.__ModuleLoader__.load({
           numInput('moodFloor', '心情下限', '最低能掉到多少；0 = 不设底线（0–100）', 0, 100),
           numInput('decayHalfHours', '多久平复一半', '受一次影响之后，心里多久淡掉一半（小时）。大 = 隔夜还留着余温，小 = 情绪来得快去得也快', 1, 168),
           h('div', { 'data-fm-note': '' }, '下面两个数决定"什么才算一次值得告诉它的变化"。够不着就只记账（面板里看得到，不影响它说话）。调小 = 它更敏感，调大 = 它只在真动心的时候才变。'),
-          numInput('sigMood', '心情变这么多才算', '判定给的涨跌够这个数就算一次「真有事」（1–30，默认 3）。⚠️ 心情值本身每轮只吃 1/3，所以这里比的是判定原始值', 1, 30),
+          numInput('sigMood', '心情变这么多才算', '判定给的涨跌够这个数就算一次「真有事」（1–30，默认 3）。注意： 心情值本身每轮只吃 1/3，所以这里比的是判定原始值', 1, 30),
           numInput('sigDim', '或者某根情绪变这么多', '开心/心疼/担心……任意一根涨跌够这个数也算（1–100，默认 5）。心疼+5、担心+5 这种「突然一下」才触发', 1, 100),
           numInput('injectPerDay', '每天最多说几次',
             '这一份今天已经说过 ' + String((st && st.saidToday) || 0) + ' 次（同一份的几个会话合起来算）。到上限就只记账、不再打扰它，明天重新算。填 0 = 一次都不说（只看面板）', 0, 50)))
@@ -572,16 +568,16 @@ window.__ModuleLoader__.load({
                 h('div', { 'data-fm-note': '' }, t))))))
 
       return h('div', { 'data-fm-wrap': '' },
-        h('div', { 'data-fm-tabs': '' },
-          页签.map(([id, 名]) => h('button', {
-            key: id, 'data-fm-tab': '', 'data-fm-on': 页 === id ? '' : undefined,
+        h('div', { 'data-fm-tabs': '', role: 'tablist', 'aria-label': '心情页面' },
+          页签.map(([id, 名]) => h('button', {type: 'button',
+            key: id, role: 'tab', 'aria-selected': 页 === id, tabIndex: 页 === id ? 0 : -1, onKeyDown: e => { const i = 页签.findIndex(item => item[0] === id); const next = e.key === 'ArrowRight' ? (i + 1) % 页签.length : e.key === 'ArrowLeft' ? (i + 页签.length - 1) % 页签.length : e.key === 'Home' ? 0 : e.key === 'End' ? 页签.length - 1 : null; if (next !== null) { e.preventDefault(); set页(页签[next][0]); e.currentTarget.parentElement.querySelectorAll('[role=tab]')[next].focus() } }, 'data-fm-tab': '', 'data-fm-on': 页 === id ? '' : undefined,
             onClick: () => set页(id),
           }, 名))),
         页 === 'mood' ? 心情页 : null,
         页 === 'bind' ? 绑定页 : null,
         页 === 'judge' ? 判断页 : null,
         页 === 'charm' ? 挂饰页 : null,
-        h('div', { 'data-fm-msg': '' }, msg),
+        h('div', { 'data-fm-msg': '', role: 'status', 'aria-live': 'polite' }, msg),
       )
     }
 

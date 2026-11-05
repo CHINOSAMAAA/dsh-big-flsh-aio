@@ -146,7 +146,7 @@ let 树 = 首次渲染(造态(['sess-abc']))
 let 文 = JSON.stringify(树)
 const 要有 = ['主动搭话', '总开关', '试运行', '掷骰子间隔', '安静时段', '时机因子',
   '峰谷分时', '峰时命中线', '谷时命中线', '搭话冷却', '没中加成', '加成上限',
-  '近：', '远：', '目标会话', '触发文案', '角色', '保存设置', '演练一次', '真发一次', '新建一个小屋', '最近', 'developer']
+  '近：', '远：', '目标会话', '触发文案', '角色', '保存设置', '演练一次', '真发一次', '新建并选中会话', '最近', 'developer']
 const 缺 = 要有.filter((x) => !文.includes(x))
 报('7 组设置 + 峰谷 + 攒加成 + 冷却 + 所有按钮都渲染出来了', 缺.length === 0, 缺.length ? '缺：' + 缺.join('、') : `${文.length} 字节`)
 报('渲染过程没崩', 树 && 树.t === 'div')
@@ -178,7 +178,7 @@ const 缺 = 要有.filter((x) => !文.includes(x))
 报('「两个数字填成一样 = 不启用」单独成一行写着',
   文.includes('两个数字填成一样') && 文.includes('= 不启用安静时段：整天都可能掷骰子'))
 {
-  // 它得是一个独立节点（不是埋在长句子里），而且用了醒目样式（红字）
+  // 独立节点和警告色在两种主题下都要保留。
   let 单独行 = null
   const 走 = (n) => {
     if (!n || typeof n !== 'object') return
@@ -187,8 +187,8 @@ const 缺 = 要有.filter((x) => !文.includes(x))
     ;(n.kids || []).forEach(走)
   }
   走(树)
-  报('那行是独立节点且用了醒目样式（红字，不是普通说明）',
-    !!单独行 && !!单独行.p && !!单独行.p.style && 单独行.p.style.color === '#c0392b', JSON.stringify(单独行 && 单独行.p))
+  报('那行是独立节点且用了主题警告色',
+    !!单独行 && !!单独行.p && !!单独行.p.style && 单独行.p.style.color === 'var(--fish-warning)', JSON.stringify(单独行 && 单独行.p))
 }
 
 // ---------- 峰谷卡片：只有两个数字，没有时段格子 ----------
@@ -325,7 +325,7 @@ const 全部节点 = (树) => {
   走(树)
   return 出
 }
-const 是悬浮条 = (n) => !!(n && n.p && n.p.style && n.p.style.position === 'sticky' && n.p.style.bottom === 0)
+const 是悬浮条 = (n) => !!(n && n.p && n.p.style && n.p.style.position === 'sticky' && Number.isFinite(n.p.style.bottom))
 
 const 干净树 = 首次渲染(造态(['sess-abc']))
 报('没有改动时**不**渲染悬浮保存条（平时不挡视线）', 全部节点(干净树).filter(是悬浮条).length === 0)
@@ -336,9 +336,9 @@ if (数字框) 数字框.p.onChange({ target: { value: '35' } })
 
 const 脏树 = 渲染()
 const 浮条 = 全部节点(脏树).filter(是悬浮条)
-报('一改数字 → 底下立刻冒出保存条（带「有改动还没保存」+ 保存按钮）',
+报('一改数字 → 底下立刻冒出保存条（带未保存提示和保存按钮）',
   浮条.length === 1 &&
-    JSON.stringify(浮条[0]).includes('有改动还没保存') &&
+    JSON.stringify(浮条[0]).includes('有未保存的改动') &&
     JSON.stringify(浮条[0]).includes('保存设置'),
   浮条.length ? JSON.stringify(浮条[0].kids).slice(0, 150) : '没冒出来')
 

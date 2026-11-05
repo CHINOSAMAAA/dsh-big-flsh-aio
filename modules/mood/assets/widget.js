@@ -7,8 +7,8 @@
 
   var B = '/dsh-feiyu-mood'
   var dimColor = {
-    happy: '#5ddc8a', calm: '#7aaadc', sweet: '#e28fc0',
-    heartache: '#e0b070', worry: '#e8a25b', sad: '#7a96c8', jealous: '#c88fdc'
+    happy: 'var(--fm-green)', calm: 'var(--fm-blue)', sweet: 'var(--fm-pink)',
+    heartache: 'var(--fm-amber)', worry: 'var(--fm-amber)', sad: 'var(--fm-blue)', jealous: 'var(--fm-purple)'
   }
   var DIM_LABELS = { happy: '开心', calm: '踏实', sweet: '甜蜜', heartache: '心疼', worry: '担心', sad: '难过', jealous: '吃醋' }
   var DIM_KEYS = ['happy', 'calm', 'sweet', 'heartache', 'worry', 'sad', 'jealous']
@@ -22,6 +22,7 @@
   }
 
   var css = [
+    '.fm-widget{--fm-paper:#fffefa;--fm-text:#30302b;--fm-muted:#68685f;--fm-border:#deddd3;--fm-soft:#f5f4ed;--fm-accent:#a9472a;--fm-green:#367052;--fm-blue:#426b83;--fm-pink:#995a7a;--fm-amber:#8a561a;--fm-purple:#80548e;color-scheme:light}body[data-ds-dark-theme] .fm-widget{--fm-paper:#262624;--fm-text:#eeeee6;--fm-muted:#b8b8ac;--fm-border:#4b4b43;--fm-soft:#1f1f1e;--fm-accent:#dc9475;--fm-green:#a1c7ab;--fm-blue:#9bbfd3;--fm-pink:#e5a9c8;--fm-amber:#e2ba80;--fm-purple:#caa8dc;color-scheme:dark}',
     // ⭐ 0.8.0：尺寸可自己调（面板里那个「大小」滑杆），--fm-scale 就是倍数
     '.fm-widget{position:fixed;right:18px;bottom:18px;z-index:99990;--fm-scale:1;',
     'width:calc(180px * var(--fm-scale));height:calc(180px * var(--fm-scale));',
@@ -31,50 +32,51 @@
     '.fm-widget:active{cursor:grabbing}',
     '.fm-widget>img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}',
     // 面板：基础定位（JS positionPanel 会按屏幕边适配再调）
-    '.fm-panel{position:absolute;left:0;bottom:calc(100% + 10px);width:300px;max-height:62vh;',
-    'overflow:auto;background:#1b1c1f;color:#e8e8ea;border:1px solid rgba(128,128,128,.28);',
+    '.fm-widget .fm-panel{position:absolute;left:0;bottom:calc(100% + 10px);width:320px;max-width:calc(100vw - 32px);max-height:62vh;',
+    'overflow:auto;background:var(--fm-paper);color:var(--fm-text);border:1px solid var(--fm-border);',
     'border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);padding:14px;display:none;',
     'font-size:13px;line-height:1.6;cursor:auto;',
     'font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}',
-    '.fm-panel img{pointer-events:none;-webkit-user-drag:none}',
-    '.fm-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}',
-    '.fm-face{width:64px;height:64px;object-fit:contain;flex:none}',
-    '.fm-big{font-size:22px;font-weight:700;line-height:1.15}',
-    '.fm-reason{color:#9aa0a6;margin:6px 0 10px;overflow-wrap:anywhere}',
-    '.fm-dim{display:flex;align-items:center;gap:8px;margin:4px 0}',
-    '.fm-dimlabel{width:34px;flex:none;color:#9aa0a6}',
-    '.fm-bar{flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.2);overflow:hidden}',
-    '.fm-bar i{display:block;height:100%}',
-    '.fm-val{width:28px;text-align:right;color:#9aa0a6;flex:none}',
-    '.fm-btn{margin-top:12px;display:block;width:100%;padding:7px 0;border:1px solid rgba(128,128,128,.35);',
+    '.fm-widget .fm-panel img{pointer-events:none;-webkit-user-drag:none}',
+    '.fm-widget .fm-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}',
+    '.fm-widget .fm-face{width:64px;height:64px;object-fit:contain;flex:none}',
+    '.fm-widget .fm-big{font-size:22px;font-weight:600;line-height:1.15}',
+    '.fm-widget .fm-reason{color:var(--fm-muted);margin:6px 0 10px;overflow-wrap:anywhere}',
+    '.fm-widget .fm-dim{display:flex;align-items:center;gap:8px;margin:4px 0}',
+    '.fm-widget .fm-dimlabel{width:34px;flex:none;color:var(--fm-muted)}',
+    '.fm-widget .fm-bar{flex:1;height:7px;border-radius:4px;background:rgba(128,128,128,.2);overflow:hidden}',
+    '.fm-widget .fm-bar i{display:block;height:100%}',
+    '.fm-widget .fm-val{width:28px;text-align:right;color:var(--fm-muted);flex:none}',
+    '.fm-widget .fm-btn{margin-top:12px;display:block;width:100%;padding:7px 0;border:1px solid rgba(128,128,128,.35);',
     'border-radius:8px;background:transparent;color:inherit;cursor:pointer;font-size:13px;text-align:center;font-family:inherit}',
-    '.fm-btn:hover{background:rgba(128,128,128,.12)}',
-    '.fm-h{font-weight:600;margin:10px 0 6px;color:#c9cdd3}',
-    '.fm-back{color:#8fa8c8;cursor:pointer;font-size:13px;margin-bottom:6px;display:inline-block}',
-    '.fm-back:hover{text-decoration:underline}',
-    '.fm-tlrow{display:flex;gap:6px;padding:3px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:baseline}',
-    '.fm-tltime{flex:none;width:50px;color:#7a8088}',
-    '.fm-tlmood{flex:none;width:32px;font-weight:600}',
-    '.fm-tldelta{flex:none;width:44px;text-align:left;font-size:12px}',
-    '.fm-tlreason{flex:1;overflow-wrap:anywhere;word-break:break-word}',
-    '.fm-tldims{color:#8a93a0;font-size:11px;padding:1px 0 5px 62px}',
+    '.fm-widget .fm-btn:hover{background:rgba(128,128,128,.12)}',
+    '.fm-widget .fm-h{font-weight:600;margin:10px 0 6px;color:var(--fm-text)}',
+    '.fm-widget .fm-back{color:var(--fm-accent);cursor:pointer;font-size:13px;margin-bottom:6px;display:inline-block}',
+    '.fm-widget .fm-back:hover{text-decoration:underline}',
+    '.fm-widget .fm-tlrow{display:flex;gap:6px;padding:3px 0;border-bottom:1px solid rgba(128,128,128,.1);align-items:baseline}',
+    '.fm-widget .fm-tltime{flex:none;width:50px;color:var(--fm-muted)}',
+    '.fm-widget .fm-tlmood{flex:none;width:32px;font-weight:600}',
+    '.fm-widget .fm-tldelta{flex:none;width:44px;text-align:left;font-size:12px}',
+    '.fm-widget .fm-tlreason{flex:1;overflow-wrap:anywhere;word-break:break-word}',
+    '.fm-widget .fm-tldims{color:var(--fm-muted);font-size:11px;padding:1px 0 5px 62px}',
     // ⭐ 收起态：只剩一个小圆 + 心情数字（挡不住界面），点它再展开
     // ⭐ 0.8.0：收起态是**一只小鲸鱼**（形象缩到 64px），不再是纯圆 ——
     //   心情数字做成一角上的小徽章，照样能拖、点一下展开。
     '.fm-widget.fm-col{width:64px;height:64px;border-radius:0;background:transparent;border:0;',
     'box-shadow:none}',
     '.fm-widget.fm-col>img{display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,.45))}',
-    '.fm-col-num{display:none;position:absolute;right:-4px;bottom:-4px;width:24px;height:24px;',
-    'border-radius:50%;background:rgba(27,28,31,.94);border:1px solid rgba(128,128,128,.4);',
+    '.fm-widget .fm-col-num{display:none;position:absolute;right:-4px;bottom:-4px;width:24px;height:24px;',
+    'border-radius:50%;background:var(--fm-paper);border:1px solid rgba(128,128,128,.4);',
     'align-items:center;justify-content:center;',
-    'font:700 11px/1 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:#e8e8ea}',
+    'font:700 11px/1 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--fm-text)}',
     '.fm-widget.fm-col .fm-col-num{display:flex}',
     // 面板里的「最小化」（像窗口那样，做在面板边框里面）
-    '.fm-mini{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:6px;display:flex;',
+    '.fm-widget .fm-mini{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:6px;display:flex;',
     'align-items:center;justify-content:center;font:600 15px/1 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;',
-    'color:#9aa0a6;cursor:pointer;background:rgba(128,128,128,.14);border:1px solid rgba(128,128,128,.25);z-index:2}',
-    '.fm-mini:hover{background:rgba(128,128,128,.3);color:#e8e8ea}',
-    '.fm-head{padding-right:26px}'
+    'color:var(--fm-muted);cursor:pointer;background:rgba(128,128,128,.14);border:1px solid rgba(128,128,128,.25);z-index:2}',
+    '.fm-widget .fm-mini:hover{background:rgba(128,128,128,.3);color:var(--fm-text)}',
+    '.fm-widget .fm-head{padding-right:26px}'
+    ,'@media(prefers-reduced-motion:reduce){.fm-widget,.fm-widget *{transition:none!important}}.fm-widget :is(button,input,[tabindex]):focus-visible{outline:2px solid var(--fm-accent);outline-offset:3px}'
   ].join('')
 
   var style = document.createElement('style')
@@ -221,11 +223,12 @@
     大小行.appendChild(el('span', 'fm-dimlabel', '大小'))
     var 滑 = document.createElement('input')
     滑.type = 'range'
+    滑.setAttribute('aria-label', '挂饰大小')
     滑.min = '60'
     滑.max = '160'
     滑.step = '5'
     滑.value = String(Math.round(取缩放() * 100))
-    滑.style.cssText = 'flex:1;accent-color:#8fa8c8;cursor:pointer'
+    滑.style.cssText = 'flex:1;accent-color:var(--fm-accent);cursor:pointer'
     var 读数 = el('span', 'fm-val', Math.round(取缩放() * 100) + '%')
     滑.addEventListener('input', function (e) {
       e.stopPropagation()

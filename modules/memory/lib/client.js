@@ -35,23 +35,23 @@ window.__ModuleLoader__.load({
       'aria-label': label, type, value: config[name], min: type === 'number' ? 0 : undefined, style: { maxWidth: '100%', width: type === 'number' ? 100 : 500 },
       onChange: e => setConfig({ ...config, [name]: type === 'number' ? Number(e.target.value) : e.target.value }),
     }))
-    return React.createElement('details', { style: { margin: '12px 0' } },
+    return React.createElement('details', { className: 'fish-embedding', style: { margin: '24px 0' } },
       React.createElement('summary', null, 'Qwen 语义召回（默认关闭）'),
       React.createElement('p', null, '启用后，记忆正文与查询会发送给配置的云服务商并可能产生费用。正文仍以鱼的记忆为准，断网回退关键词；QQ 权限保持不变。'),
-      React.createElement('label', null, React.createElement('input', { type: 'checkbox', checked: config.enabled, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), '启用语义召回'),
+      React.createElement('label', null, React.createElement('input', {'aria-label': '启用语义召回',  type: 'checkbox', checked: config.enabled, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), '启用语义召回'),
       field('endpoint', 'DashScope 完整服务地址'), field('model', 'Qwen 模型'), field('dimensions', '维度', 'number'),
       field('minSimilarity', '语义门槛（需用自己的数据校准）', 'number'), field('topK', '语义候选上限', 'number'), field('timeoutMs', '本轮超时毫秒', 'number'),
       React.createElement('label', null, '密钥（只写） ', React.createElement('input', { 'aria-label': 'Embedding 密钥', type: 'password', autoComplete: 'new-password', value: key, disabled: !status?.writable, onChange: e => setKey(e.target.value) })),
       React.createElement('p', null, status?.configured ? '密钥已配置（不会返回前端）' : '未配置密钥。可用宿主凭据 FISH_MEMORY_QWEN_API_KEY；旧宿主使用同名或 DASHSCOPE_API_KEY 环境变量。'),
-      React.createElement('button', { disabled: busy, onClick: () => post('/settings', { config, ...(key ? { key } : {}) }) }, '保存 Embedding 设置'),
-      React.createElement('button', { disabled: busy || !status?.writable, onClick: () => post('/settings', { config, clearKey: true }) }, '清除保存的密钥'),
+      React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/settings', { config, ...(key ? { key } : {}) }) }, '保存 Embedding 设置'),
+      React.createElement('button', {type: 'button',  disabled: busy || !status?.writable, onClick: () => post('/settings', { config, clearKey: true }) }, '清除保存的密钥'),
       session ? React.createElement('div', null,
         React.createElement('p', null, '当前库索引：' + (status?.indexed ?? '—') + ' / ' + (status?.total ?? '—') + '；缺失 ' + (status?.missing ?? '—') + '；本次完成 ' + (status?.completed || 0) + (status?.running ? '（运行中）' : '') + (status?.error ? '；回退原因 ' + status.error : '')),
-        React.createElement('button', { disabled: busy || status?.running, onClick: () => post('/index', { session, storeId }) }, '补齐当前库索引'),
-        React.createElement('button', { disabled: busy || status?.running, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引（保留正文）'),
-        React.createElement('button', { disabled: busy, onClick: () => post('/index', { stop: true }) }, '中断补齐'),
+        React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId }) }, '补齐当前库索引'),
+        React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引（保留正文）'),
+        React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/index', { stop: true }) }, '中断补齐'),
       ) : React.createElement('p', null, '打开下方一个记忆库后，可分批补齐或重建其索引。'),
-      React.createElement('button', { onClick: () => refresh().catch(() => setMessage('状态不可用')) }, '刷新索引状态'), message,
+      React.createElement('button', {type: 'button',  onClick: () => refresh().catch(() => setMessage('状态不可用')) }, '刷新索引状态'), message,
     )
   }
     const B = '/dsh-fish-memory'
@@ -71,10 +71,10 @@ window.__ModuleLoader__.load({
       const dayIdx = (x) => Math.floor((new Date(x).getTime() + 8 * 3600000) / 86400000)
       const days = dayIdx(now) - dayIdx(t)
       if (!isFinite(days)) return fmt(t)
-      // ⚠⚠ 2026-09-22 修（反馈：「为什么还有今天的事儿」）：
+      // ⚠注意：2026-09-22 修（反馈：「为什么还有今天的事儿」）：
       //   原来是 `if (days <= 0) return '今天 …'` —— **负数的（未来的）也被算成今天** ✗
       //   实测：一条日期在未来的记忆→ 页面显示「今天 12:00」✗✗
-      //   → 今天 / 明天 / N 天后 分开写 ✓
+      //   → 今天 / 明天 / N 天后 分开写
       if (days === 0) return '今天 ' + fmt(t).slice(6)
       if (days === -1) return '明天 ' + fmt(t).slice(6)
       if (days < 0) {
@@ -93,7 +93,7 @@ window.__ModuleLoader__.load({
         if (差 === 1) return '去年 ' + fmt(t).slice(0, 5)
         return 那年 + '-' + fmt(t).slice(0, 5) + '（' + 差 + ' 年前）'
       }
-      // ⚠⚠ 2026-09-22 修（反馈：「不是两个月前啊」）：
+      // ⚠注意：2026-09-22 修（反馈：「不是两个月前啊」）：
       //   原来是 `Math.round(days / 30)` —— **四舍五入**把 47 天说成了「2 个月」✗
       //   47 天明明才一个半月。→ 改成**只进不退**（floor），零头够 15 天就说「个多月」✓
       const 月 = Math.floor(days / 30)
@@ -103,17 +103,17 @@ window.__ModuleLoader__.load({
     const impName = (v) => (v >= 1 ? '非常重要' : v >= 0.5 ? '比较重要' : '随口提过')
 
     // ---------- 提炼 / 扩词的进度放在**组件外面** ----------
-    // 为什么：跑一轮要十几二十分钟，她中途切走再回来，进度不该消失 ✓
-    // ⚠ 两个**各占一格** —— 共用一个格子的话，两个一起跑会互相盖，
+    // 为什么：跑一轮要十几二十分钟，她中途切走再回来，进度不该消失
+    // 注意：两个**各占一格** —— 共用一个格子的话，两个一起跑会互相盖，
     //   看起来就像「点了扩词，过一会儿自己取消了」✗（2026-09-20 踩到）
     const 进度 = { 扩词: { 状态: null, 说明: null }, 提炼: { 状态: null, 说明: null }, 订阅: new Set() }
     // ⭐ 2026-09-22（反馈「点了判断，但他没有弹进度条啊，他就卡着判着呢」）：
     //   「补标不淡」原来**只有一行字、没有进度条** —— 跑起来看不出它在动 ✗
     //   （其实一直在跑，日志里一批批都有；她以为卡死了）
-    //   → 给它也配一条进度条 ✓（放在组件外面，切走再回来还在）
-    // ⚠ 2026-09-22（她的反馈）：这条原来跟提炼/扩词挤在同一张卡里，
-    //   点了重判得往上翻才看得见 ✗ → 挪到按钮行下面，并记下**是哪一种**：
-    //   「补标不淡」还是「重判一遍」，进度条上写清楚 ✓
+    //   → 给它也配一条进度条（放在组件外面，切走再回来还在）
+    // 注意：2026-09-22（她的反馈）：这条原来跟提炼/扩词挤在同一张卡里，
+    //   点了重判得往上翻才看得见 失败：→ 挪到按钮行下面，并记下**是哪一种**：
+    //   「补标不淡」还是「重判一遍」，进度条上写清楚
     const 补标进度 = { 已: 0, 总: 0, 在跑: false, 重判: false }
 // ⭐⭐ 2026-09-23：**清洗补键**的进度（老数据补事实键）✓
 //   跟 补标 分开一份 —— 两条进度条同时跑的时候不许互相盖 ✗
@@ -132,44 +132,44 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
     // 一次别画太多行 —— 库里 800 多条的时候，全画出来整个页面都会卡（连别的插件面板一起卡）✗
     const 一次最多画 = 200
 
-    // 权重在页面上按百分比显示 ✓（0.55 → 55）
+    // 权重在页面上按百分比显示（0.55 → 55）
     const toPct = (v) => Math.round(Number(v) * 1000) / 10
     const fromPct = (v) => Math.round(Number(v) * 10) / 1000
 
     const S = {
-      wrap: { padding: '16px 6px', fontSize: 13, lineHeight: 1.8, maxWidth: 780 },
+      wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       dim: { color: 'var(--dsw-alias-label-tertiary, #8a8a8a)' },
-      h: { fontSize: 14, margin: '20px 0 8px', fontWeight: 600 },
-      // ⚠⚠ 2026-09-23（她的反馈：「右边堆的东西太多，左边的文字成了竖着的一条」）：
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 600, lineHeight: 1.5 },
+      // ⚠注意：2026-09-23（她的反馈：「右边堆的东西太多，左边的文字成了竖着的一条」）：
       //   这一行**必须能换行** ✗
       //   原来没有 flexWrap —— 行里全是 flex:'none' 的牌子/列（日期、鲜活度、重要度、原文、改、删…），
       //   它们一多，那条 flex:1 的正文就被挤成**竖着的一条**（一个字一行）。
       //   清洗补键给两百多条补上键之后，行里又多一个牌子 → 立刻犯病。
-      //   加 flexWrap：装不下就让牌子们**掉到下一行**，正文始终有地方 ✓
+      //   加 flexWrap：装不下就让牌子们**掉到下一行**，正文始终有地方
       //   （跟上面 nameBox 那条是同一个教训）
-      // ⚠⚠ 2026-09-24（她说的「能搜到它的词和讲的是，移到下一条的那一格里面去了」）：
+      // ⚠注意：2026-09-24（她说的「能搜到它的词和讲的是，移到下一条的那一格里面去了」）：
       //   分隔线**原来画在「行」上** —— 可每条下面还有一两行小字
       //   （「提炼前：…」「能搜到它的词：…」「讲的是：…」），
       //   它们在线的**下面** → 看着就像属于**下一条**了 ✗
-      //   → 线挪到「整条」上（见 S.条），行自己不再画线 ✓
-      row: { padding: '6px 8px', display: 'flex', flexWrap: 'wrap', gap: 10, rowGap: 2, alignItems: 'baseline' },
-      // 「一整条」的分隔线：**连着下面那几行小字一起**框住 ✓
-      条: { borderBottom: '1px solid rgba(128,128,128,.15)' },
-      btn: { padding: '3px 10px', borderRadius: 6, border: '1px solid rgba(128,128,128,.35)', background: 'transparent', color: 'inherit', cursor: 'pointer', fontSize: 12 },
-      inp: { width: 72, padding: '2px 6px', borderRadius: 5, border: '1px solid rgba(128,128,128,.35)', background: 'transparent', color: 'inherit', fontSize: 12 },
-      link: { color: 'var(--dsw-alias-label-secondary, #8fa8c8)', cursor: 'pointer', textDecoration: 'underline' },
-      confirm: { display: 'flex', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 6, background: 'rgba(200,120,120,.12)', border: '1px solid rgba(200,120,120,.35)', fontSize: 12 },
-      // ⚠ flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
-      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 6, background: 'rgba(128,128,128,.10)', border: '1px solid rgba(128,128,128,.22)', fontSize: 12 },
-      editBox: { margin: '4px 0 10px 8px', padding: '8px 10px', borderRadius: 6, background: 'rgba(128,128,128,.10)', border: '1px solid rgba(128,128,128,.28)' },
-      askBox: { display: 'flex', gap: 8, alignItems: 'center', margin: '8px 0', padding: '8px 10px', borderRadius: 6, background: 'rgba(224,176,112,.12)', border: '1px solid rgba(224,176,112,.4)', fontSize: 12 },
-      barOut: { height: 10, borderRadius: 5, background: 'rgba(128,128,128,.20)', overflow: 'hidden', border: '1px solid rgba(128,128,128,.25)' },
-      barIn: { height: '100%', background: 'linear-gradient(90deg,#5b8fd6,#8fd0a0)', transition: 'width .25s' },
-      area: { width: '100%', boxSizing: 'border-box', padding: '6px 8px', borderRadius: 5, border: '1px solid rgba(128,128,128,.35)', background: 'transparent', color: 'inherit', fontSize: 13, lineHeight: 1.7, fontFamily: 'inherit', resize: 'vertical' },
-      btnDanger: { padding: '3px 10px', borderRadius: 6, border: '1px solid rgba(200,120,120,.6)', background: 'rgba(200,120,120,.18)', color: 'inherit', cursor: 'pointer', fontSize: 12 },
-      ok: { color: '#8fd0a0' },
-      drop: { color: '#c98080' },
-      warn: { color: '#e0b070' },
+      //   → 线挪到「整条」上（见 S.条），行自己不再画线
+      row: { padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 10, rowGap: 2, alignItems: 'baseline' },
+      // 「一整条」的分隔线：**连着下面那几行小字一起**框住
+      条: { borderBottom: '1px solid var(--fish-line)' },
+      btn: { padding: '8px 12px', borderRadius: 6, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
+      inp: { width: 72, padding: '8px 12px', borderRadius: 5, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)' },
+      link: { color: 'var(--dsw-alias-label-secondary, var(--fish-info))', cursor: 'pointer', textDecoration: 'underline' },
+      confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid rgba(200,120,120,.35)', fontSize: 'var(--fish-small)' },
+      // 注意：flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
+      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' },
+      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)' },
+      askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid rgba(224,176,112,.4)', fontSize: 'var(--fish-small)' },
+      barOut: { height: 10, borderRadius: 5, background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid rgba(128,128,128,.25)' },
+      barIn: { height: '100%', background: 'var(--fish-accent)' },
+      area: { width: '100%', boxSizing: 'border-box', padding: '12px 16px', borderRadius: 5, border: '1px solid var(--fish-border)', background: 'transparent', color: 'inherit', fontSize: 'var(--fish-small)', lineHeight: 1.7, fontFamily: 'inherit', resize: 'vertical' },
+      btnDanger: { padding: '8px 12px', borderRadius: 6, border: '1px solid rgba(200,120,120,.6)', background: 'var(--fish-soft)', color: 'inherit', cursor: 'pointer', fontSize: 'var(--fish-small)' },
+      ok: { color: 'var(--fish-success)' },
+      drop: { color: 'var(--fish-danger)' },
+      warn: { color: 'var(--fish-warning)' },
     }
 
     const GROUPS = [
@@ -186,7 +186,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         return rawPost(p, { ...body, ...(selected?.qq ? { storeId: selected.storeId } : {}), ...(target?.qq ? { toStoreId: target.storeId } : {}) })
       }
       const [err, setErr] = React.useState(null)
-      const [open, setOpen] = React.useState(null) // 打开哪个会话（两级结构 ✓）
+      const [open, setOpen] = React.useState(null) // 打开哪个会话（两级结构）
       const [params, setParams] = React.useState(null)
       const [pin, setPin] = React.useState(null) // 她刚改的那一项权重
       const [editing, setEditing] = React.useState(null) // 正在打字的那格（原样显示她敲的字）
@@ -204,7 +204,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [impBusy, setImpBusy] = React.useState(false)
       const [impNote, setImpNote] = React.useState(null)
       const [impOpen, setImpOpen] = React.useState(false)
-      // 进度放在组件外面（见上面「进度」那段）—— 她切走再回来，进度不该消失 ✓
+      // 进度放在组件外面（见上面「进度」那段）—— 她切走再回来，进度不该消失
       const [exp, setExpState] = React.useState(进度.扩词.状态)
       const [expNote, setExpNoteState] = React.useState(进度.扩词.说明)
       const [rf, setRfState] = React.useState(进度.提炼.状态)
@@ -226,7 +226,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       //   库里 850 条只有 188 条有日期 —— 混在一起排，「中间那一段」全是没日期的，排序就白排了。
       //   原话：「要么就是这样分类，记了时间的和没记时间的分开……
       //            不然的话记和没记的就全混在一起了，这个排序就没办法用了」
-      //   她要的是**自己切**（不是固定的两块）→ 三种视图轮着切 ✓
+      //   她要的是**自己切**（不是固定的两块）→ 三种视图轮着切
       //     '全部' = 老样子；'有时间' = 只看有日期的；'没时间' = 只看没日期的
       const [看哪边, set看哪边] = React.useState('全部')
       // ⭐ 2026-09-22（她要的）：长期事实那个「收理的文件夹」展开没有（**默认收着**）
@@ -235,24 +235,24 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [看参数, set看参数] = React.useState(false)
       // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没找到按钮」）：
       //   去重一直有，但都是**自动**的（召回时、导入时）—— **库里已有的重复没人管** ✗
-      //   这里补一个手动查重：列出来、挑、才合 ✓
+      //   这里补一个手动查重：列出来、挑、才合
       const [查重, set查重] = React.useState(null) // 查重结果：{组, 真重复组数, 汇总组数, 能少}
       const [查重选, set查重选] = React.useState({}) // 第几组 → 留哪条的 id
       // ⭐⭐ 2026-09-23（她真被坑过一次）：**哪几组要合**。
       //   原来「按我选的合」是**把每一组都合掉** —— 而每组默认都选中了，
       //   于是一点就把「汇总+明细」那 105 组也合了，**123 条记忆没了**（回收站还被清空）✗
-      //   → 改成：**「汇总+明细」默认不参与**，要合得一组一组自己勾 ✓
+      //   → 改成：**「汇总+明细」默认不参与**，要合得一组一组自己勾
       const [查重合, set查重合] = React.useState({}) // 第几组 → 要不要合
       const [查重开, set查重开] = React.useState(false) // 面板展开没有
-      // ⭐⭐ 2026-09-22（她要的）：**批量删除**，但**必须二次确认** ✓
+      // ⭐⭐ 2026-09-22（她要的）：**批量删除**，但**必须二次确认**
       //   原话：「再出一个批量删除，但还是需要 2 次确认的」
       //   ① 勾选（每条行首一个框）② 点「批量删」→ 出一个确认条 ③ 点「确定删」才真删
-      //   删掉的是**收进「已删」**（不是销毁），能找回来 ✓
+      //   删掉的是**收进「已删」**（不是销毁），能找回来
       const [选中, set选中] = React.useState({}) // 勾了哪些 id
       const [批删问, set批删问] = React.useState(false) // 二次确认条出来了没
       // ⭐ 2026-09-22（反馈「回收站还没有批量删除，就批量清空」）：
-      //   「已删掉的」那一栏原来只有「一条条清」和「全清空」→ 补一个**批量清掉** ✓
-      //   ⚠ 这个是**真销毁**（不是收起来）→ 界面必须问两遍 ✓
+      //   「已删掉的」那一栏原来只有「一条条清」和「全清空」→ 补一个**批量清掉**
+      //   注意：这个是**真销毁**（不是收起来）→ 界面必须问两遍
       const [选中清, set选中清] = React.useState({}) // 「已删」里勾了哪些
       const [批清问, set批清问] = React.useState(false)
       // ⭐⭐ 2026-09-23（反馈「这里没有批量找回呀」）：批量找回的确认
@@ -260,7 +260,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [mdl, setMdl] = React.useState(null) // DSH 里有哪些模型可选
       // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案** —— 给别人用的功能
       //   用户导入自己的会话 → 模型读一遍 → 出一份档案 → 再走「从旧档案导入」变成条目
-      //   ⚠ 四步分开，因为**第三步调模型、花钱**，得一批一批停下来看 ✓
+      //   注意：四步分开，因为**第三步调模型、花钱**，得一批一批停下来看
       const [生成开, set生成开] = React.useState(false) // 面板展开没有
       const [生成会话, set生成会话] = React.useState(null) // 这个工作区有哪些会话
       const [生成选, set生成选] = React.useState({}) // 勾了哪几个
@@ -271,7 +271,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [生成备, set生成备] = React.useState(null) // 给模型用的备用模型（可选）
       const [生成诊断, set生成诊断] = React.useState(null) // 列表跟 DSH 对不上时，看这几个数
       // ⭐⭐ 2026-09-22（反馈：「点存档案的地方应该自定义」）：
-      //   原来存到哪儿是我**写死的**（`.dsh\生成的档案.md`）✗ → 能打、能选 ✓
+      //   原来存到哪儿是我**写死的**（`.dsh\生成的档案.md`）失败：→ 能打、能选
       const [生成存到, set生成存到] = React.useState('')
       const [生成目录列, set生成目录列] = React.useState(null) // 文件夹选择器的列表
       const [生成选目录, set生成选目录] = React.useState(false)
@@ -289,7 +289,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [加结果, set加结果] = React.useState(null) // { ok, 文字 }
       const [加展开, set加展开] = React.useState(false)
 
-      // 「指她的名字」那一格：读出来、点一下加/减 ✓
+      // 「指她的名字」那一格：读出来、点一下加/减
       const 名字串 = () => (impNames !== null ? impNames : (imp.data && imp.data.用户名字 ? imp.data.用户名字 : []).join(','))
       const 名字们 = () => 名字串().split(/[,，]/).map((x) => x.trim()).filter(Boolean)
       const 已选名字 = (n) => 名字们().indexOf(n) >= 0
@@ -300,7 +300,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         else 有.push(n)
         setImpNames(有.join(','))
       }
-      // 「这个不是名字」—— 昵称、旧事里的称呼…… 标了就存起来，以后不再出现、也不会被换掉 ✓
+      // 「这个不是名字」—— 昵称、旧事里的称呼…… 标了就存起来，以后不再出现、也不会被换掉
       const 标掉名字 = (n) => {
         const 现有 = 找名字 && Array.isArray(找名字.不是名字) ? 找名字.不是名字.slice() : []
         if (现有.indexOf(n) < 0) 现有.push(n)
@@ -323,13 +323,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             style: Object.assign({}, S.btn, {
               cursor: 'pointer',
               opacity: 淡 ? 0.7 : 1,
-              color: 已选名字(x.name) ? '#8fd0a0' : 'inherit',
+              color: 已选名字(x.name) ? 'var(--fish-success)' : 'inherit',
             }),
           },
-          React.createElement('span', { onClick: () => 点名字(x.name) }, (已选名字(x.name) ? '✓ ' : '') + x.name + ' ' + x.n),
+          React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  onClick: () => 点名字(x.name) }, (已选名字(x.name) ? '' : '') + x.name + ' ' + x.n),
           React.createElement(
             'span',
-            {
+            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
               style: Object.assign({}, S.dim, { marginLeft: 5, cursor: 'pointer' }),
               title: '不是名字（昵称、旧事里的称呼…）—— 标了就再也不出现，也不会被换掉',
               onClick: (e) => {
@@ -390,7 +390,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         })
           .then((r) => {
             if (r && r.ok) {
-              set加结果({ ok: true, 文字: '加上了 ✓（这个会话现在 ' + r.count + ' 条）' })
+              set加结果({ ok: true, 文字: '加上了（这个会话现在 ' + r.count + ' 条）' })
               set加内容('')
               set加时间('')
               set加词('')
@@ -402,7 +402,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           .catch((e) => set加结果({ ok: false, 文字: String((e && e.message) || e) }))
       }, [加内容, 加时间, 加重要, 加词, 加哪个会话, load])
 
-      // 订阅外面那个「进度」—— 切走再回来也看得到还在跑 ✓
+      // 订阅外面那个「进度」—— 切走再回来也看得到还在跑
       React.useEffect(() => {
         const 同步 = () => {
           setExpState(进度.扩词.状态)
@@ -417,8 +417,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
       }, [])
 
-      // 切回这个页面就重读一遍 —— 不然得手动按「刷新」才看得到别处刚发生的变化 ✓
-      // ⚠ 但一定要**限流**：库里有 800 多条的时候，/list 要吐 1 MB 左右，
+      // 切回这个页面就重读一遍 —— 不然得手动按「刷新」才看得到别处刚发生的变化
+      // 注意：但一定要**限流**：库里有 800 多条的时候，/list 要吐 1 MB 左右，
       //   每次切窗口都重读 + 重画一遍，整个页面（连带别的插件面板）都会卡住 ✗
       React.useEffect(() => {
         if (typeof window === 'undefined' || !window.addEventListener) return
@@ -439,8 +439,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
       }, [load])
 
-      if (err) return React.createElement('div', { style: S.wrap }, React.createElement('div', { style: S.drop }, '出错了：' + err))
-      if (!d || !params) return React.createElement('div', { style: S.wrap }, '加载中…')
+      if (err) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, React.createElement('div', { style: S.drop }, '出错了：' + err))
+      if (!d || !params) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '加载中…')
 
       const now = Date.now()
 
@@ -459,7 +459,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 '切成「按工作区」要把这些会话的记忆并成一份：',
                 React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4, lineHeight: 1.7 }) },
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4, lineHeight: 1.7 }) },
                   并入.map((r) =>
                     '· ' + r.叫什么 + '：' + r.会话数 + ' 间会话，共 ' + r.合计 + ' 条' +
                     (r.去重 ? '（' + r.去重 + ' 条重复，并完 ' + r.并完 + ' 条）' : ''),
@@ -467,13 +467,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 ),
                 React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { fontSize: 11, marginTop: 4 }) },
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
                   '归档的会话不会并进来。旧库都留着 —— 想退回「按会话」随时能退。',
                 ),
               ),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btnDanger,
                   disabled: busy,
                   onClick: () => {
@@ -486,17 +486,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 },
                 busy ? '并着呢…' : '并进来',
               ),
-              React.createElement('button', { style: S.btn, onClick: () => set并入(null) }, '算了'),
+              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set并入(null) }, '算了'),
             )
           : null
 
       if (open) {
         const s = (d.sessions || []).find((x) => x.id === open)
-        if (!s) return React.createElement('div', { style: S.wrap }, '找不到这个会话')
+        if (!s) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '找不到这个会话')
         const tr = (s.traces || []).slice(-1)[0]
         const 删 = (id, action) => post('/delete', { session: open, id, action }).then(() => { setConfirm(null); load() })
         // ⭐⭐ 2026-09-23（反馈「过期条目没标作废」）：
-        //   撤销「已被取代」—— 标错了、或者状态又变回来了 ✓
+        //   撤销「已被取代」—— 标错了、或者状态又变回来了
         //   （不删任何东西，只把那面小旗子摘掉，摘完它又能被想起来）
         const 撤销作废 = (id) => {
           setBusy(true)
@@ -507,7 +507,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 setNotes(['撤销失败：' + ((r && r.message) || '？')])
                 return
               }
-              setNotes(['✓ ' + r.message])
+              setNotes(['' + r.message])
               load()
             })
             .catch((e) => {
@@ -520,7 +520,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           post('/refine/undo', id === '*' ? { session: open, all: true } : { session: open, id: id })
             .then((r) => {
               setConfirm(null)
-              setExpNote('✓ 退回了 ' + ((r && r.退了) || 0) + ' 条原文')
+              setExpNote('退回了 ' + ((r && r.退了) || 0) + ' 条原文')
               load()
             })
             .catch((e) => setExpNote('退不回：' + String((e && e.message) || e)))
@@ -534,10 +534,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               else 尾巴.push('一条也没加')
               if (r && r.重复) 尾巴.push('重复跳过 ' + r.重复 + ' 条')
               if (r && r.保留) 尾巴.push('那边原有的 ' + r.保留 + ' 条都留着')
-              setExpNote(r && r.ok ? '✓ ' + 尾巴.join('，') + '；那个会话的开关也开了' : '✗ ' + ((r && r.message) || '？'))
+              setExpNote(r && r.ok ? '' + 尾巴.join('，') + '；那个会话的开关也开了' : '失败：' + ((r && r.message) || '？'))
               load()
             })
-            .catch((e) => setExpNote('✗ ' + String((e && e.message) || e)))
+            .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
 
         // 二次确认条（点「删」之后才出现，手滑不了）
         const 确认条 = (text, okLabel, action, id) =>
@@ -545,8 +545,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             'div',
             { style: S.confirm },
             React.createElement('span', { style: { flex: 1, minWidth: 0, overflowWrap: 'anywhere' } }, text),
-            React.createElement('button', { style: S.btnDanger, onClick: () => 删(id, action) }, okLabel),
-            React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+            React.createElement('button', {type: 'button',  style: S.btnDanger, onClick: () => 删(id, action) }, okLabel),
+            React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
           )
 
         // 改一条：文本框 + 重要度 + 存 / 算了
@@ -554,7 +554,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           React.createElement(
             'div',
             { style: S.editBox },
-            React.createElement('textarea', {
+            React.createElement('textarea', {'aria-label': '记忆正文',
               style: S.area,
               rows: 3,
               value: edit.text,
@@ -562,11 +562,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             }),
             React.createElement(
               'div',
-              { style: { display: 'flex', gap: 8, alignItems: 'center', marginTop: 6 } },
+              { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: 6 } },
               React.createElement('span', { style: S.dim }, '重要度'),
               React.createElement(
                 'select',
-                {
+                {'aria-label': '重要度',
                   style: S.inp,
                   value: String(edit.importance),
                   onChange: (e) => setEdit(Object.assign({}, edit, { importance: Number(e.target.value) })),
@@ -575,10 +575,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement('option', { value: '0.5' }, '比较重要'),
                 React.createElement('option', { value: '1' }, '非常重要（会变成「一直」记得）'),
               ),
-              React.createElement('span', { style: Object.assign({}, S.dim, { flex: 1, fontSize: 12 }) }, '改之前会自动备份 ✓'),
+              React.createElement('span', { style: Object.assign({}, S.dim, { flex: 1, fontSize: 'var(--fish-small)' }) }, '改之前会自动备份'),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   disabled: !String(edit.text || '').trim(),
                   onClick: () =>
@@ -589,21 +589,21 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 },
                 '保存修改',
               ),
-              React.createElement('button', { style: S.btn, onClick: () => setEdit(null) }, '算了'),
+              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setEdit(null) }, '算了'),
             ),
           )
 
         const 一条记忆 = (m) =>
           React.createElement(
             'div',
-            // ⚠ 分隔线画在**整条**上（不是里面那个「行」）——
-            //   这样下面那几行小字（能搜到它的词 / 讲的是）算在**这一条**里 ✓
+            // 注意：分隔线画在**整条**上（不是里面那个「行」）——
+            //   这样下面那几行小字（能搜到它的词 / 讲的是）算在**这一条**里
             { key: m.id, style: S.条 },
             React.createElement(
               'div',
-              { style: S.row },
+              { className: 'fish-record-row', style: S.row },
               // ⭐ 2026-09-22（她要的批量删除）：行首一个勾选框
-              React.createElement('input', {
+              React.createElement('input', {'aria-label': '选择记忆：' + m.text,
                 type: 'checkbox',
                 checked: !!选中[m.id],
                 title: '勾上它，再点上面的「批量删」',
@@ -611,16 +611,16 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               }),
               React.createElement('div', { style: Object.assign({}, S.dim, { width: 96, flex: 'none' }) }, rel(m.at, now)),
               React.createElement(
-                // ⚠⚠ 正文这一格给个**下限**（flexBasis 260 / minWidth 200）✗
+                // ⚠注意：正文这一格给个**下限**（flexBasis 260 / minWidth 200）✗
                 //   光有 flex:1 是不够的：它允许被压到 0，右边牌子一多就成竖条。
-                //   有了下限 + 上面那条 flexWrap，装不下时是**牌子换行**，不是正文变窄 ✓
+                //   有了下限 + 上面那条 flexWrap，装不下时是**牌子换行**，不是正文变窄
                 'div',
                 { style: { flex: '1 1 260px', minWidth: 200, overflowWrap: 'anywhere', wordBreak: 'break-word' } },
                 m.已被取代
                   ? React.createElement(
                       'span',
                       {
-                        style: Object.assign({}, S.dim, { textDecoration: 'line-through', opacity: 0.62 }),
+                        style: Object.assign({}, S.dim, { textDecoration: 'line-through', opacity: 1 }),
                         title: '这条已被取代（' + (m.已被取代.为什么 || '') + '）—— 不再被想起来，东西还留着',
                       },
                       m.text,
@@ -628,12 +628,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   : m.text,
               ),
               // ⭐⭐ 2026-09-23（反馈「过期条目没标作废」）：
-              //   标了「已被取代」的，行里直接挂一个「已被取代」的牌子 + 一个撤销口 ✓
+              //   标了「已被取代」的，行里直接挂一个「已被取代」的牌子 + 一个撤销口
               m.已被取代
                 ? React.createElement(
                     'div',
                     {
-                      style: { flex: 'none', fontSize: 11, marginRight: 10, padding: '1px 6px', borderRadius: 8, background: 'rgba(224,176,112,.18)', color: '#e0b070', whiteSpace: 'nowrap' },
+                      style: { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10, padding: '1px 6px', borderRadius: 8, background: 'rgba(224,176,112,.18)', color: 'var(--fish-warning)', overflowWrap: 'anywhere' },
                       title: (m.已被取代.为什么 || '') + '（' + rel(m.已被取代.作废于, now) + '）—— 它不再被注入，但东西还在',
                     },
                     '已被取代',
@@ -642,25 +642,25 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               m.已被取代
                 ? React.createElement(
                     'div',
-                    {
-                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 12, marginRight: 10 }),
+                    {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10 }),
                       title: '撤销「已被取代」—— 它又能被想起来了（标错了 / 状态又变回来了）',
                       onClick: () => 撤销作废(m.id),
                     },
                     '恢复',
                   )
                 : null,
-              // ⭐⭐ 2026-09-23：**事实键** —— ⚠ 不挂在行里，改挂到下面那行小字 ✓
+              // ⭐⭐ 2026-09-23：**事实键** —— 注意：不挂在行里，改挂到下面那行小字
               //   行里每多一个固定宽的牌子，正文就被挤窄一分；
               //   键本来就是「附注」性质，跟「能搜到它的词」放一起正合适（见下面那条）
               React.createElement(
                 'div',
-                { style: Object.assign({}, S.dim, { width: 58, flex: 'none', fontSize: 12 }), title: '鲜活度：越近就越鲜活，只影响排序。长期事实本来就不淡；没记时间的不知道是什么时候的事' },
+                { style: Object.assign({}, S.dim, { width: 58, flex: 'none', fontSize: 'var(--fish-small)' }), title: '鲜活度：越近就越鲜活，只影响排序。长期事实本来就不淡；没记时间的不知道是什么时候的事' },
                 // ⭐⭐ 2026-09-22（反馈：「没标时间的还是鲜活 100%」）：
                 //   光显示百分比会骗人 —— 长期事实本来就不淡，写「100%」像在说「刚发生」✗
                 //   → 长期事实写「**不淡**」✓
                 //   ⭐ 2026-09-22 再改（发现流水账来问）：**没记时间的也会淡了**
-                //     （从「记下来的那天」开始算）→ 它们照常显示百分比 ✓
+                //     （从「记下来的那天」开始算）→ 它们照常显示百分比
                 //     （原来显示「没记时间」，那是我上一版判错了 —— 它们并不是不淡）
                 m.freshKind === 'fact' ? '不淡'
                   : typeof m.activation === 'number' && isFinite(m.activation) ? '鲜活 ' + Math.round(m.activation * 100) + '%' : '—',
@@ -669,8 +669,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               m.textBefore
                 ? React.createElement(
                     'div',
-                    {
-                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 12, marginRight: 10 }),
+                    {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10 }),
                       title: '看看提炼之前长什么样',
                       onClick: () => set看原文(Object.assign({}, 看原文, { [m.id]: !看原文[m.id] })),
                     },
@@ -680,8 +680,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               m.textBefore
                 ? React.createElement(
                     'div',
-                    {
-                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 12, marginRight: 10, color: '#e0b070' }),
+                    {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10, color: 'var(--fish-warning)' }),
                       title: '把这条退回提炼前的原文（退回后可以再提炼一遍）',
                       onClick: () => setConfirm({ id: m.id, kind: 'refineundo' }),
                     },
@@ -690,12 +690,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 : null,
               React.createElement(
                 'div',
-                { style: Object.assign({}, S.link, { flex: 'none', fontSize: 12, marginRight: 10 }), onClick: () => setEdit({ id: m.id, text: m.text, importance: typeof m.importance === 'number' ? m.importance : 0.5 }) },
-                '改',
+                {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10 }), onClick: () => setEdit({ id: m.id, text: m.text, importance: typeof m.importance === 'number' ? m.importance : 0.5 }) },
+                '编辑',
               ),
-              React.createElement('div', { style: Object.assign({}, S.link, { flex: 'none', fontSize: 12 }), onClick: () => setConfirm({ id: m.id, kind: 'delete' }) }, '删'),
+              React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)' }), onClick: () => setConfirm({ id: m.id, kind: 'delete' }) }, '删除'),
             ),
-            m.qqSource ? React.createElement('div', { style: Object.assign({}, S.dim, { fontSize: 12, overflowWrap: 'anywhere' }) },
+            m.qqSource ? React.createElement('div', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', overflowWrap: 'anywhere' }) },
               '来源：' + m.qqSource.type + ' ' + m.qqSource.chatId + ' · ' + ({ owner: '主人私聊', member: '群成员', peer: '私聊对象', manual: '人工记录（对象待核对）' }[m.qqSource.role] || '对象待核对') + ' · 发送者：' + ((m.qqSource.senders || []).join(', ') || '未确认')) : null,
             edit && edit.id === m.id ? 改一条(m) : null,
             confirm && confirm.id === m.id && confirm.kind === 'refineundo'
@@ -703,8 +703,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   'div',
                   { style: S.confirm },
                   React.createElement('span', { style: { flex: 1 } }, '把这条退回提炼前的原文？退回后它会变回「还没提炼」。'),
-                  React.createElement('button', { style: S.btn, onClick: () => 退原文(m.id) }, '退回'),
-                  React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                  React.createElement('button', {type: 'button',  style: S.btn, onClick: () => 退原文(m.id) }, '退回'),
+                  React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                 )
               : null,
             m.textBefore && 看原文[m.id]
@@ -712,10 +712,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   'div',
                   {
                     style: Object.assign({}, S.dim, {
-                      margin: '0 0 6px 104px',
-                      fontSize: 12,
+                      margin: '4px 0 8px',
+                      fontSize: 'var(--fish-small)',
                       whiteSpace: 'pre-wrap',
-                      // ⚠ pre-wrap 只在空格/换行处断，长串（网址、长英文）照样横向撑破面板 —— 得补这两条
+                      // 注意：pre-wrap 只在空格/换行处断，长串（网址、长英文）照样横向撑破面板 —— 得补这两条
                       overflowWrap: 'anywhere',
                       wordBreak: 'break-word',
                       borderLeft: '2px solid rgba(224,176,112,.5)',
@@ -728,22 +728,22 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             m.related && m.related.length
               ? React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { margin: '0 0 6px 104px', fontSize: 11, overflowWrap: 'anywhere', wordBreak: 'break-word' }) },
+                  { style: Object.assign({}, S.dim, { margin: '4px 0 8px', fontSize: 'var(--fish-small)', overflowWrap: 'anywhere', wordBreak: 'break-word' }) },
                   '能搜到它的词：' + m.related.join(' '),
                 )
               : null,
-            // ⭐⭐ 2026-09-23：**「这条讲的是哪件事」** —— 挂在这儿（第二行小字），不占行里的宽度 ✓
-            //   ⚠⚠ 别用「事实键」这种我自己造的词 ——
+            // ⭐⭐ 2026-09-23：**「这条讲的是哪件事」** —— 挂在这儿（第二行小字），不占行里的宽度
+            //   ⚠注意：别用「事实键」这种我自己造的词 ——
             //     她说了「让人看不懂，写通俗一点的」✗
             m.事实键
               ? React.createElement(
                   'div',
-                  { style: { margin: '0 0 6px 104px', fontSize: 11, overflowWrap: 'anywhere', wordBreak: 'break-word' } },
+                  { style: { margin: '4px 0 8px', fontSize: 'var(--fish-small)', overflowWrap: 'anywhere', wordBreak: 'break-word' } },
                   React.createElement('span', { style: S.dim }, '讲的是：'),
                   React.createElement(
                     'span',
                     {
-                      style: { padding: '1px 6px', borderRadius: 8, background: 'rgba(120,170,220,.16)', color: '#7aaadc', whiteSpace: 'nowrap' },
+                      style: { padding: '1px 6px', borderRadius: 8, background: 'rgba(120,170,220,.16)', color: 'var(--fish-info)', overflowWrap: 'anywhere' },
                       title:
                         '这条讲的是「' + m.事实键 + '」这件事。' +
                         '讲同一件事的记忆只留最新那条 —— 旧的收起来了（还能恢复）',
@@ -759,21 +759,21 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
 
         const 已删 = s.deleted || []
         // ⭐⭐ 2026-09-24（她说的「那已被取代应该回回收站呀」）：
-        //   被取代的**从主列表挪走**，收进「已删掉的」那一栏 ✓
+        //   被取代的**从主列表挪走**，收进「已删掉的」那一栏
         //   理由：它们已经不再被注入了，跟「收起来的」是一个性质，
         //         摆在主列表里只是占地方（还会挂个牌子把正文挤窄）
         //
-        //   ⚠⚠ 但**不许挪进 `s.deleted`** —— 那是「她亲手删的」那一栏，
+        //   ⚠注意：但**不许挪进 `s.deleted`** —— 那是「她亲手删的」那一栏，
         //     「批量清掉」「把已删掉的清空」会**真销毁**它们 ✗
         //     被取代的是**自动标的**（几百条一起），
         //     不该被那两个按钮连坐销毁 —— 那正是丢 157 条那次的教训 ✗✗
         //   → 所以：**显示上**收进回收站，**数据上**还留在 memories 里，
-        //     只是带一个「已被取代」的旗子 ✓
+        //     只是带一个「已被取代」的旗子
         const 被取代的 = (s.memories || []).filter((m) => m.已被取代)
         const 活着的 = (s.memories || []).filter((m) => !m.已被取代)
 
         // ---- 记忆列表的检索（几百条的时候靠翻是翻不到的）----
-        // 正文、提炼前的原文、检索词、来源、id 都能搜 ✓
+        // 正文、提炼前的原文、检索词、来源、id 都能搜
         const 关键字 = 搜词.trim().toLowerCase()
         const 搜过 = 关键字
           ? 活着的.filter((m) => {
@@ -788,19 +788,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             })
           : 活着的
 
-        // ⭐ 2026-09-24（反馈）：**把「记了时间的」和「没记时间的」分开** ✓
+        // ⭐ 2026-09-24（反馈）：**把「记了时间的」和「没记时间的」分开**
         //   上一版它们混在一个列表里 —— 188 条有日期的排在上面，下面 662 条没日期的
         //   挤成「中间一坨」，看着就像排序坏了。原话：
         //   「还有中间没有记日期的，全卡在中间一坨了……不然的话记和没记的就全混在一起了，
         //     这个排序就没办法用了」
-        //   她要**自己切** → 三种视图轮着切 ✓
+        //   她要**自己切** → 三种视图轮着切
         const 有时间 = (m) => !!m.at
-        // ⭐⭐ 2026-09-22（她要的）：**「永远不淡」单独收成一栏** ✓
+        // ⭐⭐ 2026-09-22（她要的）：**「永远不淡」单独收成一栏**
         //   原话：「改了就会归纳到那个永远不会淡的那一行里去了，就是那一行，
         //              我们是**单独做一个收理的文件夹一样**的，不然的话那些就不需要露在外面」
         //   ⭐ 又说：「**外面都是会淡的，里面才是不会淡的**，就不用管里面了」
-        //   ⚠⚠ 2026-09-22 再改（发现两条流水账被误标）：
-        //     **「不会淡」的只有一类：长期事实** ✓
+        //   ⚠注意：2026-09-22 再改（发现两条流水账被误标）：
+        //     **「不会淡」的只有一类：长期事实**
         //     上一版我拿「鲜活度是不是钉住的」当判据 —— 那是**算分的副作用**，不是语义 ✗
         //     结果把 394 条**没抠到日期的流水账**错收进「不会淡的」里 ✗✗
         //     （一眼就看出不对）
@@ -822,8 +822,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         //   **根本没看日期**。所以补完日期顺序一点没变 —— 她一眼就看出来了 ✗
         // 这一版：有日期的按日期排，**没日期的排最后**（没日期 = 不知道啥时候的事，
         //   搁在中间会把有日期的顶散）✓
-        // ⚠ 「没时间」那个视图里全是没日期的 → 保留类里原来的相对次序（谁先记谁在前），
-        //   这样「旧的在前 / 新的在前」切一下还能看出入库先后来 ✓
+        // 注意：「没时间」那个视图里全是没日期的 → 保留类里原来的相对次序（谁先记谁在前），
+        //   这样「旧的在前 / 新的在前」切一下还能看出入库先后来
         const 排序 = (m) => {
           const t = m.at ? new Date(m.at).getTime() : NaN
           return isFinite(t) ? t : null
@@ -836,14 +836,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           if (tb === null) return -1
           return 顺序 === '旧' ? ta - tb : tb - ta
         })
-        // 「没时间」那个视图里没有日期可比 —— 想按入库先后翻的时候还得能用 ✓
+        // 「没时间」那个视图里没有日期可比 —— 想按入库先后翻的时候还得能用
         const 画这个 = 看哪边 === '没时间' && 顺序 === '新' ? 排好.slice().reverse() : 排好
         const 有时间数 = 活着的.filter(有时间).length
         const 没时间数 = 活着的.length - 有时间数
         // ⭐ 2026-09-22：**不会淡的**单独收一栏（「全部」视图里才拆）
         //   ⭐ 判据 = 鲜活度钉住的那批（长期事实 + 没时间的）——
         //     原话：「外面都是会淡的，里面才是不会淡的」
-        //   ⚠ 2026-09-24：口径换成**活着的** —— 被取代的已经收进回收站了，
+        //   注意：2026-09-24：口径换成**活着的** —— 被取代的已经收进回收站了，
         //     不该还算在「会淡的/不会淡的」这些数里 ✗
         const 事实总数 = 活着的.filter(不会淡).length
         const 会淡总数 = 活着的.length - 事实总数
@@ -873,10 +873,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         // ⭐⭐ 2026-09-22（反馈）：**补标「永远不淡」** ——
         //   提炼原来只改重要度、不碰分类（0.7.6 才修好），
         //   所以实测库里 135 条该「永远不淡」的被标成了会淡的（重要的日子就在里面）。
-        //   修好提炼只影响以后的，已经记下的那些得**单独补一遍** ✓
+        //   修好提炼只影响以后的，已经记下的那些得**单独补一遍**
         //   一条条问模型太慢 → 一批一批来，界面循环调（照「补日期」的样子）
         //   ⭐⭐ 2026-09-22 晚（反馈：「有好多那种就不该是长期事实的」）：
-        //     现在判**所有没判过的**（不只「会淡的」）—— 该升的升、**该降的降** ✓
+        //     现在判**所有没判过的**（不只「会淡的」）—— 该升的升、**该降的降**
         const 没判过的 = (s.memories || []).filter((m) => !m.stableChecked).length
         // ⭐ 2026-09-22（她要的批量删除）：勾了几条
         const 已选几条 = Object.keys(选中).filter((k) => 选中[k]).length
@@ -899,15 +899,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           补标进度.总 = (s.memories || []).length
           补标进度.等 = 0
           const 跑 = () => {
-            // ⚠ 重判：只在**第一趟**带这个参数（服务端会把所有「判过」标记清掉再从头判）
+            // 注意：重判：只在**第一趟**带这个参数（服务端会把所有「判过」标记清掉再从头判）
             const 体 = { session: s.id, 每批: 20 }
             if (重判 && 头一趟) 体.重判 = true
             头一趟 = false
             post('/backfill-stable', 体)
               .then((r) => {
                 if (!r || !r.ok) {
-                  // ⚠⚠ 2026-09-22（反馈：跑到一半「模型报错：429 status code (no body)」）：
-                  //   限流是**暂时的**，不该直接放弃 —— 等一等再试同一批 ✓
+                  // ⚠注意：2026-09-22（反馈：跑到一半「模型报错：429 status code (no body)」）：
+                  //   限流是**暂时的**，不该直接放弃 —— 等一等再试同一批
                   //   指数退避：5s → 10s → 20s → 40s → 60s，最多 6 次
                   const 是限流 = /429|rate.?limit|too many|限流|超限/i.test(String((r && r.message) || ''))
                   if (是限流 && 连着失败 < 6) {
@@ -915,8 +915,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     const 等 = Math.min(60000, 5000 * Math.pow(2, 连着失败 - 1))
                     补标进度.等 = Math.round(等 / 1000)
                     setNotes([
-                      '⚠ 模型那边限流了（429），等 ' + Math.round(等 / 1000) + ' 秒再试…（第 ' + 连着失败 + ' 次）',
-                      '已经判好的都存下来了，不用重头来 ✓',
+                      '注意：模型那边限流了（429），等 ' + Math.round(等 / 1000) + ' 秒再试…（第 ' + 连着失败 + ' 次）',
+                      '已经判好的都存下来了，不用重头来',
                     ])
                     setTimeout(跑, 等)
                     return
@@ -925,7 +925,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   setBusy(false)
                   setNotes([
                     '补标失败：' + ((r && r.message) || '？'),
-                    '已经判好的都存下来了 —— 再点一次会接着跑，不会重头来 ✓',
+                    '已经判好的都存下来了 —— 再点一次会接着跑，不会重头来',
                   ])
                   return
                 }
@@ -936,11 +936,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 累计降 += r.降成会淡 || 0
                 补标进度.已 = 累计判
                 if (r.共) 补标进度.总 = r.共
-                // ⚠⚠ 2026-09-22 修（反馈「他就卡着判着呢」）：
+                // ⚠注意：2026-09-22 修（反馈「他就卡着判着呢」）：
                 //   原来这里判「完了没」用的是 `判了 > 0` ——
                 //   **一批回 0 条（模型没回东西）就被当成「判完了」直接停** ✗
                 //   日志实锤：07:09:21「判了 0 条，还剩 665」之后就没动静了
-                //   → 改成看**服务端的 done**；一批回 0 就**接着试下一批** ✓
+                //   → 改成看**服务端的 done**；一批回 0 就**接着试下一批**
                 //     连着 3 批都空才停（说明模型那边真出问题了），并说清楚
                 连着空 = (r.判了 || 0) === 0 ? 连着空 + 1 : 0
                 setNotes([
@@ -948,14 +948,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     累计降 + ' 条改成会淡' + (r.done ? '' : '，还剩 ' + r.剩 + ' 条') +
                     (r.判了 === 0 && !r.done ? '　（这批模型没回东西，再试一批）' : ''),
                 ])
-                // ⚠ 每批之间**慢一点** —— 300ms 太急，容易撞限流（反馈就是 429 挂的）
+                // 注意：每批之间**慢一点** —— 300ms 太急，容易撞限流（反馈就是 429 挂的）
                 if (!r.done) {
                   if (连着空 >= 3) {
                     补标进度.在跑 = false
                     setBusy(false)
                     setNotes([
-                      '⚠ 连着 3 批模型都没回东西，先停了（还剩 ' + r.剩 + ' 条）。',
-                      '已经判好的都存下来了 —— 再点一次会接着跑，不会重头来 ✓',
+                      '注意：连着 3 批模型都没回东西，先停了（还剩 ' + r.剩 + ' 条）。',
+                      '已经判好的都存下来了 —— 再点一次会接着跑，不会重头来',
                     ])
                     return
                   }
@@ -964,7 +964,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   补标进度.在跑 = false
                   setBusy(false)
                   setNotes([
-                    '✓ 判完了：看了 ' + 累计判 + ' 条 —— ' + 累计升 + ' 条标成「永远不淡」，' +
+                    '判完了：看了 ' + 累计判 + ' 条 —— ' + 累计升 + ' 条标成「永远不淡」，' +
                       累计降 + ' 条从「永远不淡」改成会淡',
                     '（这一趟把所有还没判过的都过了一遍：该升的升、该降的降）',
                   ])
@@ -974,7 +974,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               .catch((e) => {
                 补标进度.在跑 = false
                 setBusy(false)
-                setNotes(['补标失败：' + ((e && e.message) || e), '已经判好的都存下来了 —— 再点一次会接着跑 ✓'])
+                setNotes(['补标失败：' + ((e && e.message) || e), '已经判好的都存下来了 —— 再点一次会接着跑'])
               })
           }
           跑()
@@ -986,15 +986,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         //   老库里那些条目是导入时进来的，**本来就没有键** ——
         //   不补的话「同一个 key 只留最新一条」对老数据一点用都没有 ✗
         //
-        //   ⚠⚠ **只在设置页点按钮跑，不在对话里跑**（她的死规矩）：
+        //   ⚠注意：**只在设置页点按钮跑，不在对话里跑**（她的死规矩）：
         //     几百条要调几百次模型，挂在对话那一轮上会把那轮卡死。
-        //   ⚠ 先「干跑」看一眼，确认了再真洗 —— 这一步要改几百条，别一上来就动库 ✓
-        // ⚠ 算「还剩几条要洗」要跟服务端的 `要洗` **同一个口径** ——
+        //   注意：先「干跑」看一眼，确认了再真洗 —— 这一步要改几百条，别一上来就动库
+        // 注意：算「还剩几条要洗」要跟服务端的 `要洗` **同一个口径** ——
         //   洗过的（含判了留空的）不算，不然按钮上的数字永远不消 ✗
         const 没键的 = (s.memories || []).filter((m) => !m.已被取代 && !m.refinedSkip && !m.事实键 && !m.洗键过).length
         // 判了「留空」的那些（洗过、但没键）—— 单独报个数，免得她以为漏了
         const 判留空的 = (s.memories || []).filter((m) => !m.事实键 && m.洗键过).length
-        // ⚠⚠ 撤回按钮上的数字要跟**它真能撤的**对得上 ✗
+        // ⚠注意：撤回按钮上的数字要跟**它真能撤的**对得上 ✗
         //   原来用的是「所有带键的」—— 把她自己手工填的也算进去了，
         //   于是按钮写「撤掉这次标的（5）」、真撤只撤掉 2 条，数对不上（她会以为坏了）
         const 可撤的 = (s.memories || []).filter((m) => m.键来源 === '清洗补键' || m.洗键过).length
@@ -1012,7 +1012,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           洗键进度.已 = 0
           洗键进度.总 = 没键的
           const 跑 = () => {
-            // ⚠ 干跑：只跑**一批**就停 —— 让她看几个例子再决定，
+            // 注意：干跑：只跑**一批**就停 —— 让她看几个例子再决定，
             //   不许拿几百次模型调用去"试" ✗
             const 体 = { session: s.id, 每批: 8, 干跑: !!干跑 }
             post('/wash-keys', 体)
@@ -1023,8 +1023,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     连着失败++
                     const 等 = Math.min(60000, 5000 * Math.pow(2, 连着失败 - 1))
                     setNotes([
-                      '⚠ 模型那边限流了（429），等 ' + Math.round(等 / 1000) + ' 秒再试…（第 ' + 连着失败 + ' 次）',
-                      '已经补好的都存下来了，不用重头来 ✓',
+                      '注意：模型那边限流了（429），等 ' + Math.round(等 / 1000) + ' 秒再试…（第 ' + 连着失败 + ' 次）',
+                      '已经补好的都存下来了，不用重头来',
                     ])
                     setTimeout(跑, 等)
                     return
@@ -1033,7 +1033,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   setBusy(false)
                   setNotes([
                     '清洗失败：' + ((r && r.message) || '？'),
-                    '已经补好的都存下来了 —— 再点一次会接着跑，不会重头来 ✓',
+                    '已经补好的都存下来了 —— 再点一次会接着跑，不会重头来',
                   ])
                   return
                 }
@@ -1044,12 +1044,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 累计废 += r.作废了 || 0
                 洗键进度.已 = 累计洗
                 if (r.总数) 洗键进度.总 = 没键的
-                // ⚠⚠ 「模型整批没回出东西」才算失败，**不许拿「给了键 === 0」当信号** ✗
+                // ⚠注意：「模型整批没回出东西」才算失败，**不许拿「给了键 === 0」当信号** ✗
                 //   模型正常地把一批全判成留空时，给了键也是 0 ——
                 //   原来按那个数，连着 3 批就误报「模型没回出键」停下来（实测踩到过）
                 连着空 = (r.没回出东西 || 0) >= (r.洗了 || 0) ? 连着空 + 1 : 0
                 if (干跑) {
-                  // 干跑：把几个例子摆出来，让她看一眼标得对不对 ✓
+                  // 干跑：把几个例子摆出来，让她看一眼标得对不对
                   洗键进度.在跑 = false
                   setBusy(false)
                   const 例 = (r.示例 || []).map((x) => '　「' + x.键 + '」　←　' + x.正文)
@@ -1059,7 +1059,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       '它标出来是这样的（左边是「这条讲的是哪件事」，右边是记忆本身）：',
                     ]
                       .concat(例.length ? 例 : ['　（这批它都说不用标）'])
-                      .concat(['', '看着行就点「全部开始」；不行就先别动 —— 这一步不做也不影响别的 ✓']),
+                      .concat(['', '看着行就点「全部开始」；不行就先别动 —— 这一步不做也不影响别的']),
                   )
                   return
                 }
@@ -1073,8 +1073,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     洗键进度.在跑 = false
                     setBusy(false)
                     setNotes([
-                      '⚠ 连着 3 批模型一个字都没回，先停了（还剩 ' + r.剩 + ' 条）。',
-                      '已经标好的都存下来了 —— 再点一次会接着跑 ✓',
+                      '注意：连着 3 批模型一个字都没回，先停了（还剩 ' + r.剩 + ' 条）。',
+                      '已经标好的都存下来了 —— 再点一次会接着跑',
                       '（要是它只是说「这批都不用标」，那不算出错、会自己往下走）',
                     ])
                     return
@@ -1084,9 +1084,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   洗键进度.在跑 = false
                   setBusy(false)
                   setNotes([
-                    '✓ 跑完了：过了 ' + 累计洗 + ' 条 —— 标了 ' + 累计给 + ' 条、说不用标 ' + 累计空 + ' 条' +
+                    '跑完了：过了 ' + 累计洗 + ' 条 —— 标了 ' + 累计给 + ' 条、说不用标 ' + 累计空 + ' 条' +
                       (累计废 ? '，其中 ' + 累计废 + ' 条因为「讲的是同一件事」被收起来了（还留着、能恢复）' : ''),
-                    '说不用标的那批一个字都没动 ✓（要退回来就点「撤掉这次标的」）',
+                    '说不用标的那批一个字都没动（要退回来就点「撤掉这次标的」）',
                   ])
                   load()
                 }
@@ -1094,7 +1094,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               .catch((e) => {
                 洗键进度.在跑 = false
                 setBusy(false)
-                setNotes(['跑失败了：' + ((e && e.message) || e), '已经标好的都存下来了 —— 再点一次会接着跑 ✓'])
+                setNotes(['跑失败了：' + ((e && e.message) || e), '已经标好的都存下来了 —— 再点一次会接着跑'])
               })
           }
           跑()
@@ -1112,7 +1112,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 return
               }
               setNotes([
-                '✓ 撤完了：撤掉 ' + (r.摘了 || 0) + ' 条自动标的、放回来 ' + (r.恢复 || 0) + ' 条被收起来的',
+                '撤完了：撤掉 ' + (r.摘了 || 0) + ' 条自动标的、放回来 ' + (r.恢复 || 0) + ' 条被收起来的',
                 '（你自己填的那些没动 —— 这个按钮只管自动标的）',
               ])
               load()
@@ -1124,13 +1124,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
 
         // ⭐ 2026-09-22（反馈「回收站还没有批量删除，就批量清空」）：
-        //   「已删掉的」那一栏补一个**批量清掉** ✓
-        //   ⚠ 这个是**真销毁**（不是收起来）→ 界面必须问两遍 ✓
+        //   「已删掉的」那一栏补一个**批量清掉**
+        //   注意：这个是**真销毁**（不是收起来）→ 界面必须问两遍
         // ⭐⭐ 2026-09-23（反馈：「那这里没有批量找回呀」）：
         //   「已删掉的」原来只有**批量清掉**，想全捞回来只能一条条点「找回来」✗
         //   → 补一个**批量找回**（勾了哪几条就捞哪几条）
-        //   ⚠ `只合并` = 只捞「合并掉的」那批 —— 等于**一键撤销整次合并** ✓
-        //   ⚠ 这个**不是销毁**，是往回捞，所以不用问两遍；但界面上还是先说一句捞几条
+        //   注意：`只合并` = 只捞「合并掉的」那批 —— 等于**一键撤销整次合并**
+        //   注意：这个**不是销毁**，是往回捞，所以不用问两遍；但界面上还是先说一句捞几条
         const 批回 = (会话, 只合并) => {
           const ids = 只合并 ? [] : Object.keys(选中清).filter((k) => 选中清[k])
           if (!只合并 && !ids.length) {
@@ -1147,7 +1147,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 return
               }
               set选中清({})
-              setNotes(['✓ ' + r.message + '（「已删」里还剩 ' + r.剩 + ' 条）'])
+              setNotes(['' + r.message + '（「已删」里还剩 ' + r.剩 + ' 条）'])
               load()
             })
             .catch((e) => {
@@ -1171,7 +1171,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 return
               }
               set选中清({})
-              setNotes(['✓ ' + r.message + '（「已删」里还剩 ' + r.剩 + ' 条）'])
+              setNotes(['' + r.message + '（「已删」里还剩 ' + r.剩 + ' 条）'])
               load()
             })
             .catch((e) => {
@@ -1183,13 +1183,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没做啊？我怎么没有找到按钮」）：
         //   去重一直有，但都是**自动**的 —— 召回时（注入前只留一条）、导入时。
         //   **库里已经存着的重复没人管** ✗
-        //   ⚠ 不能一键全合：「汇总+明细」那种一长一短，合了会丢信息
-        //     → 真重复给「一键合」，汇总+明细只列出来让她自己挑 ✓
+        //   注意：不能一键全合：「汇总+明细」那种一长一短，合了会丢信息
+        //     → 真重复给「一键合」，汇总+明细只列出来让她自己挑
         const 去查重 = (会话) => {
           setBusy(true)
-          // ⚠⚠ 面板在**记忆列表那一块里**（跟「补标不淡」的确认框一样），
+          // ⚠注意：面板在**记忆列表那一块里**（跟「补标不淡」的确认框一样），
           //   列表默认是折叠的 —— 不展开就看不见面板 ✗
-          //   → 点查重时**顺手把列表展开** ✓（按钮本身在标题行，永远看得见）
+          //   → 点查重时**顺手把列表展开**（按钮本身在标题行，永远看得见）
           set看记忆(true)
           post('/duplicates', { session: 会话.id })
             .then((r) => {
@@ -1210,7 +1210,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               set查重选(选)
               set查重合(勾)
               set查重开(true)
-              if (!(r.组 || []).length) setNotes(['✓ 查过了：没有「几乎一样」的记忆'])
+              if (!(r.组 || []).length) setNotes(['查过了：没有「几乎一样」的记忆'])
             })
             .catch((e) => {
               setBusy(false)
@@ -1218,9 +1218,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             })
         }
         // 合掉：每组留一条，其余交给**服务端再验一遍**（不像的会被保住）✓
-        //   ⚠⚠ 2026-09-22 修（反馈：「把一些别的对的事实给删了」）：
+        //   ⚠注意：2026-09-22 修（反馈：「把一些别的对的事实给删了」）：
         //     原来客户端自己算好「删哪些」就发过去，服务端不验 ✗
-        //     现在发的是「组」（留哪条、删哪些），**服务端自己再算一遍相似度** ✓
+        //     现在发的是「组」（留哪条、删哪些），**服务端自己再算一遍相似度**
         const 合重复 = (会话, 只合真重复) => {
           if (!查重) return
           const 组们 = []
@@ -1247,9 +1247,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 setNotes(['合并：' + ((r && r.message) || '？')])
                 return
               }
-              const 行 = ['✓ ' + r.message + '（剩下的：' + r.剩 + ' 条）', '合掉的都收在「已删」里，点开能找回来']
+              const 行 = ['' + r.message + '（剩下的：' + r.剩 + ' 条）', '合掉的都收在「已删」里，点开能找回来']
               if (r.保住) {
-                行.push('⚠ 有 ' + r.保住 + ' 条不够像、没敢合（保住了）：')
+                行.push('注意：有 ' + r.保住 + ' 条不够像、没敢合（保住了）：')
                 ;(r.保住明细 || []).forEach((x) => 行.push('　　' + x.像度 + '  ' + x.text))
               }
               setNotes(行)
@@ -1263,8 +1263,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             })
         }
 
-        // ⭐⭐ 2026-09-22（她要的）：**批量删** —— 收进「已删」，不是销毁 ✓
-        //   「还是需要 2 次确认的」→ 点按钮只出确认条，确认条上再点才删 ✓
+        // ⭐⭐ 2026-09-22（她要的）：**批量删** —— 收进「已删」，不是销毁
+        //   「还是需要 2 次确认的」→ 点按钮只出确认条，确认条上再点才删
         const 批删 = (会话) => {
           const ids = Object.keys(选中).filter((k) => 选中[k])
           if (!ids.length) {
@@ -1281,7 +1281,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 return
               }
               set选中({})
-              setNotes(['✓ ' + r.message + '（剩下的：' + r.剩 + ' 条）', '删掉的都收在「已删」里，点开能找回来'])
+              setNotes(['' + r.message + '（剩下的：' + r.剩 + ' 条）', '删掉的都收在「已删」里，点开能找回来'])
               load()
             })
             .catch((e) => {
@@ -1295,7 +1295,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         //
         //   ① 看这个工作区有哪些会话、勾几个
         //   ② 算要切几批、多少字（**不花钱**）
-        //   ③ 一批一批跑（⚠ 这一步调模型、花钱）—— 跑完一批就把条目攒起来，
+        //   ③ 一批一批跑（注意：这一步调模型、花钱）—— 跑完一批就把条目攒起来，
         //      下一批带上「已经记过的」，同一件事不会被收两遍
         //   ④ 存成档案文件 → 再走已有的「从旧档案导入」变成记忆条目
         // ═══════════════════════════════════════════════════════════════
@@ -1314,12 +1314,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               }
               set生成会话(r.会话 || [])
               set生成诊断(r.诊断 || null)
-              // 建议路径（服务端按这个会话的工作目录算的）—— 用户能改 ✓
+              // 建议路径（服务端按这个会话的工作目录算的）—— 用户能改
               if (r.建议存到) set生成存到(String(r.建议存到))
-              // ⚠⚠ 2026-09-22（反馈：「默认不该全选」）：
+              // ⚠注意：2026-09-22（反馈：「默认不该全选」）：
               //   原来我默认**全勾上** —— 那等于替用户决定「全都处理一遍」，
               //   而这一步后面是要**调模型、花钱**的 ✗
-              //   → 默认**一个都不勾**，让用户自己挑 ✓
+              //   → 默认**一个都不勾**，让用户自己挑
               set生成选({})
             })
             .catch((e) => setNotes(['读会话列表失败：' + ((e && e.message) || e)]))
@@ -1365,7 +1365,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             if (批号 > 总批) {
               setBusy(false)
               set生成进度(null)
-              setNotes(['✓ 跑完了：' + 总批 + ' 批，攒了 ' + 攒.length + ' 条。' + (攒.length ? '点「存成档案文件」' : '模型这一轮一条都没收；回文长度记在诊断日志里，换个会话或再点一次试试')])
+              setNotes(['跑完了：' + 总批 + ' 批，攒了 ' + 攒.length + ' 条。' + (攒.length ? '点「存成档案文件」' : '模型这一轮一条都没收；回文长度记在诊断日志里，换个会话或再点一次试试')])
               return
             }
             set生成进度({ 批号, 批数: 总批, 在跑: true, 模型: (生成进度 && 生成进度.模型) || '' })
@@ -1373,7 +1373,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               session: s.id,
               sids: sids,
               批号: 批号,
-              // ⚠ 把前面攒的条目当「已记清单」传过去 —— 这是防重复的机制
+              // 注意：把前面攒的条目当「已记清单」传过去 —— 这是防重复的机制
               已记: 攒.map((x) => x.章 + '|' + x.日期 + '|' + x.话),
               provider: 生成备 ? 生成备.provider : undefined,
               model: 生成备 ? 生成备.model : undefined,
@@ -1396,7 +1396,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 if (r.done) {
                   setBusy(false)
                   set生成进度(null)
-                  setNotes(['✓ 跑完了：' + 总批 + ' 批，攒了 ' + 攒.length + ' 条。' + (攒.length ? '点「存成档案文件」' : '模型这一轮一条都没收；回文长度记在诊断日志里，换个会话或再点一次试试')])
+                  setNotes(['跑完了：' + 总批 + ' 批，攒了 ' + 攒.length + ' 条。' + (攒.length ? '点「存成档案文件」' : '模型这一轮一条都没收；回文长度记在诊断日志里，换个会话或再点一次试试')])
                   return
                 }
                 // 一批回 0 条不算失败，但也别无限跑 —— 连着 3 批空就停
@@ -1431,7 +1431,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 return
               }
               set生成档(r)
-              setNotes(['✓ 档案存到：' + r.存到, '共 ' + r.条数 + ' 条' + (r.去掉重复 ? '（去掉了 ' + r.去掉重复 + ' 条重复）' : '')])
+              setNotes(['档案存到：' + r.存到, '共 ' + r.条数 + ' 条' + (r.去掉重复 ? '（去掉了 ' + r.去掉重复 + ' 条重复）' : '')])
             })
             .catch((e) => {
               setBusy(false)
@@ -1440,9 +1440,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
 
         // ---- 用 DSH 自己的模型给记忆扩词 ----
-        // 「直接用我们 deepseek 的可不可以」→ 可以 ✓ 插件能调宿主模型，不用外部 key
+        // 「直接用我们 deepseek 的可不可以」→ 可以 插件能调宿主模型，不用外部 key
         const 没扩的 = (s.memories || []).filter((m) => !m.related || !m.related.length).length
-        // 要提炼的：档案导入进来的、还没提炼过的 ✓
+        // 要提炼的：档案导入进来的、还没提炼过的
         const 没提炼的 = (s.memories || []).filter((m) => String(m.source || '').indexOf('档案导入') === 0 && !m.refined).length
         const 扩词区 = () => {
           const 小件 = []
@@ -1486,7 +1486,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               mdl
                 ? React.createElement(
                     'select',
-                    {
+                    {'aria-label': '用哪个模型',
                       style: Object.assign({}, S.inp, { width: 300 }),
                       value: 当前 ? 当前.provider + '|' + 当前.model : '',
                       onChange: (e) => {
@@ -1495,7 +1495,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         const 选 = i > 0 ? { provider: v.slice(0, i), model: v.slice(i + 1) } : null
                         post('/names', { llmModel: 选 }).then(() => {
                           setMdl(Object.assign({}, mdl, { 选中的: 选 }))
-                          setExpNote(选 ? '以后就用 ' + 选.provider + ' / ' + 选.model + ' ✓' : '改回用会话自己的模型 ✓')
+                          setExpNote(选 ? '以后就用 ' + 选.provider + ' / ' + 选.model + '' : '改回用会话自己的模型')
                         })
                       },
                     },
@@ -1513,7 +1513,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 : React.createElement('span', { style: S.dim }, '点右边「读一下有哪些模型」'),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () => {
                     setExpNote('读着呢…')
@@ -1524,10 +1524,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           r && r.ok
                             ? 'DSH 里有 ' + (r.providers || []).length + ' 个 provider，共 ' +
                               (r.providers || []).reduce((a, p) => a + (p.models || []).length, 0) + ' 个模型。现在用：' + 当前串
-                            : '✗ ' + ((r && r.message) || '？'),
+                            : '失败：' + ((r && r.message) || '？'),
                         )
                       })
-                      .catch((e) => setExpNote('✗ ' + String((e && e.message) || e)))
+                      .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
                   },
                 },
                 '读一下有哪些模型',
@@ -1535,7 +1535,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             ),
           )
 
-          // ⚠⚠⚠ 2026-09-22（她的反馈，原话）：
+          // ⚠⚠注意：2026-09-22（她的反馈，原话）：
           //   「他那个就是重判的进度条跟那个提炼的是在一起呀。我发现我得往下翻
           //     才能看到进度条，那就不对呀。重判应该有个单独的进度条吧？如果你
           //     点了的话，它就会弹出来；如果没点，它就没有。」
@@ -1558,8 +1558,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 ),
                 React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4 }) },
-                  (exp.模式 || '扩词') + '：' + 已 + ' / ' + exp.总 + ' 条（' + 百 + '%）' + (exp.剩 ? '　还剩 ' + exp.剩 + ' 条' : '　✓ 完事了'),
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
+                  (exp.模式 || '扩词') + '：' + 已 + ' / ' + exp.总 + ' 条（' + 百 + '%）' + (exp.剩 ? '　还剩 ' + exp.剩 + ' 条' : '　完事了'),
                 ),
               ),
             )
@@ -1579,8 +1579,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 ),
                 React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4 }) },
-                  '提炼：' + 已 + ' / ' + rf.总 + ' 条（' + 百 + '%）' + (rf.剩 ? '　还剩 ' + rf.剩 + ' 条' : '　✓ 完事了'),
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
+                  '提炼：' + 已 + ' / ' + rf.总 + ' 条（' + 百 + '%）' + (rf.剩 ? '　还剩 ' + rf.剩 + ' 条' : '　完事了'),
                 ),
               ),
             )
@@ -1589,10 +1589,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           小件.push(
             React.createElement(
               'div',
-              { key: 'b', style: { display: 'flex', gap: 8, alignItems: 'center', margin: '8px 0', flexWrap: 'wrap' } },
+              { key: 'b', style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', flexWrap: 'wrap' } },
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   disabled: !!(exp && exp.running),
                   onClick: () => {
@@ -1601,36 +1601,36 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       .then((r) => {
                         setExpNote(
                           r && r.ok
-                            ? '✓ 模型通了（' + r.provider + ' / ' + r.model + '，' + r.ms + 'ms）→ 它回了「' + String(r.text || '').slice(0, 20) + '」'
-                            : '✗ 不通：' + ((r && r.message) || '？'),
+                            ? '模型通了（' + r.provider + ' / ' + r.model + '，' + r.ms + 'ms）→ 它回了「' + String(r.text || '').slice(0, 20) + '」'
+                            : '失败：不通：' + ((r && r.message) || '？'),
                         )
                       })
-                      .catch((e) => setExpNote('✗ ' + String((e && e.message) || e)))
+                      .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
                   },
                 },
                 '先测一下模型',
               ),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btnDanger,
                   disabled: !!(exp && exp.running) || 没扩的 === 0,
                   onClick: () => {
                     let 累计 = 0
                     let 空批 = 0 // 连着几批一条词都没扩出来
-                    let 每批 = 6 // 空批就把批量减半 —— 输入越少、思考越少，越不容易被截断 ✓
+                    let 每批 = 6 // 空批就把批量减半 —— 输入越少、思考越少，越不容易被截断
                     const 跑 = () => {
                       post('/expand', { session: open, 每批: 每批 })
                         .then((r) => {
                           if (!r || !r.ok) {
                             setExp({ running: false, 累计: 累计, 总: s.memories.length, 剩: r ? r.剩 : 0 })
-                            setExpNote('✗ ' + ((r && r.message) || '？'))
+                            setExpNote('失败：' + ((r && r.message) || '？'))
                             load()
                             return
                           }
                           累计 += r.改了
                           setExp({ running: !r.done, 累计: 累计, 总: r.总数, 剩: r.剩, 模型: r.provider + '/' + r.model })
-                          // ⚠ 一批没扩出词就收手的话，模型偶发抽风会让它看起来「自己取消」✗
+                          // 注意：一批没扩出词就收手的话，模型偶发抽风会让它看起来「自己取消」✗
                           //   空批就把**批量减半**（输入少 → 思考少 → 不容易被截断），
                           //   连着空三批才停，并说清楚原因
                           if (r.改了 > 0) {
@@ -1656,7 +1656,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         })
                         .catch((e) => {
                           setExp({ running: false, 累计: 累计, 总: s.memories.length, 剩: 没扩的 })
-                          setExpNote('✗ ' + String((e && e.message) || e))
+                          setExpNote('失败：' + String((e && e.message) || e))
                         })
                     }
                     setExp({ running: true, 累计: 0, 总: s.memories.length, 剩: 没扩的 })
@@ -1674,10 +1674,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           小件.push(
             React.createElement(
               'div',
-              { key: 'rf', style: { display: 'flex', gap: 8, alignItems: 'center', margin: '4px 0 8px', flexWrap: 'wrap' } },
+              { key: 'rf', style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px', flexWrap: 'wrap' } },
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btnDanger,
                   disabled: !!(rf && rf.running) || 没提炼的 === 0,
                   onClick: () => {
@@ -1692,7 +1692,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         .then((r) => {
                           if (!r || !r.ok) {
                             setRf({ running: false, 累计: 累计, 总: s.memories.length, 剩: r ? r.剩 : 0, 模式: '提炼' })
-                            setRfNote('✗ ' + ((r && r.message) || '？'))
+                            setRfNote('失败：' + ((r && r.message) || '？'))
                             load()
                             return
                           }
@@ -1710,9 +1710,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           if (!r.done) setTimeout(跑, 400)
                           else {
                             setRf({ running: false, 累计: 累计, 总: 累计, 剩: 0, 模式: '提炼' })
-                            // 检索词是提炼顺手出的，所以跑完这趟通常不用再单独跑扩词 ✓
+                            // 检索词是提炼顺手出的，所以跑完这趟通常不用再单独跑扩词
                             setRfNote(
-                              '✓ 提炼完了：改写 ' + 累计 + ' 条，跳过 ' + 跳 + ' 条' +
+                              '提炼完了：改写 ' + 累计 + ' 条，跳过 ' + 跳 + ' 条' +
                                 (词 ? '；其中 ' + 词 + ' 条顺手出了检索词，不用再跑扩词了' : '（这批没出检索词，可以再点「② 扩词」补）') +
                                 (日 ? '；' + 日 + ' 条顺手出了日期' : '') +
                                 (重 ? '；' + 重 + ' 条顺手判了重要度' : '') +
@@ -1723,7 +1723,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         })
                         .catch((e) => {
                           setRf({ running: false, 累计: 累计, 总: s.memories.length, 剩: 没提炼的, 模式: '提炼' })
-                          setRfNote('✗ ' + String((e && e.message) || e))
+                          setRfNote('失败：' + String((e && e.message) || e))
                         })
                     }
                     setRf({ running: true, 累计: 0, 总: 没提炼的, 剩: 没提炼的, 模式: '提炼' })
@@ -1736,7 +1736,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               React.createElement('span', { style: S.dim }, '① 提炼：还没提炼的 ' + 没提炼的 + ' 条'),
             ),
           )
-          // 提炼改坏了能退回 —— 单条的在下面每条记忆上，这里是整批 ✓
+          // 提炼改坏了能退回 —— 单条的在下面每条记忆上，这里是整批
           {
             const 提炼过的 = (s.memories || []).filter((m) => m.textBefore).length
             if (提炼过的 > 0) {
@@ -1749,12 +1749,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         'div',
                         { style: S.confirm },
                         React.createElement('span', { style: { flex: 1 } }, '把提炼过的 ' + 提炼过的 + ' 条全退回原文？退回后它们会变回「还没提炼」。'),
-                        React.createElement('button', { style: S.btn, onClick: () => 退原文('*') }, '全退回'),
-                        React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                        React.createElement('button', {type: 'button',  style: S.btn, onClick: () => 退原文('*') }, '全退回'),
+                        React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                       )
                     : React.createElement(
                         'button',
-                        {
+                        {type: 'button',
                           style: S.btn,
                           disabled: !!(rf && rf.running),
                           title: '把提炼过的记忆全部退回提炼前的原文',
@@ -1767,24 +1767,24 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             }
           }
           // 被「跳过」的（没改写过的）能放回队列重跑 ——
-          // 模型偶尔整批回不出东西，那种不该永远躺着 ✓
+          // 模型偶尔整批回不出东西，那种不该永远躺着
           {
             const 跳过的 = (s.memories || []).filter((m) => m.refinedSkip && !m.textBefore).length
             if (跳过的 > 0) {
               小件.push(
                 React.createElement(
                   'div',
-                  { key: 'retry', style: { margin: '0 0 6px', fontSize: 12 } },
+                  { key: 'retry', style: { margin: '0 0 6px', fontSize: 'var(--fish-small)' } },
                   React.createElement(
                     'button',
-                    {
+                    {type: 'button',
                       style: S.btn,
                       disabled: !!(rf && rf.running),
                       title: '把「跳过」的那些放回队列，再提炼一遍（模型偶尔会整批回不出东西）',
                       onClick: () =>
                         post('/refine/retry', { session: open })
                           .then((r) => {
-                            setRfNote('✓ 放回了 ' + ((r && r.放回) || 0) + ' 条，可以再点「开始提炼」')
+                            setRfNote('放回了 ' + ((r && r.放回) || 0) + ' 条，可以再点「开始提炼」')
                             load()
                           })
                           .catch((e) => setRfNote('放不回：' + String((e && e.message) || e))),
@@ -1795,11 +1795,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               )
             }
           }
-          if (expNote) 小件.push(React.createElement('div', { key: 'n', style: Object.assign({}, S.ok, { fontSize: 12, margin: '4px 0' }) }, expNote))
-          if (rfNote) 小件.push(React.createElement('div', { key: 'n2', style: Object.assign({}, S.ok, { fontSize: 12, margin: '4px 0' }) }, rfNote))
+          if (expNote) 小件.push(React.createElement('div', { key: 'n', style: Object.assign({}, S.ok, { fontSize: 'var(--fish-small)', margin: '4px 0' }) }, expNote))
+          if (rfNote) 小件.push(React.createElement('div', { key: 'n2', style: Object.assign({}, S.ok, { fontSize: 'var(--fish-small)', margin: '4px 0' }) }, rfNote))
 
           // ---- 复制记忆到别的会话 ----
-          // 新开一个空对话把记忆复制过去 —— 那边一点历史都没有，测起来最干净 ✓
+          // 新开一个空对话把记忆复制过去 —— 那边一点历史都没有，测起来最干净
           {
             const 别的 = (d.sessions || []).filter((x) => x.id !== open)
             if (别的.length) {
@@ -1809,7 +1809,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   { key: 'copy', style: { marginTop: 14 } },
                   React.createElement(
                     'div',
-                    { style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => set复制开(!复制开) },
+                    {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => set复制开(!复制开) },
                     (复制开 ? '▾ ' : '▸ ') + '复制记忆到别的会话',
                   ),
                   复制开
@@ -1822,7 +1822,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           React.createElement('div', { style: { flex: 'none', width: 76 } }, '复制到'),
                           React.createElement(
                             'select',
-                            { style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 150 }), value: 复制到, onChange: (e) => set复制到(e.target.value) },
+                            {'aria-label': '复制到',  style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 150 }), value: 复制到, onChange: (e) => set复制到(e.target.value) },
                             React.createElement('option', { value: '' }, '（选一个会话）'),
                             别的.map((x) =>
                               React.createElement('option', { key: x.id, value: x.id }, (x.title || x.id.slice(0, 18)) + '（' + x.count + ' 条）'),
@@ -1830,7 +1830,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           ),
                           React.createElement(
                             'button',
-                            {
+                            {type: 'button',
                               style: S.btnDanger,
                               disabled: !复制到 || !!(exp && exp.running) || !!(rf && rf.running),
                               onClick: () => setConfirm({ id: '*', kind: 'copyto' }),
@@ -1843,14 +1843,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               'div',
                               { style: S.confirm },
                               React.createElement('span', { style: { flex: 1 } }, '把这一份 ' + (s.memories || []).length + ' 条加进那个会话？那边**原来的都留着**，只补它还没有的（同一句会跳过）。'),
-                              React.createElement('button', { style: S.btnDanger, onClick: 复制过去 }, '确认复制'),
-                              React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                              React.createElement('button', {type: 'button',  style: S.btnDanger, onClick: 复制过去 }, '确认复制'),
+                              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                             )
                           : null,
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12 }) },
-                          '做法：新开一个空对话 → 回来这里把它选中 → 复制过去。那边一点历史都没有，她答得上来就一定是插件给的 ✓（复制过去会自动把那个会话的开关打开；只加不删，那边原本记的不会被换掉）',
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) },
+                          '做法：新开一个空对话 → 回来这里把它选中 → 复制过去。那边一点历史都没有，她答得上来就一定是插件给的（复制过去会自动把那个会话的开关打开；只加不删，那边原本记的不会被换掉）',
                         ),
                       )
                     : null,
@@ -1879,7 +1879,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               // 默认只勾「记忆卡 / 总档案」这种明显是记忆的 ——
               // 同一个文件夹里还有我自己的工程笔记，那个不能导 ✗
               //
-              // ⚠⚠ 2026-09-24 修（反馈：「别人导入会踩什么坑」时发现的）：
+              // ⚠注意：2026-09-24 修（反馈：「别人导入会踩什么坑」时发现的）：
               //   原来**只认「记忆卡 / 总档案」两个词** —— 别人的档案叫
               //   `my_memories.md`、`关于我.md`、`profile.txt` → **一个都不勾**，
               //   扫完看着一片空白，很容易以为没扫到 ✗
@@ -1960,7 +1960,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   padding: '6px 10px',
                   borderRadius: 6,
                   background: 'rgba(128,128,128,.08)',
-                  borderLeft: '2px solid rgba(128,128,128,.35)',
+                  borderLeft: '2px solid var(--fish-border)',
                 }),
               },
               React.createElement('div', { style: { fontWeight: 600 } }, '怎么归纳（一句话：一个文件一个主题，一行一件事）'),
@@ -1974,15 +1974,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           小件.push(
             React.createElement(
               'div',
-              { key: 'b', style: { display: 'flex', gap: 8, alignItems: 'center', margin: '8px 0' } },
-              React.createElement('button', { style: S.btn, disabled: impBusy, onClick: 扫描 }, impBusy ? '扫着呢…' : '扫描档案'),
+              { key: 'b', style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0' } },
+              React.createElement('button', {type: 'button',  style: S.btn, disabled: impBusy, onClick: 扫描 }, impBusy ? '扫着呢…' : '扫描档案'),
               imp ? React.createElement('span', { style: S.dim }, '目录：' + imp.data.dir) : null,
               imp && imp.data.selfName
                 ? React.createElement('span', { style: S.dim }, '（人称：「' + imp.data.selfName + '」→「我」）')
-                : React.createElement('span', { style: S.warn, fontSize: 12 }, '（这个会话还没设「她自己叫什么」，导进去的人称不会自动换 —— 建议先在上面填好）'),
+                : React.createElement('span', { style: S.warn, fontSize: 'var(--fish-small)' }, '（这个会话还没设「她自己叫什么」，导进去的人称不会自动换 —— 建议先在上面填好）'),
             ),
           )
-          // 只导哪些文件 —— 同一个文件夹里常常还堆着别的文档，得能挑 ✓
+          // 只导哪些文件 —— 同一个文件夹里常常还堆着别的文档，得能挑
           if (imp && imp.data && (imp.data.files || []).length) {
             小件.push(
               React.createElement(
@@ -1995,7 +1995,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     borderRadius: 6,
                     background: 'rgba(128,128,128,.08)',
                     border: '1px solid rgba(128,128,128,.2)',
-                    fontSize: 12,
+                    fontSize: 'var(--fish-small)',
                   },
                 },
                 React.createElement('div', { style: S.dim }, '只导这些文件（默认只勾了「记忆卡／总档案」—— 别的文档别导进来）：'),
@@ -2007,9 +2007,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       'label',
                       {
                         key: f.name,
-                        style: { cursor: 'pointer', display: 'flex', gap: 4, alignItems: 'center', opacity: imp.files[f.name] ? 1 : 0.5 },
+                        style: { cursor: 'pointer', display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', opacity: imp.files[f.name] ? 1 : 0.5 },
                       },
-                      React.createElement('input', {
+                      React.createElement('input', {'aria-label': f.name,
                         type: 'checkbox',
                         checked: !!imp.files[f.name],
                         onChange: (e) =>
@@ -2024,7 +2024,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           }
           if (impNote) 小件.push(React.createElement('div', { key: 'n', style: Object.assign({}, S.ok, { margin: '6px 0' }) }, impNote))
 
-          // 导过几批 + 撤销 —— ⚠ 必须在 `if (!imp)` **之前**：
+          // 导过几批 + 撤销 —— 注意：必须在 `if (!imp)` **之前**：
           // 导入完 imp 就清空了，放后面的话撤销按钮根本看不到 ✗
           const 批次 = s.importBatches || []
           if (批次.length) {
@@ -2040,8 +2040,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     React.createElement('div', { style: { flex: 1 } }, (b.at ? rel(b.at, Date.now()) : '（不知道什么时候）') + '　' + b.n + ' 条'),
                     React.createElement(
                       'div',
-                      {
-                        style: Object.assign({}, S.drop, { flex: 'none', fontSize: 12, cursor: 'pointer' }),
+                      {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                        style: Object.assign({}, S.drop, { flex: 'none', fontSize: 'var(--fish-small)', cursor: 'pointer' }),
                         onClick: () => {
                           setImpBusy(true)
                           post('/import/undo', { session: open, batch: b.id }).then((r) => {
@@ -2075,19 +2075,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               })
               .catch((e) => setExpNote('列不了目录：' + String((e && e.message) || e)))
           }
-          // ⚠ 拆成两行、输入框用弹性宽度 ——
+          // 注意：拆成两行、输入框用弹性宽度 ——
           //   原来四个控件挤一行，加起来 880px 撑破了 780px 的容器（放大之后更糟）✗
           小件.push(
             React.createElement(
               'div',
               { key: 'cfg', style: S.nameBox },
               React.createElement('div', { style: { flex: 'none', width: 92 } }, '档案目录'),
-              React.createElement('input', {
+              React.createElement('input', {'aria-label': '档案目录',
                 style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 130 }),
                 value: 现在目录,
                 onChange: (e) => setImpDir(e.target.value),
               }),
-              React.createElement('button', { style: S.btn, onClick: () => 列目录(现在目录) }, '选文件夹'),
+              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => 列目录(现在目录) }, '选文件夹'),
             ),
           )
           小件.push(
@@ -2095,7 +2095,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               'div',
               { key: 'cfg2', style: Object.assign({}, S.nameBox, { marginTop: -4 }) },
               React.createElement('div', { style: { flex: 'none', width: 92 } }, '指她的名字'),
-              React.createElement('input', {
+              React.createElement('input', {'aria-label': '可以不填 —— 或者点右边「自动找」',
                 style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 130 }),
                 placeholder: '可以不填 —— 或者点右边「自动找」',
                 value: 名字串(),
@@ -2103,7 +2103,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               }),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () =>
                     post('/names/scan', { session: open, dir: 现在目录 })
@@ -2114,7 +2114,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               ),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () =>
                     post('/names', {
@@ -2130,14 +2130,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               ),
             ),
           )
-          // 自动找出来的候选 —— 点一下加进上面那格，再点一下减掉 ✓
+          // 自动找出来的候选 —— 点一下加进上面那格，再点一下减掉
           if (找名字) {
             小件.push(
               React.createElement(
                 'div',
-                { key: 'names', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'rgba(128,128,128,.10)', border: '1px solid rgba(128,128,128,.22)', fontSize: 12 } },
+                { key: 'names', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                 找名字.ok === false
-                  ? React.createElement('div', { style: S.drop }, '✗ ' + (找名字.message || '找不了'))
+                  ? React.createElement('div', { style: S.drop }, '失败：' + (找名字.message || '找不了'))
                   : React.createElement(
                       'div',
                       null,
@@ -2161,18 +2161,18 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         : null,
                       React.createElement(
                         'div',
-                        { style: Object.assign({}, S.dim, { fontSize: 11 }) },
+                        { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) },
                         '数字是出现次数。底下混着界面词没关系，不点就行。填不填都不影响导入。',
                       ),
                     ),
               ),
             )
           }
-          // 现在扫的是哪个目录 —— 用文字再写一遍，不靠输入框 ✓
+          // 现在扫的是哪个目录 —— 用文字再写一遍，不靠输入框
           小件.push(
             React.createElement(
               'div',
-              { key: 'nowdir', style: Object.assign({}, S.dim, { fontSize: 12, margin: '2px 0 6px' }) },
+              { key: 'nowdir', style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '2px 0 6px' }) },
               '现在扫的是：' + imp.data.dir + '　（' + (imp.data.files || []).length + ' 个文件，' + (imp.data.items || []).length + ' 条候选）',
             ),
           )
@@ -2181,9 +2181,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             小件.push(
               React.createElement(
                 'div',
-                { key: 'dirs', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'rgba(128,128,128,.10)', border: '1px solid rgba(128,128,128,.22)', fontSize: 12 } },
+                { key: 'dirs', style: { margin: '0 0 8px', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                 impDirs.ok === false
-                  ? React.createElement('div', { style: S.drop }, '✗ ' + (impDirs.message || '列不了'))
+                  ? React.createElement('div', { style: S.drop }, '失败：' + (impDirs.message || '列不了'))
                   : React.createElement(
                       'div',
                       null,
@@ -2194,12 +2194,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       ),
                       React.createElement(
                         'div',
-                        { style: { display: 'flex', gap: 10, flexWrap: 'wrap' } },
+                        { style: { display: 'flex', flexWrap: 'wrap', gap: 10, flexWrap: 'wrap' } },
                         impDirs.parent
-                          ? React.createElement('span', { style: S.link, onClick: () => 列目录(impDirs.parent) }, '↑ 上一级')
+                          ? React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => 列目录(impDirs.parent) }, '↑ 上一级')
                           : null,
                         (impDirs.dirs || []).map((d) =>
-                          React.createElement('span', { key: d.path, style: S.link, onClick: () => 列目录(d.path) }, '📁 ' + d.name),
+                          React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  key: d.path, style: S.link, onClick: () => 列目录(d.path) }, '📁 ' + d.name),
                         ),
                         (impDirs.dirs || []).length === 0 && !impDirs.parent
                           ? React.createElement('span', { style: S.dim }, '（这里没有子文件夹）')
@@ -2228,7 +2228,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   React.createElement(
                     'label',
                     { key: f.name, style: { display: 'block', cursor: 'pointer' } },
-                    React.createElement('input', {
+                    React.createElement('input', {'aria-label': f.name,
                       type: 'checkbox',
                       checked: !!imp.files[f.name],
                       onChange: (e) => setImp(Object.assign({}, imp, { files: Object.assign({}, imp.files, { [f.name]: e.target.checked }) })),
@@ -2256,12 +2256,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           小件.push(
             React.createElement(
               'div',
-              { key: 'secbar', style: { display: 'flex', gap: 8, alignItems: 'center', margin: '10px 0 4px' } },
+              { key: 'secbar', style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '10px 0 4px' } },
               React.createElement('span', { style: { fontWeight: 600 } }, '按小节挑'),
-              React.createElement('button', { style: S.btn, onClick: () => setImp(Object.assign({}, imp, { off: {} })) }, '全选'),
+              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setImp(Object.assign({}, imp, { off: {} })) }, '全选'),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () => {
                     const off = {}
@@ -2273,7 +2273,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               ),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () => {
                     const off = {}
@@ -2296,17 +2296,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 { key: 'sec' + k, style: { margin: '2px 0' } },
                 React.createElement(
                   'div',
-                  { style: { display: 'flex', gap: 8, alignItems: 'baseline' } },
+                  { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'baseline' } },
                   React.createElement(
                     'div',
-                    { style: Object.assign({}, S.link, { flex: 1 }), onClick: () => setImp(Object.assign({}, imp, { open: Object.assign({}, imp.open, { [k]: !开 }) })) },
+                    {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 1 }), onClick: () => setImp(Object.assign({}, imp, { open: Object.assign({}, imp.open, { [k]: !开 }) })) },
                     (开 ? '▾ ' : '▸ ') + g.section,
                   ),
                   React.createElement('div', { style: Object.assign({}, S.dim, { width: 90, flex: 'none' }) }, 选了几条 + ' / ' + g.items.length + ' 条'),
                   React.createElement(
                     'div',
-                    {
-                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 12 }),
+                    {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                      style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)' }),
                       onClick: () => {
                         const 全选这节 = 选了几条 < g.items.length
                         const off = Object.assign({}, imp.off)
@@ -2322,21 +2322,21 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   ? g.items.map((it) =>
                       React.createElement(
                         'div',
-                        { key: it.key, style: { margin: '2px 0 6px 18px', fontSize: 12 } },
+                        { key: it.key, style: { margin: '2px 0 6px 18px', fontSize: 'var(--fish-small)' } },
                         React.createElement(
                           'label',
                           { style: { cursor: 'pointer' } },
-                          React.createElement('input', {
+                          React.createElement('input', {'aria-label': it.改后 || it.text,
                             type: 'checkbox',
                             checked: imp.off[it.key] !== true,
                             onChange: (e) => setImp(Object.assign({}, imp, { off: Object.assign({}, imp.off, { [it.key]: !e.target.checked }) })),
                           }),
                           ' ',
-                          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 11 }) }, it.file + ' 第 ' + it.line + ' 行　'),
+                          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, it.file + ' 第 ' + it.line + ' 行　'),
                           String(it.改后 || it.text),
-                          it.at ? React.createElement('span', { style: Object.assign({}, S.ok, { fontSize: 11 }) }, '　[' + it.at.slice(0, 10) + ']') : null,
+                          it.at ? React.createElement('span', { style: Object.assign({}, S.ok, { fontSize: 'var(--fish-small)' }) }, '　[' + it.at.slice(0, 10) + ']') : null,
                           it.改后 && it.改后 !== it.text
-                            ? React.createElement('div', { style: Object.assign({}, S.dim, { marginLeft: 18, fontSize: 11 }) }, '原文：' + it.text)
+                            ? React.createElement('div', { style: Object.assign({}, S.dim, { marginLeft: 18, fontSize: 'var(--fish-small)' }) }, '原文：' + it.text)
                             : null,
                         ),
                       ),
@@ -2351,7 +2351,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               'div',
               { key: 'go', style: Object.assign({}, S.askBox, { marginTop: 10 }) },
               React.createElement('div', { style: { flex: 1 } }, '已选 ' + 选中.length + ' 条，共约 ' + 字数 + ' 字' + (选中.length ? '（一次只注入 6 条，其余在库里等着）' : '')),
-              React.createElement('button', { style: S.btnDanger, disabled: impBusy || !选中.length, onClick: 导入 }, impBusy ? '导着呢…' : '导入选中的'),
+              React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: impBusy || !选中.length, onClick: 导入 }, impBusy ? '导着呢…' : '导入选中的'),
             ),
           )
           return 小件
@@ -2359,20 +2359,20 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
 
         return React.createElement(
           'div',
-          { style: S.wrap },
-          React.createElement('div', { style: S.link, onClick: () => setOpen(null) }, '← 所有会话'),
+          { className: 'fish-module fish-memory', style: S.wrap },
+          React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => setOpen(null) }, '← 所有会话'),
           React.createElement('div', { style: S.h }, s.title || s.id),
           React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId }),
           s.qq ? React.createElement('div', { style: S.dim }, '记忆库：' + s.storeId) : null,
           React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
           React.createElement(
             'div',
-            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(128,128,128,.22)', background: 'rgba(127,127,127,.05)' } },
+            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'rgba(127,127,127,.05)' } },
             React.createElement(
               'div',
-              { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 } },
-              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 13 } }, '她自己叫什么'),
-              React.createElement('input', {
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
+              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她自己叫什么'),
+              React.createElement('input', {'aria-label': '她在这儿的名字',
                 style: Object.assign({}, S.inp, { width: 160 }),
                 placeholder: '她在这儿的名字',
                 value: selfDraft[open] !== undefined ? selfDraft[open] : s.selfName || s.titleName || '',
@@ -2380,13 +2380,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               }),
               s.selfName
                 ? null
-                : (s.titleName ? React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 12 }) }, '（先填的是会话标题，确认没问题再点「存」）') : null),
+                : (s.titleName ? React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '（先填的是会话标题，确认没问题再点「存」）') : null),
             ),
             React.createElement(
               'div',
-              { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 } },
-              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 13 } }, '她怎么称呼你'),
-              React.createElement('input', {
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
+              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她怎么称呼你'),
+              React.createElement('input', {'aria-label': '她平时怎么叫你（小名、昵称都行）',
                 style: Object.assign({}, S.inp, { width: 160 }),
                 placeholder: '她平时怎么叫你（小名、昵称都行）',
                 value: ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName || '',
@@ -2395,10 +2395,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             ),
             React.createElement(
               'div',
-              { style: { display: 'flex', alignItems: 'center', gap: 10 } },
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 } },
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () =>
                     post('/names', {
@@ -2415,17 +2415,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               ),
               React.createElement(
                 'span',
-                { style: Object.assign({}, S.dim, { fontSize: 12, flex: 1, lineHeight: 1.5 }) },
+                { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1, lineHeight: 1.5 }) },
                 '她自己的名字写进记忆时会换成「我」；她怎么称呼你，会换成「你」。已有的记忆也会顺手洗一遍。',
               ),
             ),
           ),
           // ---- 2026-09-21 新加：她自己后台手动加一条 ----
-          // 跟模型自己记是两回事：它记受上面那个开关管，**手动加不受管** ✓
+          // 跟模型自己记是两回事：它记受上面那个开关管，**手动加不受管**
           // （开关管的是「他自己记不记、注不注入」，管不到她手动写）
           React.createElement(
             'div',
-            { style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 16 }), onClick: () => set加展开(!加展开) },
+            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 16 }), onClick: () => set加展开(!加展开) },
             (加展开 ? '▾ ' : '▸ ') + '＋ 自己加一条（开关关着也能加）',
           ),
           加展开
@@ -2438,7 +2438,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   React.createElement('div', { style: { flex: 'none', width: 44 } }, '加到哪里'),
                   React.createElement(
                     'select',
-                    {
+                    {'aria-label': '加到哪里',
                       style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 160 }),
                       value: 加在谁 || open || '',
                       onChange: (e) => set加在谁(e.target.value),
@@ -2449,9 +2449,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       (x.title || ('…' + String(x.id).slice(-6))) + (x.enabled ? '' : '（没开记忆）'),
                     ))),
                   ),
-                  React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 12 }) }, '默认是你正打开的这个'),
+                  React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '默认是你正打开的这个'),
                 ),
-                React.createElement('textarea', {
+                React.createElement('textarea', {'aria-label': '一句话说清。人称：你自己是「我」，她是「她」——写「小明」会自动换成「我」。',
                   style: Object.assign({}, S.area, { minHeight: 54 }),
                   placeholder: '一句话说清。人称：你自己是「我」，她是「她」——写「小明」会自动换成「我」。',
                   value: 加内容,
@@ -2461,13 +2461,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   'div',
                   { style: Object.assign({}, S.nameBox, { margin: '8px 0 0' }) },
                   React.createElement('div', { style: { flex: 'none', width: 44 } }, '时间'),
-                  React.createElement('input', {
+                  React.createElement('input', {'aria-label': '这件事什么时候发生的（留空＝现在）',
                     style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 150 }),
                     placeholder: '这件事什么时候发生的（留空＝现在）',
                     value: 加时间,
                     onChange: (e) => set加时间(e.target.value),
                   }),
-                  React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 12 }) }, '比如 2026-09-19 或 2026-09-19 14:30'),
+                  React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '比如 2026-09-19 或 2026-09-19 14:30'),
                 ),
                 React.createElement(
                   'div',
@@ -2476,26 +2476,26 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   ['0', '0.5', '1'].map((v) =>
                     React.createElement(
                       'button',
-                      {
+                      {type: 'button',
                         key: v,
-                        style: Object.assign({}, S.btn, String(加重要) === v ? { borderColor: '#5b8fd6', color: '#8fb8f0' } : null),
+                        style: Object.assign({}, S.btn, String(加重要) === v ? { borderColor: 'var(--fish-info)', color: 'var(--fish-info)' } : null),
                         onClick: () => set加重要(v),
                       },
                       v === '0' ? '0 随口提过' : v === '0.5' ? '0.5 比较重要' : '1 非常重要',
                     ),
                   ),
-                  React.createElement('input', {
+                  React.createElement('input', {'aria-label': '记忆重要度',
                     style: Object.assign({}, S.inp, { width: 58 }),
                     value: 加重要,
                     onChange: (e) => set加重要(e.target.value),
                   }),
-                  React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 12 }) }, '也能自己填 0~1'),
+                  React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '也能自己填 0~1'),
                 ),
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.nameBox, { margin: '6px 0 0' }) },
                   React.createElement('div', { style: { flex: 'none', width: 44 } }, '关键词'),
-                  React.createElement('input', {
+                  React.createElement('input', {'aria-label': '空格分开，方便以后被想起来（可留空）',
                     style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 150 }),
                     placeholder: '空格分开，方便以后被想起来（可留空）',
                     value: 加词,
@@ -2505,37 +2505,37 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.askBox, { margin: '8px 0 0' }) },
-                  React.createElement('button', { style: S.btn, onClick: 提交一条 }, '加进这个会话'),
+                  React.createElement('button', {type: 'button',  style: S.btn, onClick: 提交一条 }, '加进这个会话'),
                   React.createElement(
                     'span',
-                    { style: Object.assign({}, 加结果 && 加结果.ok ? S.ok : S.drop, { fontSize: 12 }) },
+                    { style: Object.assign({}, 加结果 && 加结果.ok ? S.ok : S.drop, { fontSize: 'var(--fish-small)' }) },
                     (加结果 && 加结果.文字) || '',
                   ),
                 ),
                 React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4 }) },
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
                   '加完记得点一下「开始扩词」—— 不然这条只有正文能搜到，检索词还是空的。',
                 ),
               )
             : null,
-          // ⚠ 记忆列表**默认折叠** —— 库里几百条的时候，它压在中间会把
+          // 注意：记忆列表**默认折叠** —— 库里几百条的时候，它压在中间会把
           //   「提炼 / 扩词」那些按钮顶到很下面，她得一直翻才够得着 ✗
           React.createElement(
             'div',
-            { style: { display: 'flex', gap: 8, alignItems: 'center', marginTop: 16 } },
+            { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: 16 } },
             React.createElement(
               'div',
-              { style: Object.assign({}, S.h, { cursor: 'pointer', margin: 0, flex: 1 }), onClick: () => set看记忆(!看记忆) },
+              {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer', margin: 0, flex: 1 }), onClick: () => set看记忆(!看记忆) },
               (看记忆 ? '▾ ' : '▸ ') + '记忆列表（' + s.memories.length + ' 条）',
             ),
             // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没做啊？我怎么没有找到按钮」）：
-            //   ⚠⚠ 第一次我把它放进了**折叠起来的**记忆列表块里 ——
+            //   ⚠注意：第一次我把它放进了**折叠起来的**记忆列表块里 ——
             //     不点开列表就看不见，那就等于没有按钮 ✗
             //     → 挪到**标题这一行**（这一行永远看得见）✓
             React.createElement(
               'button',
-              {
+              {type: 'button',
                 style: S.btn,
                 title:
                   '找出库里「几乎一样」的记忆。自动去重只管召回和导入，管不到已经存着的。' +
@@ -2546,10 +2546,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             ),
             // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案**
             //   「别的用户导入自己的会话 → 模型读一遍 → 出一份档案」
-            //   ⚠ 这是**给别人用的功能**，跟「手工维护一份档案」是两码事 ✓
+            //   注意：这是**给别人用的功能**，跟「手工维护一份档案」是两码事
             React.createElement(
               'button',
-              {
+              {type: 'button',
                 style: S.btn,
                 title:
                   '把你自己的会话读一遍，提炼出一份长期档案（分九章）。' +
@@ -2560,11 +2560,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               '从会话生成档案',
             ),
             // ⭐⭐ 2026-09-22（她要的）：**批量删除** —— 勾了几条就显示几条
-            //   ⚠ 二次确认：点这里**不删**，只出确认条；确认条上再点「确定删」才真删 ✓
+            //   注意：二次确认：点这里**不删**，只出确认条；确认条上再点「确定删」才真删
             已选几条 > 0
               ? React.createElement(
                   'button',
-                  {
+                  {type: 'button',
                     style: S.btnDanger,
                     title: '把勾上的这几条收进「已删」（不是销毁，能找回来）。点它不会直接删，会先问一遍',
                     onClick: () => set批删问(true),
@@ -2575,17 +2575,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             已选几条 > 0
               ? React.createElement(
                   'button',
-                  { style: S.btn, onClick: () => { set选中({}); set批删问(false) } },
+                  {type: 'button',  style: S.btn, onClick: () => { set选中({}); set批删问(false) } },
                   '取消勾选',
                 )
               : null,
           ),
           // ⭐ 2026-09-24：折叠着也能一眼看出「记了时间的」有多少 ——
           //   反馈那个「中间一坨」的根源就是 850 条里只有 188 条有日期，
-          //   这个数字摆在标题下面，心里有底 ✓
+          //   这个数字摆在标题下面，心里有底
           React.createElement(
             'div',
-            { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
             '记了时间的 ' + 有时间数 + ' 条 · 没记时间的 ' + 没时间数 + ' 条' +
               (看哪边 === '全部' ? '' : '（现在只看' + (看哪边 === '有时间' ? '记了时间的' : '没记时间的') + '）'),
           ),
@@ -2598,22 +2598,22 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   'div',
                   { style: S.nameBox },
                   React.createElement('div', { style: { flex: 'none', width: 44 } }, '找'),
-                  React.createElement('input', {
+                  React.createElement('input', {'aria-label': '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
                     style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
                     placeholder: '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
                     value: 搜词,
                     onChange: (e) => set搜词(e.target.value),
                   }),
                   搜词
-                    ? React.createElement('button', { style: S.btn, onClick: () => set搜词('') }, '清掉')
+                    ? React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set搜词('') }, '清掉')
                     : null,
-                  // ⭐ 2026-09-24（她要的）：**记了时间的 / 没记时间的分开看** ✓
-                  // ⭐ 2026-09-22 又加两档：**长期事实 / 会淡的** ✓
+                  // ⭐ 2026-09-24（她要的）：**记了时间的 / 没记时间的分开看**
+                  // ⭐ 2026-09-22 又加两档：**长期事实 / 会淡的**
                   //   点一下就轮到下一种：
                   //   全部 → 只记了时间的 → 只有没记时间的 → 不会淡的 → 会淡的 → 全部…
                   React.createElement(
                     'button',
-                    {
+                    {type: 'button',
                       style: S.btn,
                       title:
                         '点一下换个看法：全部 → 只记了时间的 → 只有没记时间的 → ' +
@@ -2647,7 +2647,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   //   （851 条里只画前 200 条，不排的话看到的永远是最老的）
                   React.createElement(
                     'button',
-                    {
+                    {type: 'button',
                       style: S.btn,
                       title: '按最左边的日期排。没写日期的排在最后 —— 它们不知道是什么时候的事',
                       onClick: () => set顺序(顺序 === '新' ? '旧' : '新'),
@@ -2658,7 +2658,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   没日期的 > 0
                     ? React.createElement(
                         'button',
-                        {
+                        {type: 'button',
                           style: S.btn,
                           title: '从正文里认出日期（09-17、8月26日…）。只补没日期的，已有的不动；补之前会自动备份',
                           onClick: () => setConfirm({ id: '*', kind: 'backfill' }),
@@ -2671,7 +2671,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   没判过的 > 0
                     ? React.createElement(
                         'button',
-                        {
+                        {type: 'button',
                           style: S.btn,
                           title:
                             '拿模型一条条判「该不该一直记得」，判成要记一辈子的就标成「永远不淡」' +
@@ -2686,7 +2686,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   判过的 > 0
                     ? React.createElement(
                         'button',
-                        {
+                        {type: 'button',
                           style: S.btn,
                           title:
                             '把所有「判过」的标记清掉，用现在的判据从头判一遍。' +
@@ -2696,22 +2696,22 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '重判一遍（' + 判过的 + '）',
                       )
                     : null,
-                  // ⭐⭐ 2026-09-23（第三步）：**老数据清洗补键** ✓
+                  // ⭐⭐ 2026-09-23（第三步）：**老数据清洗补键**
                   //   提炼只管以后；老条目本来就没键 → 这里单独过一遍
-                  //   ⚠ 先「试几条」再真洗 —— 一条命令改几百条，得让她先看一眼 ✓
-                  //   ⚠⚠ 按钮上**不许写「清洗补键」** —— 那是我自己造的词，她看不懂 ✗
+                  //   注意：先「试几条」再真洗 —— 一条命令改几百条，得让她先看一眼
+                  //   ⚠注意：按钮上**不许写「清洗补键」** —— 那是我自己造的词，她看不懂 ✗
                   //     改成说**它有什么用**：「讲同一件事的，只留最新那条」
                   没键的 > 0
                     ? React.createElement(
                         'button',
-                        {
+                        {type: 'button',
                           style: S.btn,
                           title:
                             '让老记忆认出「讲的是同一件事」。\n' +
                             '比如「她身高一米七」和「她身高一米六八」是同一件事 —— ' +
                             '认出来之后只留最新那条，旧的收起来（还能恢复）。\n' +
                             '光看句子像不像认不出来，所以要一条条问模型。\n' +
-                            '⚠ 先点「试 8 条看看」看一眼它标的对不对，再决定要不要全跑。',
+                            '注意：先点「试 8 条看看」看一眼它标的对不对，再决定要不要全跑。',
                           onClick: () => setConfirm({ id: '*', kind: 'washkeys' }),
                         },
                         '同一件事只留最新（' + 没键的 + '）',
@@ -2721,7 +2721,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   可撤的 > 0
                     ? React.createElement(
                         'button',
-                        {
+                        {type: 'button',
                           style: S.btn,
                           title:
                             '把这次自动标的全撤掉、顺手收起来的也全放回来 —— 回到没跑之前。\n' +
@@ -2733,12 +2733,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     : null,
                 ),
                 // ⭐⭐ 2026-09-23：她说了「这个让人看不懂，写通俗一点的」——
-                //   光按钮上有个名字不够，旁边得有一句人话解释它到底干嘛 ✓
+                //   光按钮上有个名字不够，旁边得有一句人话解释它到底干嘛
                 //   （只在按钮露着的时候出现，平时不占地方）
                 没键的 > 0
                   ? React.createElement(
                       'div',
-                      { style: Object.assign({}, S.dim, { fontSize: 11, margin: '4px 0 0' }) },
+                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '4px 0 0' }) },
                       '「同一件事只留最新」是干嘛的：给老记忆一条条标上「这条讲的是哪件事」。' +
                         '标好之后，讲同一件事的只留最新那条，旧的收起来（还能恢复）。',
                     )
@@ -2749,9 +2749,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 判留空的 > 0
                   ? React.createElement(
                       'div',
-                      { style: Object.assign({}, S.dim, { fontSize: 11, margin: '4px 0 0' }) },
+                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '4px 0 0' }) },
                       '（另外 ' + 判留空的 + ' 条，模型看了说「这条不用标」—— 一次性的、或者拿不准的。' +
-                        '那种一个字都没改，也不会再问一遍 ✓）',
+                        '那种一个字都没改，也不会再问一遍）',
                     )
                   : null,
                 confirm && confirm.kind === 'stable'
@@ -2764,15 +2764,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '拿模型判一遍这 ' + 没判过的 + ' 条该不该「永远不淡」？',
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                           '会调用模型（走你 DSH 里那个），一批 20 条慢慢跑。判过的不会重复问。',
                         ),
                       ),
-                      React.createElement('button', { style: S.btnDanger, disabled: busy, onClick: () => 补不淡(false) }, busy ? '判着呢…' : '开始'),
-                      React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 补不淡(false) }, busy ? '判着呢…' : '开始'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐ 重判：判据改过之后，把老结果清掉重来 ✓
+                // ⭐ 重判：判据改过之后，把老结果清掉重来
                 confirm && confirm.kind === 'restable'
                   ? React.createElement(
                       'div',
@@ -2783,13 +2783,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '把 ' + 判过的 + ' 条的「判过」标记全清掉，用现在的判据重判一遍？',
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                           '判据改过之后要用这个 —— 不然老结果一直留着。会重新调模型（全库 ' +
                             (s.memories || []).length + ' 条，一批 20 条），动之前自动备份。',
                         ),
                       ),
-                      React.createElement('button', { style: S.btnDanger, disabled: busy, onClick: () => 补不淡(true) }, busy ? '判着呢…' : '重判'),
-                      React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 补不淡(true) }, busy ? '判着呢…' : '重判'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
                 // ⭐⭐ 2026-09-23：清洗补键 —— 先「试几条」✓
@@ -2803,15 +2803,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '这 ' + 没键的 + ' 条老记忆，让它们认出「讲的是同一件事」？',
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                           '每条记忆贴一个说明：「这条讲的是哪件事」。讲同一件事的，以后只留最新那条，' +
                             '旧的收起来（还能恢复）—— 就不用再靠「句子像不像」去猜了。' +
                             '会调用模型（走你 DSH 里那个），一批 8 条慢慢跑，只在设置页跑、不碰对话。动之前自动备份。',
                         ),
                       ),
-                      React.createElement('button', { style: S.btn, disabled: busy, onClick: () => 洗键(true) }, busy ? '跑着呢…' : '先试 8 条看看'),
-                      React.createElement('button', { style: S.btnDanger, disabled: busy, onClick: () => 洗键(false) }, busy ? '跑着呢…' : '全部开始'),
-                      React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                      React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => 洗键(true) }, busy ? '跑着呢…' : '先试 8 条看看'),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 洗键(false) }, busy ? '跑着呢…' : '全部开始'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
                 // 撤退：把这次自动标的全撤掉
@@ -2825,13 +2825,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '把这次自动标的 ' + 可撤的 + ' 条全撤掉、顺手收起来的也全放回来？',
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                           '回到没跑之前的样子。只撤自动标的 —— 你自己填的那些不动。' +
                             '记忆本身一条都不会被删。',
                         ),
                       ),
-                      React.createElement('button', { style: S.btnDanger, disabled: busy, onClick: 撤销洗键 }, busy ? '撤着呢…' : '撤掉'),
-                      React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: 撤销洗键 }, busy ? '撤着呢…' : '撤掉'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
                 // ⭐⭐ 2026-09-23：**进度条**（跟补标那条分开，不互相盖）✓
@@ -2843,20 +2843,20 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         { style: Object.assign({}, S.editBox, { marginTop: 8 }) },
                         React.createElement(
                           'div',
-                          { style: { fontSize: 13, marginBottom: 4 } },
+                          { style: { fontSize: 'var(--fish-small)', marginBottom: 4 } },
                           '⭐ 正在认「讲的是同一件事」' + (洗键进度.干跑 ? '（先试几条）' : '') + '　跑着呢',
                         ),
                         React.createElement(
                           'div',
-                          { style: { fontSize: 12, color: '#8a6d3b' } },
+                          { style: { fontSize: 'var(--fish-small)', color: 'var(--fish-warning)' } },
                           '已过 ' + 洗键进度.已 + ' / ' + 洗键进度.总 + ' 条（' + 百 + '%）' +
                             '　还剩 ' + Math.max(0, 洗键进度.总 - 洗键进度.已) + ' 条　（每批 8 条，跑着就动）',
                         ),
                       )
                     })()
                   : null,
-                // ⭐⭐ 2026-09-22（她要的）：**补标/重判的进度条，就贴在按钮这一行下面** ✓
-                //   点了才出现，没点就没有 —— 不跟提炼/扩词那条挤在一起 ✓
+                // ⭐⭐ 2026-09-22（她要的）：**补标/重判的进度条，就贴在按钮这一行下面**
+                //   点了才出现，没点就没有 —— 不跟提炼/扩词那条挤在一起
                 补标进度.在跑 && 补标进度.总 > 0
                   ? (() => {
                       const 百 = Math.round((补标进度.已 / 补标进度.总) * 100)
@@ -2865,7 +2865,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         { style: Object.assign({}, S.editBox, { marginTop: 8 }) },
                         React.createElement(
                           'div',
-                          { style: { fontSize: 13, marginBottom: 4 } },
+                          { style: { fontSize: 'var(--fish-small)', marginBottom: 4 } },
                           '⭐ ' + (补标进度.重判 ? '重判一遍' : '补标不淡') + '　跑着呢',
                         ),
                         React.createElement(
@@ -2875,16 +2875,16 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         ),
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
                           '已判 ' + 补标进度.已 + ' / ' + 补标进度.总 + ' 条（' + 百 + '%）' +
                             '　还剩 ' + Math.max(0, 补标进度.总 - 补标进度.已) + ' 条' +
-                            (补标进度.等 ? '　⚠ 撞限流了，正在等 ' + 补标进度.等 + ' 秒' : '　（每批 20 条，跑着就动）'),
+                            (补标进度.等 ? '　注意：撞限流了，正在等 ' + 补标进度.等 + ' 秒' : '　（每批 20 条，跑着就动）'),
                         ),
                       )
                     })()
                   : null,
-                // ⭐⭐ 2026-09-22（她要的）：**批量删的二次确认条** ✓
-                //   第一次点是「批量删（N）」，出这条；第二次点「确定删」才真删 ✓
+                // ⭐⭐ 2026-09-22（她要的）：**批量删的二次确认条**
+                //   第一次点是「批量删（N）」，出这条；第二次点「确定删」才真删
                 批删问 && 已选几条 > 0
                   ? React.createElement(
                       'div',
@@ -2895,27 +2895,27 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '要删掉这 ' + 已选几条 + ' 条吗？',
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                           '不是销毁 —— 收进「已删」里，点开还能找回来。动之前也会自动备份。',
                         ),
                       ),
-                      React.createElement('button', { style: S.btnDanger, disabled: busy, onClick: () => 批删(s) }, busy ? '删着…' : '确定删（' + 已选几条 + ' 条）'),
-                      React.createElement('button', { style: S.btn, onClick: () => set批删问(false) }, '算了'),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 批删(s) }, busy ? '删着…' : '确定删（' + 已选几条 + ' 条）'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批删问(false) }, '算了'),
                     )
                   : null,
-                // ⚠⚠ 2026-09-22（我发现的）：`notes` 原来**只在第一级**渲染 ——
+                // ⚠注意：2026-09-22（我发现的）：`notes` 原来**只在第一级**渲染 ——
                 //   而会话详情是 `if (open) return …` **提前返回**的，
                 //   所以在详情页里 setNotes 的东西**一个字都看不到** ✗
-                //   「补日期」「补标不淡」「查重」的结果提示全落在这儿 → 补一份 ✓
+                //   「补日期」「补标不淡」「查重」的结果提示全落在这儿 → 补一份
                 notes && notes.length
                   ? React.createElement(
                       'div',
-                      { style: Object.assign({}, S.warn, { margin: '8px 0', fontSize: 12, whiteSpace: 'pre-line' }) },
+                      { style: Object.assign({}, S.warn, { margin: '8px 0', fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
                       '　· ' + notes.join('\n　· '),
                     )
                   : null,
                 // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案** 的面板
-                //   四步分开 —— 因为第三步**调模型、花钱**，得让人看清再点 ✓
+                //   四步分开 —— 因为第三步**调模型、花钱**，得让人看清再点
                 生成开
                   ? React.createElement(
                       'div',
@@ -2923,7 +2923,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       [
                         React.createElement(
                           'div',
-                          { key: 'h', style: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
+                          { key: 'h', style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
                           React.createElement('b', null, '从会话生成档案'),
                           React.createElement(
                             'span',
@@ -2931,7 +2931,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             '把会话读一遍，提炼出一份长期档案（九章）。出好的档案再走「从旧档案导入」变成记忆条目。',
                           ),
                           React.createElement('div', { style: { flex: 1 } }),
-                          React.createElement('button', { style: S.btn, onClick: () => set生成开(false) }, '收起'),
+                          React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set生成开(false) }, '收起'),
                         ),
 
                         // ① 选会话
@@ -2946,14 +2946,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                 生成会话.map((x) =>
                                   React.createElement(
                                     'label',
-                                    { key: x.sid, style: { display: 'block', fontSize: 12, cursor: 'pointer', padding: '2px 0' } },
-                                    React.createElement('input', {
+                                    { key: x.sid, style: { display: 'block', fontSize: 'var(--fish-small)', cursor: 'pointer', padding: '2px 0' } },
+                                    React.createElement('input', {'aria-label': x.标题 || x.sid,
                                       type: 'checkbox',
                                       checked: !!生成选[x.sid],
                                       onChange: () => set生成选(Object.assign({}, 生成选, { [x.sid]: !生成选[x.sid] })),
                                     }),
-                                    // ⚠⚠ 2026-09-22（反馈：「不显示名字」）：
-                                    //   光有 `session-a1b2c3d4-…` 这种**没法挑** —— 得显示标题 ✓
+                                    // ⚠注意：2026-09-22（反馈：「不显示名字」）：
+                                    //   光有 `session-a1b2c3d4-…` 这种**没法挑** —— 得显示标题
                                     ' ',
                                     React.createElement('span', { style: x.标题 ? null : S.dim }, x.标题 || '（没起名字）'),
                                     React.createElement(
@@ -2971,14 +2971,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                   '这个工作区里没找到会话（归档的、子代理跑出来的、空壳的都不列）',
                                 )
                               : null,
-                          // ⚠ 默认一个都不勾 —— 让用户自己挑（后面是要花钱的）✓
+                          // 注意：默认一个都不勾 —— 让用户自己挑（后面是要花钱的）✓
                           生成会话 && 生成会话.length
                             ? React.createElement(
                                 'div',
-                                { style: { marginTop: 4, display: 'flex', gap: 8, alignItems: 'center' } },
+                                { style: { marginTop: 4, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' } },
                                 React.createElement(
                                   'button',
-                                  {
+                                  {type: 'button',
                                     style: S.btn,
                                     onClick: () => {
                                       const 勾 = {}
@@ -2990,17 +2990,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                   },
                                   '全选',
                                 ),
-                                React.createElement('button', { style: S.btn, onClick: () => set生成选({}) }, '全不选'),
+                                React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set生成选({}) }, '全不选'),
                                 React.createElement('span', { style: S.dim }, '勾了 ' + 勾的sid().length + ' 个'),
                               )
                             : null,
-                          // ⚠ 诊断：列表跟 DSH 对不上时，这几个数能看出卡在哪一道 ✓
-                          // ⚠ 2026-11-03：诊断只在**一个会话都没列出来**时才显示。
+                          // 注意：诊断：列表跟 DSH 对不上时，这几个数能看出卡在哪一道
+                          // 注意：2026-11-03：诊断只在**一个会话都没列出来**时才显示。
                           //   有列表的时候它就是一大坨内部数字，挤在勾选框下面很难看。
                           生成诊断 && 生成会话 && 生成会话.length === 0
                             ? React.createElement(
                                 'div',
-                                { style: Object.assign({}, S.dim, { marginTop: 4, fontSize: 11 }) },
+                                { style: Object.assign({}, S.dim, { marginTop: 4, fontSize: 'var(--fish-small)' }) },
                                 '磁盘上 ' + 生成诊断.文件夹里 + ' 个会话文件　归档 ' + 生成诊断.归档 + ' 个　可挑 ' + 生成诊断.筛完剩 + ' 个',
                                 (生成诊断.被我筛掉的 || []).length
                                   ? React.createElement(
@@ -3016,10 +3016,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             : null,
                           React.createElement(
                             'div',
-                            { style: { marginTop: 6, display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                            { style: { marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 8, flexWrap: 'wrap' } },
                             React.createElement(
                               'button',
-                              { style: S.btn, disabled: busy || 勾的sid().length === 0, onClick: () => 算生成() },
+                              {type: 'button',  style: S.btn, disabled: busy || 勾的sid().length === 0, onClick: () => 算生成() },
                               '② 算一下要多少',
                             ),
                             React.createElement(
@@ -3049,10 +3049,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               ),
                               React.createElement(
                                 'div',
-                                { style: { marginTop: 6, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
+                                { style: { marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
                                 React.createElement(
                                   'button',
-                                  { style: S.btnDanger, disabled: busy, onClick: () => 跑生成() },
+                                  {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 跑生成() },
                                   busy ? '跑着呢…' : '③ 开始跑（会调模型、会花钱）',
                                 ),
                                 React.createElement(
@@ -3064,7 +3064,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               (生成计划.会话 || []).length
                                 ? React.createElement(
                                     'div',
-                                    { style: Object.assign({}, S.dim, { marginTop: 4, fontSize: 12 }) },
+                                    { style: Object.assign({}, S.dim, { marginTop: 4, fontSize: 'var(--fish-small)' }) },
                                     '会话情况：' +
                                       生成计划.会话
                                         .map((x) => (x.标题 || x.sid.slice(0, 12)) + '（独有 ' + x.独有 + '／副本 ' + x.副本 + '）')
@@ -3088,7 +3088,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                 ),
                                 React.createElement(
                                   'div',
-                                  { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4 }) },
+                                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
                                   '第 ' + 生成进度.批号 + ' / ' + 生成进度.批数 + ' 批（' + 百 + '%）' +
                                     '　已攒 ' + 生成条目.length + ' 条' +
                                     (生成进度.模型 ? '　' + 生成进度.模型 : ''),
@@ -3097,19 +3097,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             })()
                           : null,
 
-                        // ④ 存到哪儿 —— ⚠⚠ 2026-09-22（反馈：「选了文件夹点了过后
+                        // ④ 存到哪儿 —— ⚠注意：2026-09-22（反馈：「选了文件夹点了过后
                         //   再想换的话就会卡住，就没有那个选项了，就不能再修改了」）
                         //   两个毛病：
                         //     ① 这块原来在 `生成条目.length` 里面 —— **跑完才出现** ✗
-                        //        → 挪到外面，面板一开就能设 ✓
+                        //        → 挪到外面，面板一开就能设
                         //     ② 再点「选文件夹」时**不重新读目录**（`if (!生成目录列)`）——
-                        //        看到的还是上次那份，像卡住 ✗ → 每次打开都重读 ✓
+                        //        看到的还是上次那份，像卡住 失败：→ 每次打开都重读
                         React.createElement(
                           'div',
                           { key: 'save', style: { marginTop: 8 } },
                           React.createElement(
                             'div',
-                            { style: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
+                            { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
                             React.createElement('b', null, '④ 存到哪儿'),
                             React.createElement('span', { style: S.dim }, '跑完就存到这个文件 —— 能直接改，也能点「选文件夹」挑'),
                           ),
@@ -3117,7 +3117,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             'div',
                             { style: Object.assign({}, S.nameBox, { marginTop: 6 }) },
                             React.createElement('div', { style: { flex: 'none', width: 72 } }, '存到'),
-                            React.createElement('input', {
+                            React.createElement('input', {'aria-label': '要存的完整路径（比如 D:\\档案\\生成的档案.md）',
                               style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
                               value: 生成存到,
                               placeholder: '要存的完整路径（比如 D:\\档案\\生成的档案.md）',
@@ -3125,12 +3125,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             }),
                             React.createElement(
                               'button',
-                              {
+                              {type: 'button',
                                 style: S.btn,
                                 onClick: () => {
                                   const 要开 = !生成选目录
                                   set生成选目录(要开)
-                                  // ⚠ 每次打开都**重读一遍**（原来只在第一次读，再打开看到的是旧的）
+                                  // 注意：每次打开都**重读一遍**（原来只在第一次读，再打开看到的是旧的）
                                   if (要开) {
                                     // 从当前路径所在的目录开始（拿不到就从盘符列表开始）
                                     const 起点 = /[\\/]/.test(生成存到) ? 生成存到.replace(/[\\/][^\\/]*$/, '') : ''
@@ -3147,17 +3147,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           生成选目录 && 生成目录列
                             ? React.createElement(
                                 'div',
-                                { style: { margin: '4px 0 0', padding: '6px 10px', borderRadius: 6, background: 'rgba(128,128,128,.10)', border: '1px solid rgba(128,128,128,.22)', fontSize: 12 } },
+                                { style: { margin: '4px 0 0', padding: '6px 10px', borderRadius: 6, background: 'var(--fish-soft)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' } },
                                 React.createElement(
                                   'div',
-                                  { style: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 } },
+                                  { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginBottom: 4 } },
                                   React.createElement('span', { style: S.dim }, 生成目录列.path ? '当前：' + 生成目录列.path : '选一个盘'),
                                   React.createElement('div', { style: { flex: 1 } }),
-                                  // ⚠ 选择器里也放一个「收起」—— 别只能靠上面那个按钮
-                                  React.createElement('button', { style: S.btn, onClick: () => set生成选目录(false) }, '收起'),
+                                  // 注意：选择器里也放一个「收起」—— 别只能靠上面那个按钮
+                                  React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set生成选目录(false) }, '收起'),
                                 ),
                                 生成目录列.ok === false
-                                  ? React.createElement('div', { style: S.drop }, '✗ ' + (生成目录列.message || '列不了'))
+                                  ? React.createElement('div', { style: S.drop }, '失败：' + (生成目录列.message || '列不了'))
                                   : React.createElement(
                                       'div',
                                       null,
@@ -3170,11 +3170,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                       ),
                                       React.createElement(
                                         'div',
-                                        { style: { display: 'flex', gap: 10, flexWrap: 'wrap' } },
+                                        { style: { display: 'flex', flexWrap: 'wrap', gap: 10, flexWrap: 'wrap' } },
                                         生成目录列.parent
                                           ? React.createElement(
                                               'span',
-                                              {
+                                              {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
                                                 style: S.link,
                                                 onClick: () =>
                                                   post('/dirs', { path: 生成目录列.parent }).then((r) => set生成目录列(r)).catch(() => {}),
@@ -3185,7 +3185,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                         (生成目录列.dirs || []).map((d) =>
                                           React.createElement(
                                             'span',
-                                            {
+                                            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
                                               key: d.path,
                                               style: S.link,
                                               onClick: () =>
@@ -3202,7 +3202,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                             { style: { marginTop: 6 } },
                                             React.createElement(
                                               'button',
-                                              {
+                                              {type: 'button',
                                                 style: S.btn,
                                                 onClick: () => {
                                                   const p = String(生成目录列.path).replace(/[\\/]+$/, '')
@@ -3229,7 +3229,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         ),
 
                         // 攒下来的条目 + 存文件
-                        // ⚠ 2026-10-26：原来只在「条目 > 0」时渲染 —— 0 条时界面上只留一句
+                        // 注意：2026-10-26：原来只在「条目 > 0」时渲染 —— 0 条时界面上只留一句
                         //   「点『存成档案文件』」，按钮根本不存在，用户只能到处找 ✗
                         //   → 算过计划就画出来；0 条时按钮置灰、旁边写明为什么。
                         生成计划
@@ -3238,11 +3238,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               { key: 'r', style: { marginTop: 8 } },
                               React.createElement(
                                 'div',
-                                { style: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
+                                { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
                                 React.createElement('b', null, '攒了 ' + 生成条目.length + ' 条'),
                                 React.createElement(
                                   'button',
-                                  {
+                                  {type: 'button',
                                     style: S.btn,
                                     disabled: busy || !!(生成进度 && 生成进度.在跑) || !生成条目.length,
                                     onClick: () => 存生成(),
@@ -3260,7 +3260,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               生成条目.length
                                 ? React.createElement(
                                     'div',
-                                    { style: Object.assign({}, S.dim, { marginTop: 4, maxHeight: 200, overflow: 'auto', fontSize: 12, whiteSpace: 'pre-line' }) },
+                                    { style: Object.assign({}, S.dim, { marginTop: 4, maxHeight: 200, overflow: 'auto', fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
                                     生成条目.slice(0, 40).map((x) => x.章 + '|' + x.日期 + '|' + x.话).join('\n') +
                                       (生成条目.length > 40 ? '\n…（还有 ' + (生成条目.length - 40) + ' 条）' : ''),
                                   )
@@ -3273,7 +3273,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           ? React.createElement(
                               'div',
                               { key: 'ok', style: { marginTop: 8 } },
-                              React.createElement('div', null, '✓ 档案存到：' + 生成档.存到),
+                              React.createElement('div', null, '档案存到：' + 生成档.存到),
                               React.createElement(
                                 'div',
                                 { style: Object.assign({}, S.dim, { marginTop: 2 }) },
@@ -3290,7 +3290,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       [
                         React.createElement(
                           'div',
-                          { key: '头', style: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
+                          { key: '头', style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
                           React.createElement('b', null, '查重：'),
                           React.createElement('span', null, (查重.组 || []).length + ' 组、能少 ' + 查重.能少 + ' 条'),
                           React.createElement(
@@ -3300,12 +3300,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           ),
                           React.createElement(
                             'button',
-                            { style: S.btn, disabled: busy || !查重.真重复组数, onClick: () => 合重复(s, true) },
+                            {type: 'button',  style: S.btn, disabled: busy || !查重.真重复组数, onClick: () => 合重复(s, true) },
                             '一键合真重复（' + 查重.真重复组数 + ' 组）',
                           ),
                           React.createElement(
                             'button',
-                            {
+                            {type: 'button',
                               style: S.btn,
                               disabled: busy || !(查重.组 || []).some((g, i) => 查重合[i]),
                               onClick: () => 合重复(s, false),
@@ -3315,9 +3315,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           ),
                           React.createElement(
                             'button',
-                            {
+                            {type: 'button',
                               style: S.btn,
-                              title: '把「汇总+明细」那些也勾上。⚠ 一长一短，合了会丢短的里的细节',
+                              title: '把「汇总+明细」那些也勾上。注意：一长一短，合了会丢短的里的细节',
                               onClick: () => {
                                 const 全 = {}
                                 ;(查重.组 || []).forEach((g, i) => {
@@ -3328,11 +3328,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             },
                             '把「汇总+明细」也全勾上',
                           ),
-                          React.createElement('button', { style: S.btn, onClick: () => { set查重(null); set查重开(false) } }, '收起'),
+                          React.createElement('button', {type: 'button',  style: S.btn, onClick: () => { set查重(null); set查重开(false) } }, '收起'),
                         ),
                         React.createElement(
                           'div',
-                          { key: '说明', style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 4 }) },
+                          { key: '说明', style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
                           '「真重复」= 两条长度差不多，合了安全，默认勾上；' +
                             '「汇总+明细」= 一长一短（长的把短的包住了），默认不勾 —— ' +
                             '长的那条未必真的包含了短的每个细节，合了会丢东西。要合哪一组，自己勾那一组。' +
@@ -3352,10 +3352,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                   'div',
                                   {
                                     key: 'h',
-                                    style: { fontSize: 12, marginBottom: 4, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' },
+                                    style: { fontSize: 'var(--fish-small)', marginBottom: 4, display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', flexWrap: 'wrap' },
                                   },
-                                  // ⭐⭐ 2026-09-23：每组一个「要合」的勾 —— 不勾的组「按我勾的合」不会碰 ✓
-                                  React.createElement('input', {
+                                  // ⭐⭐ 2026-09-23：每组一个「要合」的勾 —— 不勾的组「按我勾的合」不会碰
+                                  React.createElement('input', {'aria-label': '合并第 ' + (i + 1) + ' 组',
                                     key: 'c',
                                     type: 'checkbox',
                                     checked: !!查重合[i],
@@ -3368,7 +3368,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                     ? null
                                     : React.createElement(
                                         'span',
-                                        { style: Object.assign({}, S.dim, { fontSize: 11 }) },
+                                        { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) },
                                         '（不参与）',
                                       ),
                                 ),
@@ -3378,10 +3378,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                     'label',
                                     {
                                       key: t.id,
-                                      style: { display: 'flex', gap: 6, alignItems: 'flex-start', padding: '3px 0', cursor: 'pointer' },
+                                      style: { display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'flex-start', padding: '3px 0', cursor: 'pointer' },
                                     },
                                     [
-                                      React.createElement('input', {
+                                      React.createElement('input', {'aria-label': '保留记忆：' + t.text,
                                         key: 'r',
                                         type: 'radio',
                                         name: '查重组' + i,
@@ -3395,7 +3395,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                       ),
                                       React.createElement(
                                         'span',
-                                        { key: 'n', style: Object.assign({}, S.dim, { fontSize: 11, whiteSpace: 'nowrap' }) },
+                                        { key: 'n', style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', overflowWrap: 'anywhere' }) },
                                         t.长 + ' 字',
                                       ),
                                     ],
@@ -3423,14 +3423,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       'div',
                       { style: S.confirm },
                       React.createElement('span', { style: { flex: 1 } }, '从正文里补日期？只补那 ' + 没日期的 + ' 条没日期的，已有的不动（补之前会自动备份）。'),
-                      React.createElement('button', { style: S.btn, onClick: 补日期 }, '补'),
-                      React.createElement('button', { style: S.btn, onClick: () => setConfirm(null) }, '算了'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: 补日期 }, '补'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
                 搜词 || 看哪边 !== '全部'
                   ? React.createElement(
                       'div',
-                      { style: Object.assign({}, S.dim, { fontSize: 12, margin: '0 0 6px' }) },
+                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '0 0 6px' }) },
                       '这里 ' + 过滤后.length + ' 条 / 共 ' + s.memories.length + ' 条' +
                         (看哪边 === '有时间' ? '（只看记了时间的）' : 看哪边 === '没时间' ? '（只看没记时间的）' : '') +
                         (过滤后.length === 0 ? ' —— 换几个字试试，或者点上面的「看」换个范围' : ''),
@@ -3446,14 +3446,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         搜词 ? '（没有含「' + 搜词 + '」的）' : '（这个范围里没有记忆）',
                       )
                     : (() => {
-                        // ⭐⭐ 2026-09-22（她要的）：**「全部」视图里，不会淡的收进一个折叠的分组** ✓
+                        // ⭐⭐ 2026-09-22（她要的）：**「全部」视图里，不会淡的收进一个折叠的分组**
                         //   原话：「那一行，我们是单独做一个收理的文件夹一样的，
                         //              不然的话那些就不需要露在外面」
                         //   ⭐ 又说：「**外面都是会淡的，里面才是不会淡的**，就不用管里面了」
                         //   → 外面只列**会淡的**；不会淡的（长期事实 + 没时间的）
-                        //     塞进「▸ 不会淡的（N 条）」里，点开才看 ✓
+                        //     塞进「▸ 不会淡的（N 条）」里，点开才看
                         const 上 = 画这个.slice(0, 画全部 ? 画这个.length : 一次最多画)
-                        // ⚠ 搜的时候**不许折叠** —— 不然搜到了却看不见 ✗
+                        // 注意：搜的时候**不许折叠** —— 不然搜到了却看不见 ✗
                         //   （自检逮到的：搜「衣服」时匹配的那条是长期事实，被收进分组里了）
                         if (看哪边 !== '全部' || 搜词) return 上.map(一条记忆)
                         const 会淡的 = 上.filter((m) => !不会淡(m))
@@ -3466,7 +3466,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                 { key: '事实组' },
                                 React.createElement(
                                   'div',
-                                  {
+                                  {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
                                     style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 14 }),
                                     onClick: () => set看事实(!看事实),
                                   },
@@ -3474,7 +3474,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                 ),
                                 React.createElement(
                                   'div',
-                                  { style: Object.assign({}, S.dim, { fontSize: 12, marginBottom: 4 }) },
+                                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
                                   '里面这些是长期事实（要记一辈子的事，不会淡）。' +
                                     '外面那些都会淡 —— 包括没记时间的（它们从「记下来的那天」开始淡）。',
                                 ),
@@ -3487,12 +3487,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 过滤后.length > 一次最多画
                   ? React.createElement(
                       'div',
-                      { style: { margin: '6px 0 0', fontSize: 12 } },
+                      { style: { margin: '6px 0 0', fontSize: 'var(--fish-small)' } },
                       画全部
-                        ? React.createElement('span', { style: S.link, onClick: () => set画全部(false) }, '↑ 收起来（只画前 ' + 一次最多画 + ' 条）')
+                        ? React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(false) }, '↑ 收起来（只画前 ' + 一次最多画 + ' 条）')
                         : React.createElement(
                             'span',
-                            { style: S.link, onClick: () => set画全部(true) },
+                            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(true) },
                             '还有 ' + (过滤后.length - 一次最多画) + ' 条' +
                               (看哪边 === '没时间' ? '（更早记的）' : 顺序 === '新' ? '（更早的）' : '（更新的）') +
                               '没画出来 —— 点这里全部显示（多了会卡）',
@@ -3504,7 +3504,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           React.createElement(
             'div',
             null,
-            React.createElement('div', { style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setShowDeleted(!showDeleted) }, (showDeleted ? '▾ ' : '▸ ') + '已删掉的（' + (已删.length + 被取代的.length) + '）'),
+            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setShowDeleted(!showDeleted) }, (showDeleted ? '▾ ' : '▸ ') + '已删掉的（' + (已删.length + 被取代的.length) + '）'),
             React.createElement('div', { style: S.dim }, '收起来的记忆不会被注入，但还留着，随时能找回来。'),
             showDeleted
               ? React.createElement(
@@ -3513,17 +3513,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   // ⭐⭐ 2026-09-22（反馈「你放在最下面的呀，你改到最上面去，
                   //     谁那么多条？如果有100条，我得翻到最下面才能全选吗？」）：
                   //   工具条原来在**列表最下面** —— 68 条就得翻到底才能点「全选」✗
-                  //   → 挪到**最上面**，跟标题挨着 ✓
+                  //   → 挪到**最上面**，跟标题挨着
                   // ⭐⭐ 2026-09-23（反馈「点『清空』之后提示在最下面，看都看不到」）：
                   //   确认条原来渲染在**列表下面** —— 68 条就得翻到底才看得见那两句问话 ✗
                   //   （跟 0.9.7 修过的「工具条在最下面」是同一个毛病）
                   //   → 改成**就地替换工具条**：两样都在最上面，点了「清空」，
-                  //     工具条那一格立刻变成确认条，不用滚 ✓
+                  //     工具条那一格立刻变成确认条，不用滚
                   已删.length > 0 && confirm && confirm.kind === 'purgeall'
                     ? 确认条('把收着的 ' + 已删.length + ' 条全清掉？找不回来了。', '全清掉', 'purgeall', '*')
                     : null,
                   // ⭐⭐ 2026-09-23（反馈「这里没有批量找回呀」）：批量找回的确认
-                  //   ⚠ 这个**不是销毁**（是往回捞），所以文案跟「清掉」正好相反
+                  //   注意：这个**不是销毁**（是往回捞），所以文案跟「清掉」正好相反
                   已删.length > 0 && !(confirm && confirm.kind === 'purgeall') && 批回问
                     ? React.createElement(
                         'div',
@@ -3536,12 +3536,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             : '把勾上的这 ' + 已选清几条 + ' 条捞回来？',
                           React.createElement(
                             'div',
-                            { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                             '捞回来之后它们又会被注入（跟原来一样）。不是销毁，随时能再删。',
                           ),
                         ),
-                        React.createElement('button', { style: S.btn, disabled: busy, onClick: () => 批回(s, 批回问.只合并) }, busy ? '捞着…' : '确定找回'),
-                        React.createElement('button', { style: S.btn, onClick: () => set批回问(false) }, '算了'),
+                        React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => 批回(s, 批回问.只合并) }, busy ? '捞着…' : '确定找回'),
+                        React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批回问(false) }, '算了'),
                       )
                     : null,
                   已删.length > 0 && !(confirm && confirm.kind === 'purgeall') && !批回问 && 批清问 && 已选清几条 > 0
@@ -3554,22 +3554,22 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           '要彻底清掉这 ' + 已选清几条 + ' 条吗？',
                           React.createElement(
                             'div',
-                            { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) },
+                            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
                             '清掉就找不回来了（备份目录里可能还有一份）。想留就用「找回来」。',
                           ),
                         ),
-                        React.createElement('button', { style: S.btnDanger, disabled: busy, onClick: () => 批清(s) }, busy ? '清着…' : '确定清掉（' + 已选清几条 + ' 条）'),
-                        React.createElement('button', { style: S.btn, onClick: () => set批清问(false) }, '算了'),
+                        React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 批清(s) }, busy ? '清着…' : '确定清掉（' + 已选清几条 + ' 条）'),
+                        React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批清问(false) }, '算了'),
                       )
                     : null,
                   已删.length > 0 && !(confirm && confirm.kind === 'purgeall') && !批回问 && !(批清问 && 已选清几条 > 0)
                     ? React.createElement(
                         'div',
-                        { style: { margin: '8px 0', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' } },
-                        // ⭐ 一键全选 ✓
+                        { style: { margin: '8px 0', display: 'flex', flexWrap: 'wrap', gap: 8, flexWrap: 'wrap', alignItems: 'center' } },
+                        // ⭐ 一键全选
                         React.createElement(
                           'button',
-                          {
+                          {type: 'button',
                             style: S.btn,
                             title: '把这一栏里的全勾上（再点一下取消）',
                             onClick: () => {
@@ -3585,19 +3585,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           },
                           已选清几条 === 已删.length && 已删.length > 0 ? '取消全选' : '全选（' + 已删.length + '）',
                         ),
-                        // ⭐ 批量清掉（勾了几条就显示几条）—— 点了**不直接清**，先问一遍 ✓
+                        // ⭐ 批量清掉（勾了几条就显示几条）—— 点了**不直接清**，先问一遍
                         已选清几条 > 0
                           ? React.createElement(
                               'button',
-                              { style: S.btnDanger, onClick: () => set批清问(true) },
+                              {type: 'button',  style: S.btnDanger, onClick: () => set批清问(true) },
                               '批量清掉（' + 已选清几条 + '）',
                             )
                           : null,
-                        // ⭐⭐ 2026-09-23（反馈「这里没有批量找回呀」）：**批量找回** ✓
+                        // ⭐⭐ 2026-09-23（反馈「这里没有批量找回呀」）：**批量找回**
                         已选清几条 > 0
                           ? React.createElement(
                               'button',
-                              {
+                              {type: 'button',
                                 style: S.btn,
                                 title: '把勾上的这几条从「已删」里捞回来（不是销毁，随时能再删）',
                                 onClick: () => set批回问({ 只合并: false }),
@@ -3605,11 +3605,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                               '批量找回（' + 已选清几条 + '）',
                             )
                           : null,
-                        // ⭐ 一键撤销整次合并：把「合并掉的」那批全捞回来 ✓
+                        // ⭐ 一键撤销整次合并：把「合并掉的」那批全捞回来
                         已删.filter((m) => m.合并掉的 === true).length > 0
                           ? React.createElement(
                               'button',
-                              {
+                              {type: 'button',
                                 style: S.btn,
                                 title: '把「合并掉的」那批全捞回来 —— 等于撤销整次合并',
                                 onClick: () => set批回问({ 只合并: true }),
@@ -3620,11 +3620,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         已选清几条 > 0
                           ? React.createElement(
                               'button',
-                              { style: S.btn, onClick: () => { set选中清({}); set批清问(false); set批回问(false) } },
+                              {type: 'button',  style: S.btn, onClick: () => { set选中清({}); set批清问(false); set批回问(false) } },
                               '取消勾选',
                             )
                           : null,
-                        React.createElement('button', { style: S.btn, onClick: () => setConfirm({ id: '*', kind: 'purgeall' }) }, '把「已删掉的」清空'),
+                        React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm({ id: '*', kind: 'purgeall' }) }, '把「已删掉的」清空'),
                       )
                     : null,
                   已删.length === 0
@@ -3635,9 +3635,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           { key: m.id, style: S.条 },
                           React.createElement(
                             'div',
-                            { style: S.row },
+                            { className: 'fish-record-row', style: S.row },
                             // ⭐ 批量清掉：行首一个勾选框（跟上面那栏一样）
-                            React.createElement('input', {
+                            React.createElement('input', {'aria-label': '选择已删记忆：' + m.text,
                               type: 'checkbox',
                               checked: !!选中清[m.id],
                               title: '勾上它，再点上面的「批量清掉」',
@@ -3645,8 +3645,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             }),
                             React.createElement('div', { style: Object.assign({}, S.dim, { width: 108, flex: 'none' }) }, '收于 ' + rel(m.deletedAt, now)),
                             React.createElement('div', { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0, overflowWrap: 'anywhere', wordBreak: 'break-word' }) }, m.text),
-                            React.createElement('div', { style: Object.assign({}, S.link, { flex: 'none', fontSize: 12, marginRight: 10 }), onClick: () => 删(m.id, 'restore') }, '找回来'),
-                            React.createElement('div', { style: Object.assign({}, S.drop, { flex: 'none', fontSize: 12, cursor: 'pointer' }), onClick: () => setConfirm({ id: m.id, kind: 'purge' }) }, '彻底清掉'),
+                            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)', marginRight: 10 }), onClick: () => 删(m.id, 'restore') }, '找回来'),
+                            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.drop, { flex: 'none', fontSize: 'var(--fish-small)', cursor: 'pointer' }), onClick: () => setConfirm({ id: m.id, kind: 'purge' }) }, '彻底清掉'),
                           ),
                           confirm && confirm.id === m.id && confirm.kind === 'purge'
                             ? 确认条('彻底清掉就找不回来了（备份里可能还有）。', '确认清掉', 'purge', m.id)
@@ -3655,10 +3655,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       ),
                   // ⭐⭐ 2026-09-24（她说的「那已被取代应该回回收站呀」）：
                   //   **被取代的**从主列表挪出来，收在回收站里（就在这一栏下面）✓
-                  //   ⚠ 放在 `showDeleted ?` **里面** —— 跟回收站一起折叠 ✓
+                  //   注意：放在 `showDeleted ?` **里面** —— 跟回收站一起折叠
                   //     （放外面的话，回收站收起来了它们还杵在那儿，看着像两栏）
                   //
-                  //   ⚠⚠ 它们**不在 `s.deleted` 里** —— 所以上面那排
+                  //   ⚠注意：它们**不在 `s.deleted` 里** —— 所以上面那排
                   //     「全选 / 批量清掉 / 把已删掉的清空」**碰不到它们**，
                   //     这是故意的：被取代是自动标的（可能几百条），
                   //     不该被「清空」连坐销毁（丢 157 条那次的教训）✗✗
@@ -3673,13 +3673,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         ),
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginBottom: 4 }) },
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
                           '这些是「讲的是同一件事」里比较旧的那条，自动收起来的 —— 不再被注入，但东西还留着。',
                         ),
                         React.createElement(
                           'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 12, marginBottom: 4 }) },
-                          '⚠ 「清空」不会清掉它们（只有你亲手删的那些才会被清掉）。想让它回来就点「恢复」。',
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
+                          '注意：「清空」不会清掉它们（只有你亲手删的那些才会被清掉）。想让它回来就点「恢复」。',
                         ),
                         被取代的.map((m) =>
                           React.createElement(
@@ -3687,7 +3687,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             { key: m.id, style: S.条 },
                             React.createElement(
                               'div',
-                              { style: S.row },
+                              { className: 'fish-record-row', style: S.row },
                               React.createElement(
                                 'div',
                                 { style: Object.assign({}, S.dim, { width: 108, flex: 'none' }) },
@@ -3698,14 +3698,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                 { style: { flex: '1 1 260px', minWidth: 200, overflowWrap: 'anywhere', wordBreak: 'break-word' } },
                                 React.createElement(
                                   'span',
-                                  { style: Object.assign({}, S.dim, { textDecoration: 'line-through', opacity: 0.62 }) },
+                                  { style: Object.assign({}, S.dim, { textDecoration: 'line-through', opacity: 1 }) },
                                   m.text,
                                 ),
                               ),
                               React.createElement(
                                 'div',
-                                {
-                                  style: Object.assign({}, S.link, { flex: 'none', fontSize: 12 }),
+                                {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                                  style: Object.assign({}, S.link, { flex: 'none', fontSize: 'var(--fish-small)' }),
                                   title: '让它回来 —— 又能被想起来了（标错了 / 状态又变回来了）',
                                   onClick: () => 撤销作废(m.id),
                                 },
@@ -3717,8 +3717,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                   'div',
                                   {
                                     style: Object.assign({}, S.dim, {
-                                      margin: '0 0 6px 104px',
-                                      fontSize: 11,
+                                      margin: '4px 0 8px',
+                                      fontSize: 'var(--fish-small)',
                                       overflowWrap: 'anywhere',
                                       wordBreak: 'break-word',
                                     }),
@@ -3730,20 +3730,20 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         ),
                       )
                     : null,
-                  // ⚠ 工具条和两个确认条**都在上面**了（见前面那段）——
+                  // 注意：工具条和两个确认条**都在上面**了（见前面那段）——
                   //   原来「批量清掉」和「清空」的确认条渲染在这儿（列表最下面），
-                  //   条数一多就看不见 ✗ → 挪走了，这里不再重复 ✓
+                  //   条数一多就看不见 失败：→ 挪走了，这里不再重复
                 )
               : null,
           ),
-          // ⚠ 2026-09-22：**「备份」原来插在这里**（在「扩词」「导入」前面），
+          // 注意：2026-09-22：**「备份」原来插在这里**（在「扩词」「导入」前面），
           //   可它后面跟的却是那两个区块 —— 看着像它俩的标题，其实只是句说明 ✗
           //   （「设置页面会不会有点乱」）
-          //   → 挪到**末尾**，跟「这一页到底会怎么变」那些说明放一起 ✓
+          //   → 挪到**末尾**，跟「这一页到底会怎么变」那些说明放一起
           React.createElement('div', null, 扩词区()),
           React.createElement(
             'div',
-            { style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setImpOpen(!impOpen) },
+            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setImpOpen(!impOpen) },
             (impOpen ? '▾ ' : '▸ ') + '从旧档案导入',
           ),
           React.createElement('div', { style: S.dim }, '把一个文件夹里的档案拆成一条条记忆，你挑完再导。文件夹在下面选。'),
@@ -3756,7 +3756,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement('div', { style: S.dim }, '线索：「' + String(tr.query || '').slice(0, 50) + '」'),
                 tr.semantic ? React.createElement('div', { style: S.dim }, '语义：缺失向量 ' + tr.semantic.missing + '；耗时 ' + tr.semantic.latencyMs + 'ms；回退 ' + (tr.semantic.fallback || '无')) : null,
                 (() => {
-                  // ⚠ 按分数排再显示 —— 老记录是按**入库顺序**存的，
+                  // 注意：按分数排再显示 —— 老记录是按**入库顺序**存的，
                   //   直接取前 12 条全是 0 分的老条目，看不出到底挑中了什么 ✗
                   //   （反馈：「这里为什么只有这些，该显示最近标中的」）
                   const 排好 = (tr.rows || []).slice().sort((a, b) => (b.P || 0) - (a.P || 0) || (b.C || 0) - (a.C || 0))
@@ -3766,9 +3766,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     null,
                     React.createElement(
                       'div',
-                      { style: Object.assign({}, S.dim, { fontSize: 12, margin: '2px 0 4px' }) },
+                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '2px 0 4px' }) },
                       进去的.length
-                        ? '✓ 挑中并塞进去了 ' + 进去的.length + ' 条（排在最前面）'
+                        ? '挑中并塞进去了 ' + 进去的.length + ' 条（排在最前面）'
                         : '这次一条都没挑中（线索跟记忆对不上）',
                     ),
                     排好.slice(0, 20).map((r, i) => {
@@ -3788,8 +3788,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         React.createElement(
                           'div',
                           { style: { flex: 1 } },
-                          (r.omission ? '　' : '✓ ') + String((mm && mm.text) || r.id).slice(0, 60),
-                          r.storeId ? React.createElement('button', { style: S.btn, onClick: () => setOpen(origin.id) }, '原库：' + r.storeId) : null,
+                          (r.omission ? '　' : '') + String((mm && mm.text) || r.id).slice(0, 60),
+                          r.storeId ? React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setOpen(origin.id) }, '原库：' + r.storeId) : null,
                         ),
                         React.createElement('div', { style: Object.assign({}, S.dim, { width: 54 }) }, 'C ' + r.C + (r.vectorMissing ? ' / 向量缺失' : '') + (r.semantic !== null && r.semantic !== undefined ? ' / cos ' + r.semantic.toFixed(3) + ' / R ' + r.R : '')),
                         React.createElement('div', { style: Object.assign({}, S.dim, { width: 54 }) }, 'P ' + r.P),
@@ -3800,7 +3800,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 })(),
                 React.createElement(
                   'div',
-                  { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 6 }) },
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 6 }) },
                   '「进去了」= 这一轮塞进提示词了；「像是用上了」= 她回复里的实词跟这条重合得多（这是猜的）；「已失效」= 这条后来被删了或改过。',
                 ),
               )
@@ -3823,7 +3823,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const WK = spec.filter((s) => s.group === 'weight').map((s) => s.key)
 
       const setOne = (k, native) => {
-        // 函数式更新 —— 连着改两格不会互相覆盖 ✓
+        // 函数式更新 —— 连着改两格不会互相覆盖
         setParams((prev) => Object.assign({}, prev, { [k]: native }))
         if (WK.indexOf(k) >= 0) setPin(k)
         setNotes(null)
@@ -3845,7 +3845,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         const unit = isW ? '%' : s.unit || ''
         const head = [
           React.createElement('span', { key: 'lbl', style: { flex: '0 0 auto' } }, s.label),
-          React.createElement('input', {
+          React.createElement('input', {'aria-label': s.label,
             key: 'inp',
             type: 'number',
             style: S.inp,
@@ -3863,13 +3863,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           }),
         ]
         if (unit) head.push(React.createElement('span', { key: 'unit', style: S.dim }, unit))
-        head.push(React.createElement('span', { key: 'rng', style: Object.assign({}, S.dim, { fontSize: 11, opacity: 0.75 }) }, '（' + lo + ' ~ ' + hi + '）'))
+        head.push(React.createElement('span', { key: 'rng', style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', opacity: 1 }) }, '（' + lo + ' ~ ' + hi + '）'))
         return React.createElement(
           'div',
           { key: s.key, style: { margin: '7px 0' } },
-          React.createElement('div', { style: { display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' } }, head),
+          React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' } }, head),
           s.tip
-            ? React.createElement('div', { style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2, lineHeight: 1.5 }) }, s.tip)
+            ? React.createElement('div', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2, lineHeight: 1.5 }) }, s.tip)
             : null,
         )
       }
@@ -3904,8 +3904,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               React.createElement('span', { style: { display: 'inline-block', width: 110 } }, '合计'),
               React.createElement('span', { style: wSum === 100 ? S.ok : S.warn, fontWeight: 600 }, wSum + '%'),
               wSum === 100
-                ? React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 12 }) }, '正好 ✓')
-                : React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 12 }) }, '不是 100% —— 保存时会自动调平'),
+                ? React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 'var(--fish-small)' }) }, '正好')
+                : React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 'var(--fish-small)' }) }, '不是 100% —— 保存时会自动调平'),
             ),
           )
         }
@@ -3914,12 +3914,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
 
       return React.createElement(
         'div',
-        { style: S.wrap },
+        { className: 'fish-module fish-memory', style: S.wrap },
         React.createElement(
           'div',
-          { style: { display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 } },
-          React.createElement('span', { style: { fontSize: 15, fontWeight: 600 } }, '鱼的记忆'),
-          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 12 }) }, 'v' + (d.version || '?')),
+          { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 8, marginBottom: 10 } },
+          React.createElement('span', { style: { fontSize: 15, fontWeight: 600 } }, '长期记忆'),
+          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, 'v' + (d.version || '?')),
         ),
         React.createElement('div', { style: Object.assign({}, S.h, { marginTop: 0 }) }, '哪些会话用记忆'),
         React.createElement(
@@ -3931,7 +3931,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           'div',
           { style: S.nameBox },
           React.createElement('div', { style: { flex: 'none', width: 132 } }, '用户的称呼'),
-          React.createElement('input', {
+          React.createElement('input', {'aria-label': 'ta / 她 / 他',
             style: Object.assign({}, S.inp, { width: 90 }),
             placeholder: 'ta / 她 / 他',
             value: pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta',
@@ -3939,13 +3939,13 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           }),
           React.createElement(
             'button',
-            {
+            {type: 'button',
               style: S.btn,
               onClick: () => {
                 const p = pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta'
                 post('/names', { userPronoun: p }).then((r) => {
                   setPronounDraft(null)
-                  // 影响到了旧记忆就先问一句，不偷偷改 ✓
+                  // 影响到了旧记忆就先问一句，不偷偷改
                   if (r && r.称呼影响几条 > 0 && !r.称呼已改) setPronounAsk({ n: r.称呼影响几条, to: p, 例子: r.称呼例子 || [] })
                   else setPronounAsk(null)
                   load()
@@ -3954,7 +3954,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             },
             '存',
           ),
-          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 12, flex: 1 }) }, '记忆里提到你时用哪个字。默认「ta」；设成「她」或「他」就按你设的记。'),
+          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1 }) }, '记忆里提到你时用哪个字。默认「ta」；设成「她」或「他」就按你设的记。'),
         ),
         pronounAsk
           ? React.createElement(
@@ -3965,12 +3965,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 { style: { flex: 1 } },
                 React.createElement('div', null, '已有 ' + pronounAsk.n + ' 条旧记忆里还写着旧的字。要一起改成「' + pronounAsk.to + '」吗？'),
                 (pronounAsk.例子 || []).slice(0, 2).map((e, i) =>
-                  React.createElement('div', { key: i, style: Object.assign({}, S.dim, { fontSize: 12, marginTop: 2 }) }, '　「' + e.旧 + '」→「' + e.新 + '」'),
+                  React.createElement('div', { key: i, style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) }, '　「' + e.旧 + '」→「' + e.新 + '」'),
                 ),
               ),
               React.createElement(
                 'button',
-                {
+                {type: 'button',
                   style: S.btn,
                   onClick: () =>
                     post('/names', { userPronoun: pronounAsk.to, applyToExisting: true }).then(() => {
@@ -3980,7 +3980,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 },
                 '一起改',
               ),
-              React.createElement('button', { style: S.btn, onClick: () => setPronounAsk(null) }, '以后再说'),
+              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setPronounAsk(null) }, '以后再说'),
             )
           : null,
         // ⭐ 1.3.4：**总开关**（管整个插件）+ 下面每个会话自己的开关
@@ -3990,11 +3990,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           { style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
           React.createElement(
             'button',
-            {
+            {type: 'button',
               style: Object.assign({}, S.btn, {
                 flex: 'none',
-                color: d.全局开关 !== false ? '#8fd0a0' : 'inherit',
-                borderColor: d.全局开关 !== false ? 'rgba(143,208,160,.6)' : 'rgba(128,128,128,.35)',
+                color: d.全局开关 !== false ? 'var(--fish-success)' : 'inherit',
+                borderColor: d.全局开关 !== false ? 'var(--fish-success)' : 'var(--fish-border)',
               }),
               disabled: busy,
               onClick: () => {
@@ -4018,7 +4018,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           ),
         ),
         React.createElement(EmbeddingSettings, {}),
-        React.createElement('div', { style: S.条 },
+        React.createElement('div', { className: 'fish-record', style: S.条 },
           React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
           React.createElement('label', null, '主人 QQ ', React.createElement('input', {
             'aria-label': '主人 QQ', value: d.qqOwner || '', style: S.inp,
@@ -4028,7 +4028,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             'aria-label': '隔离群号', value: Array.isArray(d.qqIsolatedGroups) ? d.qqIsolatedGroups.join(',') : d.qqIsolatedGroups || '', style: S.inp,
             onChange: e => setD({ ...d, qqIsolatedGroups: e.target.value }),
           })),
-          React.createElement('button', { style: S.btn, disabled: busy, onClick: async () => {
+          React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: async () => {
             setBusy(true)
             try {
               const result = await post('/qq-settings', { qqOwner: d.qqOwner, qqIsolatedGroups: Array.isArray(d.qqIsolatedGroups) ? d.qqIsolatedGroups.join(',') : d.qqIsolatedGroups })
@@ -4037,7 +4037,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             } catch (e) { setErr(e.message) } finally { setBusy(false) }
           } }, '保存 QQ 设置'),
           React.createElement('p', { style: S.dim }, '群号以逗号分隔。其余已绑定群默认共用普通群库。主人仅在可信私聊轮次跨库检索；其他私聊独立。每个聊天仍须独立会话，未绑定群不会接入。切换隔离后旧库保留，可在下方按库管理。'),
-          React.createElement('button', { style: S.btn, disabled: busy, onClick: async () => {
+          React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: async () => {
             setBusy(true)
             try {
               const preview = await post('/qq-migrate', {})
@@ -4047,7 +4047,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           } }, '预览旧数据迁移'),
           d.qqMigration ? React.createElement('div', null,
             React.createElement('pre', { style: { maxHeight: 240, overflow: 'auto', whiteSpace: 'pre-wrap' } }, JSON.stringify(d.qqMigration, null, 2)),
-            React.createElement('button', { style: S.btn, disabled: busy || !d.qqMigration.preview, onClick: async () => {
+            React.createElement('button', {type: 'button',  style: S.btn, disabled: busy || !d.qqMigration.preview, onClick: async () => {
               setBusy(true)
               try { const result = await post('/qq-migrate', { execute: true }); setD(old => ({ ...old, qqMigration: result })) }
               catch (e) { setErr(e.message) } finally { setBusy(false) }
@@ -4059,11 +4059,11 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           { style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
           React.createElement(
             'button',
-            {
+            {type: 'button',
               style: Object.assign({}, S.btn, {
                 flex: 'none',
-                color: d.模式 === 'workspace' ? '#8fd0a0' : 'inherit',
-                borderColor: d.模式 === 'workspace' ? 'rgba(143,208,160,.6)' : 'rgba(128,128,128,.35)',
+                color: d.模式 === 'workspace' ? 'var(--fish-success)' : 'inherit',
+                borderColor: d.模式 === 'workspace' ? 'var(--fish-success)' : 'var(--fish-border)',
               }),
               disabled: busy,
               onClick: () => {
@@ -4105,15 +4105,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         (d.sessions || []).map((s) =>
           React.createElement(
             'div',
-            { key: s.id, style: Object.assign({}, S.row, S.条) },
+            { key: s.id, className: 'fish-library-row', style: Object.assign({}, S.row, S.条) },
             React.createElement(
               'button',
-              {
+              {type: 'button',
                 style: Object.assign({}, S.btn, {
                   flex: 'none',
-                  width: 56,
-                  color: s.enabled ? '#8fd0a0' : 'inherit',
-                  borderColor: s.enabled ? 'rgba(143,208,160,.6)' : 'rgba(128,128,128,.35)',
+                  minWidth: 72,
+                  color: s.enabled ? 'var(--fish-success)' : 'inherit',
+                  borderColor: s.enabled ? 'var(--fish-success)' : 'var(--fish-border)',
                 }),
                 disabled: busy,
                 onClick: () => {
@@ -4128,19 +4128,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               },
               s.enabled ? '● 开' : '○ 关',
             ),
-            React.createElement('div', { style: Object.assign({}, S.link, { flex: 1, minWidth: 0, overflowWrap: 'anywhere' }), onClick: () => setOpen(s.id) }, s.title || s.id.slice(0, 24)),
-            s.live ? null : React.createElement('div', { style: Object.assign({}, S.dim, { width: 48, fontSize: 12 }) }, '不在线'),
+            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 1, minWidth: 0, overflowWrap: 'anywhere' }), onClick: () => setOpen(s.id) }, s.title || s.id.slice(0, 24)),
+            s.live ? null : React.createElement('div', { style: Object.assign({}, S.dim, { width: 48, fontSize: 'var(--fish-small)' }) }, '不在线'),
             React.createElement('div', { style: Object.assign({}, S.dim, { width: 60 }) }, s.count + ' 条'),
             React.createElement('div', { style: Object.assign({}, S.dim, { width: 90 }) }, s.lastTrace ? rel(s.lastTrace, now) : '—'),
           ),
         ),
-        // ⭐ 2026-09-22（「设置页面会不会有点乱」）：**参数默认收起来** ✓
+        // ⭐ 2026-09-22（「设置页面会不会有点乱」）：**参数默认收起来**
         //   那是**调一次就不动**的东西，原来直接铺在会话列表下面，占了大半屏，
-        //   把常用的（会话列表）挤到上面去了。收成一行，想看再点开 ✓
+        //   把常用的（会话列表）挤到上面去了。收成一行，想看再点开
         React.createElement(
           'div',
-          { style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => set看参数(!看参数) },
-          (看参数 ? '▾ ' : '▸ ') + '参数（调一次就不动的东西，点开调）',
+          {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => set看参数(!看参数) },
+          (看参数 ? '▾ ' : '▸ ') + '召回与遗忘参数',
         ),
         看参数
           ? React.createElement(
@@ -4150,26 +4150,26 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               blocks,
               React.createElement(
                 'div',
-                { style: { marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' } },
+                { style: { marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' } },
                 React.createElement(
                   'button',
-                  { style: S.btn, disabled: busy, onClick: () => save(Object.assign({}, params, { pin })) },
+                  {type: 'button',  style: S.btn, disabled: busy, onClick: () => save(Object.assign({}, params, { pin })) },
                   busy ? '保存中…' : '保存参数',
                 ),
-                React.createElement('button', { style: S.btn, disabled: busy, onClick: () => save({ reset: true }) }, '恢复默认'),
-                React.createElement('button', { style: S.btn, disabled: busy, onClick: () => load() }, '刷新'),
+                React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => save({ reset: true }) }, '恢复默认'),
+                React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => load() }, '刷新'),
               ),
             )
           : null,
         notes && notes.length
           ? React.createElement(
               'div',
-              { style: Object.assign({}, S.warn, { marginTop: 8, fontSize: 12, whiteSpace: 'pre-line' }) },
+              { style: Object.assign({}, S.warn, { marginTop: 8, fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
               '　· ' + notes.join('\n　· '),
             )
           : null,
-        React.createElement('div', { style: S.h }, '看某个会话'),
-        React.createElement('div', { style: S.dim }, '点上面的会话名字'),
+        React.createElement('div', { style: S.h }, '打开一个记忆库'),
+        React.createElement('div', { style: S.dim }, '选择上方名称，查看、编辑记忆和档案，或使用管理工具。'),
       )
     }
 
@@ -4182,7 +4182,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             name: 'settings.section',
             id: 'memory',
             order: 51,
-            label: () => '鱼的记忆',
+            label: () => '长期记忆',
           },
           () => React.createElement('div', null, null, React.createElement(Section)),
         ),

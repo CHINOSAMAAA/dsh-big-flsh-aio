@@ -4,7 +4,7 @@
 // 在 **DSH 设置** 左侧栏加一项「通到 QQ」，Plus 增加历史导入页。
 // 绑定是核心：一行 = 一个聊天（私聊 或 群）→ 一间 DSH 会话，各回各的，不串。
 //
-// ⚠ 这里不碰会话、不发消息，只是往宿主那几条 /dsh-qq-bridge/* 路由上读写。
+// 注意：这里不碰会话、不发消息，只是往宿主那几条 /dsh-qq-bridge/* 路由上读写。
 
 window.__ModuleLoader__.load({
   id: 'dsh-qq-link-plus',
@@ -25,113 +25,46 @@ window.__ModuleLoader__.load({
     const h = React.createElement
 
     const S = {
-      wrap: {
-        padding: '20px 20px 28px',
-        fontSize: 13,
-        lineHeight: 1.6,
-        background: 'var(--dsw-alias-bg-layer-1, rgba(255,255,255,.92))',
-        border: '1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.08))',
-        borderRadius: 12,
-      },
-      h: { fontSize: 14, fontWeight: 600, margin: '0 0 12px' },
-      dim: { opacity: 0.62, fontSize: 12 },
-      card: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 8,
-        padding: '16px',
-        marginBottom: 0,
-        minWidth: 0,
-        background: 'var(--dsw-alias-bg-layer-1)',
-      },
-      row: { display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 14, flexWrap: 'wrap' },
-      lab: { flex: '0 1 190px', paddingTop: 3, fontSize: 12.5, fontWeight: 500 },
+      wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
+      h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 },
+      dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-surface)' },
+      row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
+      lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
-      hint: { opacity: 0.6, fontSize: 11.5, marginTop: 2 },
-      input: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '4px 8px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12.5,
-        width: '100%',
-        boxSizing: 'border-box',
-      },
-      small: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '4px 8px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12.5,
-        width: 140,
-        boxSizing: 'border-box',
-      },
-      wide: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '4px 8px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12.5,
-        width: '100%',
-        boxSizing: 'border-box',
-      },
-      ok: { color: 'var(--dsw-alias-state-business-primary)', fontSize: 12 },
-      已同步: { margin: '6px 0 10px', fontSize: 12, color: 'var(--dsw-alias-state-business-primary)' },
-      未保存: { margin: '6px 0 10px', fontSize: 12, color: '#c0392b', fontWeight: 600 },
-      悬浮保存条: {
-        position: 'sticky',
-        bottom: 0,
-        marginTop: 12,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        flexWrap: 'wrap',
-        padding: '8px 12px',
-        borderRadius: 10,
-        border: '1px solid var(--dsw-alias-border-l2)',
-        background: 'var(--dsw-alias-bg-layer-1, rgba(255,255,255,.95))',
-        boxShadow: '0 -6px 18px rgba(0,0,0,.18)',
-        zIndex: 5,
-      },
-      btn: {
-        border: '1px solid var(--dsw-alias-border-l2)',
-        borderRadius: 6,
-        padding: '4px 12px',
-        background: 'transparent',
-        color: 'inherit',
-        fontSize: 12,
-        cursor: 'pointer',
-      },
-      btnOn: {
-        border: '1px solid var(--dsw-alias-state-business-primary)',
-        borderRadius: 6,
-        padding: '4px 12px',
-        background: 'var(--dsw-alias-state-business-primary)',
-        color: '#fff',
-        fontSize: 12,
-        cursor: 'pointer',
-      },
-      tabBar: { display: 'flex', gap: 8, flexWrap: 'wrap', margin: '16px 0', paddingBottom: 14, borderBottom: '1px solid var(--dsw-alias-border-l2)' },
-      stack: { display: 'grid', gap: 14 },
-      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 14, alignItems: 'start' },
-      group: { border: '1px solid var(--dsw-alias-border-l2)', borderRadius: 10, padding: '14px 16px' },
-      summary: { fontWeight: 600, fontSize: 14, cursor: 'pointer', padding: '2px 0 12px' },
-      日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 11.5, whiteSpace: 'pre-wrap' },
-      表头: { display: 'grid', gridTemplateColumns: '70px minmax(90px, 130px) minmax(90px, 1fr) 40px 64px 48px', gap: 8, alignItems: 'center', marginBottom: 8, minWidth: 500 },
-      表格行: { display: 'grid', gridTemplateColumns: '70px minmax(90px, 130px) minmax(90px, 1fr) 40px 64px 48px', gap: 8, alignItems: 'center', marginBottom: 8, minWidth: 500 },
-      表头字: { fontSize: 11.5, opacity: 0.65 },
-      空间表头: { display: 'grid', gridTemplateColumns: '120px 140px 1fr 56px', gap: 6, alignItems: 'center', marginBottom: 4 },
-      空间行: { display: 'grid', gridTemplateColumns: '120px 140px 1fr 56px', gap: 6, alignItems: 'center', marginBottom: 6 },
+      hint: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)', marginTop: 8, lineHeight: 1.75 },
+      input: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' },
+      small: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: 136, maxWidth: '100%', boxSizing: 'border-box' },
+      wide: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', width: '100%', boxSizing: 'border-box' },
+      ta: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '12px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-body)', width: '100%', minHeight: 112, boxSizing: 'border-box', lineHeight: 1.75, fontFamily: 'inherit', resize: 'vertical' },
+      ok: { color: 'var(--fish-success)', fontSize: 'var(--fish-small)' },
+      warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: 16, marginBottom: 16 },
+      已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
+      未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
+      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 12, border: '1px solid var(--fish-border)', background: 'var(--fish-surface)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
+      btn: { border: '1px solid var(--fish-border)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-surface)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      btnOn: { border: '1px solid var(--fish-action)', borderRadius: 8, padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
+      tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
+      stack: { display: 'grid', gap: 20 },
+      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
+      group: { borderTop: '1px solid var(--fish-border)', padding: '20px 0' },
+      summary: { fontWeight: 600, fontSize: 16, cursor: 'pointer', padding: '8px 0 16px' },
+      日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
+      表头: {}, 表格行: {}, 空间表头: {}, 空间行: {},
+      表头字: { fontSize: 'var(--fish-small)', color: 'var(--fish-muted)' },
+      已勾: { border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 8, padding: '12px 16px', fontSize: 'var(--fish-small)' },
+      清单: { border: '1px solid var(--fish-border)', borderRadius: 8, marginTop: 12, maxHeight: 320, overflowY: 'auto' },
+      会话行: { display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid var(--fish-line)' },
+      会话行勾上: { background: 'var(--fish-accent-soft)', fontWeight: 550 },
+      tag: { display: 'inline-block', border: '1px solid var(--fish-border)', borderRadius: 4, padding: '2px 8px', fontSize: 'var(--fish-small)', marginRight: 8 }
     }
 
     const 提示 = (文本) => h('div', { style: S.hint }, 文本)
     const 行 = (标签, 控件, 说明) =>
-      h('div', { style: S.row }, h('div', { style: S.lab }, 标签), h('div', { style: S.ctl }, 控件, 说明 ? 提示(说明) : null))
+      h('div', { className: 'fish-form-row', style: S.row }, h('div', { className: 'fish-form-label', style: S.lab }, 标签), h('div', { className: 'fish-control', style: S.ctl }, (['input', 'select', 'textarea'].includes(控件?.type) ? React.cloneElement(控件, { 'aria-label': 标签 }) : 控件), 说明 ? 提示(说明) : null))
     const 按钮 = (文字, onClick, 亮, 关) =>
       h('button', { type: 'button', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 }, 文字)
-    const 勾 = (值, onChange) => h('input', { type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+    const 勾 = (值, onChange, label = '切换设置') => h('input', {'aria-label': label, type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
     const 短id = (id) => {
       const s = String(id)
       return s.length <= 8 ? s : s.slice(-8)
@@ -189,7 +122,7 @@ window.__ModuleLoader__.load({
         const r = await post('/persona-apply', {})
         设人设忙(false)
         if (!r || !r.ok) {
-          设人设说('✗ ' + ((r && r.说) || '请求未响应'))
+          设人设说('失败：' + ((r && r.说) || '请求未响应'))
           return
         }
         const 行们 = Array.isArray(r.结果们) ? r.结果们 : []
@@ -198,7 +131,7 @@ window.__ModuleLoader__.load({
           return
         }
         const 不顺 = 行们.filter((x) => !x.生效)
-        设人设说((r.生效 ? '✓ ' + r.生效 + ' 个会话已应用' : '未应用到任何会话')
+        设人设说((r.生效 ? '' + r.生效 + ' 个会话已应用' : '未应用到任何会话')
           + (不顺.length ? '；' + 不顺.map((x) => x.聊天 + '：' + x.说).join('；') : ''))
       }
       const 改 = (k, v) => {
@@ -256,7 +189,7 @@ window.__ModuleLoader__.load({
         await 拉()
       }
 
-      if (!态) return h('div', { style: S.wrap }, h('div', { style: S.h }, '通到 QQ'), h('div', { style: S.dim }, '读取中…'))
+      if (!态) return h('div', { className: 'fish-module fish-qq', style: S.wrap }, h('div', { className: 'fish-section-title', style: S.h }, '连接与转发'), h('div', { style: S.dim }, '读取中…'))
 
       const 配置 = 态.配置 || {}
       const 目标们 = Array.isArray(态.活着的会话) ? 态.活着的会话 : []
@@ -265,14 +198,14 @@ window.__ModuleLoader__.load({
       const 绑定 = 绑定们()
 
       const 会话选项 = (值, onChange) =>
-        h('select', { style: S.wide, value: 值 || '', onChange: (e) => onChange(e.target.value) },
+        h('select', {'aria-label': '目标会话', style: S.wide, value: 值 || '', onChange: (e) => onChange(e.target.value) },
           h('option', { value: '' }, '请选择目标会话'),
           ...目标们.map((s) => h('option', { value: s.id }, (s.标题 || '…' + 短id(s.id)) + ' · ' + 短id(s.id))),
           值 && !目标们.some((s) => s.id === 值)
             ? h('option', { value: 值 }, '（当前：' + 短id(值) + '）')
             : null)
 
-      const 页签 = h('div', { style: S.tabBar },
+      const 页签 = h('div', { className: 'fish-subnav', style: S.tabBar },
         ...页签们.map((名) => 按钮(名 === '绑定' ? '配置' : 名, () => 设页(名), 页 === 名, false)))
 
       const 历史请求 = async (path, body, memory = false) => {
@@ -310,7 +243,7 @@ window.__ModuleLoader__.load({
           const list = await get('/history/jobs')
           if (list?.ok) 设历史列表(list.jobs)
           设历史说('读取完成，请核对记录范围和发言人身份。')
-        } catch (e) { 设历史说('✗ ' + e.message) }
+        } catch (e) { 设历史说('失败：' + e.message) }
         finally { 历史控制.running = false; 设历史忙(false) }
       }
       const 整理历史 = async () => {
@@ -338,15 +271,15 @@ window.__ModuleLoader__.load({
             job = committed.job; 设历史任务(job)
           }
           设历史任务(job)
-          设历史说(job.done ? '✓ 处理完成，可在「鱼的记忆」核查结果。' : '已暂停，可从已保存进度继续。')
+          设历史说(job.done ? '处理完成，可在「鱼的记忆」核查结果。' : '已暂停，可从已保存进度继续。')
           const list = await get('/history/jobs')
           if (list?.ok) 设历史列表(list.jobs)
-        } catch (e) { 设历史说('✗ ' + e.message + '；进度已保存，可重试。') }
+        } catch (e) { 设历史说('失败：' + e.message + '；进度已保存，可重试。') }
         finally { 历史控制.running = false; 设历史忙(false) }
       }
       const 历史页 = h('div', { style: S.stack },
         h('div', { style: S.card },
-          h('div', { style: S.h }, '导入 QQ 聊天记录'),
+          h('div', { className: 'fish-section-title', style: S.h }, '导入 QQ 聊天记录'),
           h('p', null, '按时间分段读取记录，通过摘要衔接上下文并写入「鱼的记忆 Plus」。目标会话需使用 DeepSeek。'),
           行('目标会话绑定', h('select', { style: S.wide, value: 历史绑定, disabled: 历史忙, 'aria-label': '历史导入绑定', onChange: e => 设历史绑定(e.target.value) },
             h('option', { value: '' }, '请选择已保存的绑定'),
@@ -391,7 +324,7 @@ window.__ModuleLoader__.load({
             + '上报地址：'
             + 'http://127.0.0.1:<DSH 端口>' + B + '/notice。'
             + '仅处理 notice，消息仍通过轮询接收。'),
-          行('上报口令（选填）', h('input', {
+          行('上报口令（选填）', h('input', {'aria-label': '通知口令',
             style: S.wide,
             value: String(配置.通知口令 || ''),
             placeholder: '留空不校验口令',
@@ -401,7 +334,7 @@ window.__ModuleLoader__.load({
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '会话绑定（' + 绑定.length + ' 条）'),
           绑定.length === 0
-            ? h('div', { style: S.dim }, '暂无绑定，请在「配置」中添加 QQ 与 DSH 会话映射。')
+            ? h('div', { style: S.dim }, '暂无绑定，请在「绑定」中添加 QQ 与 DSH 会话映射。')
             : h('div', null,
               ...绑定.map((x, i) => h('div', { key: i, style: { marginBottom: 4 } },
                 (x.类型 === '群' ? '群 ' : '私聊 ') + String(x.号码 || '?')
@@ -419,7 +352,7 @@ window.__ModuleLoader__.load({
             h('span', { style: S.dim }, '　'),
             按钮('刷新', 拉, false, 忙)),
           h('div', { style: { ...S.dim, marginTop: 4 } }, '测试消息会实际发送至 QQ，不受试运行限制。'),
-          说 ? h('div', { style: { ...S.ok, marginTop: 6 } }, 说) : null,
+          说 ? h('div', { role: 'status', 'aria-live': 'polite', style: { ...S.ok, color: 'var(--fish-text)', marginTop: 6 } }, 说) : null,
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '最近 ' + 日志.length + ' 条日志（按时间升序）'),
@@ -437,7 +370,7 @@ window.__ModuleLoader__.load({
           h('div', { style: S.dim },
             '未配置独立角色的会话使用全局设定。'),
           h('div', { style: { marginTop: 6 } }, 勾(配置.人设开, (v) => 改('人设开', v)), ' ', '启用角色设定'),
-          h('textarea', {
+          h('textarea', {'aria-label': '人设',
             style: { ...S.input, display: 'block', width: '100%', height: 88, marginTop: 6, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
             value: String(配置.人设 || ''),
             placeholder: '输入角色身份、表达风格与交互要求。',
@@ -465,23 +398,23 @@ window.__ModuleLoader__.load({
           绑定.length === 0
             ? h('div', { style: { ...S.dim, margin: '8px 0' } }, '暂无条目，请添加。')
             : h('div', null, ...绑定.map((x, i) => h(React.Fragment, { key: i },
-              h('div', { style: S.表格行 },
-                h('select', { style: S.wide, value: x.类型 || '群', onChange: (e) => 改绑定(i, { 类型: e.target.value }) },
+              h('div', { className: 'fish-binding-row', style: S.表格行 },
+                h('select', {'aria-label': '绑定类型', style: S.wide, value: x.类型 || '群', onChange: (e) => 改绑定(i, { 类型: e.target.value }) },
                   h('option', { value: '私聊' }, '私聊'),
                   h('option', { value: '群' }, '群')),
-                h('input', {
+                h('input', {'aria-label': 'QQ 号或群号',
                   style: S.wide, value: String(x.号码 || ''), placeholder: x.类型 === '私聊' ? 'QQ 号' : '群号',
                   onChange: (e) => 改绑定(i, { 号码: e.target.value.trim() }),
                 }),
-                h('input', {
+                h('input', {'aria-label': '对方称呼',
                   style: S.wide, value: String(x.称呼 || ''),
                   placeholder: x.类型 === '私聊' ? '对方' : '群成员',
                   onChange: (e) => 改绑定(i, { 称呼: e.target.value }),
                 }),
                 h('div', { style: { textAlign: 'center' } },
-                  勾(x.门槛, (v) => 改绑定(i, { 门槛: v }))),
+                  勾(x.门槛, (v) => 改绑定(i, { 门槛: v }), '启用回复门槛')),
                 h('div', { style: { textAlign: 'center' } },
-                  按钮(String(x.人设 || '').trim() ? '✓ 独立' : '独立', () => 设人设行(人设行 === i ? null : i), false, false)),
+                  按钮(String(x.人设 || '').trim() ? '独立' : '独立', () => 设人设行(人设行 === i ? null : i), false, false)),
                 h('div', null, 按钮('删除', () => 删绑定(i), false, false))),
               // ⭐ 1.1.0：会话单独占一整行，宽度给够
               h('div', { style: { display: 'grid', gridTemplateColumns: '70px 1fr', gap: 6, alignItems: 'center', margin: '0 0 6px' } },
@@ -490,7 +423,7 @@ window.__ModuleLoader__.load({
               // ⭐ 1.1.8：这一行自己的开关 —— 不想理就把「启用」取消，不用删掉
               h('div', { style: { display: 'flex', gap: 16, alignItems: 'center', margin: '0 0 10px', paddingLeft: 2 } },
                 h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
-                  勾(x.开 !== false, (v) => 改绑定(i, { 开: v })),
+                  勾(x.开 !== false, (v) => 改绑定(i, { 开: v }), '启用收发'),
                   h('span', { style: S.dim }, '启用收发')),
                 x.类型 === '群'
                   ? h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
@@ -500,7 +433,7 @@ window.__ModuleLoader__.load({
               i === 人设行
                 ? h('div', { style: { margin: '0 0 8px', padding: '6px 8px', background: 'rgba(127,127,127,.06)', borderRadius: 4 } },
                     h('div', { style: { ...S.dim, marginBottom: 4 } }, '独立角色设定（留空使用全局设定）'),
-                    h('textarea', {
+                    h('textarea', {'aria-label': '输入此会话的角色设定。',
                       style: { ...S.input, display: 'block', width: '100%', height: 72, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
                       value: String(x.人设 || ''),
                       placeholder: '输入此会话的角色设定。',
@@ -517,7 +450,7 @@ window.__ModuleLoader__.load({
                 ? h('div', { style: { margin: '0 0 8px' } },
                     h('div', { style: { ...S.dim, marginBottom: 3 } },
                       '点名豁免名单（QQ 号，以逗号或空格分隔）'),
-                    h('input', {
+                    h('input', {'aria-label': '例如 3274796953',
                       style: { ...S.input, display: 'block', width: '100%', boxSizing: 'border-box' },
                       value: String(x.点名例外 || ''),
                       placeholder: '例如 3274796953',
@@ -536,14 +469,14 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '群聊频率与概率'),
           h('div', { style: S.dim },
             '以下设置控制群聊处理频率与回复概率。'),
-          行('回复冷却时间（秒）', h('input', { type: 'number', min: 0, max: 300, style: S.small, value: String(配置.回复冷却秒 ?? 5), onChange: (e) => 改('回复冷却秒', Number(e.target.value)) }), '冷却期间的消息等待合并处理，默认 5 秒。'),
-          行('每分钟处理上限（条）', h('input', { type: 'number', min: 1, max: 120, style: S.small, value: String(配置.每分钟最多条 ?? 4), onChange: (e) => 改('每分钟最多条', Number(e.target.value)) }), '超出限制的消息等待下一时间窗口，默认 4 条。'),
-          行('单批合并上限（条）', h('input', { type: 'number', min: 1, max: 50, style: S.small, value: String(配置.合并最多条 ?? 8), onChange: (e) => 改('合并最多条', Number(e.target.value)) }), '合并时保留发言人标识，默认 8 条。'),
-          行('私聊来源标识', h('select', { style: S.small, value: String(配置.私聊署名 || '关'), onChange: (e) => 改('私聊署名', e.target.value) },
+          行('回复冷却时间（秒）', h('input', {'aria-label': '回复冷却秒',  type: 'number', min: 0, max: 300, style: S.small, value: String(配置.回复冷却秒 ?? 5), onChange: (e) => 改('回复冷却秒', Number(e.target.value)) }), '冷却期间的消息等待合并处理，默认 5 秒。'),
+          行('每分钟处理上限（条）', h('input', {'aria-label': '每分钟最多条',  type: 'number', min: 1, max: 120, style: S.small, value: String(配置.每分钟最多条 ?? 4), onChange: (e) => 改('每分钟最多条', Number(e.target.value)) }), '超出限制的消息等待下一时间窗口，默认 4 条。'),
+          行('单批合并上限（条）', h('input', {'aria-label': '合并最多条',  type: 'number', min: 1, max: 50, style: S.small, value: String(配置.合并最多条 ?? 8), onChange: (e) => 改('合并最多条', Number(e.target.value)) }), '合并时保留发言人标识，默认 8 条。'),
+          行('私聊来源标识', h('select', {'aria-label': '私聊署名',  style: S.small, value: String(配置.私聊署名 || '关'), onChange: (e) => 改('私聊署名', e.target.value) },
             h('option', { value: '关' }, '无标识'), h('option', { value: '前缀' }, '[QQ] 前缀'), h('option', { value: '署名' }, '署名（对方：…）')),
             '区分 QQ 消息与 DSH 手动输入，默认不标记。'),
-          行('点名消息必回', h('input', { type: 'checkbox', checked: 配置.点名必回 !== false, onChange: (e) => 改('点名必回', Boolean(e.target.checked)) }), '默认启用；禁用后，点名消息也受回复概率限制。'),
-          行('回复概率（%）', h('input', { type: 'number', min: 0, max: 100, style: S.small, value: String(配置.回复概率 ?? 100), onChange: (e) => 改('回复概率', Number(e.target.value)) }), '默认 100%；未选中的消息不进入模型上下文。'),
+          行('点名消息必回', h('input', {'aria-label': '点名必回',  type: 'checkbox', checked: 配置.点名必回 !== false, onChange: (e) => 改('点名必回', Boolean(e.target.checked)) }), '默认启用；禁用后，点名消息也受回复概率限制。'),
+          行('回复概率（%）', h('input', {'aria-label': '回复概率',  type: 'number', min: 0, max: 100, style: S.small, value: String(配置.回复概率 ?? 100), onChange: (e) => 改('回复概率', Number(e.target.value)) }), '默认 100%；未选中的消息不进入模型上下文。'),
           h('div', { style: { ...S.dim, marginTop: 4 } }, '合并窗口可在「消息收发」中配置，默认 3 秒。'),
         ),
       ]
@@ -552,8 +485,8 @@ window.__ModuleLoader__.load({
       const 消息卡片 = [
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, 'QQ 后端连接'),
-          行('接口地址', h('input', { style: S.wide, value: String(配置.NapCat || ''), onChange: (e) => 改('NapCat', e.target.value) }), 'OneBot HTTP 地址，默认 http://127.0.0.1:3000。'),
-          行('接口令牌', h('input', { type: 'password', style: S.small, value: String(配置.令牌 || ''), onChange: (e) => 改('令牌', e.target.value) }), '后端启用鉴权时填写 access_token。'),
+          行('接口地址', h('input', {'aria-label': 'QQ 后端连接',  style: S.wide, value: String(配置.NapCat || ''), onChange: (e) => 改('NapCat', e.target.value) }), 'OneBot HTTP 地址，默认 http://127.0.0.1:3000。'),
+          行('接口令牌', h('input', {'aria-label': '令牌',  type: 'password', style: S.small, value: String(配置.令牌 || ''), onChange: (e) => 改('令牌', e.target.value) }), '后端启用鉴权时填写 access_token。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '发送格式'),
@@ -562,27 +495,27 @@ window.__ModuleLoader__.load({
           行('包含自动触发的回复', 勾(配置.自动触发也发, (v) => 改('自动触发也发', v)), '启用后包含主动消息和定时任务；DSH 手动对话不转发。'),
           行('拆分长回复', 勾(配置.长回复拆段, (v) => 改('长回复拆段', v)), '默认按空行拆分；禁用后整段发送。'),
           行('按句拆分', 勾(配置.按句拆, (v) => 改('按句拆', v)), '按句末标点拆分，括号内标点除外；默认禁用。'),
-          行('分段发送间隔（毫秒）', h('input', { type: 'number', min: 0, max: 5000, style: S.small, value: String(配置.拆段间隔毫秒 ?? 450), onChange: (e) => 改('拆段间隔毫秒', Number(e.target.value)) }), '仅在启用拆分时生效，默认 450 毫秒。'),
+          行('分段发送间隔（毫秒）', h('input', {'aria-label': '拆段间隔毫秒',  type: 'number', min: 0, max: 5000, style: S.small, value: String(配置.拆段间隔毫秒 ?? 450), onChange: (e) => 改('拆段间隔毫秒', Number(e.target.value)) }), '仅在启用拆分时生效，默认 450 毫秒。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '接收与合并'),
-          行('合并窗口（秒）', h('input', { type: 'number', min: 0, max: 60, style: S.small, value: String(配置.合并窗口秒 ?? 3), onChange: (e) => 改('合并窗口秒', Number(e.target.value)) }), '同一发言人的连续消息合并处理；0 为禁用，默认 3 秒。'),
-          行('最长合并等待（秒）', h('input', { type: 'number', min: 3, max: 300, style: S.small, value: String(配置.合并最多秒 ?? 20), onChange: (e) => 改('合并最多秒', Number(e.target.value)) }), '达到时限后处理已接收的消息，默认 20 秒。'),
-          行('消息轮询间隔（毫秒）', h('input', { type: 'number', min: 800, max: 30000, style: S.small, value: String(配置.轮询间隔毫秒 ?? 2000), onChange: (e) => 改('轮询间隔毫秒', Number(e.target.value)) }), '默认 2000 毫秒，修改后需重启 DSH。'),
+          行('合并窗口（秒）', h('input', {'aria-label': '合并窗口秒',  type: 'number', min: 0, max: 60, style: S.small, value: String(配置.合并窗口秒 ?? 3), onChange: (e) => 改('合并窗口秒', Number(e.target.value)) }), '同一发言人的连续消息合并处理；0 为禁用，默认 3 秒。'),
+          行('最长合并等待（秒）', h('input', {'aria-label': '合并最多秒',  type: 'number', min: 3, max: 300, style: S.small, value: String(配置.合并最多秒 ?? 20), onChange: (e) => 改('合并最多秒', Number(e.target.value)) }), '达到时限后处理已接收的消息，默认 20 秒。'),
+          行('消息轮询间隔（毫秒）', h('input', {'aria-label': '轮询间隔毫秒',  type: 'number', min: 800, max: 30000, style: S.small, value: String(配置.轮询间隔毫秒 ?? 2000), onChange: (e) => 改('轮询间隔毫秒', Number(e.target.value)) }), '默认 2000 毫秒，修改后需重启 DSH。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '图片'),
           行('接收图片（QQ → DSH）', 勾(配置.收图, (v) => 改('收图', v)), '图片转入目标会话；纯文本模型仅接收图片数量和路径。'),
           行('发送图片（DSH → QQ）', 勾(配置.发图, (v) => 改('发图', v)), '将模型输出的图片转发至 QQ。'),
-          行('单条图片上限（张）', h('input', { type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '最多 10 张，超出部分不转发。'),
-          行('单张图片上限（MB）', h('input', { type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: (e) => 改('图上限MB', Number(e.target.value)) }), '收发共用，超出上限时跳过。'),
-          行('图片根目录', h('input', { style: S.wide, placeholder: '留空使用会话工作区', value: String(配置.图片根目录 || ''), onChange: (e) => 改('图片根目录', e.target.value) }), '用于解析 Markdown 图片的相对路径。'),
+          行('单条图片上限（张）', h('input', {'aria-label': '收图最多',  type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '最多 10 张，超出部分不转发。'),
+          行('单张图片上限（MB）', h('input', {'aria-label': '图上限MB',  type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: (e) => 改('图上限MB', Number(e.target.value)) }), '收发共用，超出上限时跳过。'),
+          行('图片根目录', h('input', {'aria-label': '图片根目录',  style: S.wide, placeholder: '留空使用会话工作区', value: String(配置.图片根目录 || ''), onChange: (e) => 改('图片根目录', e.target.value) }), '用于解析 Markdown 图片的相对路径。'),
           h('div', { style: S.dim }, '接收图片保存在 DSH 数据目录的 qq-bridge-inbox 中。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '文件'),
           行('发送文件（DSH → QQ）', 勾(配置.发文件, (v) => 改('发文件', v)), '将正文中的本地文件链接上传至 QQ；图片语法单独处理。'),
-          行('单文件上限（MB）', h('input', { type: 'number', min: 1, max: 2048, style: S.small, value: String(配置.文件上限MB ?? 50), onChange: (e) => 改('文件上限MB', Number(e.target.value)) }), '超限时发送说明；同时受 QQ 后端限制。'),
+          行('单文件上限（MB）', h('input', {'aria-label': '文件上限MB',  type: 'number', min: 1, max: 2048, style: S.small, value: String(配置.文件上限MB ?? 50), onChange: (e) => 改('文件上限MB', Number(e.target.value)) }), '超限时发送说明；同时受 QQ 后端限制。'),
           行('文件仅发送至私聊', 勾(配置.文件仅私聊 !== false, (v) => 改('文件仅私聊', v)), '默认启用；禁用后允许向群聊上传文件。'),
           h('div', { style: S.dim }, '含空格的路径需使用尖括号：[报告](<D:\\我的 文档\\报告.docx>)。网页链接不作为文件处理。'),
         ),
@@ -591,8 +524,8 @@ window.__ModuleLoader__.load({
           行('转写语音', 勾(配置.语音转写, (v) => 改('语音转写', v)), '通过指定命令转写语音；禁用时仅保留语音标记。'),
           // —— 一键装依赖 ——
           h('div', { style: { ...S.row, alignItems: 'center' } },
-            h('div', { style: S.lab }, '语音识别环境'),
-            h('div', { style: S.ctl },
+            h('div', { className: 'fish-form-label', style: S.lab }, '语音识别环境'),
+            h('div', { className: 'fish-control', style: S.ctl },
               h('div', null,
                 按钮(asr忙 ? '…' : (asr && asr.就绪 ? '重新安装' : '安装语音依赖'), 装语音, !(asr && asr.就绪), asr忙 || Boolean(asr && asr.进行中)),
                 h('span', { style: S.dim }, '　'),
@@ -606,8 +539,8 @@ window.__ModuleLoader__.load({
               // 进度
               asr && asr.步骤 && asr.步骤.length
                 ? h('div', { style: { marginTop: 8 } },
-                  ...asr.步骤.map((x, i) => h('div', { key: i, style: { fontSize: 12 } },
-                    (x.态 === '完成' ? '✓ ' : x.态 === '失败' ? '✗ ' : '⋯ ') + x.名 + (x.附 ? '（' + x.附 + '）' : ''))))
+                  ...asr.步骤.map((x, i) => h('div', { key: i, style: { fontSize: 'var(--fish-small)' } },
+                    (x.态 === '完成' ? '' : x.态 === '失败' ? '失败：' : '⋯ ') + x.名 + (x.附 ? '（' + x.附 + '）' : ''))))
                 : null,
               // —— 下载进度条（模型 230MB，得让人看见下了多少）——
               asr && asr.下载
@@ -627,25 +560,25 @@ window.__ModuleLoader__.load({
                     + (asr.下载.速度KB ? '　约 ' + (asr.下载.速度KB > 1024 ? (asr.下载.速度KB / 1024).toFixed(1) + 'MB/s' : asr.下载.速度KB + 'KB/s') : '')))
                 : null,
               asr && asr.进行中 ? h('div', { style: { ...S.dim, marginTop: 4 } }, '正在安装，已用时 ' + String(asr.用时秒 || 0) + ' 秒（每 2 秒刷新一次）') : null,
-              asr && asr.失败 ? h('div', { style: { color: '#c0392b', fontSize: 12, marginTop: 4 } }, '✗ ' + asr.失败) : null,
+              asr && asr.失败 ? h('div', { style: { color: 'var(--fish-danger)', fontSize: 'var(--fish-small)', marginTop: 4 } }, '失败：' + asr.失败) : null,
               asr && asr.日志
                 ? h('div', { style: { marginTop: 8 } },
                   h('div', { style: S.dim }, '安装日志'),
                   h('div', { style: { ...S.日志行, maxHeight: 160, overflowY: 'auto', whiteSpace: 'pre-wrap', marginTop: 4 } }, String(asr.日志)))
                 : null)),
-          行('转写命令', h('input', {
+          行('转写命令', h('input', {'aria-label': '转写命令',
             style: S.wide,
             placeholder: 'python D:\\asr_cli.py "{file}"',
             value: String(配置.转写命令 || ''),
             onChange: (e) => 改('转写命令', e.target.value),
           }), '命令须包含 {file}，向 stdout 输出转写文本；非零退出码视为失败。'),
-          行('语音模型目录', h('input', {
+          行('语音模型目录', h('input', {'aria-label': '语音模型目录',
             style: S.wide,
             placeholder: '安装依赖后自动填写',
             value: String(配置.语音模型目录 || ''),
             onChange: (e) => 改('语音模型目录', e.target.value),
           }), '安装时自动下载模型并填写目录；使用自备模型时可手动修改。'),
-          行('超时（秒）', h('input', { type: 'number', min: 5, max: 600, style: S.small, value: String(配置.转写超时秒 ?? 60), onChange: (e) => 改('转写超时秒', Number(e.target.value)) }), '超时后终止命令，默认 60 秒。'),
+          行('超时（秒）', h('input', {'aria-label': '转写超时秒',  type: 'number', min: 5, max: 600, style: S.small, value: String(配置.转写超时秒 ?? 60), onChange: (e) => 改('转写超时秒', Number(e.target.value)) }), '超时后终止命令，默认 60 秒。'),
           h('div', { style: S.dim },
             '内置 tools/asr_cli.py 支持本机 SenseVoice，也可配置其他转写命令。'),
         ),
@@ -663,7 +596,7 @@ window.__ModuleLoader__.load({
           行('未通过门槛时终止推理', 勾(配置.门槛真停轮, (v) => 改('门槛真停轮', v)), '默认仅阻止转发；启用后终止当前轮次，可能显示 tool call aborted。'),
           h('div', { style: { ...S.dim, marginTop: 6 } },
             '启用门槛会新增工具，目标会话的下一次请求可能重新计算上下文。'),
-          行('点名关键词', h('input', {
+          行('点名关键词', h('input', {'aria-label': '点名关键词',
             style: S.wide,
             value: String(配置.点名关键词 || ''),
             placeholder: '留空仅识别 @ 和引用',
@@ -674,9 +607,9 @@ window.__ModuleLoader__.load({
             '默认仅接收 @ 或引用消息。'
             + '启用后接收全部群消息，由回复门槛判断是否回复。'),
           // ⭐ 1.4.1：被点名之后，同一个群后面紧跟着的几句也放进来（不然接话接不上前文）
-          行('点名后续接收上限（条）', h('input', { type: 'number', min: 0, max: 50, style: S.small, value: String(配置.点名后接听条 ?? 5), onChange: (e) => 改('点名后接听条', Number(e.target.value)) }),
+          行('点名后续接收上限（条）', h('input', {'aria-label': '点名后接听条',  type: 'number', min: 0, max: 50, style: S.small, value: String(配置.点名后接听条 ?? 5), onChange: (e) => 改('点名后接听条', Number(e.target.value)) }),
             '点名后继续接收同群后续消息，默认 5 条；0 为禁用。'),
-          行('点名后续接收时限（秒）', h('input', { type: 'number', min: 0, max: 600, style: S.small, value: String(配置.点名后接听秒 ?? 120), onChange: (e) => 改('点名后接听秒', Number(e.target.value)) }),
+          行('点名后续接收时限（秒）', h('input', {'aria-label': '点名后接听秒',  type: 'number', min: 0, max: 600, style: S.small, value: String(配置.点名后接听秒 ?? 120), onChange: (e) => 改('点名后接听秒', Number(e.target.value)) }),
             '到期后恢复仅接收点名消息，默认 120 秒。'),
         ),
       ]
@@ -700,19 +633,19 @@ window.__ModuleLoader__.load({
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '定时发布'),
           h('div', { style: S.dim }, '按计划触发绑定会话，动态内容由模型生成。'),
-          h('div', { style: { ...S.空间表头, marginTop: 10 } },
+          h('div', { className: 'fish-schedule-row fish-binding-head', style: { ...S.空间表头, marginTop: 10 } },
             h('div', { style: S.表头字 }, '时间'),
             h('div', { style: S.表头字 }, '可见范围'),
             h('div', { style: S.表头字 }, '启用'),
             h('div', { style: S.表头字 }, '')),
           空间定时().length === 0
             ? h('div', { style: { ...S.dim, margin: '8px 0' } }, '暂无条目，请添加。')
-            : h('div', null, ...空间定时().map((x, i) => h('div', { key: i, style: S.空间行 },
-              h('input', {
+            : h('div', null, ...空间定时().map((x, i) => h('div', { key: i, className: 'fish-schedule-row', style: S.空间行 },
+              h('input', {'aria-label': '发布时间 ' + (i + 1),
                 type: 'time', style: S.wide, value: String(x.时 || '09:30'),
                 onChange: (e) => 改空间定时(i, { 时: e.target.value }),
               }),
-              h('select', {
+              h('select', {'aria-label': '可见范围 ' + (i + 1),
                 style: S.wide, value: String(x.权 || 1),
                 onChange: (e) => 改空间定时(i, { 权: Number(e.target.value) }),
               },
@@ -727,7 +660,7 @@ window.__ModuleLoader__.load({
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '好友动态同步'),
-          行('同步间隔（分钟）', h('input', { type: 'number', min: 5, max: 1440, style: S.small, value: String(配置.空间看圈分 ?? 30), onChange: (e) => 改('空间看圈分', Number(e.target.value)) }), '5～1440，默认 30。'),
+          行('同步间隔（分钟）', h('input', {'aria-label': '空间看圈分',  type: 'number', min: 5, max: 1440, style: S.small, value: String(配置.空间看圈分 ?? 30), onChange: (e) => 改('空间看圈分', Number(e.target.value)) }), '5～1440，默认 30。'),
           行('启用同步', 勾(配置.空间看圈开, (v) => 改('空间看圈开', v)), '启用后定时获取好友动态。'),
         ),
         h('div', { style: S.card },
@@ -762,24 +695,25 @@ window.__ModuleLoader__.load({
 
       return h(
         'div',
-        { style: S.wrap },
-        h('div', { style: S.h }, '通到 QQ'),
-        h('div', { style: S.dim },
-          'QQ 与 DSH 双向消息转发及历史记忆导入。'
-            + '版本 ' + String(态.版本 || '?') + '｜配置文件：' + String(态.配置文件 || '')),
+        { className: 'fish-module fish-qq', style: S.wrap },
+        h('div', { className: 'fish-section-title', style: S.h }, '连接与转发'),
+        h('div', { style: S.dim }, 'QQ 与 DSH 双向消息转发及历史记忆导入。'),
         NapCat && !NapCat.错
-          ? h('div', { style: S.已同步 }, '✓ 已连接 QQ：' + NapCat.昵称 + '（' + NapCat.用户 + '）')
-          : h('div', { style: S.未保存 }, '⚠ QQ 后端未连接（NapCat / SnowLuma）' + (NapCat && NapCat.错 ? '：' + NapCat.错 : '')),
+          ? h('div', { style: S.已同步 }, '已连接 QQ：' + NapCat.昵称 + '（' + NapCat.用户 + '）')
+          : h('div', { style: S.未保存 }, '注意：QQ 后端未连接（NapCat / SnowLuma）' + (NapCat && NapCat.错 ? '：' + NapCat.错 : '')),
         页签,
         h('div', { style: 脏 ? S.未保存 : S.已同步 },
-          脏 ? '存在未保存的配置' : '配置已保存 ✓'),
+          脏 ? '存在未保存的配置' : '配置已保存'),
         h('div', { style: { marginBottom: 14 } }, 总览卡片[2]),
         页 === '总览' ? 总览页 : null,
         页 === '绑定' ? 配置页 : null,
         页 === '历史导入' ? 历史页 : null,
+        h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
+          h('p', null, '模块版本 ' + String(态.版本 || '?')),
+          h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),
         脏
           ? h('div', { style: S.悬浮保存条 },
-            h('span', { style: { fontWeight: 600, color: '#c0392b' } }, '存在未保存的配置'),
+            h('span', { style: { fontWeight: 600, color: 'var(--fish-danger)' } }, '存在未保存的配置'),
             h('span', { style: S.dim }, '保存后生效'),
             按钮('保存设置', 存, true, 忙))
           : null,
@@ -791,7 +725,7 @@ window.__ModuleLoader__.load({
       if (slots === undefined) return
       slots.inject('settings.section', () =>
         slots.register(
-          { name: 'settings.section', id: 'qq-bridge', order: 54, label: () => '通到 QQ' },
+          { name: 'settings.section', id: 'qq-bridge', order: 54, label: () => '连接与转发' },
           Section,
         ),
       )

@@ -24,7 +24,7 @@ test('整合包只注册一个侧栏和主面板，六个入口直接挂载四�
   const nodes = []
   const walk = x => { if (x && typeof x === 'object') { nodes.push(x); for (const c of x.children || []) (Array.isArray(c) ? c : [c]).forEach(walk) } }
   walk(tree)
-  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.children[0]), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源'])
+  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源'])
   const panels = nodes.filter(n => n.props?.role === 'tabpanel')
   assert.equal(panels.length, 6)
   assert.equal(panels[1].children[0].type.name, 'Section')
