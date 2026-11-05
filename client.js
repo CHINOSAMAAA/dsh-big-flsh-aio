@@ -5006,7 +5006,1252 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
   },
 })
 
-const META = {"name":"dsh-big-flsh-aio","version":"0.0.1","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"}]};
+/**
+ * dsh-feiyu-mood —— 浏览器半端（设置里的一页「心情」）
+ * ============================================================================
+ * 自注册脚本（和 dsh-bili-scroll 一样的约定）：
+ *
+ *     moduleLoader.load({ id: '<包名>', factory: (require) => ({ inject, apply }) })
+ *
+ * 这一页要满足的想法（主人 2026-10-19）：
+ *   · 心情插件**也能给别人用** ⇒ 名字得能改（它叫什么叫什么、你叫什么叫什么）
+ *   · 目标会话、基线、下限、注入开关、自动判断开关，都在面板里改，不用去翻 config.json
+ *   · 改完**立刻生效**（宿主那边是原地改 cfg，不用重启）
+ *
+ * ⭐ 0.6.0：设置页分四个页签（心情 / 会话绑定 / 判断与注入 / 挂饰）。
+ *    一份心情可以绑好几个会话 —— 这些会话共用一份心情、一条时间线、每天的额度；
+ *    分页签只是把「看」和「改」分开，切页签不动任何设置。
+ *
+ * ⭐ 0.7.0：「会话绑定」页签顶上多了**模式切换**，二选一：
+ *    · 会话模式：跟以前一样，按点名的会话绑；
+ *    · 工作区模式：按工作区绑 —— 那个工作区下所有会话都归这一份，新开的自动进来。
+ *    名字那栏的文案也改清楚了：那只是「这份叫什么」，不是称呼（称呼在「判断与注入」）。
+ * ============================================================================
+ */
+moduleLoader.load({
+  id: 'dsh-feiyu-mood',
+  factory: (require) => {
+    const React = require('react')
+    const h = React.createElement
+
+    const API = '/dsh-feiyu-mood'
+
+    // 四个页签（默认第一个）
+    const 页签 = [
+      ['mood', '心情'],
+      ['bind', '会话绑定'],
+      ['judge', '判断与注入'],
+      ['charm', '挂饰'],
+    ]
+
+    // 五档表情：用的就是挂饰那五张图（assets/face-*.png，448×352）
+    const faceImg = (v) => {
+      const m = Number(v)
+      if (!Number.isFinite(m)) return API + '/face-ok.png'
+      if (m >= 80) return API + '/face-great.png'
+      if (m >= 62) return API + '/face-good.png'
+      if (m >= 42) return API + '/face-ok.png'
+      if (m >= 25) return API + '/face-worry.png'
+      return API + '/face-sad.png'
+    }
+
+    const getJson = async (url) => {
+      const res = await fetch(url, { headers: { accept: 'application/json' } })
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      return res.json()
+    }
+    const postJson = async (url, body) => {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body || {}),
+      })
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      return res.json()
+    }
+
+    const CSS = `
+[data-fm-wrap]{display:flex;flex-direction:column;gap:14px;padding:4px 2px 24px;}
+[data-fm-hero]{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;background:rgba(127,127,127,.08);}
+[data-fm-face]{width:84px;height:66px;object-fit:contain;border-radius:10px;flex:0 0 auto;background:rgba(127,127,127,.10);}
+[data-fm-big]{font-size:30px;font-weight:600;line-height:1;}
+[data-fm-sub]{font-size:12px;opacity:.7;margin-top:4px;}
+[data-fm-sec]{display:flex;flex-direction:column;gap:8px;}
+[data-fm-h]{font-size:13px;font-weight:600;opacity:.85;padding-top:6px;border-top:1px solid rgba(127,127,127,.18);}
+[data-fm-note]{font-size:12px;opacity:.62;line-height:1.5;}
+[data-fm-row]{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+[data-fm-grow]{flex:1;min-width:180px;}
+[data-fm-label]{font-size:13px;}
+[data-fm-input]{padding:6px 9px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-size:13px;min-width:120px;}
+/* ⭐ 0.7.2（issue #5）：深色主题下**原生 select 的弹出层是系统白底**，
+   而文字继承了主题的浅色 → 白字白底，选项「看得见但认不出」。
+   用系统色（Canvas / CanvasText）让弹出层跟它自己的底色一起变，
+   深色主题深底浅字、浅色主题白底黑字，两边都不会再撞。 */
+[data-fm-wrap]{color-scheme:light dark;}
+[data-fm-wrap] select{background:Canvas;color:CanvasText;}
+[data-fm-wrap] select option{background:Canvas;color:CanvasText;}
+[data-fm-wrap] select:disabled{opacity:.6;}
+[data-fm-num]{width:88px;min-width:88px;}
+[data-fm-btn]{padding:6px 12px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-size:13px;cursor:pointer;}
+[data-fm-btn]:hover{background:rgba(127,127,127,.12);}
+[data-fm-btn][disabled]{opacity:.5;cursor:default;}
+[data-fm-msg]{font-size:12px;opacity:.8;min-height:16px;}
+[data-fm-tabs]{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid rgba(127,127,127,.2);}
+[data-fm-tab]{padding:5px 12px;border-radius:7px;border:1px solid transparent;background:transparent;color:inherit;font-size:13px;cursor:pointer;opacity:.72;}
+[data-fm-tab]:hover{background:rgba(127,127,127,.10);opacity:1;}
+[data-fm-tab][data-fm-on]{background:rgba(127,127,127,.16);border-color:rgba(127,127,127,.28);opacity:1;font-weight:600;}
+[data-fm-pick]{padding:5px 14px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-size:13px;cursor:pointer;opacity:.8;}
+[data-fm-pick]:hover{background:rgba(127,127,127,.10);opacity:1;}
+[data-fm-pick][data-fm-on]{background:rgba(127,127,127,.18);border-color:rgba(127,127,127,.5);opacity:1;font-weight:600;}
+[data-fm-pane]{display:flex;flex-direction:column;gap:14px;}
+[data-fm-slot]{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:rgba(127,127,127,.06);}
+[data-fm-sess]{display:flex;align-items:center;gap:8px;padding:2px 0;}
+[data-fm-sessname]{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+[data-fm-faces]{display:flex;gap:10px;flex-wrap:wrap;}
+[data-fm-faces] img{width:84px;height:66px;object-fit:contain;border-radius:10px;background:rgba(127,127,127,.10);}
+[data-fm-quote]{font-size:13px;line-height:1.65;white-space:pre-wrap;padding:10px 12px;border-radius:9px;background:rgba(127,127,127,.10);border-left:3px solid rgba(127,127,127,.35);}
+[data-fm-quote][data-fm-dim]{opacity:.62;}
+[data-fm-tl]{display:flex;flex-direction:column;gap:2px;max-height:280px;overflow:auto;}
+[data-fm-tlrow]{display:flex;gap:8px;font-size:12px;line-height:1.6;}
+[data-fm-time]{opacity:.55;width:78px;flex:0 0 78px;}
+[data-fm-mood]{opacity:.85;width:34px;flex:0 0 34px;}
+[data-fm-delta]{width:40px;flex:0 0 40px;opacity:.8;}
+[data-fm-reason]{opacity:.85;}
+[data-fm-ver]{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(127,127,127,.06);}
+`
+
+    function Panel() {
+      const [cfg, setCfg] = React.useState(null)
+      const [st, setSt] = React.useState(null)
+      const [sessions, setSessions] = React.useState([])
+      const [工作区们, set工作区们] = React.useState([])   // 工作区模式的下拉清单
+      const [看哪份, set看哪份] = React.useState('')      // 多份心情时看的是哪一份
+      const 看哪份Ref = React.useRef('')
+      const keyNow = () => (看哪份Ref.current ? '?key=' + encodeURIComponent(看哪份Ref.current) : '')
+      const [models, setModels] = React.useState([])
+      const [busy, setBusy] = React.useState('')
+      const [msg, setMsg] = React.useState('')
+      const [页, set页] = React.useState('mood')       // 页签：mood / bind / judge / charm
+
+      const flash = (t) => { setMsg(t); setTimeout(() => setMsg(''), 2500) }
+
+      const load = React.useCallback(async () => {
+        try {
+          const [c, s] = await Promise.all([getJson(API + '/config'), getJson(API + '/state' + keyNow())])
+          if (c && c.config) setCfg(c.config)
+          if (s && s.ok) setSt(s)
+        } catch (e) {
+          setMsg('读取失败：' + (e && e.message))
+        }
+      }, [])
+
+      React.useEffect(() => {
+        load()
+        getJson(API + '/sessions').then((r) => setSessions((r && r.sessions) || [])).catch(() => {})
+        getJson(API + '/workspaces').then((r) => set工作区们((r && r.workspaces) || [])).catch(() => {})
+        getJson(API + '/models').then((r) => setModels((r && r.providers) || [])).catch(() => {})
+        const t = setInterval(() => { getJson(API + '/state' + keyNow()).then((s) => s && s.ok && setSt(s)).catch(() => {}) }, 20000)
+        return () => clearInterval(t)
+      }, [load])
+
+      // ⭐ 0.7.5（最小化的时候心情以前不刷新，得点一下才变）：
+      //   页面在后台时浏览器会把定时器节流到一分钟以上，切回来那一瞬间还显示旧值。
+      //   所以「重新可见 / 重新获得焦点」时立刻拉一次 —— 不用她点任何东西。
+      React.useEffect(() => {
+        const 立刻刷 = () => {
+          if (document.hidden) return
+          getJson(API + '/state' + keyNow()).then((s) => { if (s && s.ok) setSt(s) }).catch(() => {})
+        }
+        document.addEventListener('visibilitychange', 立刻刷)
+        window.addEventListener('focus', 立刻刷)
+        return () => {
+          document.removeEventListener('visibilitychange', 立刻刷)
+          window.removeEventListener('focus', 立刻刷)
+        }
+      }, [])
+
+      const patch = async (p, label) => {
+        setCfg((c) => ({ ...c, ...p }))
+        try {
+          const r = await postJson(API + '/config', p)
+          if (r && r.config) setCfg(r.config)
+          flash((label || '设置') + ' 已保存')
+        } catch (e) { flash('保存失败：' + (e && e.message)) }
+      }
+
+      /* ⭐ 一份心情可以绑好几个会话（或一个工作区）：这里照这份清单画
+         （没配置过就当成「第一份」；id 尽量沿用宿主给的 st.key，别凭空造一个） */
+      const 份列表 = (() => {
+        const raw = Array.isArray(cfg && cfg.slots) && cfg.slots.length
+          ? cfg.slots
+          : [{ id: String((st && st.key) || ''), label: '', selfName: '', ownerName: '', 工作区: '', sessions: [] }]
+        return raw.map((s) => ({
+          id: String((s && s.id) || ''),
+          label: String((s && s.label) || ''),
+          selfName: String((s && s.selfName) || ''),
+          ownerName: String((s && s.ownerName) || ''),
+          工作区: String((s && s.工作区) || (s && s.workspace) || ''),
+          sessions: Array.isArray(s && s.sessions)
+            ? s.sessions.map((x) => String(x || ''))
+            : ((s && s.session) ? [String(s.session)] : []),
+        }))
+      })()
+      const 会话名 = (id) => {
+        const hit = (sessions || []).find((x) => x.id === id)
+        return (hit && hit.title) || String(id)
+      }
+      const 份标题 = (sl) => sl.label
+        || (sl.sessions || []).map(会话名).filter(Boolean).join('、')
+        || (sl.工作区 ? String(sl.工作区) : '')
+        || '（还没绑会话）'
+      const 已绑 = new Set()
+      份列表.forEach((p) => p.sessions.forEach((s) => 已绑.add(s)))
+      const 可加会话 = (sessions || []).filter((x) => !已绑.has(x.id))
+
+      const 改份 = (i, 变) => patch({ slots: 份列表.map((x, j) => (j === i ? { ...x, ...变 } : x)) }, '绑定')
+
+      const 切份 = (e) => {
+        const v = e.target.value
+        set看哪份(v)
+        看哪份Ref.current = v
+        getJson(API + '/state?key=' + encodeURIComponent(v)).then((x) => { if (x && x.ok) setSt(x) }).catch(() => {})
+      }
+
+      const onReset = async () => {
+        setBusy('reset')
+        try {
+          await postJson(API + '/reset', { key: 看哪份 || (st && st.key) || '' })
+          await load()
+          flash('已重置到基线')
+        } catch (e) { flash('重置失败：' + (e && e.message)) }
+        setBusy('')
+      }
+
+      if (!cfg) return h('div', { 'data-fm-wrap': '' }, h('div', { 'data-fm-note': '' }, '读取中…'))
+
+      const sw = (key, label) => h('input', {
+        type: 'checkbox',
+        checked: Boolean(cfg[key]),
+        onChange: (e) => patch({ [key]: e.target.checked }, label),
+      })
+
+      const numInput = (key, label, note, min, max) => h('div', { 'data-fm-row': '' },
+        h('div', { 'data-fm-grow': '' },
+          h('div', { 'data-fm-label': '' }, label),
+          note ? h('div', { 'data-fm-note': '' }, note) : null),
+        h('input', {
+          'data-fm-input': '', 'data-fm-num': '', type: 'number', min, max,
+          value: String(cfg[key] ?? ''),
+          onChange: (e) => setCfg((c) => ({ ...c, [key]: e.target.value })),
+          onBlur: () => {
+            const n = Math.max(min, Math.min(Number(cfg[key]) || 0, max))
+            patch({ [key]: n }, label)
+          },
+        }))
+
+
+      /* ── 页签 1：心情（当前心情 / 它会听到的话 / 完整记录） ── */
+      const 心情页 = (() => {
+        const 项 = []
+        if (st && st.multi) {
+          项.push(h('div', { key: 'pick', 'data-fm-sec': '' },
+            h('div', { 'data-fm-h': '' }, '这是哪一份心情'),
+            h('div', { 'data-fm-note': '' },
+              '现在有 ' + (st.slots || []).length + ' 份，各自绑各自的会话、互不影响。这里只切换「看」哪一份，不改任何设置。'),
+            h('select', {
+              'data-fm-input': '', value: 看哪份 || (st.key || ''),
+              onChange: 切份,
+            },
+              (st.slots || []).map((sl) => h('option', { key: sl.id, value: sl.id }, 份标题(sl))))))
+        }
+        项.push(h('div', { key: 'hero', 'data-fm-hero': '' },
+          h('img', { 'data-fm-face': '', src: faceImg(st && st.mood), alt: '' }),
+          h('div', { 'data-fm-grow': '' },
+            h('div', { 'data-fm-big': '' }, (st && st.mood != null ? st.mood : '—')
+              + (st && st.moodLabel ? '　' + st.moodLabel : '')),
+            h('div', { 'data-fm-sub': '' },
+              ((st && st.lastReason) || '还没有记录 —— 跟 TA 聊起来就有了'),
+              (st && st.updatedAt ? '（' + new Date(st.updatedAt).toLocaleString() + '）' : ''),
+              (st && st.lastReason
+                ? (st.injectMode === 'off'
+                  ? '　· 心情不告诉它'
+                  : (st.injectable ? '　· 这条还没跟它说' : '　· 这条已经说过了'))
+                : ''))),
+          h('button', { 'data-fm-btn': '', disabled: busy === 'reset', onClick: onReset }, '重置到基线')))
+        项.push(h('div', { key: 'preview', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '它会听到的那句话'),
+          (st && st.injectPreview && st.injectPreview.state === 'off')
+            ? h('div', { 'data-fm-note': '' }, '现在选的是「不告诉它」—— 心情只记在后台，不影响它说话。')
+            : null,
+          (st && st.injectPreview && st.injectPreview.state === 'pending')
+            ? h('div', {},
+              h('div', { 'data-fm-note': '' }, '下一次它开口时，会看到这句（预览 —— 括号里的话会随机换一句）：'),
+              h('div', { 'data-fm-quote': '' }, st.injectPreview.text || '（这会儿没有可说的）'))
+            : null,
+          (st && st.injectPreview && st.injectPreview.state === 'minor')
+            ? h('div', { 'data-fm-note': '' }, '这次只是个小波动，够不上门槛 —— 记在后台，不打扰它。')
+            : null,
+          (st && st.injectPreview && st.injectPreview.state === 'blocked')
+            ? h('div', {},
+              h('div', { 'data-fm-note': '' },
+                '今天已经说过 ' + (st.injectPreview.said != null ? st.injectPreview.said : st.saidToday)
+                + ' 次（上限 ' + (st.injectPreview.cap != null ? st.injectPreview.cap : st.injectPerDay)
+                + '）—— 这一次的心情今天不会再说了，明天 0 点重新算。'),
+              st.lastInjectedText
+                ? h('div', {},
+                  h('div', { 'data-fm-note': '' },
+                    '最近一次说过的话'
+                    + (st.lastInjectedAt ? '（' + new Date(st.lastInjectedAt).toLocaleString() + '）' : '')
+                    + ' —— 不是这次的：'),
+                  h('div', { 'data-fm-quote': '', 'data-fm-dim': '' }, st.lastInjectedText))
+                : null)
+            : null,
+          (st && st.injectPreview && st.injectPreview.state === 'said')
+            ? h('div', {},
+              h('div', { 'data-fm-note': '' },
+                '最近一次说给 TA 的话'
+                + (st.lastInjectedAt ? '（' + new Date(st.lastInjectedAt).toLocaleString() + '）' : '')
+                + (st.injectPreview.replay
+                  ? ' —— 这句是按当时的记录还原的，字面可能略有出入：'
+                  : ' —— 同一件事不会再说第二遍，之后这句就留在对话记录里：')),
+              h('div', { 'data-fm-quote': '', 'data-fm-dim': st.lastInjectedText ? undefined : '' },
+                st.lastInjectedText || '（还没有说过；等下一次心情有变化就有了）'))
+            : null))
+        项.push(h('div', { key: 'timeline', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '完整记录'),
+          h('div', { 'data-fm-tl': '' },
+            ((st && st.timeline) || []).slice().reverse().slice(0, 40).map((t, i) => h('div', { 'data-fm-tlrow': '', key: i },
+              h('span', { 'data-fm-time': '' }, new Date(t.at).toLocaleString()),
+              h('span', { 'data-fm-mood': '' }, String(t.mood)),
+              h('span', { 'data-fm-delta': '' }, (t.delta > 0 ? '+' : '') + (t.delta ?? 0)),
+              h('span', { 'data-fm-reason': '' }, (t.reason || '—')
+                + (t.kind === 'decay' ? '（自己平的）' : '')
+                + (t.minor ? '（小波动，没告诉它）' : '')
+                + (t.conf != null && t.kind !== 'decay' ? '（可信 ' + t.conf + '）' : ''))))),
+          (st && st.timeline && st.timeline.length > 40
+            ? h('div', { 'data-fm-note': '' }, '只显示最近 40 条，共 ' + st.timeline.length + ' 条')
+            : null)))
+        return h('div', { 'data-fm-pane': '' }, ...项)
+      })()
+
+      /* ── 页签 2：绑定（会话模式按会话绑 / 工作区模式按工作区绑，二选一） ── */
+      const 模式 = cfg.模式 === 'workspace' ? 'workspace' : 'session'
+      const 工作区显示 = (name) => {
+        const 命中 = (工作区们 || []).find((w) => w.name === name)
+        return (命中 && (命中.path || 命中.name)) || String(name || '')
+      }
+      const 刷新工作区 = () => {
+        getJson(API + '/workspaces').then((r) => set工作区们((r && r.workspaces) || [])).catch(() => {})
+      }
+      const 绑定页 = (() => {
+        const 项 = []
+        const 模式钮 = (id, 名) => h('button', {
+          key: id,
+          'data-fm-pick': '',
+          'data-fm-on': 模式 === id ? '' : undefined,
+          onClick: () => {
+            if (模式 !== id) patch({ 模式: id }, '模式')
+            if (id === 'workspace') 刷新工作区()
+          },
+        }, 名)
+        项.push(h('div', { key: 'mode', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '按什么认这一份'),
+          h('div', { 'data-fm-note': '' },
+            '两种模式只能选一种，不能同时开。'
+            + '会话模式：只有下面点名的会话用这一份。'
+            + '工作区模式：整个工作区里的会话都用这一份 —— 新开的会话自动进来，共用这一份心情、一条时间线和每天的额度。'),
+          h('div', { 'data-fm-row': '' },
+            模式钮('session', '会话模式'),
+            模式钮('workspace', '工作区模式'))))
+        项.push(h('div', { key: 'h', 'data-fm-h': '' }, 模式 === 'workspace' ? '工作区绑定' : '会话绑定'))
+        项.push(h('div', { key: 'note', 'data-fm-note': '' },
+          模式 === 'workspace'
+            ? '每一份填一个工作区：那个工作区下所有会话都归这一份，不用一个个加。切回会话模式时，原来绑的会话还在。'
+            : '每一份心情可以绑好几个会话：绑在同一份上的会话共用这一份心情、一条时间线和每天的额度；不同份之间互不影响。'
+              + '一个会话只会归一份，重复加进来的会被丢掉。'))
+        份列表.forEach((sl, i) => {
+          const 标题 = i === 0 ? '第一份' : ('第 ' + (i + 1) + ' 份')
+          const 这块工作区 = (工作区们 || []).find((w) => w.name === (sl.工作区 || ''))
+          // 会话模式：这一份绑的会话，能删能加
+          const 会话块 = h('div', {},
+            sl.sessions.length
+              ? sl.sessions.map((sid) => h('div', { key: sid, 'data-fm-sess': '' },
+                h('span', { 'data-fm-sessname': '', title: sid }, 会话名(sid)),
+                h('button', {
+                  'data-fm-btn': '', style: { padding: '2px 8px', fontSize: '12px', flex: '0 0 auto' },
+                  onClick: () => 改份(i, { sessions: sl.sessions.filter((x) => x !== sid) }),
+                }, '删掉')))
+              : h('div', { 'data-fm-note': '' }, '还没绑会话 —— 从下面加一个。'),
+            h('div', { style: { marginTop: '6px' } },
+              h('select', {
+                'data-fm-input': '', value: '',
+                onChange: (e) => {
+                  const v = e.target.value
+                  if (v) 改份(i, { sessions: [...sl.sessions, v] })
+                },
+              },
+                h('option', { value: '' }, '+ 加一个会话'),
+                ((sessions || []).filter((x) => !已绑.has(x.id))).map((x) => h('option', { key: x.id, value: x.id }, x.title || x.id)))))
+          // 工作区模式：这一份只填一个工作区（工作区里所有会话都归它）
+          const 工作区块 = h('div', {},
+            h('div', { 'data-fm-row': '' },
+              h('select', {
+                'data-fm-input': '', 'data-fm-grow': '', value: sl.工作区 || '',
+                onChange: (e) => 改份(i, { 工作区: e.target.value }),
+              },
+                h('option', { value: '' }, '（还没选工作区）'),
+                (工作区们 || []).map((w) => h('option', { key: w.name, value: w.name },
+                  (w.path ? w.path + (w.title ? '（' + w.title + '）' : '') : w.name)
+                  + ' · ' + (w.sessions || 0) + ' 个会话')),
+                sl.工作区 && !(工作区们 || []).some((w) => w.name === sl.工作区)
+                  ? h('option', { value: sl.工作区 }, sl.工作区 + '（不在清单里，可能是别的机器上的）')
+                  : null),
+              h('button', { 'data-fm-btn': '', onClick: 刷新工作区, style: { flex: '0 0 auto' } }, '刷新')),
+            h('div', { 'data-fm-note': '' },
+              sl.工作区
+                ? (这块工作区
+                  ? '这个工作区现在有 ' + (这块工作区.sessions || 0) + ' 个会话 —— 全部用这一份，新开的也会自动进来。'
+                  : '清单里没有这个工作区（可能是别的机器上的目录名）—— 它下面新出现的会话照样归这一份。')
+                : '选一个工作区；选好以后这个工作区里的会话都归这一份。'))
+          项.push(h('div', { key: 'slot' + i, 'data-fm-slot': '' },
+            h('div', { 'data-fm-row': '' },
+              h('div', { 'data-fm-grow': '', style: { fontWeight: 600, fontSize: '13px' } },
+                标题 + (模式 === 'workspace'
+                  ? (sl.工作区 ? ' · ' + 工作区显示(sl.工作区) : ' · 还没选工作区')
+                  : (sl.sessions.length ? ' · ' + sl.sessions.length + ' 个会话' : ' · 还没绑会话'))),
+              h('button', {
+                'data-fm-btn': '', style: { padding: '2px 8px', fontSize: '12px' },
+                onClick: () => patch({ slots: 份列表.filter((_, j) => j !== i) }, '删掉这一份'),
+              }, '删掉')),
+            h('div', { 'data-fm-row': '' },
+              h('div', { 'data-fm-grow': '' },
+                h('div', { 'data-fm-label': '', style: { fontSize: '12px' } },
+                  '这份叫什么（只是用来区分，不是称呼）')),
+              h('input', {
+                'data-fm-input': '', value: sl.label || '', placeholder: '比如：这份叫大肥鱼，那份叫修路的',
+                onChange: (e) => {
+                  const v = e.target.value
+                  setCfg((c) => ({ ...c, slots: 份列表.map((x, j) => (j === i ? { ...x, label: v } : x)) }))
+                },
+                onBlur: () => patch({ slots: 份列表 }, '名字'),
+              })),
+            模式 === 'workspace' ? 工作区块 : 会话块))
+        })
+        项.push(份列表.length < 6
+          ? h('div', { key: 'add', 'data-fm-row': '' },
+            h('button', {
+              'data-fm-btn': '',
+              onClick: () => patch({ slots: [...份列表, { id: '', label: '', selfName: '', ownerName: '', 工作区: '', sessions: [] }] }, '再加一份心情'),
+            }, '+ 再加一份心情'))
+          : h('div', { key: 'max', 'data-fm-note': '' }, '最多 6 份。'))
+        项.push(h('div', { key: 'tip', 'data-fm-note': '' },
+          模式 === 'workspace'
+            ? '工作区下拉里，能反查到路径的显示路径，查不到的显示目录名 —— 两种都能选。'
+            : '下拉里是真会话（跳过归档和空会话）；同一个会话重复加是加不进去的。换会话、加会话都不用重启。'))
+        return h('div', { 'data-fm-pane': '' }, ...项)
+      })()
+
+      /* ── 页签 3：判断与注入（称呼 / 模型 / 开关 / 数值） ── */
+      const 判断页 = (() => {
+        const 项 = []
+        项.push(h('div', { key: 'names', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '称呼'),
+          h('div', { 'data-fm-note': '' }, '这两个名字会写进判断提示词；换了名字，心情描述里也跟着换。'),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'TA 叫什么（被关心的那个人）')),
+            h('input', {
+              'data-fm-input': '', value: cfg.ownerName || '',
+              placeholder: '用户',
+              onChange: (e) => setCfg((c) => ({ ...c, ownerName: e.target.value })),
+              onBlur: () => patch({ ownerName: cfg.ownerName }, '称呼'),
+            })),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'TA 自己叫什么（有心情的那个人）')),
+            h('input', {
+              'data-fm-input': '', value: cfg.selfName || '',
+              placeholder: '伙伴',
+              onChange: (e) => setCfg((c) => ({ ...c, selfName: e.target.value })),
+              onBlur: () => patch({ selfName: cfg.selfName }, '称呼'),
+            })),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' },
+              h('div', { 'data-fm-label': '' }, 'TA 平时怎么叫你（昵称）'),
+              h('div', { 'data-fm-note': '' }, '逗号分隔，写成 TA 平时怎么喊你，比如：小鱼,宝贝,亲爱的。判断时会把这些词当成「在叫你」，不会把「宝宝视频」当成一个东西')),
+            h('input', {
+              'data-fm-input': '', value: cfg.selfAliases || '',
+              placeholder: '小鱼,宝贝,亲爱的',
+              onChange: (e) => setCfg((c) => ({ ...c, selfAliases: e.target.value })),
+              onBlur: () => patch({ selfAliases: cfg.selfAliases }, '昵称'),
+            })),
+          // ⭐ 它自己怎么自称：写进 reason 的那个「我」
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' },
+              h('div', { 'data-fm-label': '' }, 'TA 自称什么'),
+              h('div', { 'data-fm-note': '' }, '心情描述里它管自己叫什么。默认「我」；跑角色设定重的模型、它平时说「本小姐」「在下」，就填进去')),
+            h('input', {
+              'data-fm-input': '', value: cfg.selfPronoun || '我',
+              placeholder: '我',
+              onChange: (e) => setCfg((c) => ({ ...c, selfPronoun: e.target.value })),
+              onBlur: () => patch({ selfPronoun: cfg.selfPronoun }, '自称'),
+            }))))
+        项.push(h('div', { key: 'model', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '判断用哪个模型'),
+          h('div', { 'data-fm-note': '' }, '心情判断是一次很短的小调用。想更准就指到更强的模型，想省钱就指到便宜的；留空 = 跟着当前会话的模型走。'),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'provider（厂商）')),
+            h('select', {
+              'data-fm-input': '', value: cfg.judgeProvider || '',
+              onChange: (e) => {
+                const v = e.target.value
+                const list = ((models || []).find((p) => p.id === v)?.models) || []
+                const nextModel = v ? (list[0]?.id || '') : ''
+                setCfg((c) => ({ ...c, judgeProvider: v, judgeModel: nextModel }))
+                patch({ judgeProvider: v, judgeModel: nextModel }, '判断模型')
+              },
+            },
+              h('option', { value: '' }, '（跟着会话走）'),
+              (models || []).map((p) => h('option', { key: p.id, value: p.id }, p.name || p.id)),
+              cfg.judgeProvider && !(models || []).some((p) => p.id === cfg.judgeProvider)
+                ? h('option', { value: cfg.judgeProvider }, cfg.judgeProvider)
+                : null)),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' }, h('div', { 'data-fm-label': '' }, 'model（型号）')),
+            h('select', {
+              'data-fm-input': '', value: cfg.judgeModel || '', disabled: !cfg.judgeProvider,
+              onChange: (e) => { const v = e.target.value; setCfg((c) => ({ ...c, judgeModel: v })); patch({ judgeModel: v }, '判断模型') },
+            },
+              h('option', { value: '' }, '（默认）'),
+              (((models || []).find((p) => p.id === cfg.judgeProvider) || {}).models || [])
+                .map((m) => h('option', { key: m.id, value: m.id }, m.name || m.id)),
+              cfg.judgeModel && !((((models || []).find((p) => p.id === cfg.judgeProvider) || {}).models) || []).some((m) => m.id === cfg.judgeModel)
+                ? h('option', { value: cfg.judgeModel }, cfg.judgeModel)
+                : null))))
+        项.push(h('div', { key: 'switch', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '开关'),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' },
+              h('div', { 'data-fm-label': '' }, '每轮判断心情'),
+              h('div', { 'data-fm-note': '' }, '关掉就完全不判断、不改数值（也不花判断的 token）')),
+            sw('autoJudge', '每轮判断')),
+          h('div', { 'data-fm-row': '' },
+            h('div', { 'data-fm-grow': '' },
+              h('div', { 'data-fm-label': '' }, '心情怎么告诉它'),
+              h('div', { 'data-fm-note': '' }, '影响它说话口气的唯一开关。选「说心情和那件事」时，它看到的是两行：第一行是这一刻的心情底子，第二行是这段时间发生了什么 —— 底子会真的影响它怎么说话，那件事只是来历。')),
+            h('select', {
+              'data-fm-input': '', value: cfg.injectMode || 'event',
+              onChange: (e) => patch({ injectMode: e.target.value }, '心情怎么告诉它'),
+            },
+              h('option', { value: 'off' }, '不告诉它（只记录，不影响）'),
+              h('option', { value: 'label' }, '只说心情，不说为什么'),
+              h('option', { value: 'event' }, '说心情 + 那件事（推荐）'))),
+          h('div', { 'data-fm-note': '' }, '同一次变化只说一次 —— 说完就留在对话记录里，下次不再重复，不会变成反复出现的背景音。'),
+          numInput('injectConfidence', '可信度门槛', '判断模型自己对这次判断有多确定；低于这个数就只记进后台、不进它的嘴（0–100，默认 60）。调高更保守，调低更爱说。', 0, 100)))
+        项.push(h('div', { key: 'num', 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '心情怎么变'),
+          numInput('moodBase', '基线心情', '没事的时候，心情会慢慢回到这个数（30–100）', 30, 100),
+          numInput('moodFloor', '心情下限', '最低能掉到多少；0 = 不设底线（0–100）', 0, 100),
+          numInput('decayHalfHours', '多久平复一半', '受一次影响之后，心里多久淡掉一半（小时）。大 = 隔夜还留着余温，小 = 情绪来得快去得也快', 1, 168),
+          h('div', { 'data-fm-note': '' }, '下面两个数决定"什么才算一次值得告诉它的变化"。够不着就只记账（面板里看得到，不影响它说话）。调小 = 它更敏感，调大 = 它只在真动心的时候才变。'),
+          numInput('sigMood', '心情变这么多才算', '判定给的涨跌够这个数就算一次「真有事」（1–30，默认 3）。⚠️ 心情值本身每轮只吃 1/3，所以这里比的是判定原始值', 1, 30),
+          numInput('sigDim', '或者某根情绪变这么多', '开心/心疼/担心……任意一根涨跌够这个数也算（1–100，默认 5）。心疼+5、担心+5 这种「突然一下」才触发', 1, 100),
+          numInput('injectPerDay', '每天最多说几次',
+            '这一份今天已经说过 ' + String((st && st.saidToday) || 0) + ' 次（同一份的几个会话合起来算）。到上限就只记账、不再打扰它，明天重新算。填 0 = 一次都不说（只看面板）', 0, 50)))
+        return h('div', { 'data-fm-pane': '' }, ...项)
+      })()
+
+      /* ── 页签 4：挂饰（说明；挂饰本身没有开关） ── */
+      const 挂饰页 = h('div', { 'data-fm-pane': '' },
+        h('div', { 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '右下角的挂饰'),
+          h('div', { 'data-fm-note': '' },
+            '桌面上右下角那个小挂饰，点一下就能看心情和记录；按住可以拖着换位置。'),
+          h('div', { 'data-fm-note': '' },
+            '面板右上角的钮只管切换形态（大图 ↔ 小圆）：缩成小圆以后照样能拖，点一下照样打开记录。这些状态记在浏览器本地，每台机器各记各的。'),
+          h('div', { 'data-fm-note': '' },
+            '挂饰显示的是「最近在聊的那一份」—— 在哪个绑定的会话里说话，它就跟着显示那一份；想换着看，去「心情」页切换。'),
+          h('div', { 'data-fm-note': '' },
+            '没看到它？刷新一下页面就出来了。')),
+        h('div', { 'data-fm-sec': '' },
+          h('div', { 'data-fm-h': '' }, '五档表情'),
+          h('div', { 'data-fm-faces': '' },
+            [['great', '≥ 80 欢喜'], ['good', '62–79 开心'], ['ok', '42–61 一般'], ['worry', '25–41 心疼'], ['sad', '< 25 难过']]
+              .map(([f, t]) => h('div', { key: f, style: { textAlign: 'center' } },
+                h('img', { src: API + '/face-' + f + '.png', alt: '' }),
+                h('div', { 'data-fm-note': '' }, t))))))
+
+      return h('div', { 'data-fm-wrap': '' },
+        h('div', { 'data-fm-tabs': '' },
+          页签.map(([id, 名]) => h('button', {
+            key: id, 'data-fm-tab': '', 'data-fm-on': 页 === id ? '' : undefined,
+            onClick: () => set页(id),
+          }, 名))),
+        页 === 'mood' ? 心情页 : null,
+        页 === 'bind' ? 绑定页 : null,
+        页 === 'judge' ? 判断页 : null,
+        页 === 'charm' ? 挂饰页 : null,
+        h('div', { 'data-fm-msg': '' }, msg),
+      )
+    }
+
+    return { Section: function MoodSection() { return h('div', null, h('style', null, CSS), h(Panel)) } }
+  },
+})
+
+// DSH「主动搭话」· 网页半边
+//
+// 只干一件事：在 **DSH 设置** 左侧栏加一项「主动搭话」，
+// 把那 7 组设置全摆出来，外加两个安全的试法（演练 / 真发一次）和一份最近掷骰记录。
+//
+// ⚠ 这里**不碰会话、不发消息**，只是往宿主那几条 /dsh-speak-up/* 路由上读写。
+//   真正的掷骰和 followup 都在宿主半边（lib/host.js），这样只有一份逻辑。
+//
+// ⚠ 槽位名 'settings.section' 跟 dsh-write / dsh-fish-memory 用的是同一个，
+//   是在这个环境里已经跑通的路子（不确定换 DSH 版本会不会变，见 README）。
+
+moduleLoader.load({
+  id: 'dsh-speak-up',
+  factory: (require) => {
+    var module = { exports: {} }
+    var exports = module.exports
+
+    const React = require('react')
+    const inject = ['slots']
+
+    const B = '/dsh-speak-up'
+    const get = (p) => fetch(B + p, { cache: 'no-store' }).then((r) => r.json()).catch(() => null)
+    const post = (p, body) =>
+      fetch(B + p, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body || {}),
+      })
+        .then((r) => r.json())
+        .catch(() => null)
+
+    const h = React.createElement
+
+    // 样式贴着主题变量走，换皮肤/换深浅色都跟着变（照 dsh-write 的做法）
+    const S = {
+      wrap: {
+        padding: '12px 14px 24px',
+        fontSize: 13,
+        lineHeight: 1.7,
+        background: 'var(--dsw-alias-bg-layer-1, rgba(255,255,255,.92))',
+        border: '1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.08))',
+        borderRadius: 12,
+      },
+      h: { fontSize: 14, fontWeight: 600, margin: '16px 0 8px' },
+      dim: { opacity: 0.62, fontSize: 12 },
+      card: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 8,
+        padding: '10px 12px',
+        marginBottom: 10,
+        background: 'var(--dsw-alias-bg-layer-1)',
+      },
+      row: { display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 8, flexWrap: 'wrap' },
+      lab: { minWidth: 190, paddingTop: 3, fontSize: 12.5 },
+      ctl: { flex: '1 1 260px', minWidth: 220 },
+      hint: { opacity: 0.6, fontSize: 11.5, marginTop: 2 },
+      input: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 6,
+        padding: '4px 8px',
+        background: 'transparent',
+        color: 'inherit',
+        fontSize: 12.5,
+        width: '100%',
+        boxSizing: 'border-box',
+      },
+      small: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 6,
+        padding: '4px 8px',
+        background: 'transparent',
+        color: 'inherit',
+        fontSize: 12.5,
+        width: 110,
+        boxSizing: 'border-box',
+      },
+      ta: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 6,
+        padding: '8px 10px',
+        background: 'transparent',
+        color: 'inherit',
+        fontSize: 12.5,
+        width: '100%',
+        boxSizing: 'border-box',
+        lineHeight: 1.7,
+        fontFamily: 'inherit',
+        minHeight: 56,
+      },
+      btn: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 6,
+        padding: '5px 12px',
+        background: 'transparent',
+        color: 'inherit',
+        cursor: 'pointer',
+        fontSize: 12.5,
+      },
+      btnOn: {
+        border: '1px solid var(--dsw-alias-state-business-primary)',
+        borderRadius: 6,
+        padding: '5px 12px',
+        background: 'var(--dsw-alias-state-business-primary)',
+        color: '#fff',
+        cursor: 'pointer',
+        fontSize: 12.5,
+      },
+      warn: {
+        border: '1px solid #c0392b',
+        borderRadius: 8,
+        padding: '8px 10px',
+        marginBottom: 10,
+        fontSize: 12,
+        lineHeight: 1.7,
+        color: '#c0392b',
+      },
+      ok: { color: 'var(--dsw-alias-state-business-primary)', fontSize: 12 },
+      已同步: {
+        margin: '6px 0 10px',
+        fontSize: 12,
+        color: 'var(--dsw-alias-state-business-primary)',
+      },
+      未保存: {
+        margin: '6px 0 10px',
+        fontSize: 12,
+        color: '#c0392b',
+        fontWeight: 600,
+      },
+      /**
+       * 悬浮的保存条（只在「有改动还没保存」时渲染）。
+       * ⚠ sticky 而不是 fixed：它属于这张设置页，滚动到哪都贴在**这一页**的底部；
+       *   页面上没有改动时它压根不渲染，所以平时不占地方、不挡内容。
+       */
+      悬浮保存条: {
+        position: 'sticky',
+        bottom: 0,
+        marginTop: 12,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        flexWrap: 'wrap',
+        padding: '8px 12px',
+        borderRadius: 10,
+        border: '1px solid var(--dsw-alias-border-l2)',
+        background: 'var(--dsw-alias-bg-layer-1, rgba(255,255,255,.95))',
+        boxShadow: '0 -6px 18px rgba(0,0,0,.18)',
+        zIndex: 5,
+      },
+      已勾: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 6,
+        padding: '5px 8px',
+        fontSize: 12,
+        lineHeight: 1.6,
+      },
+      清单: {
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 6,
+        marginTop: 4,
+        maxHeight: 260,
+        overflowY: 'auto',
+      },
+      会话行: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '5px 8px',
+        cursor: 'pointer',
+        borderBottom: '1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.06))',
+      },
+      会话行勾上: {
+        background: 'var(--dsw-alias-interactive-bg-hover, rgba(0,0,0,.04))',
+        fontWeight: 600,
+      },
+      tag: {
+        display: 'inline-block',
+        border: '1px solid var(--dsw-alias-border-l2)',
+        borderRadius: 4,
+        padding: '0 6px',
+        fontSize: 11,
+        marginRight: 6,
+        opacity: 0.9,
+      },
+      日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 11.5, whiteSpace: 'pre-wrap' },
+    }
+
+    // ---------- 小控件 ----------
+
+    const 提示 = (文本) => h('div', { style: S.hint }, 文本)
+    const 行 = (标签, 控件, 说明) =>
+      h(
+        'div',
+        { style: S.row },
+        h('div', { style: S.lab }, 标签),
+        h('div', { style: S.ctl }, 控件, 说明 ? 提示(说明) : null),
+      )
+    const 按钮 = (文字, onClick, 亮, 关) =>
+      h(
+        'button',
+        { type: 'button', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 },
+        文字,
+      )
+    const 勾 = (值, onChange) =>
+      h('input', { type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+    const 数 = (值, onChange, 步) =>
+      h('input', {
+        type: 'number',
+        value: 值 === undefined || 值 === null ? '' : 值,
+        step: 步 || 1,
+        style: S.small,
+        onChange: (e) => onChange(e.target.value),
+      })
+    /** 会话 id 的后 8 位 —— 前面那截（session- 和 uuid 开头）全都一样，只有尾巴分得出谁是谁。 */
+    const 短id = (id) => {
+      const s = String(id)
+      return s.length <= 8 ? s : s.slice(-8)
+    }
+
+    /** 标题拿不到就明说「（还没起名）」，**绝不留空白**（空白会让人以为坏了）。 */
+    const 题 = (s) => (s && typeof s.标题 === 'string' && s.标题.trim() !== '' ? s.标题 : '（还没起名）')
+
+    /** 逗号/空格/顿号都能当分隔（照抄老版输入框的行为）。 */
+    const 拆id = (文) => String(文 || '').split(/[\s,;，、]+/).filter((x) => x !== '')
+
+    // ---------- 设置页 ----------
+
+    function Section() {
+      const [态, 设态] = React.useState(null)
+      const [说, 设说] = React.useState('')
+      const [忙, 设忙] = React.useState(false)
+      // 次要路径（手填 id）的草稿：null = 没动过，直接显示配置里那份
+      const [手填, 设手填] = React.useState(null)
+      // 「改了但还没按保存」——填了不按保存等于没填，这个标志就是让这件事写在脸上
+      const [脏, 设脏] = React.useState(false)
+      const [同步话, 设同步话] = React.useState('')
+
+      const 拉 = React.useCallback(
+        () => get('/state').then((r) => { if (r && r.ok) 设态(r); else 设说('读不到宿主那边的状态（插件加载了吗？）') }),
+        [],
+      )
+
+      React.useEffect(() => { 拉() }, [拉])
+
+      if (!态 || !态.配置) {
+        return h('div', { style: S.wrap }, h('div', { style: S.h }, '主动搭话'), h('div', { style: S.dim }, '读取中…'))
+      }
+
+      const 配置 = 态.配置
+      /** 改「要点保存」的字段（数字/文案/开关）→ 置脏。 */
+
+      const 改 = (k, v) => {
+        设态((旧) => ({ ...旧, 配置: { ...旧.配置, [k]: v } }))
+        设脏(true)
+      }
+
+      /** 勾上的会话列表（组件里以本地状态为准，不等刷新，点一下立刻变色）。 */
+      const 目标们 = Array.isArray(配置.目标会话) ? 配置.目标会话 : []
+      // ⭐ 2026-10-23：会话 id 有两种写法（`xxx` / `session-xxx`）。host 那边现在统一存带前缀的，
+      //    这里比较也要先洗一遍 —— 否则会出现「面板说已勾 1 个，框却是空的 / 点一下变 2 / 取消不掉」。
+      const 会话键 = (v) => {
+        const s = String(v == null ? '' : v).trim()
+        return s.startsWith('session-') ? s.slice('session-'.length) : s
+      }
+      const 已勾 = (id) => 目标们.map(会话键).indexOf(会话键(id)) >= 0
+
+      /**
+       * 勾上/取消 → **立刻自动保存**（她原话：「有打勾不就完了嘛」）。
+       * ⚠ 这是踩过坑改的：最早那版是「填进输入框 → 再按下面的『保存设置』」，
+       *   结果她填了没按保存（按钮在另一张卡片里、页面上也没有任何"还没保存"的提示），
+       *   host 一直报「还没配目标会话」。勾选这类核心设置就该点一下就落盘。
+       * ⚠ 自动存只把「目标会话」这一个补丁发上去（host 的 /save 是合并语义），
+       *   所以不会覆盖她在别的字段里还没保存的改动。
+       */
+      const 切换 = (id, 勾上) => {
+        const 键 = 会话键(id)
+        const 下一个 = 勾上
+          ? (目标们.map(会话键).indexOf(键) >= 0 ? 目标们 : [...目标们, String(id)])
+          : 目标们.filter((x) => 会话键(x) !== 键)
+        设态((旧) => ({ ...旧, 配置: { ...旧.配置, 目标会话: 下一个 } }))
+        自动存({ 目标会话: 下一个 })
+      }
+
+      const 自动存 = async (补丁) => {
+        设同步话('保存中…')
+        const r = await post('/save', 补丁)
+        if (r && r.ok) {
+          // ⚠ 只把「服务端算出来的东西」刷回来，**不整体替换 配置** ——
+          //   否则她在别的字段里还没保存的改动会被这次自动保存悄悄抹掉。
+          设态((旧) => ({
+            ...旧,
+            日志: r.日志,
+            目标情况: r.目标情况,
+            目标活着: r.目标活着,
+            活着的会话: r.活着的会话,
+          }))
+          设同步话('已保存 ✓')
+        } else {
+          设同步话('保存失败 ✗')
+        }
+      }
+
+      const 存 = async () => {
+        设忙(true)
+        // 手填框里还有没提交的草稿 → 存的时候一起带上
+        const 要存 = 手填 === null ? 配置 : { ...配置, 目标会话: 拆id(手填) }
+        const r = await post('/save', 要存)
+        if (r && r.ok) {
+          设态(r)
+          设手填(null)
+          设脏(false)
+          设同步话('已保存 ✓')
+          设说(r.说 || '保存好了')
+        } else {
+          设说((r && r.说) || '保存失败')
+          设同步话('保存失败 ✗')
+        }
+        设忙(false)
+      }
+
+      const 掷 = async (模式) => {
+        设忙(true)
+        const r = await post('/roll', { 模式 })
+        if (r && r.ok) 设态((旧) => ({ ...旧, 日志: r.日志 }))
+        设说((r && r.说) || '跑完了')
+        设忙(false)
+      }
+
+      const 新建小屋 = async () => {
+        if (!window.confirm('新建一个空会话，并自动勾上它？（会在你的会话列表里多出一条）')) return
+        设忙(true)
+        const r = await post('/new-session', { 设为目标: true })
+        if (r && (r.ok || r.新会话)) {
+          // 同样只刷服务端那份，别把她在别的字段里还没保存的改动抹掉
+          设态((旧) => ({
+            ...旧,
+            配置: { ...旧.配置, 目标会话: r.配置 ? r.配置.目标会话 : 旧.配置.目标会话 },
+            日志: r.日志,
+            目标情况: r.目标情况,
+            目标活着: r.目标活着,
+            活着的会话: r.活着的会话,
+          }))
+        }
+        设说((r && r.说) || '做完了')
+        设忙(false)
+      }
+
+      const 会话们 = Array.isArray(态.活着的会话) ? 态.活着的会话 : []
+      const 日志 = Array.isArray(态.日志) ? 态.日志 : []
+      const 目标情况 = Array.isArray(态.目标情况) ? 态.目标情况 : []
+      const 目标活着数 = 目标情况.filter((x) => x.活着).length
+      const 手填文本 = 手填 === null ? 目标们.join(', ') : 手填
+
+      /** 清单里的一行：`☐ 标题 · …后8位 · 状态`，整行点一下就勾/取消（勾选立刻自动保存）。 */
+      const 会话行 = (s) =>
+        h(
+          'label',
+          {
+            key: s.id,
+            style: { ...S.会话行, ...(已勾(s.id) ? S.会话行勾上 : null) },
+            title:
+              String(s.id) +
+              (s.标题来源 ? '｜标题来源：' + String(s.标题来源) : '') +
+              (s.有agent ? '' : '（这个会话现在没有活着的 agent，掷中时会跳过它）') +
+              (s.归档 ? '（⚠ 这个会话已经归档了，建议取消勾选）' : ''),
+          },
+          h('input', {
+            type: 'checkbox',
+            checked: 已勾(s.id),
+            onChange: (e) => 切换(s.id, e.target.checked),
+          }),
+          h(
+            'span',
+            { style: { marginLeft: 8, ...(s.有agent ? null : S.dim) } },
+            题(s),
+          ),
+          h('span', { style: { ...S.dim, marginLeft: 8, whiteSpace: 'nowrap' } }, '…' + 短id(s.id) + ' · ' + String(s.状态 || '?')),
+        )
+
+      return h(
+        'div',
+        { style: S.wrap },
+
+        h('div', { style: S.h }, '主动搭话'),
+        h(
+          'div',
+          { style: S.dim },
+          '没人在跟她说话的时候，她也有可能先开口：按下面的间隔掷一次骰子（纯本地随机，不花模型），' +
+            '掷中了才往「目标会话」里送一句话，让 DSH 自己开一轮（人格、历史、工具、记忆都是她自己的）。' +
+            '版本 ' + String(态.版本 || '?') + '｜配置文件：' + String(态.配置文件 || ''),
+        ),
+
+        // ⚠ 「填了不按保存等于没填」这件事必须写在脸上（踩过坑：她在输入框里填了 id
+        //   却没按保存，host 一直报「还没配目标会话」，而她不知道差在哪一步）
+        h('div', { style: 脏 ? S.未保存 : S.已同步 },
+          (脏 ? '⚠ 上面有改动还没保存 —— 数字/文案改完要点「保存设置」' : '设置' + (同步话 || '已同步 ✓')) +
+            '（勾选会话不用点保存，点一下立刻生效）'),
+
+        // —— 总开关 + 试运行 ——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '开关'),
+          行('总开关', 勾(配置.总开关, (v) => 改('总开关', v)), '关掉就完全不动（定时器还在，但什么都不做）。'),
+          行(
+            '试运行（默认开）',
+            勾(配置.试运行, (v) => 改('试运行', v)),
+            '开着的时候：掷中了也只写一条记录，不真的发。先看几轮记录，确认时机合适了再关掉它。',
+          ),
+        ),
+
+        // —— 骰子 ——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '骰子'),
+          h('div', { style: S.dim },
+            '每轮掷一个 0~100 的数，比命中线小就开口。命中线 =（峰时或谷时的那格命中线）× 时机因子，再加上攒下来的没中加成。'),
+          行('掷骰子间隔（分钟）', 数(配置.间隔分钟, (v) => 改('间隔分钟', v)), '默认 30。范围 1~1440；改完保存，下一轮就按新间隔走（不用重启）。'),
+          行(
+            '搭话冷却（分钟）',
+            数(配置.搭话冷却分钟, (v) => 改('搭话冷却分钟', v)),
+            '她真的说了话之后，这么多分钟内不再开口（默认 20）。' +
+              '只是把一句念头投进去、她看完没开口，**不算**开过口、不吃冷却。0 = 不冷却（刚开口过也照投）。' +
+              '手动按钮不受它限制。',
+          ),
+          行(
+            '没中加成（百分点）',
+            数(配置.没中加成, (v) => 改('没中加成', v)),
+            '每没掷中一次，下一次命中线加这么多（默认 10）。填 0 = 关掉这个功能（一分都不加）。',
+          ),
+          行(
+            '加成上限（百分点）',
+            数(配置.加成上限, (v) => 改('加成上限', v)),
+            '加成最多加到这么多（默认 40）。',
+          ),
+          h('div', { style: S.dim },
+            '掷中（含试运行掷中）就清零，从头开始；连着没中就一次一次往上加，加到上限为止。',
+          ),
+          h('div', { style: { ...S.dim, marginTop: 2 } },
+            '这两格只影响自动的定时掷骰；手动按钮（演练/真发）不掷骰子，也不动这个计数器。',
+          ),
+          h('div', { style: { ...S.dim, marginTop: 2 } },
+            '⚠ 「连着没中」这个数只记在内存里：DSH 一重启就回到 0。',
+          ),
+          行(
+            '安静时段（起 / 止，小时）',
+            h('div', null, 数(配置.安静起, (v) => 改('安静起', v)), h('span', { style: S.dim }, ' 点 ~ '), 数(配置.安静止, (v) => 改('安静止', v)), h('span', { style: S.dim }, ' 点')),
+            '默认 1 ~ 8 点不掷（含 1 点、不含 8 点）。跨午夜也行（比如 23 ~ 7）。',
+          ),
+          // ⚠ 这条她特意提过两次，所以从上面那句里拎出来单独成一行、用红字（不新造颜色，复用 S.未保存）
+          h('div', { style: S.未保存 }, '⚠ 两个数字填成一样（比如 8 和 8）= 不启用安静时段：整天都可能掷骰子'),
+        ),
+
+        // —— 时机因子 ——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '时机因子（刚聊过就少开口，冷太久了就多开口）'),
+          行(
+            '近：刚聊过 → 命中线 ×0.15',
+            h('div', null, 数(配置.近阈值分钟, (v) => 改('近阈值分钟', v)), h('span', { style: S.dim }, ' 分钟内 → ×'), 数(配置.近因子, (v) => 改('近因子', v), 0.05)),
+            '距她上次说话不到这个分钟数 → 命中线乘这个因子（更难开口）。默认 20 分钟 ×0.15。',
+          ),
+          行(
+            '远：冷太久 → 命中线 ×1.5',
+            h('div', null, 数(配置.远阈值分钟, (v) => 改('远阈值分钟', v)), h('span', { style: S.dim }, ' 分钟以上 → ×'), 数(配置.远因子, (v) => 改('远因子', v), 0.1)),
+            '超过这个分钟数没说话 → 命中线乘这个因子（更容易开口）。默认 360 分钟（6 小时）×1.5。',
+          ),
+          h('div', { style: S.dim }, '中间那一段：命中线 ×1（既不加也不减）。最后会夹在 0~100。'),
+        ),
+
+        // —— 峰谷分时（贵的时候少开口，便宜的时候多开口）——
+        // ⚠ 时段是**写死的**（不给格子填），这里只有两个命中线数字 —— 她的要求。
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '峰谷分时（贵的时候少开口，便宜的时候多开口）'),
+          h('div', { style: S.dim }, '时段是固定的，不用你填；只有这两个数字要你定：'),
+          行(
+            '峰时命中线（%）',
+            数(配置.峰时命中线, (v) => 改('峰时命中线', v)),
+            '每轮掷一个 0~100 的数，掷到命中线以下才开口；掷在上面就不开。' +
+              '这是峰时的基础命中线（峰时 = 周一~周五 9:00~12:00、14:00~18:00，贵）。默认 20 —— 贵的时候少开口。',
+          ),
+          行(
+            '谷时命中线（%）',
+            数(配置.谷时命中线, (v) => 改('谷时命中线', v)),
+            '这是谷时的基础命中线（其余全是谷时：午休 12:00~14:00、18:00 到次日 9:00、周六周日全天，便宜）。默认 60。',
+          ),
+          行(
+            '按哪个时区算峰谷',
+            h('input', {
+              style: S.small,
+              placeholder: '留空 = 本机时区；北京填 Asia/Shanghai',
+              value: String(配置.峰谷时区 || ''),
+              onChange: (e) => 改('峰谷时区', e.target.value),
+            }),
+            '峰谷是**北京时间**算的。机器不在东八区时，这里填 Asia/Shanghai，峰谷就不会按你的本地时间错判。' +
+              '写成别的 IANA 名字也行（比如 Europe/Berlin）；写得不对会当没填。',
+          ),
+          h('div', { style: { ...S.dim, marginTop: 4 } },
+            '最终命中线 = 这格（看是峰时还是谷时）× 时机因子 + 攒下来的没中加成（最后夹在 0~100）。',
+          ),
+          h('div', { style: S.未保存 }, '⚠ 两个数字填成一样 = 不分峰谷，全天一个命中线'),
+          h('div', { style: S.未保存 },
+            '⚠ 注意：安静时段会盖住谷时 —— 你现在安静时段是 ' +
+              String(配置.安静起) + '~' + String(配置.安静止) +
+              ' 点，那段时间根本不掷，谷时命中线再高也用不上。',
+          ),
+        ),
+
+        // —— 目标会话（勾选清单；手填只是次要路径）——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '目标会话'),
+          h('div', { style: S.dim }, '勾了谁，她就会在谁的会话里自己开口。勾几个都行；一次掷中只在其中一个里开口（随机挑一个活着、又不忙的）。'),
+          h('div', { style: { ...S.dim, marginTop: 2, fontWeight: 600 } }, '✓ 勾选/取消一点就生效（自动保存，不用再按保存）'),
+          h('div', { style: { marginTop: 4 } },
+            目标们.length
+              ? h('div', { style: S.已勾 },
+                  '已勾 ' + 目标们.length + ' 个' +
+                    (目标情况.length
+                      ? '：' + 目标情况.map((x) => (x.标题 ? x.标题 : '…' + 短id(x.id)) + (x.活着 ? '' : '（现在没活着）')).join('、')
+                      : '') +
+                    (目标情况.length ? '。其中 ' + 目标活着数 + ' 个现在活着' + (目标活着数 === 0 ? ' —— 掷中也会跳过，先把它打开' : '') : ''),
+                )
+              : h('div', { style: { ...S.dim, color: '#c0392b' } }, '现在一个都没勾 —— 掷中了也不会开口。'),
+          ),
+
+          会话们.length
+            ? h('div', { style: { marginTop: 8 } },
+                h('div', { style: S.dim }, '现在开着的会话（点一下 = 勾上/取消，立刻生效）：'),
+                h('div', { style: S.清单 }, 会话们.map(会话行)),
+                h('div', { style: { ...S.dim, marginTop: 4 } },
+                  '已归档的会话不再列出来（它们掷中也会被 DSH 拦掉）；' +
+                    '只有你已经勾着的归档会话还会显示，带「⚠ 已归档」——看到就取消勾选。' +
+                    '没起名字的会话显示「（还没起名）」+ 短 id，照样能勾；' +
+                    '标着「没活着」的是现在没打开的会话，勾上也没用（掷中会跳过它）。',
+                ),
+              )
+            : h('div', { style: { ...S.dim, marginTop: 8 } }, '现在没有开着的会话（在 DSH 里打开一个再回来点「刷新清单」）。'),
+
+          h('div', { style: { marginTop: 8 } },
+            按钮('刷新清单', 拉, false, 忙),
+            h('span', { style: S.dim }, '　'),
+            按钮('新建一个小屋会话，并自动勾上', 新建小屋, false, 忙),
+          ),
+
+          // 次要路径：手填 / 粘贴 id（她要求「不再是主路径」，但留着）
+          h('div', { style: { marginTop: 10, borderTop: '1px solid var(--dsw-alias-border-l2)', paddingTop: 8 } },
+            h('div', { style: S.dim }, '也可以直接手填 / 粘贴会话 id（逗号分隔）—— 手填的必须点保存才生效：'),
+            h('div', { style: { marginTop: 4 } },
+              h('input', {
+                type: 'text',
+                style: S.input,
+                value: 手填文本,
+                placeholder: 'session-xxxxxxxx-…, session-yyyyyyyy-…',
+                onChange: (e) => 设手填(e.target.value),
+              }),
+            ),
+            h('div', { style: { marginTop: 6 } }, 按钮('保存手填的 id', 存, true, 忙)),
+          ),
+        ),
+
+        // —— 文案 ——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '触发文案'),
+          行(
+            '掷中之后送出去的那句话',
+            h('textarea', {
+              style: S.ta,
+              value: 配置.触发文案 === undefined ? '' : String(配置.触发文案),
+              onChange: (e) => 改('触发文案', e.target.value),
+            }),
+            '用她自己的口吻写一句「心里话」（比如「好久没人跟我说话了，我该主动去打个招呼」）。发出去时会自动加上一句说明「这是你自己冒出来的念头、不是对方说的」，所以别在这里再写解释。',
+          ),
+        ),
+
+        // —— 角色（做不到的地方，老实写在这儿）——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '触发消息的角色'),
+          行(
+            '角色',
+            h('select', {
+              style: S.input,
+              value: 配置.角色,
+              onChange: (e) => 改('角色', e.target.value),
+            },
+              h('option', { value: 'user' }, 'user（当前唯一跑得通的）'),
+              h('option', { value: 'developer' }, 'developer（当前 DSH 送不了）'),
+            ),
+            '选 developer 时本插件会主动拒发并记一条，不会去写坏会话日志。原因与证据见 README「做不到的地方」。',
+          ),
+        ),
+
+        // —— 动作 ——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '自己的动作'),
+          h('div', null,
+            按钮('保存设置', 存, true, 忙),
+            h('span', { style: S.dim }, '　'),
+            按钮('演练一次（绝不真发）', () => 掷('演练'), false, 忙),
+            h('span', { style: S.dim }, '　'),
+            按钮('真发一次（跳过等待）', () => 掷('真发'), false, 忙),
+            h('span', { style: S.dim }, '　'),
+            按钮('刷新', 拉, false, 忙),
+          ),
+          h('div', { style: { marginTop: 6 } },
+            h('div', { style: S.dim },
+              '「保存设置」要按的场合：改了数字 / 触发文案 / 开关 / 角色之后（「目标会话」的勾选不用按，一点就生效）。'),
+            h('div', { style: S.dim },
+              '「演练一次」会完整走一遍判断（安静时段、概率、因子都跳过，一定走到最后一步），但绝不真发，' +
+                '只告诉你「本来要发什么」。「真发一次」会当场真的送出去一轮，用于验证能不能跑通。'),
+          ),
+          说 ? h('div', { style: { ...S.ok, marginTop: 6 } }, 说) : null,
+        ),
+
+        // —— 记录 ——
+        h('div', { style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '最近 ' + 日志.length + ' 条记录（新的在最下面）'),
+          h('div', { style: S.dim }, '定时器每轮都会留一条：没掷中也留（好确认它到底有没有在跑）。'),
+          h('div', { style: { marginTop: 6, maxHeight: 260, overflowY: 'auto' } },
+            日志.length === 0
+              ? h('div', { style: S.dim }, '还没有记录。')
+              : 日志.map((条, i) => h('div', { key: i, style: S.日志行 }, 条.时间 + '　' + 条.文本)),
+          ),
+        ),
+
+        h('div', { style: S.dim },
+          '⚠ 掷骰子是纯本地随机，不花模型；只有「掷中之后真发」才会走 DSH 的一轮（会花 token）。',
+        ),
+
+        // —— 悬浮的保存条：**只要有没保存的改动，就贴在底下冒出来** ——
+        // 她原话：「只要上面有改动，那个按钮就会在下面弹出来，就不用每次往下面翻了」。
+        // ⚠ 用 position: sticky + bottom: 0（不是 fixed）：它只在这张设置页里浮着，
+        //   不会跑到别的设置页上去。没改动（脏=false）就完全不渲染 —— 不挡视线。
+        脏
+          ? h('div', { style: S.悬浮保存条 },
+              h('span', { style: { fontWeight: 600, color: '#c0392b' } }, '⚠ 有改动还没保存'),
+              h('span', { style: S.dim }, '数字 / 文案 / 开关改完，点这里就行'),
+              按钮('保存设置', 存, true, 忙),
+            )
+          : null,
+      )
+    }
+
+    function apply(ctx) {
+      const slots = ctx.get('slots')
+      if (slots === undefined) return
+      slots.inject('settings.section', () =>
+        slots.register(
+          { name: 'settings.section', id: 'speak-up', order: 53, label: () => '主动搭话' },
+          Section,
+        ),
+      )
+    }
+
+    exports.Section = Section
+    exports.apply = apply
+    exports.inject = inject
+    return module.exports
+  },
+})
+
+const META = {"name":"dsh-big-flsh-aio","version":"0.0.1","repositoryVersion":"0.1.1","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
 let NativeToast = null
 try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
 
@@ -5062,14 +6307,17 @@ const React = require('react')
 const h = React.createElement
 const QQ = components['dsh-qq-link-plus'].Section
 const Memory = components['dsh-fish-memory'].Section
+const Mood = components['dsh-feiyu-mood'].Section
+const Speak = components['dsh-speak-up'].Section
 const PANEL_ID = 'big-flsh-aio'
-const tabs = ['总览', 'QQ 互通', '长期记忆', '更新与来源']
+const tabs = ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源']
+const UPDATES_TAB = tabs.length - 1
 const css = `
 .big-fish{--fish-accent:var(--dsw-alias-state-business-primary,#4b70e2);box-sizing:border-box;height:100%;flex:1;min-height:0;overflow:auto;color:var(--dsw-alias-label-primary,#202535);background:var(--dsw-alias-bg-base,#f7f8fb);font:14px/1.65 system-ui,sans-serif;padding:calc(28px + var(--dsh-frame-top-clearance,0px)) clamp(18px,4vw,56px) 40px}
 .big-fish *{box-sizing:border-box}.big-fish .fish-content{max-width:1180px;margin:auto}.big-fish header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;margin-bottom:28px}.big-fish h1{font-size:28px;letter-spacing:-1px;margin:0;font-weight:650}.big-fish h2{font-size:19px;margin:0 0 8px}.big-fish h3{font-size:15px;margin:0 0 6px}.big-fish p{margin:6px 0}.big-fish .fish-muted{color:var(--dsw-alias-label-secondary,#727a8d);font-size:13px}.big-fish .fish-brand{display:flex;align-items:center;gap:14px}.big-fish .fish-logo{display:grid;place-items:center;width:50px;height:50px;border-radius:17px;color:var(--fish-accent);background:color-mix(in srgb,var(--fish-accent) 10%,transparent)}
 .big-fish button{font:inherit;cursor:pointer;color:inherit}.big-fish button:disabled{cursor:default;opacity:.5}.big-fish button:focus-visible,.big-fish a:focus-visible{outline:2px solid var(--fish-accent);outline-offset:3px}.big-fish .fish-button{border:1px solid var(--dsw-alias-border-l2,#dfe3eb);border-radius:9px;padding:8px 14px;background:var(--dsw-alias-bg-layer-1,#fff);font-size:13px}.big-fish .fish-primary{background:var(--fish-accent);border-color:transparent;color:white}.big-fish .fish-badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--dsw-alias-border-l2,#e0e4eb);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--dsw-alias-label-secondary,#727a8d)}
 .big-fish .fish-nav{display:flex;gap:6px;border-bottom:1px solid var(--dsw-alias-border-l2,#e0e4eb);margin-bottom:28px;overflow:auto}.big-fish .fish-nav button{white-space:nowrap;border:0;border-bottom:2px solid transparent;background:transparent;padding:10px 18px 13px;color:var(--dsw-alias-label-secondary,#727a8d)}.big-fish .fish-nav button[aria-selected=true]{color:var(--fish-accent);border-bottom-color:var(--fish-accent);font-weight:600}
-.big-fish .fish-hero{border:1px solid color-mix(in srgb,var(--fish-accent) 18%,transparent);background:linear-gradient(115deg,color-mix(in srgb,var(--fish-accent) 8%,transparent),transparent);border-radius:18px;padding:30px;display:flex;gap:24px;align-items:center;justify-content:space-between;margin-bottom:20px}.big-fish .fish-hero h2{font-size:24px;font-weight:550}.big-fish .fish-eyebrow{font-size:11px;letter-spacing:2px;color:var(--fish-accent);margin-bottom:8px}.big-fish .fish-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}.big-fish .fish-card{border:1px solid var(--dsw-alias-border-l2,#e0e4eb);border-radius:14px;background:var(--dsw-alias-bg-layer-1,#fff);padding:22px}.big-fish .fish-value{font-size:25px;font-weight:600;margin:8px 0 4px;letter-spacing:-.5px}.big-fish .fish-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px}.big-fish .fish-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.big-fish .fish-table{width:100%;border-collapse:collapse;font-size:13px}.big-fish .fish-table th,.big-fish .fish-table td{text-align:left;vertical-align:top;padding:14px 12px;border-bottom:1px solid var(--dsw-alias-border-l2,#e0e4eb)}.big-fish .fish-table th{font-size:12px;font-weight:500;color:var(--dsw-alias-label-secondary,#727a8d)}.big-fish a{color:var(--fish-accent);text-decoration:none;overflow-wrap:anywhere}.big-fish a:hover{text-decoration:underline}.big-fish .fish-message{white-space:pre-wrap;margin:12px 0}.big-fish footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--dsw-alias-border-l2,#e0e4eb);font-size:11px;color:var(--dsw-alias-label-secondary,#727a8d)}
+.big-fish .fish-hero{border:1px solid color-mix(in srgb,var(--fish-accent) 18%,transparent);background:linear-gradient(115deg,color-mix(in srgb,var(--fish-accent) 8%,transparent),transparent);border-radius:18px;padding:30px;display:flex;gap:24px;align-items:center;justify-content:space-between;margin-bottom:20px}.big-fish .fish-hero h2{font-size:24px;font-weight:550}.big-fish .fish-eyebrow{font-size:11px;letter-spacing:2px;color:var(--fish-accent);margin-bottom:8px}.big-fish .fish-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}.big-fish .fish-card{border:1px solid var(--dsw-alias-border-l2,#e0e4eb);border-radius:14px;background:var(--dsw-alias-bg-layer-1,#fff);padding:22px}.big-fish .fish-value{font-size:25px;font-weight:600;margin:8px 0 4px;letter-spacing:-.5px}.big-fish .fish-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px}.big-fish .fish-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.big-fish .fish-table{width:100%;min-width:850px;border-collapse:collapse;font-size:13px}.big-fish .fish-table th,.big-fish .fish-table td{text-align:left;vertical-align:top;padding:14px 12px;border-bottom:1px solid var(--dsw-alias-border-l2,#e0e4eb)}.big-fish .fish-table th{font-size:12px;font-weight:500;color:var(--dsw-alias-label-secondary,#727a8d)}.big-fish a{color:var(--fish-accent);text-decoration:none;overflow-wrap:anywhere}.big-fish a:hover{text-decoration:underline}.big-fish .fish-message{white-space:pre-wrap;margin:12px 0}.big-fish footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--dsw-alias-border-l2,#e0e4eb);font-size:11px;color:var(--dsw-alias-label-secondary,#727a8d)}
 @media(max-width:600px){.big-fish .fish-hero{padding:22px;align-items:flex-start;flex-direction:column}.big-fish .fish-hero h2{font-size:20px}.big-fish .fish-nav button{padding:10px 11px}.big-fish .fish-card{padding:17px}.big-fish h1{font-size:24px}}
 `
 
@@ -5093,8 +6341,8 @@ function Overview({ navigate }) {
   const [busy, setBusy] = React.useState(false)
   const refresh = async () => {
     setBusy(true)
-    const results = await Promise.allSettled([request('/dsh-qq-bridge/state'), request('/dsh-fish-memory/list')])
-    setState({ qq: results[0].value, memory: results[1].value, errors: results.filter(r => r.status === 'rejected').map(r => r.reason.message) })
+    const results = await Promise.allSettled([request('/dsh-qq-bridge/state'), request('/dsh-fish-memory/list'), request('/dsh-feiyu-mood/state'), request('/dsh-speak-up/state')])
+    setState({ qq: results[0].value, memory: results[1].value, mood: results[2].value, speak: results[3].value, errors: results.filter(r => r.status === 'rejected').map(r => r.reason.message) })
     setBusy(false)
   }
   React.useEffect(() => { void refresh() }, [])
@@ -5105,12 +6353,14 @@ function Overview({ navigate }) {
     ['消息转发', !qq ? '—' : qq.配置?.总开关 ? qq.配置?.试运行 ? '试运行' : '已开启' : '已关闭', '沿用原插件的收发开关与绑定策略'],
     ['长期记忆', !memory ? '—' : memory.全局开关 ? '已开启' : '已关闭', '支持按会话、QQ 来源隔离及语义召回'],
     ['记忆条目', memory ? String(libraries.reduce((n, s) => n + (s.count || 0), 0)) : '—', memory ? libraries.length + ' 个记忆库' : '等待宿主记忆服务'],
+    ['鱼的心情', state.mood ? String(state.mood.mood ?? '—') : '—', '按会话或工作区绑定，保留情绪时间线与挂饰'],
+    ['主动搭话', !state.speak ? '—' : state.speak.配置?.总开关 ? state.speak.配置?.试运行 ? '试运行' : '已开启' : '已关闭', '复用目标会话的人格、历史、工具和记忆'],
   ]
   return h('div', null,
     h('section', { className: 'fish-hero' }, h('div', null,
       h('div', { className: 'fish-eyebrow' }, 'BIG FISH / 大肥鱼'),
       h('h2', null, '消息有来处，记忆有归处。'),
-      h('p', { className: 'fish-muted' }, '在一个工作台里，连接 QQ、整理历史、照看长期记忆。')),
+      h('p', { className: 'fish-muted' }, '连接 QQ、照看记忆与心情，让伙伴主动来找你。')),
       button(busy ? '读取中…' : '刷新状态', refresh, false, busy)),
     state.errors?.length ? h('p', { className: 'fish-message', role: 'alert' }, state.errors.join('\n')) : null,
     h('div', { className: 'fish-stats' }, ...stats.map(([label, value, hint]) => h('article', { className: 'fish-card', key: label },
@@ -5121,7 +6371,13 @@ function Overview({ navigate }) {
         h('div', { className: 'fish-actions' }, button('管理 QQ 与历史导入 →', () => navigate(1), true))),
       h('article', { className: 'fish-card' }, h('span', { className: 'fish-badge' }, '02 / REMEMBER'), h('h2', { style: { marginTop: 18 } }, '长期记忆'),
         h('p', { className: 'fish-muted' }, '浏览与编辑记忆，整理档案，配置遗忘与召回。Qwen 语义检索按需启用，保留原有来源隔离。'),
-        h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2), true)))),
+        h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2), true))),
+      h('article', { className: 'fish-card' }, h('h2', null, '鱼的心情'),
+        h('p', { className: 'fish-muted' }, '自动判断心情、查看情绪时间线，管理会话或工作区绑定与挂饰。'),
+        h('div', { className: 'fish-actions' }, button('照看心情 →', () => navigate(3), true))),
+      h('article', { className: 'fish-card' }, h('h2', null, '主动搭话'),
+        h('p', { className: 'fish-muted' }, '配置空闲触发、时段与目标会话，先演练，再按需启用真发。'),
+        h('div', { className: 'fish-actions' }, button('管理主动搭话 →', () => navigate(4), true)))),
     h('p', { className: 'fish-muted', style: { marginTop: 20 } }, '首次使用：配置 QQ 后端与会话绑定 → 启用目标会话记忆 → 按需导入历史。历史整理会调用目标会话模型并消耗额度。'))
 }
 
@@ -5148,7 +6404,8 @@ function Updates() {
   const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
   return h('div', null,
     h('section', { className: 'fish-card' },
-      h('span', { className: 'fish-badge' }, 'RELEASE / v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
+      h('span', { className: 'fish-badge' }, '仓库 v' + META.repositoryVersion + ' / npm 包 v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
+      h('p', { className: 'fish-muted' }, '仓库版本供自己使用；npm 包是经过验证后另行发布的对外版本，两者独立编号。'),
       h('p', null, status),
       h('label', null, '更新渠道 ', h('select', { 'aria-label': '更新渠道', className: 'fish-button', value: channel, disabled: busy, onChange: e => { setUpdate(null); setMessage(''); setChannel(e.target.value) } },
         h('option', { value: 'mirror' }, '国内镜像 · npmmirror'), h('option', { value: 'github' }, 'GitHub 仓库'))),
@@ -5162,30 +6419,32 @@ function Updates() {
       h('div', { style: { overflowX: 'auto' } }, h('table', { className: 'fish-table' },
         h('thead', null, h('tr', null,
           ...['项目名称', '本项目子仓库', '原作者仓库'].map(x => h('th', { key: x, scope: 'col' }, x)),
-          h('th', { scope: 'col' }, '适配的原仓库版本', h('div', { className: 'fish-muted', style: { fontWeight: 400, minWidth: 170 } }, '仅表示本项目目前适配的原仓库版本，不代表源仓库的最新版本')))),
+          h('th', { scope: 'col' }, '整合时的原仓库版本', h('div', { className: 'fish-muted', style: { fontWeight: 400, minWidth: 170 } }, '固定记录整合基线，不随上游最新版本变化')),
+          h('th', { scope: 'col' }, '实际内置版本'))),
         h('tbody', null, ...META.upstreamCompatibility.map(item => h('tr', { key: item.url },
           h('td', null, item.name),
-          h('td', null, link(item.forkUrl, item.forkName), h('div', { className: 'fish-muted' }, item.forkUrl.replace('https://github.com/', ''))),
+          h('td', null, item.forkUrl ? link(item.forkUrl, item.forkName) : item.modulePath),
           h('td', null, link(item.url, item.url.replace('https://github.com/', ''))),
-          h('td', null, item.version))))))))
+          h('td', null, item.version, h('div', { className: 'fish-muted', title: item.commit }, item.commit.slice(0, 7))),
+          h('td', null, item.forkVersion || item.version, h('div', { className: 'fish-muted', title: item.forkCommit || item.commit }, (item.forkCommit || item.commit).slice(0, 7))))))))))
 
 }
 
 function Page() {
-  const initialTab = openUpdatesRequested ? 3 : 0
+  const initialTab = openUpdatesRequested ? UPDATES_TAB : 0
   const [tab, setTab] = React.useState(initialTab)
   const [visited, setVisited] = React.useState([initialTab])
   const navigate = id => { setTab(id); setVisited(old => old.includes(id) ? old : [...old, id]) }
   React.useEffect(() => {
     openUpdatesRequested = false
-    showUpdates = () => navigate(3)
+    showUpdates = () => navigate(UPDATES_TAB)
     return () => { showUpdates = null }
   }, [])
-  const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Updates)]
+  const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Mood), () => h(Speak), () => h(Updates)]
   return h('div', { className: 'big-fish' }, h('style', null, css), h('div', { className: 'fish-content' },
     h('header', null,
       h('div', { className: 'fish-brand' }, h('div', { className: 'fish-logo' }, h(FishIcon, { size: 32 })), h('div', null, h('h1', null, '大肥鱼'))),
-      h('span', { className: 'fish-badge' }, 'v' + META.version + ' / ALL IN ONE')),
+      h('span', { className: 'fish-badge' }, '仓库 v' + META.repositoryVersion + ' / npm 包 v' + META.version)),
     h('nav', { className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist' }, ...tabs.map((label, id) => h('button', {
       type: 'button', key: label, role: 'tab', id: 'fish-tab-' + id, 'aria-selected': tab === id, 'aria-controls': 'fish-panel-' + id,
       tabIndex: tab === id ? 0 : -1, onClick: () => navigate(id), onKeyDown: e => {
@@ -5194,7 +6453,7 @@ function Page() {
       },
     }, label))),
     ...visited.map(id => h('section', { key: id, id: 'fish-panel-' + id, role: 'tabpanel', 'aria-labelledby': 'fish-tab-' + id, hidden: tab !== id }, render[id]())),
-    h('footer', null, '派生自 Yuuyuko-uu / dsh-qq-link 与 dsh-fish-memory · 原作者许可与来源见「更新与来源」')))
+    h('footer', null, '派生自 Yuuyuko-uu / QQ、记忆、心情与主动搭话 · 原作者许可与来源见「更新与来源」')))
 }
 
 return {

@@ -7,9 +7,11 @@ const meta = JSON.parse(read('package.json'))
 const output = `// 自动生成：修改 src/panel.js 或 modules/*/lib/client.js 后运行 npm run build。\n` +
   `window.__ModuleLoader__.load({ id: ${JSON.stringify(meta.name)}, factory(require) {\n` +
   `const components = {};\nconst moduleLoader = { load({id, factory}) { components[id] = factory(require) } };\n` +
-  read('modules/qq/lib/client.js').replace('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
-  read('modules/memory/lib/client.js').replace('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
-  `const META = ${JSON.stringify({ name: meta.name, version: meta.version, upstreamCompatibility: meta.upstreamCompatibility })};\n` +
+  read('modules/qq/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
+  read('modules/memory/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
+  read('modules/mood/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
+  read('modules/speak/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
+  `const META = ${JSON.stringify({ name: meta.name, version: meta.version, repositoryVersion: meta.repositoryVersion, upstreamCompatibility: meta.upstreamCompatibility })};\n` +
   read('src/update-notifier.js') + '\n' +
   read('src/panel.js') + '\n} });\n'
 writeFileSync(new URL('client.js', root), output)

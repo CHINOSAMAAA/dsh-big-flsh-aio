@@ -9,7 +9,7 @@
 
 整合修改：CHINOSAMAAA 将侧栏模板改为「大肥鱼」主界面，将 QQ 与记忆模块打包，统一更新入口与更新来源，补充版本对应表、打包流程和测试。Plus 原有扩展包括历史导入、QQ 来源隔离、Qwen 语义召回。
 
-本项目整体继续采用 **Yuuyuko-uu 插件许可 1.2**。[LICENSE](LICENSE) 为逐字完整保留的许可正文；不向其正文添加署名封面，以满足「不删、不改、不缩略」的要求。本文件作为许可署名首页随包分发。两个模块中也分别保留原许可、README、变更记录与包内作者信息。
+本项目整体继续采用 **Yuuyuko-uu 插件许可 1.2**。[LICENSE](LICENSE) 为逐字完整保留的许可正文；不向其正文添加署名封面，以满足「不删、不改、不缩略」的要求。本文件作为许可署名首页随包分发。四个模块中也分别保留原许可、README、变更记录与包内作者信息。
 
 第三方资料：
 
@@ -17,3 +17,10 @@
 - 中文词典与词频来自 [fxsjy/jieba](https://github.com/fxsjy/jieba)，Copyright (c) 2013 Sun Junyi，MIT；保留 `词典-来源.txt`，并随包补充分发 `modules/memory/lib/notices/jieba-LICENSE`。
 
 发布、介绍、截图和视频引用请同时保留上述原作者署名与项目地址。详见 [LICENSE](LICENSE)。
+
+新增整合来源（原作者 Yuuyuko-uu，完整原许可保留于各模块）：
+
+- 鱼的心情 0.9.0：https://github.com/Yuuyuko-uu/dsh-feiyu-mood（02fddcaae0763651ecd65af5f644fe61f19de4bd）
+- 主动搭话 0.3.0：https://github.com/Yuuyuko-uu/dsh-speak-up（e3bc6362208c693bb833ecf463ec6a20df4b6419）
+
+CHINOSAMAAA 整合修改：统一宿主加载与工作台、合并更新入口、区分仓库和 npm 版本、记录来源与增加联调测试。心情原图片与挂饰保留于 modules/mood/assets。

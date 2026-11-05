@@ -9,9 +9,9 @@ import { createSelfUpdate } from '../lib/selfupdate.mjs'
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('整合包只注册一个侧栏和主面板，四个入口直接挂载原功能组件', () => {
+test('整合包只注册一个侧栏和主面板，六个入口直接挂载四个模块', () => {
   let plugin, index = 0
-  const states = [0, [0, 1, 2, 3]]
+  const states = [0, [0, 1, 2, 3, 4, 5]]
   const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: () => [states[index++], () => {}], useEffect() {} }
   vm.runInNewContext(read('../client.js'), { window: { __ModuleLoader__: { load: ({ id, factory }) => {
     assert.equal(id, 'dsh-big-flsh-aio'); plugin = factory(() => React)
@@ -24,16 +24,19 @@ test('整合包只注册一个侧栏和主面板，四个入口直接挂载原�
   const nodes = []
   const walk = x => { if (x && typeof x === 'object') { nodes.push(x); for (const c of x.children || []) (Array.isArray(c) ? c : [c]).forEach(walk) } }
   walk(tree)
-  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.children[0]), ['总览', 'QQ 互通', '长期记忆', '更新与来源'])
+  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.children[0]), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源'])
   const panels = nodes.filter(n => n.props?.role === 'tabpanel')
-  assert.equal(panels.length, 4)
+  assert.equal(panels.length, 6)
   assert.equal(panels[1].children[0].type.name, 'Section')
   assert.equal(panels[2].children[0].type.name, 'Section')
-  const updates = panels[3].children[0].type
+  assert.equal(panels[3].children[0].type.name, 'MoodSection')
+  assert.equal(panels[4].children[0].type.name, 'Section')
+  const updates = panels[5].children[0].type
   const compatReact = [null, false, '', 'mirror']; index = 0; React.useState = () => [compatReact[index++], () => {}]; React.useEffect = () => {}
   const htmlTree = JSON.stringify(updates())
   const meta = JSON.parse(read('../package.json'))
-  for (const source of meta.upstreamCompatibility) { assert.ok(htmlTree.includes(source.url)); assert.ok(htmlTree.includes(source.forkUrl)); assert.ok(htmlTree.includes(source.version)) }
+  for (const source of meta.upstreamCompatibility) { assert.ok(htmlTree.includes(source.url)); assert.ok(htmlTree.includes(source.forkUrl || source.modulePath)); assert.ok(htmlTree.includes(source.version)); assert.ok(htmlTree.includes(source.commit.slice(0, 7))) }
+  assert.ok(htmlTree.includes(meta.repositoryVersion) && htmlTree.includes(meta.version))
   const overviewStates = [{ memory: { sessions: [{ id: 'a', storeId: 'shared', count: 3 }, { id: 'b', storeId: 'shared', count: 3 }] } }, false]
   index = 0; React.useState = () => [overviewStates[index++], () => {}]
   const overview = JSON.stringify(panels[0].children[0].type({ navigate() {} }))
@@ -45,10 +48,17 @@ test('作者许可原文完整保留，兼容清单和包内模块版本一致',
   const license = read('../LICENSE')
   assert.equal(license, read('../modules/qq/LICENSE'))
   assert.equal(license, read('../modules/memory/LICENSE'))
+  assert.equal(license, read('../modules/mood/LICENSE'))
+  assert.equal(license, read('../modules/speak/LICENSE'))
   const meta = JSON.parse(read('../package.json'))
   for (const [module, name] of [['qq', 'dsh-qq-link-plus'], ['memory', 'dsh-fish-memory-plus']]) {
     const source = meta.upstreamCompatibility.find(s => s.forkUrl.endsWith('/' + name))
     assert.equal(source.forkVersion, JSON.parse(read(`../modules/${module}/package.json`)).version)
+  }
+  for (const module of ['mood', 'speak']) {
+    const source = meta.upstreamCompatibility.find(s => s.modulePath === 'modules/' + module)
+    assert.equal(source.version, JSON.parse(read(`../modules/${module}/package.json`)).version)
+    assert.match(source.commit, /^[a-f0-9]{40}$/)
   }
   assert.ok(read('../README.md').slice(0, 900).includes('原作者 **Yuuyuko-uu**'))
   assert.ok(read('../LICENSE.md').slice(0, 900).includes('Yuuyuko-uu'))
@@ -92,14 +102,14 @@ test('统一更新拒绝错误包、无效版本、未鉴权和跨站请求；�
     }
     managerResult = { changed: true, application: 'restart-required', stage: 'enable', target: remote.name }
     assert.equal((await call('install')).result.ok, true)
-    remote.version = JSON.parse(read('../package.json')).version
+    remote.repositoryVersion = JSON.parse(read('../package.json')).repositoryVersion
     const before = installed.length
     assert.equal((await call('install')).result.ok, false)
     assert.equal(installed.length, before)
   } finally { globalThis.fetch = originalFetch; rmSync(home, { recursive: true, force: true }) }
 })
 
-test('Host 统一加载两个子插件并注册整合包更新路由', async () => {
+test('Host 统一加载四个子插件并注册整合包更新路由', async () => {
   const home = mkdtempSync(join(tmpdir(), 'fish-aio-host-'))
   const previous = process.env.DSH_HOME
   try {
@@ -107,7 +117,7 @@ test('Host 统一加载两个子插件并注册整合包更新路由', async () 
     const host = await import('../index.js')
     const plugins = [], routes = []
     host.apply({ plugin: p => plugins.push(p.name), effect: fn => fn(), webServer: { register: route => routes.push(route.path) } })
-    assert.deepEqual(plugins, ['memory', 'qq-bridge'])
+    assert.deepEqual(plugins, ['memory', 'qq-bridge', 'feiyu-mood', 'speak-up'])
     assert.deepEqual(routes, ['/dsh-big-flsh-aio/update', '/dsh-big-flsh-aio/install'])
     assert.ok(host.inject.includes('llm') && host.inject.includes('attachments'))
   } finally { if (previous === undefined) delete process.env.DSH_HOME; else process.env.DSH_HOME = previous; rmSync(home, { recursive: true, force: true }) }

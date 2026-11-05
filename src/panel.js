@@ -2,14 +2,17 @@ const React = require('react')
 const h = React.createElement
 const QQ = components['dsh-qq-link-plus'].Section
 const Memory = components['dsh-fish-memory'].Section
+const Mood = components['dsh-feiyu-mood'].Section
+const Speak = components['dsh-speak-up'].Section
 const PANEL_ID = 'big-flsh-aio'
-const tabs = ['总览', 'QQ 互通', '长期记忆', '更新与来源']
+const tabs = ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源']
+const UPDATES_TAB = tabs.length - 1
 const css = `
 .big-fish{--fish-accent:var(--dsw-alias-state-business-primary,#4b70e2);box-sizing:border-box;height:100%;flex:1;min-height:0;overflow:auto;color:var(--dsw-alias-label-primary,#202535);background:var(--dsw-alias-bg-base,#f7f8fb);font:14px/1.65 system-ui,sans-serif;padding:calc(28px + var(--dsh-frame-top-clearance,0px)) clamp(18px,4vw,56px) 40px}
 .big-fish *{box-sizing:border-box}.big-fish .fish-content{max-width:1180px;margin:auto}.big-fish header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;margin-bottom:28px}.big-fish h1{font-size:28px;letter-spacing:-1px;margin:0;font-weight:650}.big-fish h2{font-size:19px;margin:0 0 8px}.big-fish h3{font-size:15px;margin:0 0 6px}.big-fish p{margin:6px 0}.big-fish .fish-muted{color:var(--dsw-alias-label-secondary,#727a8d);font-size:13px}.big-fish .fish-brand{display:flex;align-items:center;gap:14px}.big-fish .fish-logo{display:grid;place-items:center;width:50px;height:50px;border-radius:17px;color:var(--fish-accent);background:color-mix(in srgb,var(--fish-accent) 10%,transparent)}
 .big-fish button{font:inherit;cursor:pointer;color:inherit}.big-fish button:disabled{cursor:default;opacity:.5}.big-fish button:focus-visible,.big-fish a:focus-visible{outline:2px solid var(--fish-accent);outline-offset:3px}.big-fish .fish-button{border:1px solid var(--dsw-alias-border-l2,#dfe3eb);border-radius:9px;padding:8px 14px;background:var(--dsw-alias-bg-layer-1,#fff);font-size:13px}.big-fish .fish-primary{background:var(--fish-accent);border-color:transparent;color:white}.big-fish .fish-badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--dsw-alias-border-l2,#e0e4eb);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--dsw-alias-label-secondary,#727a8d)}
 .big-fish .fish-nav{display:flex;gap:6px;border-bottom:1px solid var(--dsw-alias-border-l2,#e0e4eb);margin-bottom:28px;overflow:auto}.big-fish .fish-nav button{white-space:nowrap;border:0;border-bottom:2px solid transparent;background:transparent;padding:10px 18px 13px;color:var(--dsw-alias-label-secondary,#727a8d)}.big-fish .fish-nav button[aria-selected=true]{color:var(--fish-accent);border-bottom-color:var(--fish-accent);font-weight:600}
-.big-fish .fish-hero{border:1px solid color-mix(in srgb,var(--fish-accent) 18%,transparent);background:linear-gradient(115deg,color-mix(in srgb,var(--fish-accent) 8%,transparent),transparent);border-radius:18px;padding:30px;display:flex;gap:24px;align-items:center;justify-content:space-between;margin-bottom:20px}.big-fish .fish-hero h2{font-size:24px;font-weight:550}.big-fish .fish-eyebrow{font-size:11px;letter-spacing:2px;color:var(--fish-accent);margin-bottom:8px}.big-fish .fish-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}.big-fish .fish-card{border:1px solid var(--dsw-alias-border-l2,#e0e4eb);border-radius:14px;background:var(--dsw-alias-bg-layer-1,#fff);padding:22px}.big-fish .fish-value{font-size:25px;font-weight:600;margin:8px 0 4px;letter-spacing:-.5px}.big-fish .fish-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px}.big-fish .fish-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.big-fish .fish-table{width:100%;border-collapse:collapse;font-size:13px}.big-fish .fish-table th,.big-fish .fish-table td{text-align:left;vertical-align:top;padding:14px 12px;border-bottom:1px solid var(--dsw-alias-border-l2,#e0e4eb)}.big-fish .fish-table th{font-size:12px;font-weight:500;color:var(--dsw-alias-label-secondary,#727a8d)}.big-fish a{color:var(--fish-accent);text-decoration:none;overflow-wrap:anywhere}.big-fish a:hover{text-decoration:underline}.big-fish .fish-message{white-space:pre-wrap;margin:12px 0}.big-fish footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--dsw-alias-border-l2,#e0e4eb);font-size:11px;color:var(--dsw-alias-label-secondary,#727a8d)}
+.big-fish .fish-hero{border:1px solid color-mix(in srgb,var(--fish-accent) 18%,transparent);background:linear-gradient(115deg,color-mix(in srgb,var(--fish-accent) 8%,transparent),transparent);border-radius:18px;padding:30px;display:flex;gap:24px;align-items:center;justify-content:space-between;margin-bottom:20px}.big-fish .fish-hero h2{font-size:24px;font-weight:550}.big-fish .fish-eyebrow{font-size:11px;letter-spacing:2px;color:var(--fish-accent);margin-bottom:8px}.big-fish .fish-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}.big-fish .fish-card{border:1px solid var(--dsw-alias-border-l2,#e0e4eb);border-radius:14px;background:var(--dsw-alias-bg-layer-1,#fff);padding:22px}.big-fish .fish-value{font-size:25px;font-weight:600;margin:8px 0 4px;letter-spacing:-.5px}.big-fish .fish-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px}.big-fish .fish-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.big-fish .fish-table{width:100%;min-width:850px;border-collapse:collapse;font-size:13px}.big-fish .fish-table th,.big-fish .fish-table td{text-align:left;vertical-align:top;padding:14px 12px;border-bottom:1px solid var(--dsw-alias-border-l2,#e0e4eb)}.big-fish .fish-table th{font-size:12px;font-weight:500;color:var(--dsw-alias-label-secondary,#727a8d)}.big-fish a{color:var(--fish-accent);text-decoration:none;overflow-wrap:anywhere}.big-fish a:hover{text-decoration:underline}.big-fish .fish-message{white-space:pre-wrap;margin:12px 0}.big-fish footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--dsw-alias-border-l2,#e0e4eb);font-size:11px;color:var(--dsw-alias-label-secondary,#727a8d)}
 @media(max-width:600px){.big-fish .fish-hero{padding:22px;align-items:flex-start;flex-direction:column}.big-fish .fish-hero h2{font-size:20px}.big-fish .fish-nav button{padding:10px 11px}.big-fish .fish-card{padding:17px}.big-fish h1{font-size:24px}}
 `
 
@@ -33,8 +36,8 @@ function Overview({ navigate }) {
   const [busy, setBusy] = React.useState(false)
   const refresh = async () => {
     setBusy(true)
-    const results = await Promise.allSettled([request('/dsh-qq-bridge/state'), request('/dsh-fish-memory/list')])
-    setState({ qq: results[0].value, memory: results[1].value, errors: results.filter(r => r.status === 'rejected').map(r => r.reason.message) })
+    const results = await Promise.allSettled([request('/dsh-qq-bridge/state'), request('/dsh-fish-memory/list'), request('/dsh-feiyu-mood/state'), request('/dsh-speak-up/state')])
+    setState({ qq: results[0].value, memory: results[1].value, mood: results[2].value, speak: results[3].value, errors: results.filter(r => r.status === 'rejected').map(r => r.reason.message) })
     setBusy(false)
   }
   React.useEffect(() => { void refresh() }, [])
@@ -45,12 +48,14 @@ function Overview({ navigate }) {
     ['消息转发', !qq ? '—' : qq.配置?.总开关 ? qq.配置?.试运行 ? '试运行' : '已开启' : '已关闭', '沿用原插件的收发开关与绑定策略'],
     ['长期记忆', !memory ? '—' : memory.全局开关 ? '已开启' : '已关闭', '支持按会话、QQ 来源隔离及语义召回'],
     ['记忆条目', memory ? String(libraries.reduce((n, s) => n + (s.count || 0), 0)) : '—', memory ? libraries.length + ' 个记忆库' : '等待宿主记忆服务'],
+    ['鱼的心情', state.mood ? String(state.mood.mood ?? '—') : '—', '按会话或工作区绑定，保留情绪时间线与挂饰'],
+    ['主动搭话', !state.speak ? '—' : state.speak.配置?.总开关 ? state.speak.配置?.试运行 ? '试运行' : '已开启' : '已关闭', '复用目标会话的人格、历史、工具和记忆'],
   ]
   return h('div', null,
     h('section', { className: 'fish-hero' }, h('div', null,
       h('div', { className: 'fish-eyebrow' }, 'BIG FISH / 大肥鱼'),
       h('h2', null, '消息有来处，记忆有归处。'),
-      h('p', { className: 'fish-muted' }, '在一个工作台里，连接 QQ、整理历史、照看长期记忆。')),
+      h('p', { className: 'fish-muted' }, '连接 QQ、照看记忆与心情，让伙伴主动来找你。')),
       button(busy ? '读取中…' : '刷新状态', refresh, false, busy)),
     state.errors?.length ? h('p', { className: 'fish-message', role: 'alert' }, state.errors.join('\n')) : null,
     h('div', { className: 'fish-stats' }, ...stats.map(([label, value, hint]) => h('article', { className: 'fish-card', key: label },
@@ -61,7 +66,13 @@ function Overview({ navigate }) {
         h('div', { className: 'fish-actions' }, button('管理 QQ 与历史导入 →', () => navigate(1), true))),
       h('article', { className: 'fish-card' }, h('span', { className: 'fish-badge' }, '02 / REMEMBER'), h('h2', { style: { marginTop: 18 } }, '长期记忆'),
         h('p', { className: 'fish-muted' }, '浏览与编辑记忆，整理档案，配置遗忘与召回。Qwen 语义检索按需启用，保留原有来源隔离。'),
-        h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2), true)))),
+        h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2), true))),
+      h('article', { className: 'fish-card' }, h('h2', null, '鱼的心情'),
+        h('p', { className: 'fish-muted' }, '自动判断心情、查看情绪时间线，管理会话或工作区绑定与挂饰。'),
+        h('div', { className: 'fish-actions' }, button('照看心情 →', () => navigate(3), true))),
+      h('article', { className: 'fish-card' }, h('h2', null, '主动搭话'),
+        h('p', { className: 'fish-muted' }, '配置空闲触发、时段与目标会话，先演练，再按需启用真发。'),
+        h('div', { className: 'fish-actions' }, button('管理主动搭话 →', () => navigate(4), true)))),
     h('p', { className: 'fish-muted', style: { marginTop: 20 } }, '首次使用：配置 QQ 后端与会话绑定 → 启用目标会话记忆 → 按需导入历史。历史整理会调用目标会话模型并消耗额度。'))
 }
 
@@ -88,7 +99,8 @@ function Updates() {
   const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
   return h('div', null,
     h('section', { className: 'fish-card' },
-      h('span', { className: 'fish-badge' }, 'RELEASE / v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
+      h('span', { className: 'fish-badge' }, '仓库 v' + META.repositoryVersion + ' / npm 包 v' + META.version), h('h2', { style: { marginTop: 16 } }, '更新大肥鱼'),
+      h('p', { className: 'fish-muted' }, '仓库版本供自己使用；npm 包是经过验证后另行发布的对外版本，两者独立编号。'),
       h('p', null, status),
       h('label', null, '更新渠道 ', h('select', { 'aria-label': '更新渠道', className: 'fish-button', value: channel, disabled: busy, onChange: e => { setUpdate(null); setMessage(''); setChannel(e.target.value) } },
         h('option', { value: 'mirror' }, '国内镜像 · npmmirror'), h('option', { value: 'github' }, 'GitHub 仓库'))),
@@ -102,30 +114,32 @@ function Updates() {
       h('div', { style: { overflowX: 'auto' } }, h('table', { className: 'fish-table' },
         h('thead', null, h('tr', null,
           ...['项目名称', '本项目子仓库', '原作者仓库'].map(x => h('th', { key: x, scope: 'col' }, x)),
-          h('th', { scope: 'col' }, '适配的原仓库版本', h('div', { className: 'fish-muted', style: { fontWeight: 400, minWidth: 170 } }, '仅表示本项目目前适配的原仓库版本，不代表源仓库的最新版本')))),
+          h('th', { scope: 'col' }, '整合时的原仓库版本', h('div', { className: 'fish-muted', style: { fontWeight: 400, minWidth: 170 } }, '固定记录整合基线，不随上游最新版本变化')),
+          h('th', { scope: 'col' }, '实际内置版本'))),
         h('tbody', null, ...META.upstreamCompatibility.map(item => h('tr', { key: item.url },
           h('td', null, item.name),
-          h('td', null, link(item.forkUrl, item.forkName), h('div', { className: 'fish-muted' }, item.forkUrl.replace('https://github.com/', ''))),
+          h('td', null, item.forkUrl ? link(item.forkUrl, item.forkName) : item.modulePath),
           h('td', null, link(item.url, item.url.replace('https://github.com/', ''))),
-          h('td', null, item.version))))))))
+          h('td', null, item.version, h('div', { className: 'fish-muted', title: item.commit }, item.commit.slice(0, 7))),
+          h('td', null, item.forkVersion || item.version, h('div', { className: 'fish-muted', title: item.forkCommit || item.commit }, (item.forkCommit || item.commit).slice(0, 7))))))))))
 
 }
 
 function Page() {
-  const initialTab = openUpdatesRequested ? 3 : 0
+  const initialTab = openUpdatesRequested ? UPDATES_TAB : 0
   const [tab, setTab] = React.useState(initialTab)
   const [visited, setVisited] = React.useState([initialTab])
   const navigate = id => { setTab(id); setVisited(old => old.includes(id) ? old : [...old, id]) }
   React.useEffect(() => {
     openUpdatesRequested = false
-    showUpdates = () => navigate(3)
+    showUpdates = () => navigate(UPDATES_TAB)
     return () => { showUpdates = null }
   }, [])
-  const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Updates)]
+  const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Mood), () => h(Speak), () => h(Updates)]
   return h('div', { className: 'big-fish' }, h('style', null, css), h('div', { className: 'fish-content' },
     h('header', null,
       h('div', { className: 'fish-brand' }, h('div', { className: 'fish-logo' }, h(FishIcon, { size: 32 })), h('div', null, h('h1', null, '大肥鱼'))),
-      h('span', { className: 'fish-badge' }, 'v' + META.version + ' / ALL IN ONE')),
+      h('span', { className: 'fish-badge' }, '仓库 v' + META.repositoryVersion + ' / npm 包 v' + META.version)),
     h('nav', { className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist' }, ...tabs.map((label, id) => h('button', {
       type: 'button', key: label, role: 'tab', id: 'fish-tab-' + id, 'aria-selected': tab === id, 'aria-controls': 'fish-panel-' + id,
       tabIndex: tab === id ? 0 : -1, onClick: () => navigate(id), onKeyDown: e => {
@@ -134,7 +148,7 @@ function Page() {
       },
     }, label))),
     ...visited.map(id => h('section', { key: id, id: 'fish-panel-' + id, role: 'tabpanel', 'aria-labelledby': 'fish-tab-' + id, hidden: tab !== id }, render[id]())),
-    h('footer', null, '派生自 Yuuyuko-uu / dsh-qq-link 与 dsh-fish-memory · 原作者许可与来源见「更新与来源」')))
+    h('footer', null, '派生自 Yuuyuko-uu / QQ、记忆、心情与主动搭话 · 原作者许可与来源见「更新与来源」')))
 }
 
 return {

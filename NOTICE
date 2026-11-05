@@ -15,3 +15,10 @@ dsh-memory-rag：Copyright 2026 aonysen，Apache-2.0。
 jieba：Copyright (c) 2013 Sun Junyi，MIT。
 词典来源：https://github.com/fxsjy/jieba
 词条和词频处理说明见 modules/memory/lib/词典-来源.txt；完整许可见 modules/memory/lib/notices/jieba-LICENSE。
+
+新增整合来源（原作者 Yuuyuko-uu，完整原许可保留于各模块）：
+
+- 鱼的心情 0.9.0：https://github.com/Yuuyuko-uu/dsh-feiyu-mood（02fddcaae0763651ecd65af5f644fe61f19de4bd）
+- 主动搭话 0.3.0：https://github.com/Yuuyuko-uu/dsh-speak-up（e3bc6362208c693bb833ecf463ec6a20df4b6419）
+
+CHINOSAMAAA 整合修改：统一宿主加载与工作台、合并更新入口、区分仓库和 npm 版本、记录来源与增加联调测试。心情原图片与挂饰保留于 modules/mood/assets。
