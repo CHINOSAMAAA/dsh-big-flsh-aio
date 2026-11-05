@@ -36,7 +36,7 @@ window.__ModuleLoader__.load({
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 8, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
@@ -54,7 +54,7 @@ window.__ModuleLoader__.load({
       btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
-      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
+      grid: { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 20, alignItems: 'start' },
       group: { borderTop: '1px solid var(--fish-border)', padding: '20px 0' },
       summary: { fontWeight: 600, fontSize: 16, cursor: 'pointer', padding: '8px 0 16px' },
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
@@ -80,11 +80,11 @@ window.__ModuleLoader__.load({
     const 按钮 = (文字, onClick, 亮, 关) =>
       h(
         'button',
-        { type: 'button', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 },
+        { type: 'button', className: 亮 ? 'fish-primary' : '', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 },
         文字,
       )
     const 勾 = (值, onChange) =>
-      h('input', {'aria-label': '设置值',  type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+      h('input', {'aria-label': '设置值',  type: 'checkbox', role: 'switch', checked: !!值, onChange: (e) => onChange(e.target.checked) })
     const 数 = (值, onChange, 步) =>
       h('input', {'aria-label': '设置值',
         type: 'number',
@@ -413,9 +413,8 @@ window.__ModuleLoader__.load({
               )
             : h('div', { style: { ...S.dim, marginTop: 8 } }, '现在没有开着的会话（在 DSH 里打开一个再回来点「刷新清单」）。'),
 
-          h('div', { style: { marginTop: 8 } },
+          h('div', { className: 'fish-actions' },
             按钮('刷新清单', 拉, false, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('新建并选中会话', 新建小屋, false, 忙),
           ),
 
@@ -469,13 +468,10 @@ window.__ModuleLoader__.load({
         // —— 动作 ——
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '保存与手动操作'),
-          h('div', null,
+          h('div', { className: 'fish-actions' },
             按钮('保存设置', 存, true, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('演练一次（绝不真发）', () => 掷('演练'), false, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('真发一次（跳过等待）', () => 掷('真发'), false, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('刷新', 拉, false, 忙),
           ),
           h('div', { style: { marginTop: 6 } },

@@ -208,7 +208,7 @@ window.__ModuleLoader__.load({
       if (!cfg) return h('div', { 'data-fm-wrap': '' }, h('div', { 'data-fm-note': '' }, '读取中…'))
 
       const sw = (key, label) => h('input', {
-        type: 'checkbox', 'aria-label': label,
+        type: 'checkbox', role: 'switch', 'aria-label': label,
         checked: Boolean(cfg[key]),
         onChange: (e) => patch({ [key]: e.target.checked }, label),
       })

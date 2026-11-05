@@ -134,3 +134,51 @@ body[data-ds-dark-theme] .big-fish,body[data-ds-dark-theme] .big-fish-notice{
 @media(max-height:780px){.big-fish .fish-sidebar-scene{min-height:120px}.big-fish .fish-sidebar-scene img{width:120px}.big-fish .fish-sidebar-scene>.fish-waves{height:96px}}
 @media(max-height:640px){.big-fish .fish-sidebar-scene{display:none}}
 @media(prefers-reduced-motion:reduce){.big-fish button:not(:disabled):hover,.big-fish button:not(:disabled):active,.big-fish-notice button{transform:none}}
+
+/* 操作页使用平面材质；总览继续保留海洋插画与立体层次。 */
+.big-fish.fish-flat{--fish-panel:var(--fish-surface);--fish-shell-fill:var(--fish-surface);--fish-control-fill:var(--fish-surface);--fish-shadow:none;--fish-small-shadow:none;--fish-inset:none;--fish-radius:12px;--fish-radius-mid:10px;background:var(--fish-bg)}
+.big-fish.fish-flat .fish-sidebar,.big-fish.fish-flat .fish-workspace{box-shadow:none;border-radius:12px}
+.big-fish.fish-flat .fish-sidebar-scene{display:none}
+.big-fish.fish-flat .fish-sidebar-note{margin-top:auto}
+.big-fish.fish-flat .fish-nav button[aria-selected=true]{background:var(--fish-accent-soft);box-shadow:none}
+.big-fish.fish-flat button:not([role=switch]):hover{transform:none;box-shadow:none;background:var(--fish-hover);color:var(--fish-text)}
+.big-fish.fish-flat button:not([role=switch]):active{transform:none;box-shadow:none}
+.big-fish.fish-flat .fish-page-header{padding-bottom:24px;margin-bottom:24px}
+.big-fish.fish-flat .fish-card{border-radius:10px;box-shadow:none}
+.big-fish .fish-settings-stack{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.big-fish .fish-form-row{gap:12px 24px;padding:16px 0;margin-bottom:0!important;align-items:start}
+.big-fish .fish-form-row:last-child{border-bottom:0}
+.big-fish .fish-form-row .fish-form-label{flex:0 1 200px;padding-top:8px}
+.big-fish .fish-form-row .fish-control{flex:1 1 320px;max-width:100%}
+.big-fish .fish-form-row:has([role=switch])>.fish-form-label{padding-top:0}
+.big-fish .fish-subnav,.big-fish .fish-qq .fish-subnav{flex-wrap:wrap;overflow:visible;gap:8px}
+.big-fish .fish-subnav button{white-space:normal}
+.big-fish .fish-rule-section{border-top:1px solid var(--fish-border);margin-top:28px;padding-top:24px}
+.big-fish .fish-feed-result{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 var(--fish-font);background:var(--fish-soft);padding:20px;border-radius:8px;max-height:480px;overflow:auto;margin-top:20px}
+.big-fish .fish-embedding{padding:24px 0;border-block:1px solid var(--fish-border)}
+.big-fish .fish-embedding label{display:grid!important;grid-template-columns:minmax(180px,1fr) minmax(100px,2fr);gap:12px;align-items:center;padding:8px 0}
+.big-fish .fish-embedding label:has([role=switch]){display:flex!important}
+.big-fish .fish-embedding input:not([role=switch]){width:100%!important}
+.big-fish.fish-flat .fish-memory .fish-library-row{border:0;border-bottom:1px solid var(--fish-border);border-radius:0;padding:20px 0;margin:0}
+.big-fish .fish-memory .fish-record:has(>label){display:flex;flex-wrap:wrap;gap:16px;align-items:end;padding:24px 0}
+.big-fish .fish-memory .fish-record>label{display:flex;flex-direction:column;gap:8px;flex:1 1 200px}
+.big-fish .fish-memory .fish-record>label input{width:100%!important}
+.big-fish .fish-memory .fish-record>div:first-child{flex-basis:100%}
+.big-fish .fish-memory .fish-record-row{row-gap:12px}
+.big-fish .fish-memory .fish-record-row>div:has(+div){min-width:0}
+.big-fish .fish-memory [role=button]{box-shadow:none}
+.big-fish .fish-binding-row{grid-template-columns:90px minmax(100px,1fr) minmax(120px,1.5fr) 56px 86px 64px;gap:12px;padding:16px 0}
+.big-fish .fish-schedule-row{grid-template-columns:minmax(120px,1fr) minmax(140px,1fr) 56px 70px;gap:16px;padding:16px 0;border-bottom:1px solid var(--fish-line)}
+/* Native checkbox switches preserve focus and keyboard behavior. */
+.big-fish input[role=switch],.big-fish button[role=switch]{appearance:none;-webkit-appearance:none;position:relative;display:inline-block;width:50px!important;min-width:50px!important;max-width:50px;height:30px!important;min-height:30px!important;flex:0 0 50px;border:0!important;border-radius:999px!important;background:#78869a!important;box-shadow:none!important;padding:0!important;margin:7px 0;vertical-align:middle;cursor:pointer;transition:background-color .2s;transform:none!important;font-size:0!important;color:transparent!important}
+.big-fish [role=switch]::before{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .42s cubic-bezier(.34,1.56,.64,1),width .18s,border-radius .18s}
+.big-fish input[role=switch]:checked,.big-fish button[role=switch][aria-checked=true]{background:#248a50!important}
+.big-fish input[role=switch]:checked::before,.big-fish button[role=switch][aria-checked=true]::before{transform:translateX(20px)}
+.big-fish [role=switch]:not(:disabled):active::before{width:28px;border-radius:14px}
+.big-fish input[role=switch]:checked:active::before,.big-fish button[role=switch][aria-checked=true]:active::before{transform:translateX(16px)}
+@container(max-width:860px){.big-fish .fish-binding-row,.big-fish .fish-schedule-row{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-binding-head{display:none}}
+@container(max-width:520px){.big-fish .fish-form-row .fish-form-label{flex-basis:100%;padding-top:0}.big-fish .fish-embedding label{grid-template-columns:1fr}.big-fish .fish-subnav button{flex:1 1 auto}.big-fish .fish-feed-result{padding:12px}}
+.big-fish .fish-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 24px;padding:0 0 20px;border-bottom:1px solid var(--fish-border)}
+.big-fish .fish-test-action{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+@container(max-width:860px){.big-fish.fish-flat .fish-sidebar-note{display:none}}
+@media(prefers-reduced-motion:reduce){.big-fish [role=switch]::before{transition:none!important}}

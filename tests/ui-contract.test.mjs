@@ -55,6 +55,7 @@ test('六入口支持图标、键盘切换及已访问面板保留', () => {
 
   tabs[1].props.onClick()
   tree = render()
+  assert.ok(tree.some(n => n.props?.className === 'big-fish fish-flat'), '操作页切换为扁平界面')
   assert.equal(tree.filter(n => n.props?.role === 'tabpanel').length, 2)
   assert.equal(tree.find(n => n.props?.id === 'fish-panel-0').props.hidden, true)
   let focused = -1, prevented = false

@@ -1270,7 +1270,7 @@ export function apply(ctx) {
   }
 
   /** 把一句正文发到该发的地方（私聊 / 群）；按空行拆段，一段一条连发。⭐ 末尾再加上图片。 */
-  async function 发到QQ(配置, 原文字, 图们, 方向 = '') {
+  async function 发到QQ(配置, 原文字, 图们, 方向 = '', 手动图片 = []) {
     // 一间会话只对应一个聊天；旧配置有歧义时整轮拒绝发送。
     const 键 = 会话键(方向)
     const 候选 = 键
@@ -1329,7 +1329,7 @@ export function apply(ctx) {
       }
     }
     if (配置.发图) {
-      for (const 源 of 抠过.图) 加图(源)
+      for (const 源 of [...抠过.图, ...手动图片]) 加图(源)
       if (Array.isArray(图们) && 图们.length) {
         const 附件 = ctx.attachments || ctx.get('attachments')
         for (const 块 of 图们) {
@@ -3119,6 +3119,57 @@ export function apply(ctx) {
     },
   ]
 
+  // 手动操作复用原发送器和空间工具；新入口要求宿主能校验管理请求。
+  const 手动操作 = handler => async (req, res) => {
+    const connection = ctx.get('connection')
+    if (req.method !== 'POST') return 回(res, { ok: false, 说: '请使用 POST' })
+    if (!connection || typeof connection.requestRejection !== 'function') return 回(res, { ok: false, 说: '宿主不支持管理请求校验，请升级宿主后使用手动操作' })
+    const rejected = connection.requestRejection(req)
+    if (rejected) return 回(res, { ok: false, 说: 'management_forbidden' })
+    if (req.headers?.origin && new URL(req.headers.origin).host !== req.headers.host) return 回(res, { ok: false, 说: 'management_forbidden' })
+    return handler(req, res)
+  }
+  路线(`${路由前缀}/space`, 手动操作(async (req, res) => {
+    const body = await 读体(req)
+    const tool = 做空间工具().find(t => t.name === body.action)
+    if (!tool) return 回(res, { ok: false, 说: '不支持的空间操作' })
+    const args = body.args || {}
+    if (typeof args !== 'object' || Array.isArray(args)) return 回(res, { ok: false, 说: '参数格式不正确' })
+    if (args.images !== undefined && (!Array.isArray(args.images) || args.images.length > 9 || args.images.some(x => typeof x !== 'string' || !x.trim()))) return 回(res, { ok: false, 说: '请填写最多 9 张有效配图' })
+    if (args.target_uins !== undefined && (!Array.isArray(args.target_uins) || args.target_uins.some(x => !/^[0-9]{4,12}$/.test(String(x))))) return 回(res, { ok: false, 说: 'QQ 号名单格式不正确' })
+    if (args.qq && !/^[0-9]{4,12}$/.test(String(args.qq))) return 回(res, { ok: false, 说: 'QQ 号格式不正确' })
+    回(res, await tool.execute(args))
+  }))
+  路线(`${路由前缀}/send-images`, 手动操作(async (req, res) => {
+    const body = await 读体(req), 配置 = 读配置()
+    const binding = (配置.绑定 || []).find(b => b.会话 === body.session && b.开 !== false)
+    if (!binding || !exclusiveBinding(配置.绑定, binding.会话)) return 回(res, { ok: false, 说: '请选择已启用且独占的会话绑定' })
+    if (!配置.总开关 || !配置.发图) return 回(res, { ok: false, 说: '请先开启总开关与发送图片，并保存设置' })
+    if (binding.类型 === '群' ? !配置.转群 : !配置.转私聊) return 回(res, { ok: false, 说: '对应的群聊或私聊转发开关未开启' })
+    if (!Array.isArray(body.images) || !body.images.length || body.images.length > 4) return 回(res, { ok: false, 说: '每次发送 1～4 张图片' })
+    const sources = []
+    for (const image of body.images) {
+      if (typeof image !== 'string' || !image.trim()) return 回(res, { ok: false, 说: '图片地址不能为空' })
+      const value = image.trim()
+      if (/^https?:\/\//i.test(value)) {
+        const url = new URL(value)
+        if (url.username || url.password) return 回(res, { ok: false, 说: '图片网址不能包含账号口令' })
+        sources.push({ kind: 'url', value })
+      } else {
+        if (!/\.(png|jpe?g|gif|webp|bmp)$/i.test(value)) return 回(res, { ok: false, 说: '本地文件必须是 PNG、JPEG、GIF、WebP 或 BMP 图片' })
+        const path = 找本地图(value, 配置)
+        if (!path || !statSync(path).isFile()) return 回(res, { ok: false, 说: '找不到本地图片：' + value })
+        if (statSync(path).size > 配置.图上限MB * 1048576) return 回(res, { ok: false, 说: '图片超过大小上限：' + value })
+        sources.push({ kind: 'path', value: path })
+      }
+    }
+    if (配置.试运行) { 记账('手动图片试运行：' + sources.length + ' 张 → ' + binding.号码); return 回(res, { ok: true, 说: '试运行校验通过，未实际发送' }) }
+    const results = await 发到QQ(配置, '', [], binding.会话, sources)
+    const ok = results.length === sources.length && results.every(r => r.ok)
+    记账('手动发送图片：' + (ok ? '成功' : '失败或部分失败') + ' → ' + binding.号码)
+    回(res, { ok, 说: ok ? '已发送 ' + sources.length + ' 张图片' : '图片未全部发送，请查看运行日志；重试可能重复发送已成功的图片' })
+  }))
+
   // 空间工具挂在「绑了 QQ 的那几间会话」上：跟门槛工具一样按会话记，挂过一次就不重复挂。
   const 空间挂着 = new Map() // 会话键 -> 卸下的函数
   function 空间工具心跳() {
@@ -3193,7 +3244,7 @@ export function apply(ctx) {
     if (!agent) return 记账('定时说说：' + 判.键 + ' 到点了，但那间会话没开着，这句没递出去')
     try {
       // ⚠ 必须 await：followup 是 Promise，reject 没接住就是未处理的 rejection（宿主会整个退出）
-      await agent.followup(手搓用户消息(定时说说提醒话))
+      await agent.followup(手搓用户消息(定时说说提醒话 + ' 本次计划可见范围 ugc_right=' + 表[判.行].权 + '，发布时请使用这个值。'))
       说过.add(判.键)   // 真递进去了才算「这个时间今天发过」；没递进去下一跳还能再试
       记账('定时说说：' + 判.键 + ' 到点了，提醒了 ' + 短id(行.会话))
     } catch (error) {

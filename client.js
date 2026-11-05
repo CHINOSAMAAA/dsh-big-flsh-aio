@@ -1,6 +1,6 @@
 // 自动生成：修改 src/panel.js 或 modules/*/lib/client.js 后运行 npm run build。
 window.__ModuleLoader__.load({ id: "dsh-big-flsh-aio", factory(require) {
-const FISH_THEME_CSS = "/* 大肥鱼 · scoped design tokens. DSH owns the body attribute. */\n.big-fish,.big-fish-notice{\n --fish-bg:#edf3ff;--fish-surface:#f8fbff;--fish-soft:#e8efff;--fish-hover:#dce7ff;--fish-text:#172d69;--fish-muted:#455b85;--fish-border:#c3d3f4;--fish-line:#d6e2f8;--fish-accent:#617bd0;--fish-action:#3e5cb0;--fish-on-accent:#fff;--fish-accent-soft:#dce6ff;--fish-success:#246b57;--fish-warning:#89571c;--fish-danger:#ae3f50;--fish-info:#3e5cb0;--fish-rim:#ffffffdf;--fish-edge:#b3c7f1;--fish-bottom:#cfddfa;--fish-panel:linear-gradient(155deg,#ffffff 0%,#f4f7ff 45%,#e8efff 100%);--fish-shell-fill:linear-gradient(155deg,#f8fbff,#edf3ff 60%,#e6eeff);--fish-control-fill:linear-gradient(180deg,#ffffff,#e4edff);--fish-inset:inset 0 2px 4px #294a7e14;--fish-small-shadow:inset 0 1px 0 var(--fish-rim),0 2px 0 var(--fish-edge),0 4px 8px #345c9c12;--fish-shadow:inset 0 2px 0 var(--fish-rim),inset 0 -3px 0 var(--fish-bottom),0 3px 0 var(--fish-edge),0 10px 24px #294b8714;--fish-pink:#d77497;--fish-decor:#91ace7;--fish-foam:#ffffffc9;--fish-workspace:#ffffffc9;--fish-wave:#c2d5ff;--fish-wave-back:#dce7ff;--fish-control-border:#7188b8;\n --fish-title:var(--fish-font);--fish-font:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;--fish-body:16px;--fish-small:14px;--fish-label:14px;--fish-radius:24px;--fish-radius-sm:10px;--fish-radius-mid:16px;--fish-gap:24px;--fish-motion:180ms;\n --dsw-alias-bg-base:var(--fish-bg);--dsw-alias-bg-layer-1:var(--fish-surface);--dsw-alias-bg-layer-2:var(--fish-soft);--dsw-alias-label-primary:var(--fish-text);--dsw-alias-label-secondary:var(--fish-muted);--dsw-alias-label-tertiary:var(--fish-muted);--dsw-alias-border-l1:var(--fish-line);--dsw-alias-border-l2:var(--fish-border);--dsw-alias-state-business-primary:var(--fish-action);--dsw-alias-interactive-bg-hover:var(--fish-hover);\n color-scheme:light;color:var(--fish-text);font:var(--fish-body)/1.75 var(--fish-font)\n}\nbody[data-ds-dark-theme] .big-fish,body[data-ds-dark-theme] .big-fish-notice{\n --fish-bg:#101a32;--fish-surface:#182741;--fish-soft:#1d2f50;--fish-hover:#293f66;--fish-text:#e2ecff;--fish-muted:#b0c1e0;--fish-border:#344a70;--fish-line:#2d4264;--fish-accent:#a6bbff;--fish-action:#a6bbff;--fish-on-accent:#142442;--fish-accent-soft:#2c426c;--fish-success:#93d1bb;--fish-warning:#eac28c;--fish-danger:#ffacbb;--fish-info:#a6bbff;--fish-rim:#587aaa66;--fish-edge:#091426;--fish-bottom:#10213d;--fish-panel:linear-gradient(155deg,#243757 0%,#1b2c48 50%,#16253f 100%);--fish-shell-fill:linear-gradient(155deg,#1a2b49,#14213a 60%,#111e35);--fish-control-fill:linear-gradient(180deg,#2b4267,#1c304f);--fish-inset:inset 0 2px 4px #030b1b50;--fish-small-shadow:inset 0 1px 0 var(--fish-rim),0 2px 0 var(--fish-edge),0 4px 8px #030b1b33;--fish-shadow:inset 0 2px 0 var(--fish-rim),inset 0 -3px 0 var(--fish-bottom),0 3px 0 var(--fish-edge),0 10px 24px #03091555;--fish-pink:#efa2bf;--fish-decor:#587aaa;--fish-foam:#9dc0ff40;--fish-workspace:#14213a;--fish-wave:#233d65;--fish-wave-back:#1d3254;--fish-control-border:#718bb7;color-scheme:dark\n}\n.big-fish{box-sizing:border-box;container-type:inline-size;width:100%;height:100%;flex:1;min-width:0;min-height:0;overflow:auto;background:linear-gradient(145deg,var(--fish-soft),var(--fish-bg) 48%,var(--fish-soft)),var(--fish-bg);padding:calc(16px + var(--dsh-frame-top-clearance,0px)) 16px 16px}\n.big-fish *,.big-fish-notice *{box-sizing:border-box}\n.big-fish [hidden]:not([hidden=\"until-found\"]){display:none!important}\n.big-fish .fish-shell{display:grid;grid-template-columns:192px minmax(0,1fr);gap:16px;min-height:100%;max-width:1600px;margin:auto;align-items:start}\n.big-fish .fish-sidebar{padding:28px 12px 20px;background:var(--fish-shell-fill);border:1px solid var(--fish-border);border-radius:var(--fish-radius);box-shadow:var(--fish-shadow);display:flex;flex-direction:column;gap:20px;min-height:calc(100dvh - 104px - var(--dsh-frame-top-clearance,0px));position:sticky;top:var(--dsh-frame-top-clearance,0px)}\n.big-fish .fish-brand{display:flex;align-items:center;gap:8px;padding:0 4px;color:var(--fish-text)}\n.big-fish .fish-brand-name{font:700 24px/1.4 var(--fish-title)}\n.big-fish .fish-logo{color:var(--fish-accent);display:flex;flex:none}\n.big-fish .fish-nav{display:flex;flex-direction:column;gap:8px}\n.big-fish .fish-nav button{display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--fish-text);padding:12px;text-align:left;white-space:nowrap}\n.big-fish .fish-nav button[aria-selected=true]{background:var(--fish-accent-soft);border-color:var(--fish-border);color:var(--fish-text);font-weight:700}\n.big-fish .fish-sidebar-note{margin-top:0;padding:0 8px;font-size:12px;color:var(--fish-muted)}\n.big-fish .fish-workspace{min-width:0;padding:24px;position:relative;isolation:isolate;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-shell-fill);box-shadow:var(--fish-shadow)}\n.big-fish .fish-page-header{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px;border-bottom:1px solid var(--fish-line);padding-bottom:28px}\n.big-fish h1{font:700 clamp(26px,2.8cqi,32px)/1.4 var(--fish-title);letter-spacing:0;margin:0}\n.big-fish h2{font:700 20px/1.4 var(--fish-title);letter-spacing:0;margin:0 0 8px}\n.big-fish h3{font-size:16px;line-height:1.7;margin:0 0 8px}\n.big-fish p{margin:8px 0;max-width:70ch;overflow-wrap:anywhere}\n.big-fish .fish-muted{color:var(--fish-muted);font-size:var(--fish-small)}\n.big-fish .fish-icon,.big-fish-notice .fish-icon{width:20px;height:20px;flex:none;display:inline-block;vertical-align:middle}\n.big-fish button,.big-fish input,.big-fish select,.big-fish textarea,.big-fish-notice button{font-family:var(--fish-font);font-size:var(--fish-label);max-width:100%;line-height:1.6}\n.big-fish button,.big-fish-notice button{cursor:pointer;letter-spacing:.02em;transition:box-shadow var(--fish-motion),transform var(--fish-motion);white-space:normal;box-shadow:var(--fish-small-shadow)}\n.big-fish button:not([role=tab]),.big-fish-notice button{min-height:40px}\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]),.big-fish select,.big-fish textarea{border:1px solid var(--fish-control-border);border-radius:var(--fish-radius-sm);padding:8px 12px;background:var(--fish-surface);color:var(--fish-text);min-width:0;box-shadow:var(--fish-inset)}\n.big-fish input[type=checkbox],.big-fish input[type=radio]{width:18px;height:18px;accent-color:var(--fish-action);vertical-align:middle;flex:none}\n.big-fish input[type=range],.big-fish progress{accent-color:var(--fish-action);max-width:100%}\n.big-fish select option{background:var(--fish-surface);color:var(--fish-text)}\n.big-fish textarea{resize:vertical;overflow-wrap:anywhere}\n.big-fish :disabled,.big-fish-notice :disabled{cursor:not-allowed;opacity:.55}\n.big-fish :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible,.big-fish-notice button:focus-visible{outline:2px solid var(--fish-accent);outline-offset:3px}\n.big-fish .fish-button,.big-fish-notice button{border:1px solid var(--fish-border);border-radius:14px;padding:8px 16px;background:var(--fish-control-fill);color:var(--fish-text)}\n.big-fish .fish-primary{background:var(--fish-action);color:var(--fish-on-accent);border-color:var(--fish-action)}\n.big-fish .fish-badge{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--fish-border);border-radius:24px;background:var(--fish-control-fill);box-shadow:var(--fish-small-shadow);color:var(--fish-action);font-size:12px;white-space:nowrap}\n.big-fish .fish-ocean-intro{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 300px 140px;grid-template-rows:auto 1fr;column-gap:16px;min-height:320px;margin-bottom:16px;padding:4px 8px 16px}\n.big-fish .fish-overview-header{grid-column:1;grid-row:1;min-width:0}\n.big-fish .fish-overview-header p{margin-bottom:12px}\n.big-fish .fish-intro-status{grid-column:3;grid-row:1;align-self:start;justify-self:end;margin-top:8px}\n.big-fish .fish-hero-copy{grid-column:1;grid-row:2;align-self:center;min-width:0;position:relative;z-index:1;padding:12px 0}\n.big-fish .fish-hero-copy h2{font:700 clamp(26px,2.6cqi,36px)/1.4 var(--fish-title);margin:12px 0 0;text-wrap:balance;letter-spacing:0}\n.big-fish .fish-love-line{display:block;width:100%;max-width:600px;height:28px;fill:none;stroke:var(--fish-pink);stroke-width:1.8;pointer-events:none}\n.big-fish .fish-welcome{grid-column:2;grid-row:1/3;align-self:center;display:grid;place-items:center;min-width:0;margin:0;pointer-events:none}\n.big-fish .fish-welcome img{display:block;width:300px;max-width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 8px 8px #294b8714)}\n.big-fish .fish-intro-tools{grid-column:3;grid-row:2;align-self:center;justify-self:end}\n.big-fish .fish-intro-tools button{white-space:nowrap}\n.big-fish .fish-waves{position:absolute;bottom:0;left:0;width:100%;height:80px;z-index:-1;pointer-events:none}\n.big-fish .fish-wave-back{fill:var(--fish-wave-back)}.big-fish .fish-wave-front{fill:var(--fish-wave)}.big-fish .fish-wave-foam{fill:none;stroke:var(--fish-foam);stroke-width:2}\n.big-fish .fish-ocean-intro>.fish-waves{height:180px;border-radius:0 0 20px 20px}\n.big-fish .fish-decoration{display:block;width:100px;height:84px;stroke:var(--fish-decor);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;flex:none}\n.big-fish .fish-decor-heart{stroke:var(--fish-pink)}.big-fish .fish-decor-star{fill:var(--fish-foam)}.big-fish .fish-decor-tail{fill:var(--fish-decor);stroke:none;opacity:.3}\n.big-fish .fish-decor-bubbles{stroke:var(--fish-foam);stroke-width:4;fill:var(--fish-wave-back)}\n.big-fish .fish-intro-bubbles{position:absolute;bottom:12px;right:12px;width:120px;height:100px;z-index:-1}\n.big-fish .fish-intro-stars{position:absolute;top:4px;right:440px;width:56px;height:48px;z-index:-1;opacity:.7}\n.big-fish .fish-eyebrow{font-size:12px;letter-spacing:.04em;color:var(--fish-action)}\n.big-fish .fish-sidebar-scene{position:relative;isolation:isolate;display:grid;place-items:center;margin:auto 0 0;min-height:208px;pointer-events:none}\n.big-fish .fish-sidebar-scene img{display:block;width:180px;max-width:100%;height:auto;align-self:end}\n.big-fish .fish-sidebar-scene>.fish-waves{height:180px;border-radius:0 0 16px 16px}\n.big-fish .fish-sidebar-scene>.fish-decoration{position:absolute;top:0;right:0;width:100px;height:84px;z-index:-1}\n.big-fish .fish-page-header>.fish-waves{height:56px;opacity:.65;border-radius:0 0 16px 16px}\n.big-fish .fish-page-header>.fish-decoration{position:absolute;right:176px;top:0;width:56px;height:48px;z-index:-1;opacity:.6}\n.big-fish .fish-stats{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-panel);margin-bottom:24px;overflow:hidden;box-shadow:var(--fish-shadow)}\n.big-fish .fish-stats .fish-card{border:0;border-radius:0;background:none;padding:16px 24px;border-bottom:1px solid var(--fish-line);box-shadow:none}\n.big-fish .fish-value{font:700 26px/1.4 var(--fish-title);margin:4px 0;color:var(--fish-text)}\n.big-fish .fish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}\n.big-fish .fish-card{min-width:0;padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-panel);box-shadow:var(--fish-shadow)}\n.big-fish .fish-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}\n.big-fish .fish-start{padding:24px 0;margin-top:24px;border-top:1px solid var(--fish-border)}\n.big-fish .fish-table{border-collapse:collapse;width:100%;min-width:850px;font-size:14px}\n.big-fish .fish-table th,.big-fish .fish-table td{vertical-align:top;text-align:left;padding:16px;border-bottom:1px solid var(--fish-line)}\n.big-fish .fish-table th{font-weight:600;background:var(--fish-soft);color:var(--fish-muted)}\n.big-fish a{color:var(--fish-action);text-decoration:none;overflow-wrap:anywhere}\n.big-fish .fish-message{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0;color:var(--fish-warning)}\n.big-fish .fish-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--fish-border);color:var(--fish-muted);font-size:12px}\n.big-fish .fish-module{min-width:0;overflow-wrap:anywhere}\n.big-fish .fish-section-title{font:600 20px/1.5 var(--fish-title)}\n.big-fish .fish-form-row{display:flex;flex-wrap:wrap;gap:16px;padding:12px 0;border-bottom:1px solid var(--fish-line);align-items:flex-start}\n.big-fish .fish-control{min-width:0;flex:1 1 260px}\n.big-fish .fish-form-label{flex:0 1 200px;font-weight:550}\n.big-fish .fish-subnav{display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;padding:0 0 16px;margin-bottom:24px;border-bottom:1px solid var(--fish-border)}\n.big-fish .fish-subnav button{flex:none}\n.big-fish .fish-log{overflow-wrap:anywhere;white-space:pre-wrap}\n.big-fish .fish-diagnostics{margin-top:24px;color:var(--fish-muted);font-size:var(--fish-small);overflow-wrap:anywhere}\n.big-fish .fish-binding-row{display:grid;grid-template-columns:80px minmax(100px,1fr) minmax(120px,1.5fr) 44px 76px 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-schedule-row{display:grid;grid-template-columns:120px 140px minmax(60px,1fr) 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record{padding:16px 0}\n.big-fish .fish-memory .fish-record-row{gap:12px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record-note{padding:4px 0;color:var(--fish-muted);font-size:14px}\n.big-fish .fish-memory .fish-link{border:0;padding:4px 0;background:transparent;text-align:left;text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-memory details{border:1px solid var(--fish-border);border-radius:var(--fish-radius);padding:16px 20px;background:var(--fish-panel);box-shadow:var(--fish-shadow)}\n.big-fish summary{cursor:pointer;font-weight:600;min-height:40px}\n.big-fish .fish-embedding label{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}\n.big-fish .fish-embedding button{margin:4px 8px 4px 0;border:1px solid var(--fish-border);background:var(--fish-soft);color:var(--fish-text);border-radius:8px;padding:8px 12px}\n.big-fish .fish-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px}\n.big-fish .fish-dimension-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}\n.big-fish .fish-dimension-track{height:8px;background:var(--fish-line);border-radius:4px;overflow:hidden}\n.big-fish .fish-dimension-track span{display:block;height:100%;background:var(--fish-accent)}\n.big-fish-notice{position:fixed;right:20px;bottom:24px;z-index:1000;pointer-events:auto;max-width:min(420px,calc(100vw - 40px));padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-panel);box-shadow:var(--fish-shadow)}\n@media(hover:hover){.big-fish button:not(:disabled):hover,.big-fish-notice button:not(:disabled):hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 var(--fish-rim),0 3px 0 var(--fish-edge),0 6px 12px #294b8720}.big-fish .fish-nav button:hover{background:var(--fish-hover);color:var(--fish-text)}.big-fish a:hover{text-decoration:underline}}\n.big-fish button:not(:disabled):active,.big-fish-notice button:not(:disabled):active{transform:translateY(1px);box-shadow:var(--fish-inset)}\n.big-fish .fish-nav button{box-shadow:none}.big-fish .fish-nav button[aria-selected=true]{box-shadow:var(--fish-small-shadow);background:linear-gradient(180deg,var(--fish-accent-soft),var(--fish-hover))}\n@container(max-width:860px){.big-fish .fish-shell{grid-template-columns:minmax(0,1fr);gap:12px}.big-fish .fish-sidebar{padding:16px;gap:12px;min-height:0;position:static}.big-fish .fish-brand-name{font-size:20px}.big-fish .fish-nav{flex-direction:row;overflow-x:auto}.big-fish .fish-nav button{width:auto;flex:none;padding:10px 12px}.big-fish .fish-sidebar-note{display:none}.big-fish .fish-workspace{padding:24px}.big-fish .fish-page-header{gap:16px}.big-fish .fish-binding-row,.big-fish .fish-schedule-row{grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid var(--fish-border)}.big-fish .fish-binding-head{display:none}}\n@container(max-width:520px){.big-fish .fish-workspace{padding:20px 16px}.big-fish .fish-sidebar{padding:16px}.big-fish .fish-page-header{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:16px}.big-fish .fish-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-stats .fish-card{padding:16px 12px}.big-fish .fish-dimensions{grid-template-columns:1fr}.big-fish .fish-card{padding:20px}.big-fish .fish-form-label{flex-basis:100%}.big-fish button:not([role=tab]){min-height:44px}.big-fish .fish-value{font-size:24px}.big-fish .fish-nav{gap:4px}}\n@media(prefers-reduced-motion:reduce){.big-fish *,.big-fish-notice *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}\n.big-fish .fish-library-row{background:var(--fish-panel);box-shadow:var(--fish-shadow);padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius-mid);margin:12px 0}\n.big-fish .fish-memory [role=button]{cursor:pointer}\n.big-fish .fish-memory [role=button]:hover{text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-qq .fish-subnav{flex-wrap:nowrap}\n\n.big-fish .fish-feature{position:relative;isolation:isolate;overflow:hidden;padding:20px 24px 24px}\n.big-fish .fish-feature-character{display:grid;grid-template-columns:minmax(0,1fr) 152px;gap:12px;align-items:center}\n.big-fish .fish-feature-copy{min-width:0;position:relative;z-index:1}.big-fish .fish-feature-copy h2{margin:8px 0}\n.big-fish .fish-feature-number{font-size:12px;padding:2px 12px;letter-spacing:.02em}\n.big-fish .fish-feature-sticker{margin:0;display:grid;place-items:center;min-width:0;align-self:end;pointer-events:none}\n.big-fish .fish-feature-sticker img{display:block;width:152px;max-width:100%;height:auto;object-fit:contain}\n.big-fish .fish-feature>.fish-waves{height:72px;opacity:.75}.big-fish .fish-feature-bubbles{position:absolute;bottom:20px;right:170px;z-index:-1;width:64px;height:56px;opacity:.65}\n.big-fish .fish-feature-light{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:12px;align-items:end}\n.big-fish .fish-feature-symbol{width:76px;height:64px;opacity:.8}\n.big-fish .fish-stats-tail{position:absolute;bottom:12px;right:16px;z-index:-1;width:72px;height:60px}\n.big-fish .fish-stats .fish-card:not(:nth-of-type(3n)){border-right:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-of-type(-n+3){border-bottom:0}\n@container(max-width:1180px){.big-fish .fish-ocean-intro{grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:auto auto auto;min-height:300px}.big-fish .fish-intro-status{grid-column:1;grid-row:2;justify-self:start;margin-top:0}.big-fish .fish-hero-copy{grid-row:3}.big-fish .fish-welcome{grid-row:1/4}.big-fish .fish-welcome img{width:280px}.big-fish .fish-intro-tools{grid-column:2;grid-row:4;justify-self:center}.big-fish .fish-intro-stars{right:250px}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 130px;padding:20px;gap:8px}.big-fish .fish-feature-sticker img{width:130px}.big-fish .fish-feature-light{grid-template-columns:minmax(0,1fr) 52px}.big-fish .fish-feature-symbol{width:52px;height:52px}}\n@container(min-width:861px) and (max-width:1060px){.big-fish .fish-grid{grid-template-columns:1fr}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 152px}.big-fish .fish-feature-sticker img{width:152px}}\n@container(max-width:860px){.big-fish .fish-sidebar-scene{display:none}.big-fish .fish-nav{padding-bottom:4px}.big-fish .fish-sidebar-note{display:block;margin:0;font-size:12px}.big-fish .fish-sidebar-note br{display:none}.big-fish .fish-sidebar-note{word-spacing:8px}}\n@container(max-width:680px){.big-fish .fish-grid{grid-template-columns:1fr}.big-fish .fish-ocean-intro{grid-template-columns:minmax(0,1fr) 180px;column-gap:8px}.big-fish .fish-welcome img{width:180px}.big-fish .fish-intro-stars{right:160px}.big-fish .fish-hero-copy h2{font-size:28px}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 140px}.big-fish .fish-feature-sticker img{width:140px}}\n@container(max-width:520px){.big-fish .fish-ocean-intro{grid-template-columns:minmax(0,1fr) 120px;padding:0 0 20px;min-height:0}.big-fish .fish-welcome{grid-row:1/3}.big-fish .fish-welcome img{width:120px}.big-fish .fish-hero-copy{grid-column:1/-1;grid-row:3;padding-top:20px}.big-fish .fish-hero-copy h2{font-size:28px}.big-fish .fish-intro-tools{grid-column:1/-1;grid-row:4;justify-self:end}.big-fish .fish-intro-status{font-size:11px;padding:4px 8px}.big-fish .fish-overview-header p{font-size:14px}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 96px;padding:20px 16px;gap:8px}.big-fish .fish-feature-sticker img{width:96px}.big-fish .fish-feature-copy .fish-actions{grid-column:1/-1}.big-fish .fish-feature-light{padding:20px 16px}.big-fish .fish-feature-bubbles{right:96px}.big-fish .fish-page-header>.fish-decoration{right:0}.big-fish .fish-stats .fish-card:not(:nth-of-type(3n)){border-right:0}.big-fish .fish-stats .fish-card:nth-of-type(odd){border-right:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-of-type(-n+3){border-bottom:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-of-type(-n+2){border-bottom:0}}\n@media(max-height:780px){.big-fish .fish-sidebar-scene{min-height:120px}.big-fish .fish-sidebar-scene img{width:120px}.big-fish .fish-sidebar-scene>.fish-waves{height:96px}}\n@media(max-height:640px){.big-fish .fish-sidebar-scene{display:none}}\n@media(prefers-reduced-motion:reduce){.big-fish button:not(:disabled):hover,.big-fish button:not(:disabled):active,.big-fish-notice button{transform:none}}\n";
+const FISH_THEME_CSS = "/* 大肥鱼 · scoped design tokens. DSH owns the body attribute. */\n.big-fish,.big-fish-notice{\n --fish-bg:#edf3ff;--fish-surface:#f8fbff;--fish-soft:#e8efff;--fish-hover:#dce7ff;--fish-text:#172d69;--fish-muted:#455b85;--fish-border:#c3d3f4;--fish-line:#d6e2f8;--fish-accent:#617bd0;--fish-action:#3e5cb0;--fish-on-accent:#fff;--fish-accent-soft:#dce6ff;--fish-success:#246b57;--fish-warning:#89571c;--fish-danger:#ae3f50;--fish-info:#3e5cb0;--fish-rim:#ffffffdf;--fish-edge:#b3c7f1;--fish-bottom:#cfddfa;--fish-panel:linear-gradient(155deg,#ffffff 0%,#f4f7ff 45%,#e8efff 100%);--fish-shell-fill:linear-gradient(155deg,#f8fbff,#edf3ff 60%,#e6eeff);--fish-control-fill:linear-gradient(180deg,#ffffff,#e4edff);--fish-inset:inset 0 2px 4px #294a7e14;--fish-small-shadow:inset 0 1px 0 var(--fish-rim),0 2px 0 var(--fish-edge),0 4px 8px #345c9c12;--fish-shadow:inset 0 2px 0 var(--fish-rim),inset 0 -3px 0 var(--fish-bottom),0 3px 0 var(--fish-edge),0 10px 24px #294b8714;--fish-pink:#d77497;--fish-decor:#91ace7;--fish-foam:#ffffffc9;--fish-workspace:#ffffffc9;--fish-wave:#c2d5ff;--fish-wave-back:#dce7ff;--fish-control-border:#7188b8;\n --fish-title:var(--fish-font);--fish-font:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;--fish-body:16px;--fish-small:14px;--fish-label:14px;--fish-radius:24px;--fish-radius-sm:10px;--fish-radius-mid:16px;--fish-gap:24px;--fish-motion:180ms;\n --dsw-alias-bg-base:var(--fish-bg);--dsw-alias-bg-layer-1:var(--fish-surface);--dsw-alias-bg-layer-2:var(--fish-soft);--dsw-alias-label-primary:var(--fish-text);--dsw-alias-label-secondary:var(--fish-muted);--dsw-alias-label-tertiary:var(--fish-muted);--dsw-alias-border-l1:var(--fish-line);--dsw-alias-border-l2:var(--fish-border);--dsw-alias-state-business-primary:var(--fish-action);--dsw-alias-interactive-bg-hover:var(--fish-hover);\n color-scheme:light;color:var(--fish-text);font:var(--fish-body)/1.75 var(--fish-font)\n}\nbody[data-ds-dark-theme] .big-fish,body[data-ds-dark-theme] .big-fish-notice{\n --fish-bg:#101a32;--fish-surface:#182741;--fish-soft:#1d2f50;--fish-hover:#293f66;--fish-text:#e2ecff;--fish-muted:#b0c1e0;--fish-border:#344a70;--fish-line:#2d4264;--fish-accent:#a6bbff;--fish-action:#a6bbff;--fish-on-accent:#142442;--fish-accent-soft:#2c426c;--fish-success:#93d1bb;--fish-warning:#eac28c;--fish-danger:#ffacbb;--fish-info:#a6bbff;--fish-rim:#587aaa66;--fish-edge:#091426;--fish-bottom:#10213d;--fish-panel:linear-gradient(155deg,#243757 0%,#1b2c48 50%,#16253f 100%);--fish-shell-fill:linear-gradient(155deg,#1a2b49,#14213a 60%,#111e35);--fish-control-fill:linear-gradient(180deg,#2b4267,#1c304f);--fish-inset:inset 0 2px 4px #030b1b50;--fish-small-shadow:inset 0 1px 0 var(--fish-rim),0 2px 0 var(--fish-edge),0 4px 8px #030b1b33;--fish-shadow:inset 0 2px 0 var(--fish-rim),inset 0 -3px 0 var(--fish-bottom),0 3px 0 var(--fish-edge),0 10px 24px #03091555;--fish-pink:#efa2bf;--fish-decor:#587aaa;--fish-foam:#9dc0ff40;--fish-workspace:#14213a;--fish-wave:#233d65;--fish-wave-back:#1d3254;--fish-control-border:#718bb7;color-scheme:dark\n}\n.big-fish{box-sizing:border-box;container-type:inline-size;width:100%;height:100%;flex:1;min-width:0;min-height:0;overflow:auto;background:linear-gradient(145deg,var(--fish-soft),var(--fish-bg) 48%,var(--fish-soft)),var(--fish-bg);padding:calc(16px + var(--dsh-frame-top-clearance,0px)) 16px 16px}\n.big-fish *,.big-fish-notice *{box-sizing:border-box}\n.big-fish [hidden]:not([hidden=\"until-found\"]){display:none!important}\n.big-fish .fish-shell{display:grid;grid-template-columns:192px minmax(0,1fr);gap:16px;min-height:100%;max-width:1600px;margin:auto;align-items:start}\n.big-fish .fish-sidebar{padding:28px 12px 20px;background:var(--fish-shell-fill);border:1px solid var(--fish-border);border-radius:var(--fish-radius);box-shadow:var(--fish-shadow);display:flex;flex-direction:column;gap:20px;min-height:calc(100dvh - 104px - var(--dsh-frame-top-clearance,0px));position:sticky;top:var(--dsh-frame-top-clearance,0px)}\n.big-fish .fish-brand{display:flex;align-items:center;gap:8px;padding:0 4px;color:var(--fish-text)}\n.big-fish .fish-brand-name{font:700 24px/1.4 var(--fish-title)}\n.big-fish .fish-logo{color:var(--fish-accent);display:flex;flex:none}\n.big-fish .fish-nav{display:flex;flex-direction:column;gap:8px}\n.big-fish .fish-nav button{display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--fish-text);padding:12px;text-align:left;white-space:nowrap}\n.big-fish .fish-nav button[aria-selected=true]{background:var(--fish-accent-soft);border-color:var(--fish-border);color:var(--fish-text);font-weight:700}\n.big-fish .fish-sidebar-note{margin-top:0;padding:0 8px;font-size:12px;color:var(--fish-muted)}\n.big-fish .fish-workspace{min-width:0;padding:24px;position:relative;isolation:isolate;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-shell-fill);box-shadow:var(--fish-shadow)}\n.big-fish .fish-page-header{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px;border-bottom:1px solid var(--fish-line);padding-bottom:28px}\n.big-fish h1{font:700 clamp(26px,2.8cqi,32px)/1.4 var(--fish-title);letter-spacing:0;margin:0}\n.big-fish h2{font:700 20px/1.4 var(--fish-title);letter-spacing:0;margin:0 0 8px}\n.big-fish h3{font-size:16px;line-height:1.7;margin:0 0 8px}\n.big-fish p{margin:8px 0;max-width:70ch;overflow-wrap:anywhere}\n.big-fish .fish-muted{color:var(--fish-muted);font-size:var(--fish-small)}\n.big-fish .fish-icon,.big-fish-notice .fish-icon{width:20px;height:20px;flex:none;display:inline-block;vertical-align:middle}\n.big-fish button,.big-fish input,.big-fish select,.big-fish textarea,.big-fish-notice button{font-family:var(--fish-font);font-size:var(--fish-label);max-width:100%;line-height:1.6}\n.big-fish button,.big-fish-notice button{cursor:pointer;letter-spacing:.02em;transition:box-shadow var(--fish-motion),transform var(--fish-motion);white-space:normal;box-shadow:var(--fish-small-shadow)}\n.big-fish button:not([role=tab]),.big-fish-notice button{min-height:40px}\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]),.big-fish select,.big-fish textarea{border:1px solid var(--fish-control-border);border-radius:var(--fish-radius-sm);padding:8px 12px;background:var(--fish-surface);color:var(--fish-text);min-width:0;box-shadow:var(--fish-inset)}\n.big-fish input[type=checkbox],.big-fish input[type=radio]{width:18px;height:18px;accent-color:var(--fish-action);vertical-align:middle;flex:none}\n.big-fish input[type=range],.big-fish progress{accent-color:var(--fish-action);max-width:100%}\n.big-fish select option{background:var(--fish-surface);color:var(--fish-text)}\n.big-fish textarea{resize:vertical;overflow-wrap:anywhere}\n.big-fish :disabled,.big-fish-notice :disabled{cursor:not-allowed;opacity:.55}\n.big-fish :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible,.big-fish-notice button:focus-visible{outline:2px solid var(--fish-accent);outline-offset:3px}\n.big-fish .fish-button,.big-fish-notice button{border:1px solid var(--fish-border);border-radius:14px;padding:8px 16px;background:var(--fish-control-fill);color:var(--fish-text)}\n.big-fish .fish-primary{background:var(--fish-action);color:var(--fish-on-accent);border-color:var(--fish-action)}\n.big-fish .fish-badge{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--fish-border);border-radius:24px;background:var(--fish-control-fill);box-shadow:var(--fish-small-shadow);color:var(--fish-action);font-size:12px;white-space:nowrap}\n.big-fish .fish-ocean-intro{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 300px 140px;grid-template-rows:auto 1fr;column-gap:16px;min-height:320px;margin-bottom:16px;padding:4px 8px 16px}\n.big-fish .fish-overview-header{grid-column:1;grid-row:1;min-width:0}\n.big-fish .fish-overview-header p{margin-bottom:12px}\n.big-fish .fish-intro-status{grid-column:3;grid-row:1;align-self:start;justify-self:end;margin-top:8px}\n.big-fish .fish-hero-copy{grid-column:1;grid-row:2;align-self:center;min-width:0;position:relative;z-index:1;padding:12px 0}\n.big-fish .fish-hero-copy h2{font:700 clamp(26px,2.6cqi,36px)/1.4 var(--fish-title);margin:12px 0 0;text-wrap:balance;letter-spacing:0}\n.big-fish .fish-love-line{display:block;width:100%;max-width:600px;height:28px;fill:none;stroke:var(--fish-pink);stroke-width:1.8;pointer-events:none}\n.big-fish .fish-welcome{grid-column:2;grid-row:1/3;align-self:center;display:grid;place-items:center;min-width:0;margin:0;pointer-events:none}\n.big-fish .fish-welcome img{display:block;width:300px;max-width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 8px 8px #294b8714)}\n.big-fish .fish-intro-tools{grid-column:3;grid-row:2;align-self:center;justify-self:end}\n.big-fish .fish-intro-tools button{white-space:nowrap}\n.big-fish .fish-waves{position:absolute;bottom:0;left:0;width:100%;height:80px;z-index:-1;pointer-events:none}\n.big-fish .fish-wave-back{fill:var(--fish-wave-back)}.big-fish .fish-wave-front{fill:var(--fish-wave)}.big-fish .fish-wave-foam{fill:none;stroke:var(--fish-foam);stroke-width:2}\n.big-fish .fish-ocean-intro>.fish-waves{height:180px;border-radius:0 0 20px 20px}\n.big-fish .fish-decoration{display:block;width:100px;height:84px;stroke:var(--fish-decor);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;flex:none}\n.big-fish .fish-decor-heart{stroke:var(--fish-pink)}.big-fish .fish-decor-star{fill:var(--fish-foam)}.big-fish .fish-decor-tail{fill:var(--fish-decor);stroke:none;opacity:.3}\n.big-fish .fish-decor-bubbles{stroke:var(--fish-foam);stroke-width:4;fill:var(--fish-wave-back)}\n.big-fish .fish-intro-bubbles{position:absolute;bottom:12px;right:12px;width:120px;height:100px;z-index:-1}\n.big-fish .fish-intro-stars{position:absolute;top:4px;right:440px;width:56px;height:48px;z-index:-1;opacity:.7}\n.big-fish .fish-eyebrow{font-size:12px;letter-spacing:.04em;color:var(--fish-action)}\n.big-fish .fish-sidebar-scene{position:relative;isolation:isolate;display:grid;place-items:center;margin:auto 0 0;min-height:208px;pointer-events:none}\n.big-fish .fish-sidebar-scene img{display:block;width:180px;max-width:100%;height:auto;align-self:end}\n.big-fish .fish-sidebar-scene>.fish-waves{height:180px;border-radius:0 0 16px 16px}\n.big-fish .fish-sidebar-scene>.fish-decoration{position:absolute;top:0;right:0;width:100px;height:84px;z-index:-1}\n.big-fish .fish-page-header>.fish-waves{height:56px;opacity:.65;border-radius:0 0 16px 16px}\n.big-fish .fish-page-header>.fish-decoration{position:absolute;right:176px;top:0;width:56px;height:48px;z-index:-1;opacity:.6}\n.big-fish .fish-stats{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-panel);margin-bottom:24px;overflow:hidden;box-shadow:var(--fish-shadow)}\n.big-fish .fish-stats .fish-card{border:0;border-radius:0;background:none;padding:16px 24px;border-bottom:1px solid var(--fish-line);box-shadow:none}\n.big-fish .fish-value{font:700 26px/1.4 var(--fish-title);margin:4px 0;color:var(--fish-text)}\n.big-fish .fish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}\n.big-fish .fish-card{min-width:0;padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-panel);box-shadow:var(--fish-shadow)}\n.big-fish .fish-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}\n.big-fish .fish-start{padding:24px 0;margin-top:24px;border-top:1px solid var(--fish-border)}\n.big-fish .fish-table{border-collapse:collapse;width:100%;min-width:850px;font-size:14px}\n.big-fish .fish-table th,.big-fish .fish-table td{vertical-align:top;text-align:left;padding:16px;border-bottom:1px solid var(--fish-line)}\n.big-fish .fish-table th{font-weight:600;background:var(--fish-soft);color:var(--fish-muted)}\n.big-fish a{color:var(--fish-action);text-decoration:none;overflow-wrap:anywhere}\n.big-fish .fish-message{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0;color:var(--fish-warning)}\n.big-fish .fish-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--fish-border);color:var(--fish-muted);font-size:12px}\n.big-fish .fish-module{min-width:0;overflow-wrap:anywhere}\n.big-fish .fish-section-title{font:600 20px/1.5 var(--fish-title)}\n.big-fish .fish-form-row{display:flex;flex-wrap:wrap;gap:16px;padding:12px 0;border-bottom:1px solid var(--fish-line);align-items:flex-start}\n.big-fish .fish-control{min-width:0;flex:1 1 260px}\n.big-fish .fish-form-label{flex:0 1 200px;font-weight:550}\n.big-fish .fish-subnav{display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;padding:0 0 16px;margin-bottom:24px;border-bottom:1px solid var(--fish-border)}\n.big-fish .fish-subnav button{flex:none}\n.big-fish .fish-log{overflow-wrap:anywhere;white-space:pre-wrap}\n.big-fish .fish-diagnostics{margin-top:24px;color:var(--fish-muted);font-size:var(--fish-small);overflow-wrap:anywhere}\n.big-fish .fish-binding-row{display:grid;grid-template-columns:80px minmax(100px,1fr) minmax(120px,1.5fr) 44px 76px 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-schedule-row{display:grid;grid-template-columns:120px 140px minmax(60px,1fr) 60px;gap:8px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record{padding:16px 0}\n.big-fish .fish-memory .fish-record-row{gap:12px;align-items:center;padding:8px 0}\n.big-fish .fish-memory .fish-record-note{padding:4px 0;color:var(--fish-muted);font-size:14px}\n.big-fish .fish-memory .fish-link{border:0;padding:4px 0;background:transparent;text-align:left;text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-memory details{border:1px solid var(--fish-border);border-radius:var(--fish-radius);padding:16px 20px;background:var(--fish-panel);box-shadow:var(--fish-shadow)}\n.big-fish summary{cursor:pointer;font-weight:600;min-height:40px}\n.big-fish .fish-embedding label{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}\n.big-fish .fish-embedding button{margin:4px 8px 4px 0;border:1px solid var(--fish-border);background:var(--fish-soft);color:var(--fish-text);border-radius:8px;padding:8px 12px}\n.big-fish .fish-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px}\n.big-fish .fish-dimension-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}\n.big-fish .fish-dimension-track{height:8px;background:var(--fish-line);border-radius:4px;overflow:hidden}\n.big-fish .fish-dimension-track span{display:block;height:100%;background:var(--fish-accent)}\n.big-fish-notice{position:fixed;right:20px;bottom:24px;z-index:1000;pointer-events:auto;max-width:min(420px,calc(100vw - 40px));padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius);background:var(--fish-panel);box-shadow:var(--fish-shadow)}\n@media(hover:hover){.big-fish button:not(:disabled):hover,.big-fish-notice button:not(:disabled):hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 var(--fish-rim),0 3px 0 var(--fish-edge),0 6px 12px #294b8720}.big-fish .fish-nav button:hover{background:var(--fish-hover);color:var(--fish-text)}.big-fish a:hover{text-decoration:underline}}\n.big-fish button:not(:disabled):active,.big-fish-notice button:not(:disabled):active{transform:translateY(1px);box-shadow:var(--fish-inset)}\n.big-fish .fish-nav button{box-shadow:none}.big-fish .fish-nav button[aria-selected=true]{box-shadow:var(--fish-small-shadow);background:linear-gradient(180deg,var(--fish-accent-soft),var(--fish-hover))}\n@container(max-width:860px){.big-fish .fish-shell{grid-template-columns:minmax(0,1fr);gap:12px}.big-fish .fish-sidebar{padding:16px;gap:12px;min-height:0;position:static}.big-fish .fish-brand-name{font-size:20px}.big-fish .fish-nav{flex-direction:row;overflow-x:auto}.big-fish .fish-nav button{width:auto;flex:none;padding:10px 12px}.big-fish .fish-sidebar-note{display:none}.big-fish .fish-workspace{padding:24px}.big-fish .fish-page-header{gap:16px}.big-fish .fish-binding-row,.big-fish .fish-schedule-row{grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid var(--fish-border)}.big-fish .fish-binding-head{display:none}}\n@container(max-width:520px){.big-fish .fish-workspace{padding:20px 16px}.big-fish .fish-sidebar{padding:16px}.big-fish .fish-page-header{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:16px}.big-fish .fish-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-stats .fish-card{padding:16px 12px}.big-fish .fish-dimensions{grid-template-columns:1fr}.big-fish .fish-card{padding:20px}.big-fish .fish-form-label{flex-basis:100%}.big-fish button:not([role=tab]){min-height:44px}.big-fish .fish-value{font-size:24px}.big-fish .fish-nav{gap:4px}}\n@media(prefers-reduced-motion:reduce){.big-fish *,.big-fish-notice *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}\n.big-fish .fish-library-row{background:var(--fish-panel);box-shadow:var(--fish-shadow);padding:20px;border:1px solid var(--fish-border);border-radius:var(--fish-radius-mid);margin:12px 0}\n.big-fish .fish-memory [role=button]{cursor:pointer}\n.big-fish .fish-memory [role=button]:hover{text-decoration:underline;text-underline-offset:4px}\n.big-fish .fish-qq .fish-subnav{flex-wrap:nowrap}\n\n.big-fish .fish-feature{position:relative;isolation:isolate;overflow:hidden;padding:20px 24px 24px}\n.big-fish .fish-feature-character{display:grid;grid-template-columns:minmax(0,1fr) 152px;gap:12px;align-items:center}\n.big-fish .fish-feature-copy{min-width:0;position:relative;z-index:1}.big-fish .fish-feature-copy h2{margin:8px 0}\n.big-fish .fish-feature-number{font-size:12px;padding:2px 12px;letter-spacing:.02em}\n.big-fish .fish-feature-sticker{margin:0;display:grid;place-items:center;min-width:0;align-self:end;pointer-events:none}\n.big-fish .fish-feature-sticker img{display:block;width:152px;max-width:100%;height:auto;object-fit:contain}\n.big-fish .fish-feature>.fish-waves{height:72px;opacity:.75}.big-fish .fish-feature-bubbles{position:absolute;bottom:20px;right:170px;z-index:-1;width:64px;height:56px;opacity:.65}\n.big-fish .fish-feature-light{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:12px;align-items:end}\n.big-fish .fish-feature-symbol{width:76px;height:64px;opacity:.8}\n.big-fish .fish-stats-tail{position:absolute;bottom:12px;right:16px;z-index:-1;width:72px;height:60px}\n.big-fish .fish-stats .fish-card:not(:nth-of-type(3n)){border-right:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-of-type(-n+3){border-bottom:0}\n@container(max-width:1180px){.big-fish .fish-ocean-intro{grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:auto auto auto;min-height:300px}.big-fish .fish-intro-status{grid-column:1;grid-row:2;justify-self:start;margin-top:0}.big-fish .fish-hero-copy{grid-row:3}.big-fish .fish-welcome{grid-row:1/4}.big-fish .fish-welcome img{width:280px}.big-fish .fish-intro-tools{grid-column:2;grid-row:4;justify-self:center}.big-fish .fish-intro-stars{right:250px}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 130px;padding:20px;gap:8px}.big-fish .fish-feature-sticker img{width:130px}.big-fish .fish-feature-light{grid-template-columns:minmax(0,1fr) 52px}.big-fish .fish-feature-symbol{width:52px;height:52px}}\n@container(min-width:861px) and (max-width:1060px){.big-fish .fish-grid{grid-template-columns:1fr}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 152px}.big-fish .fish-feature-sticker img{width:152px}}\n@container(max-width:860px){.big-fish .fish-sidebar-scene{display:none}.big-fish .fish-nav{padding-bottom:4px}.big-fish .fish-sidebar-note{display:block;margin:0;font-size:12px}.big-fish .fish-sidebar-note br{display:none}.big-fish .fish-sidebar-note{word-spacing:8px}}\n@container(max-width:680px){.big-fish .fish-grid{grid-template-columns:1fr}.big-fish .fish-ocean-intro{grid-template-columns:minmax(0,1fr) 180px;column-gap:8px}.big-fish .fish-welcome img{width:180px}.big-fish .fish-intro-stars{right:160px}.big-fish .fish-hero-copy h2{font-size:28px}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 140px}.big-fish .fish-feature-sticker img{width:140px}}\n@container(max-width:520px){.big-fish .fish-ocean-intro{grid-template-columns:minmax(0,1fr) 120px;padding:0 0 20px;min-height:0}.big-fish .fish-welcome{grid-row:1/3}.big-fish .fish-welcome img{width:120px}.big-fish .fish-hero-copy{grid-column:1/-1;grid-row:3;padding-top:20px}.big-fish .fish-hero-copy h2{font-size:28px}.big-fish .fish-intro-tools{grid-column:1/-1;grid-row:4;justify-self:end}.big-fish .fish-intro-status{font-size:11px;padding:4px 8px}.big-fish .fish-overview-header p{font-size:14px}.big-fish .fish-feature-character{grid-template-columns:minmax(0,1fr) 96px;padding:20px 16px;gap:8px}.big-fish .fish-feature-sticker img{width:96px}.big-fish .fish-feature-copy .fish-actions{grid-column:1/-1}.big-fish .fish-feature-light{padding:20px 16px}.big-fish .fish-feature-bubbles{right:96px}.big-fish .fish-page-header>.fish-decoration{right:0}.big-fish .fish-stats .fish-card:not(:nth-of-type(3n)){border-right:0}.big-fish .fish-stats .fish-card:nth-of-type(odd){border-right:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-of-type(-n+3){border-bottom:1px solid var(--fish-line)}.big-fish .fish-stats .fish-card:nth-last-of-type(-n+2){border-bottom:0}}\n@media(max-height:780px){.big-fish .fish-sidebar-scene{min-height:120px}.big-fish .fish-sidebar-scene img{width:120px}.big-fish .fish-sidebar-scene>.fish-waves{height:96px}}\n@media(max-height:640px){.big-fish .fish-sidebar-scene{display:none}}\n@media(prefers-reduced-motion:reduce){.big-fish button:not(:disabled):hover,.big-fish button:not(:disabled):active,.big-fish-notice button{transform:none}}\n\n/* 操作页使用平面材质；总览继续保留海洋插画与立体层次。 */\n.big-fish.fish-flat{--fish-panel:var(--fish-surface);--fish-shell-fill:var(--fish-surface);--fish-control-fill:var(--fish-surface);--fish-shadow:none;--fish-small-shadow:none;--fish-inset:none;--fish-radius:12px;--fish-radius-mid:10px;background:var(--fish-bg)}\n.big-fish.fish-flat .fish-sidebar,.big-fish.fish-flat .fish-workspace{box-shadow:none;border-radius:12px}\n.big-fish.fish-flat .fish-sidebar-scene{display:none}\n.big-fish.fish-flat .fish-sidebar-note{margin-top:auto}\n.big-fish.fish-flat .fish-nav button[aria-selected=true]{background:var(--fish-accent-soft);box-shadow:none}\n.big-fish.fish-flat button:not([role=switch]):hover{transform:none;box-shadow:none;background:var(--fish-hover);color:var(--fish-text)}\n.big-fish.fish-flat button:not([role=switch]):active{transform:none;box-shadow:none}\n.big-fish.fish-flat .fish-page-header{padding-bottom:24px;margin-bottom:24px}\n.big-fish.fish-flat .fish-card{border-radius:10px;box-shadow:none}\n.big-fish .fish-settings-stack{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}\n.big-fish .fish-form-row{gap:12px 24px;padding:16px 0;margin-bottom:0!important;align-items:start}\n.big-fish .fish-form-row:last-child{border-bottom:0}\n.big-fish .fish-form-row .fish-form-label{flex:0 1 200px;padding-top:8px}\n.big-fish .fish-form-row .fish-control{flex:1 1 320px;max-width:100%}\n.big-fish .fish-form-row:has([role=switch])>.fish-form-label{padding-top:0}\n.big-fish .fish-subnav,.big-fish .fish-qq .fish-subnav{flex-wrap:wrap;overflow:visible;gap:8px}\n.big-fish .fish-subnav button{white-space:normal}\n.big-fish .fish-rule-section{border-top:1px solid var(--fish-border);margin-top:28px;padding-top:24px}\n.big-fish .fish-feed-result{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 var(--fish-font);background:var(--fish-soft);padding:20px;border-radius:8px;max-height:480px;overflow:auto;margin-top:20px}\n.big-fish .fish-embedding{padding:24px 0;border-block:1px solid var(--fish-border)}\n.big-fish .fish-embedding label{display:grid!important;grid-template-columns:minmax(180px,1fr) minmax(100px,2fr);gap:12px;align-items:center;padding:8px 0}\n.big-fish .fish-embedding label:has([role=switch]){display:flex!important}\n.big-fish .fish-embedding input:not([role=switch]){width:100%!important}\n.big-fish.fish-flat .fish-memory .fish-library-row{border:0;border-bottom:1px solid var(--fish-border);border-radius:0;padding:20px 0;margin:0}\n.big-fish .fish-memory .fish-record:has(>label){display:flex;flex-wrap:wrap;gap:16px;align-items:end;padding:24px 0}\n.big-fish .fish-memory .fish-record>label{display:flex;flex-direction:column;gap:8px;flex:1 1 200px}\n.big-fish .fish-memory .fish-record>label input{width:100%!important}\n.big-fish .fish-memory .fish-record>div:first-child{flex-basis:100%}\n.big-fish .fish-memory .fish-record-row{row-gap:12px}\n.big-fish .fish-memory .fish-record-row>div:has(+div){min-width:0}\n.big-fish .fish-memory [role=button]{box-shadow:none}\n.big-fish .fish-binding-row{grid-template-columns:90px minmax(100px,1fr) minmax(120px,1.5fr) 56px 86px 64px;gap:12px;padding:16px 0}\n.big-fish .fish-schedule-row{grid-template-columns:minmax(120px,1fr) minmax(140px,1fr) 56px 70px;gap:16px;padding:16px 0;border-bottom:1px solid var(--fish-line)}\n/* Native checkbox switches preserve focus and keyboard behavior. */\n.big-fish input[role=switch],.big-fish button[role=switch]{appearance:none;-webkit-appearance:none;position:relative;display:inline-block;width:50px!important;min-width:50px!important;max-width:50px;height:30px!important;min-height:30px!important;flex:0 0 50px;border:0!important;border-radius:999px!important;background:#78869a!important;box-shadow:none!important;padding:0!important;margin:7px 0;vertical-align:middle;cursor:pointer;transition:background-color .2s;transform:none!important;font-size:0!important;color:transparent!important}\n.big-fish [role=switch]::before{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .42s cubic-bezier(.34,1.56,.64,1),width .18s,border-radius .18s}\n.big-fish input[role=switch]:checked,.big-fish button[role=switch][aria-checked=true]{background:#248a50!important}\n.big-fish input[role=switch]:checked::before,.big-fish button[role=switch][aria-checked=true]::before{transform:translateX(20px)}\n.big-fish [role=switch]:not(:disabled):active::before{width:28px;border-radius:14px}\n.big-fish input[role=switch]:checked:active::before,.big-fish button[role=switch][aria-checked=true]:active::before{transform:translateX(16px)}\n@container(max-width:860px){.big-fish .fish-binding-row,.big-fish .fish-schedule-row{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-binding-head{display:none}}\n@container(max-width:520px){.big-fish .fish-form-row .fish-form-label{flex-basis:100%;padding-top:0}.big-fish .fish-embedding label{grid-template-columns:1fr}.big-fish .fish-subnav button{flex:1 1 auto}.big-fish .fish-feed-result{padding:12px}}\n.big-fish .fish-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 24px;padding:0 0 20px;border-bottom:1px solid var(--fish-border)}\n.big-fish .fish-test-action{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px}\n@container(max-width:860px){.big-fish.fish-flat .fish-sidebar-note{display:none}}\n@media(prefers-reduced-motion:reduce){.big-fish [role=switch]::before{transition:none!important}}\n";
 const components = {};
 const moduleLoader = { load({id, factory}) { components[id] = factory(require) } };
 // 大肥鱼整合修改：供主界面直接挂载，更新入口统一到「更新与来源」。
@@ -33,7 +33,7 @@ moduleLoader.load({
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 8, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
@@ -51,7 +51,7 @@ moduleLoader.load({
       btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
-      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
+      grid: { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 20, alignItems: 'start' },
       group: { borderTop: '1px solid var(--fish-border)', padding: '20px 0' },
       summary: { fontWeight: 600, fontSize: 16, cursor: 'pointer', padding: '8px 0 16px' },
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
@@ -68,21 +68,77 @@ moduleLoader.load({
     const 行 = (标签, 控件, 说明) =>
       h('div', { className: 'fish-form-row', style: S.row }, h('div', { className: 'fish-form-label', style: S.lab }, 标签), h('div', { className: 'fish-control', style: S.ctl }, (['input', 'select', 'textarea'].includes(控件?.type) ? React.cloneElement(控件, { 'aria-label': 标签 }) : 控件), 说明 ? 提示(说明) : null))
     const 按钮 = (文字, onClick, 亮, 关) =>
-      h('button', { type: 'button', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 }, 文字)
-    const 勾 = (值, onChange, label = '切换设置') => h('input', {'aria-label': label, type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+      h('button', { type: 'button', className: 亮 ? 'fish-primary' : '', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 }, 文字)
+    const 勾 = (值, onChange, label = '切换设置') => h('input', {'aria-label': label, type: 'checkbox', role: 'switch', checked: !!值, onChange: (e) => onChange(e.target.checked) })
     const 短id = (id) => {
       const s = String(id)
       return s.length <= 8 ? s : s.slice(-8)
     }
 
-    const 页签们 = ['总览', '绑定', '历史导入']
+    const 页签们 = ['连接', '绑定', '消息策略', '图片与语音', 'QQ 空间', '历史导入', '运行日志']
+
+    function QQActions({ mode, 配置, 脏, 改 }) {
+      const [busy, setBusy] = React.useState(false)
+      const [message, setMessage] = React.useState('')
+      const [session, setSession] = React.useState('')
+      const [images, setImages] = React.useState('')
+      const [content, setContent] = React.useState('')
+      const [right, setRight] = React.useState('4')
+      const [targets, setTargets] = React.useState('')
+      const [qq, setQQ] = React.useState('')
+      const [tid, setTid] = React.useState('')
+      const [result, setResult] = React.useState('')
+      const imageList = images.split(/\r?\n/).map(x => x.trim()).filter(Boolean)
+      const limit = mode === 'images' ? 4 : 9
+      const run = async (path, body, read = false) => {
+        setBusy(true); setMessage('处理中…')
+        try {
+          const r = await post(path, body)
+          if (!r?.ok) throw new Error(r?.说 || '请求失败，请检查后端连接')
+          if (read) setResult(r.说)
+          setMessage(r.说 || '已完成')
+        } catch (e) { setMessage(e.message) }
+        finally { setBusy(false) }
+      }
+      const imageField = 行('图片地址（每行一张）', h('textarea', { style: S.ta, value: images, placeholder: mode === 'images' ? 'https://example.com/happy.gif\n_stickers/happy.png' : 'https://example.com/photo.jpg', onChange: e => setImages(e.target.value) }),
+        '已填写 ' + imageList.length + ' / ' + limit + ' 张。支持 HTTP(S) 地址和本地图片路径；图片发送路径由 DSH 读取，空间配图路径由 QQ 后端读取。')
+      const blocked = busy || 脏
+      if (mode === 'images') return h('section', { style: S.card },
+        h('h2', null, '发送图片与表情包'),
+        h('p', { style: S.dim }, '静态表情和 GIF 均走原图发送；GIF 不会在这里转成静态图。发送到已保存的会话绑定，遵守总开关、试运行和发送图片开关。'),
+        行('发送目标', h('select', { style: S.wide, value: session, onChange: e => setSession(e.target.value) },
+          h('option', { value: '' }, '选择 QQ 聊天'), ...(配置.绑定 || []).filter(b => b.开 !== false).map(b => h('option', { key: b.会话, value: b.会话 }, b.类型 + ' ' + b.号码)))),
+        imageField,
+        h('div', { className: 'fish-actions' }, 按钮('发送图片到 QQ', () => run('/send-images', { session, images: imageList }), true, blocked || !session || !imageList.length || imageList.length > 4 || !配置.总开关 || !配置.发图)),
+        h('p', { role: 'status', className: 'fish-message' }, message || (脏 ? '请先保存设置，再发送。' : 配置.试运行 ? '当前为试运行：只校验并记录，不实际发送。' : '点击后立即发送至所选 QQ 聊天。')),
+        h('div', { className: 'fish-rule-section' }, h('h3', null, '让模型按语境选择表情'),
+          h('p', { style: S.dim }, '现有插件没有自动素材库或独立选图器。可将素材路径和使用场景写入角色设定，让模型输出 Markdown 图片；具体选择由模型决定。'),
+          行('表情素材与选择规则', h('textarea', { style: S.ta, value: String(配置.人设 || ''), placeholder: '例如：开心时可用 ![开心](_stickers/happy.gif)，安慰时可用 ![拥抱](_stickers/hug.png)。没有合适素材就只回复文字。', onChange: e => 改('人设', e.target.value) }), '与「绑定 → 全局角色设定」共用同一份文本；保留已有角色描述，在末尾补充规则。'),
+          行('启用角色设定', 勾(配置.人设开, v => 改('人设开', v)), '有独立角色设定的绑定需要在对应绑定中补充规则。')))
+      return h('div', { className: 'fish-settings-stack' },
+        h('section', { style: S.card }, h('h2', null, '发布说说'),
+          行('说说正文', h('textarea', { style: S.ta, value: content, onChange: e => setContent(e.target.value), placeholder: '分享今天想说的话…' })), imageField,
+          行('可见范围', h('select', { style: S.wide, value: right, onChange: e => setRight(e.target.value) }, ...[['1','所有人'],['4','好友'],['16','部分可见'],['64','仅自己'],['128','部分不可见']].map(([value, label]) => h('option', { key: value, value }, label)))),
+          ['16','128'].includes(right) ? 行('QQ 号名单', h('input', { style: S.wide, value: targets, onChange: e => setTargets(e.target.value), placeholder: '多个 QQ 号用逗号或空格分隔' })) : null,
+          h('div', { className: 'fish-actions' }, 按钮('发布到 QQ 空间', () => run('/space', { action: 'qq_space_post', args: { content, images: imageList, ugc_right: Number(right), target_uins: targets.split(/[\s,，]+/).filter(Boolean) } }), true,
+            blocked || !配置.允许发空间动态 || (!content.trim() && !imageList.length) || imageList.length > 9 || (['16','128'].includes(right) && !targets.trim()))),
+          h('p', { style: S.dim }, 脏 ? '请先保存设置，再发布。' : '手动发布会立即发送，不受消息转发的试运行控制；受「允许发布 QQ 空间动态」控制。'),
+          h('p', { className: 'fish-message', role: 'status' }, message)),
+        h('section', { style: S.card }, h('h2', null, '浏览动态与评论'),
+          h('p', { style: S.dim }, '空间功能要求 QQ 后端支持相应接口；此处查看不会点赞或发表评论。'),
+          行('查看谁的空间', h('input', { style: S.wide, value: qq, inputMode: 'numeric', placeholder: '留空查看机器人自己的空间', onChange: e => setQQ(e.target.value) })),
+          h('div', { className: 'fish-actions' }, 按钮('查看好友动态', () => run('/space', { action: 'qq_space_feeds', args: { count: 20 } }, true), false, busy), 按钮('查看说说列表', () => run('/space', { action: 'qq_space_list', args: { qq, num: 20 } }, true), false, busy)),
+          行('说说 ID', h('input', { style: S.wide, value: tid, inputMode: 'numeric', placeholder: '填写上方说说列表中的 tid', onChange: e => setTid(e.target.value) })),
+          按钮('查看正文与评论', () => run('/space', { action: 'qq_space_detail', args: { qq, tid: Number(tid) } }, true), false, busy || !/^\d+$/.test(tid)),
+          h('pre', { className: 'fish-feed-result', role: 'status' }, result || '选择上方操作，动态会显示在这里。')))
+    }
 
     function Section() {
       const [态, 设态] = React.useState(null)
       const [脏, 设脏] = React.useState(false)
       const [忙, 设忙] = React.useState(false)
       const [说, 设说] = React.useState('')
-      const [页, 设页] = React.useState('总览')
+      const [页, 设页] = React.useState('连接')
       const [asr, 设asr] = React.useState(null)
       const [asr忙, 设asr忙] = React.useState(false)
       const [人设行, 设人设行] = React.useState(null) // 哪一行展开了「单独的人设」
@@ -211,7 +267,7 @@ moduleLoader.load({
             : null)
 
       const 页签 = h('div', { className: 'fish-subnav', style: S.tabBar },
-        ...页签们.map((名) => 按钮(名 === '绑定' ? '配置' : 名, () => 设页(名), 页 === 名, false)))
+        ...页签们.map((名) => h('button', { type: 'button', key: 名, 'aria-pressed': 页 === 名, style: 页 === 名 ? S.btnOn : S.btn, onClick: () => 设页(名) }, 名)))
 
       const 历史请求 = async (path, body, memory = false) => {
         const response = await fetch((memory ? '/dsh-fish-memory' : B + '/history') + path, {
@@ -349,17 +405,6 @@ moduleLoader.load({
           h('div', { style: { marginTop: 6 } }, 按钮('管理配置', () => 设页('绑定'))),
         ),
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '操作与诊断'),
-          h('div', null,
-            按钮('保存设置', 存, true, 忙),
-            h('span', { style: S.dim }, '　'),
-            按钮('发送测试消息', 试一句, false, 忙),
-            h('span', { style: S.dim }, '　'),
-            按钮('刷新', 拉, false, 忙)),
-          h('div', { style: { ...S.dim, marginTop: 4 } }, '测试消息会实际发送至 QQ，不受试运行限制。'),
-          说 ? h('div', { role: 'status', 'aria-live': 'polite', style: { ...S.ok, color: 'var(--fish-text)', marginTop: 6 } }, 说) : null,
-        ),
-        h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '最近 ' + 日志.length + ' 条日志（按时间升序）'),
           h('div', { style: { marginTop: 6, maxHeight: 220, overflowY: 'auto' } },
             日志.length === 0
@@ -374,7 +419,7 @@ moduleLoader.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '全局角色设定'),
           h('div', { style: S.dim },
             '未配置独立角色的会话使用全局设定。'),
-          h('div', { style: { marginTop: 6 } }, 勾(配置.人设开, (v) => 改('人设开', v)), ' ', '启用角色设定'),
+          h('div', { style: { marginTop: 6 } }, 勾(配置.人设开, (v) => 改('人设开', v), '启用角色设定'), ' ', '启用角色设定'),
           h('textarea', {'aria-label': '人设',
             style: { ...S.input, display: 'block', width: '100%', height: 88, marginTop: 6, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
             value: String(配置.人设 || ''),
@@ -393,7 +438,7 @@ moduleLoader.load({
           h('div', { style: S.dim },
             '私聊填写 QQ 号，群聊填写群号；回复按绑定关系转发。'
             + '每个聊天必须绑定独立 DSH 会话；普通群通过记忆库共享，不会转发彼此的回复。'),
-          h('div', { style: { ...S.表头, marginTop: 10 } },
+          h('div', { className: 'fish-binding-row fish-binding-head', style: { ...S.表头, marginTop: 10 } },
             h('div', { style: S.表头字 }, '类型'),
             h('div', { style: S.表头字 }, '号码'),
             h('div', { style: S.表头字 }, '称呼'),
@@ -426,13 +471,13 @@ moduleLoader.load({
                 h('div', { style: S.表头字 }, '会话'),
                 会话选项(x.会话, (v) => 改绑定(i, { 会话: v }))),
               // ⭐ 1.1.8：这一行自己的开关 —— 不想理就把「启用」取消，不用删掉
-              h('div', { style: { display: 'flex', gap: 16, alignItems: 'center', margin: '0 0 10px', paddingLeft: 2 } },
+              h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', margin: '0 0 10px', paddingLeft: 2 } },
                 h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
                   勾(x.开 !== false, (v) => 改绑定(i, { 开: v }), '启用收发'),
                   h('span', { style: S.dim }, '启用收发')),
                 x.类型 === '群'
                   ? h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
-                      勾(x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名), (v) => 改绑定(i, { 只听点名: v })),
+                      勾(x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名), (v) => 改绑定(i, { 只听点名: v }), '仅接收点名消息'),
                       h('span', { style: S.dim }, '仅接收点名消息'))
                   : null),
               i === 人设行
@@ -480,7 +525,7 @@ moduleLoader.load({
           行('私聊来源标识', h('select', {'aria-label': '私聊署名',  style: S.small, value: String(配置.私聊署名 || '关'), onChange: (e) => 改('私聊署名', e.target.value) },
             h('option', { value: '关' }, '无标识'), h('option', { value: '前缀' }, '[QQ] 前缀'), h('option', { value: '署名' }, '署名（对方：…）')),
             '区分 QQ 消息与 DSH 手动输入，默认不标记。'),
-          行('点名消息必回', h('input', {'aria-label': '点名必回',  type: 'checkbox', checked: 配置.点名必回 !== false, onChange: (e) => 改('点名必回', Boolean(e.target.checked)) }), '默认启用；禁用后，点名消息也受回复概率限制。'),
+          行('点名消息必回', h('input', {'aria-label': '点名必回',  type: 'checkbox', role: 'switch', checked: 配置.点名必回 !== false, onChange: (e) => 改('点名必回', Boolean(e.target.checked)) }), '默认启用；禁用后，点名消息也受回复概率限制。'),
           行('回复概率（%）', h('input', {'aria-label': '回复概率',  type: 'number', min: 0, max: 100, style: S.small, value: String(配置.回复概率 ?? 100), onChange: (e) => 改('回复概率', Number(e.target.value)) }), '默认 100%；未选中的消息不进入模型上下文。'),
           h('div', { style: { ...S.dim, marginTop: 4 } }, '合并窗口可在「消息收发」中配置，默认 3 秒。'),
         ),
@@ -512,7 +557,7 @@ moduleLoader.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '图片'),
           行('接收图片（QQ → DSH）', 勾(配置.收图, (v) => 改('收图', v)), '图片转入目标会话；纯文本模型仅接收图片数量和路径。'),
           行('发送图片（DSH → QQ）', 勾(配置.发图, (v) => 改('发图', v)), '将模型输出的图片转发至 QQ。'),
-          行('单条图片上限（张）', h('input', {'aria-label': '收图最多',  type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '最多 10 张，超出部分不转发。'),
+          行('接收图片上限（张）', h('input', {'aria-label': '收图最多',  type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '接收最多 10 张；发送每条最多 4 张。超出部分不转发。'),
           行('单张图片上限（MB）', h('input', {'aria-label': '图上限MB',  type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: (e) => 改('图上限MB', Number(e.target.value)) }), '收发共用，超出上限时跳过。'),
           行('图片根目录', h('input', {'aria-label': '图片根目录',  style: S.wide, placeholder: '留空使用会话工作区', value: String(配置.图片根目录 || ''), onChange: (e) => 改('图片根目录', e.target.value) }), '用于解析 Markdown 图片的相对路径。'),
           h('div', { style: S.dim }, '接收图片保存在 DSH 数据目录的 qq-bridge-inbox 中。'),
@@ -637,10 +682,10 @@ moduleLoader.load({
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '定时发布'),
-          h('div', { style: S.dim }, '按计划触发绑定会话，动态内容由模型生成。'),
+          h('div', { style: S.dim }, '按宿主所在时区，每分钟检查一次；到点提醒一个已绑定且打开的会话。模型自行决定是否发布，不保证每次都发；可见范围作为提示传给模型，实际以其调用参数为准。发布需开启空间发布开关；空间任务独立于消息转发总开关和试运行。'),
           h('div', { className: 'fish-schedule-row fish-binding-head', style: { ...S.空间表头, marginTop: 10 } },
             h('div', { style: S.表头字 }, '时间'),
-            h('div', { style: S.表头字 }, '可见范围'),
+            h('div', { style: S.表头字 }, '提示可见范围'),
             h('div', { style: S.表头字 }, '启用'),
             h('div', { style: S.表头字 }, '')),
           空间定时().length === 0
@@ -657,7 +702,7 @@ moduleLoader.load({
                 h('option', { value: '1' }, '所有人'),
                 h('option', { value: '4' }, '好友'),
                 h('option', { value: '64' }, '仅自己')),
-              h('div', { style: { textAlign: 'center' } }, 勾(x.开 !== false, (v) => 改空间定时(i, { 开: v }))),
+              h('div', null, 勾(x.开 !== false, (v) => 改空间定时(i, { 开: v }), '启用计划 ' + (i + 1))),
               h('div', null, 按钮('删除', () => 删空间定时(i), false, false))))),
           h('div', { style: { marginTop: 8 } },
             按钮('+ 添加条目', 加空间定时, false, false),
@@ -666,53 +711,40 @@ moduleLoader.load({
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '好友动态同步'),
           行('同步间隔（分钟）', h('input', {'aria-label': '空间看圈分',  type: 'number', min: 5, max: 1440, style: S.small, value: String(配置.空间看圈分 ?? 30), onChange: (e) => 改('空间看圈分', Number(e.target.value)) }), '5～1440，默认 30。'),
-          行('启用同步', 勾(配置.空间看圈开, (v) => 改('空间看圈开', v)), '启用后定时获取好友动态。'),
+          行('启用同步', 勾(配置.空间看圈开, (v) => 改('空间看圈开', v)), '至少启用点赞或动态递送之一才会请求好友动态；空间任务不受消息转发总开关和试运行控制。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '点赞 / 评论'),
           行('自动点赞', 勾(配置.空间点赞开, (v) => 改('空间点赞开', v)), '同步时点赞近期未处理动态，每次最多 3 条、每日最多 20 条。'),
-          行('允许评论', 勾(配置.空间评论开, (v) => 改('空间评论开', v)), '将新动态转入会话，由模型决定是否评论及评论内容。'),
+          行('递送动态给模型（评论提醒）', 勾(配置.空间评论开, (v) => 改('空间评论开', v)), '将新动态转入会话。当前模块没有发表评论的工具，真正评论需要会话另有可用工具；打开此开关不代表会自动发表评论。'),
         ),
       ]
 
-      const 总览页 = h('div', { style: S.stack }, 总览卡片[1], 总览卡片[3])
-      const 配置页 = h('div', { style: S.stack },
-        h('div', { style: S.dim }, '统一管理连接、会话和收发策略。修改后请保存设置。'),
-        h('details', { style: S.group, open: true },
-          h('summary', { style: S.summary }, '连接与通知'),
-          h('div', { style: S.grid }, 消息卡片[0], 总览卡片[0])),
-        h('details', { style: S.group, open: true },
-          h('summary', { style: S.summary }, '会话绑定与角色'),
-          h('div', { style: S.stack }, 绑定卡片[1], 绑定卡片[0])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, '消息收发'),
-          h('div', { style: S.grid }, 消息卡片[1], 消息卡片[2])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, '群聊回复策略'),
-          h('div', { style: S.grid }, 绑定卡片[2], 门槛卡片[0])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, '图片、文件与语音'),
-          h('div', { style: S.stack }, h('div', { style: S.grid }, 消息卡片[3], 消息卡片[4]), 消息卡片[5])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, 'QQ 空间'),
-          h('div', { style: S.grid }, ...空间卡片)),
-      )
+      const 分区 = (...内容) => h('div', { className: 'fish-settings-stack' }, ...内容)
+      const 页面 = {
+        '连接': 分区(消息卡片[0], 总览卡片[0]),
+        '绑定': 分区(绑定卡片[1], 绑定卡片[0]),
+        '消息策略': 分区(消息卡片[1], 消息卡片[2], 绑定卡片[2], 门槛卡片[0]),
+        '历史导入': 历史页,
+        '运行日志': 分区(总览卡片[1], 总览卡片[2]),
+      }
 
       return h(
         'div',
         { className: 'fish-module fish-qq', style: S.wrap },
-        h('div', { className: 'fish-section-title', style: S.h }, '连接与转发'),
-        h('div', { style: S.dim }, 'QQ 与 DSH 双向消息转发及历史记忆导入。'),
+
         NapCat && !NapCat.错
           ? h('div', { style: S.已同步 }, '已连接 QQ：' + NapCat.昵称 + '（' + NapCat.用户 + '）')
           : h('div', { style: S.未保存 }, '注意：QQ 后端未连接（NapCat / SnowLuma）' + (NapCat && NapCat.错 ? '：' + NapCat.错 : '')),
         页签,
-        h('div', { style: 脏 ? S.未保存 : S.已同步 },
-          脏 ? '存在未保存的配置' : '配置已保存'),
-        h('div', { style: { marginBottom: 14 } }, 总览卡片[2]),
-        页 === '总览' ? 总览页 : null,
-        页 === '绑定' ? 配置页 : null,
-        页 === '历史导入' ? 历史页 : null,
+        h('div', { className: 'fish-toolbar' },
+          h('span', { style: { ...S.dim, flex: '1 1 160px' } }, 脏 ? '存在未保存的配置' : '配置已保存'),
+          按钮('刷新状态', 拉, false, 忙 || 脏), 按钮('保存设置', 存, true, 忙)),
+        说 ? h('p', { role: 'status', className: 'fish-message' }, 说) : null,
+        页 === '连接' || 页 === '运行日志' ? h('div', { className: 'fish-test-action' }, 按钮('发送测试消息', 试一句, false, 忙 || 脏), h('span', { style: S.dim }, '会实际发送至首个绑定的 QQ 聊天，不受试运行限制。')) : null,
+        页面[页] || null,
+        h('div', { hidden: 页 !== '图片与语音' }, h(QQActions, { mode: 'images', 配置, 脏, 改 }), 分区(消息卡片[3], 消息卡片[4], 消息卡片[5])),
+        h('div', { hidden: 页 !== 'QQ 空间' }, 空间卡片[0], h(QQActions, { mode: 'space', 配置, 脏, 改 }), 分区(...空间卡片.slice(1))),
         h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
           h('p', null, '模块版本 ' + String(态.版本 || '?')),
           h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),
@@ -780,10 +812,10 @@ moduleLoader.load({
       'aria-label': label, type, value: config[name], min: type === 'number' ? 0 : undefined, style: { maxWidth: '100%', width: type === 'number' ? 100 : 500 },
       onChange: e => setConfig({ ...config, [name]: type === 'number' ? Number(e.target.value) : e.target.value }),
     }))
-    return React.createElement('details', { className: 'fish-embedding', style: { margin: '24px 0' } },
-      React.createElement('summary', null, 'Qwen 语义召回（默认关闭）'),
+    return React.createElement('section', { className: 'fish-embedding', style: { margin: '24px 0' } },
+      React.createElement('h2', null, 'Qwen 语义召回（默认关闭）'),
       React.createElement('p', null, '启用后，记忆正文与查询会发送给配置的云服务商并可能产生费用。正文仍以鱼的记忆为准，断网回退关键词；QQ 权限保持不变。'),
-      React.createElement('label', null, React.createElement('input', {'aria-label': '启用语义召回',  type: 'checkbox', checked: config.enabled, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), '启用语义召回'),
+      React.createElement('label', null, React.createElement('input', {'aria-label': '启用语义召回',  type: 'checkbox', role: 'switch', checked: config.enabled, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), '启用语义召回'),
       field('endpoint', 'DashScope 完整服务地址'), field('model', 'Qwen 模型'), field('dimensions', '维度', 'number'),
       field('minSimilarity', '语义门槛（需用自己的数据校准）', 'number'), field('topK', '语义候选上限', 'number'), field('timeoutMs', '本轮超时毫秒', 'number'),
       React.createElement('label', null, '密钥（只写） ', React.createElement('input', { 'aria-label': 'Embedding 密钥', type: 'password', autoComplete: 'new-password', value: key, disabled: !status?.writable, onChange: e => setKey(e.target.value) })),
@@ -905,7 +937,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       link: { color: 'var(--dsw-alias-label-secondary, var(--fish-info))', cursor: 'pointer', textDecoration: 'underline' },
       confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-danger)', fontSize: 'var(--fish-small)' },
       // 注意：flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
-      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'center', margin: '10px 0', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-border)', fontSize: 'var(--fish-small)' },
+      nameBox: { display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', margin: '10px 0', padding: '12px 0', borderBottom: '1px solid var(--fish-line)', fontSize: 'var(--fish-small)' },
       editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-border)' },
       askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-warning)', fontSize: 'var(--fish-small)' },
       barOut: { height: 10, borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid var(--fish-border)' },
@@ -962,7 +994,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const setRf = (v) => 改进度('提炼', v, 进度.提炼.说明)
       const setRfNote = (v) => 改进度('提炼', 进度.提炼.状态, v)
       const [画全部, set画全部] = React.useState(false) // 记忆列表要不要一次画完（默认只画前 200）
-      const [看记忆, set看记忆] = React.useState(false) // 记忆列表展开没有（默认折叠，不然把按钮顶到很下面）
+      const [看记忆, set看记忆] = React.useState(true) // 常用记忆列表默认展开
       // ⭐ 2026-09-21：列表顺序。记忆库是 push 顺序（老的在前），而下面只画前 200 条 ——
       //   不翻过来的话，她永远看不到刚写进来的那条（851 条里画的是最老的 200 条）。
       //   '新' = 最新的在最上面（默认）；'旧' = 最早的在前（想从头翻的时候用）
@@ -976,8 +1008,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [看哪边, set看哪边] = React.useState('全部')
       // ⭐ 2026-09-22（她要的）：长期事实那个「收理的文件夹」展开没有（**默认收着**）
       const [看事实, set看事实] = React.useState(false)
-      // ⭐ 2026-09-22：参数那一坨默认收起来（它调一次就不动）
-      const [看参数, set看参数] = React.useState(false)
+      // 参数和索引使用独立页签，保留各页草稿。
+      const [memoryPage, setMemoryPage] = React.useState('记忆库')
+      const [detailPage, setDetailPage] = React.useState('记忆与档案')
       // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没找到按钮」）：
       //   去重一直有，但都是**自动**的（召回时、导入时）—— **库里已有的重复没人管** ✗
       //   这里补一个手动查重：列出来、挑、才合
@@ -1032,7 +1065,6 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [加词, set加词] = React.useState('') // 关键词，空格分开
       const [加在谁, set加在谁] = React.useState('') // 加到哪个会话（默认第一个开着的，没有就第一个）
       const [加结果, set加结果] = React.useState(null) // { ok, 文字 }
-      const [加展开, set加展开] = React.useState(false)
 
       // 「指她的名字」那一格：读出来、点一下加/减
       const 名字串 = () => (impNames !== null ? impNames : (imp.data && imp.data.用户名字 ? imp.data.用户名字 : []).join(','))
@@ -1400,7 +1432,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               //   键本来就是「附注」性质，跟「能搜到它的词」放一起正合适（见下面那条）
               React.createElement(
                 'div',
-                { style: Object.assign({}, S.dim, { width: 58, flex: 'none', fontSize: 'var(--fish-small)' }), title: '鲜活度：越近就越鲜活，只影响排序。长期事实本来就不淡；没记时间的不知道是什么时候的事' },
+                { style: Object.assign({}, S.dim, { whiteSpace: 'nowrap', flex: 'none', fontSize: 'var(--fish-small)' }), title: '鲜活度：越近就越鲜活，只影响排序。长期事实本来就不淡；没记时间的不知道是什么时候的事' },
                 // ⭐⭐ 2026-09-22（反馈：「没标时间的还是鲜活 100%」）：
                 //   光显示百分比会骗人 —— 长期事实本来就不淡，写「100%」像在说「刚发生」✗
                 //   → 长期事实写「**不淡**」✓
@@ -1410,7 +1442,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 m.freshKind === 'fact' ? '不淡'
                   : typeof m.activation === 'number' && isFinite(m.activation) ? '鲜活 ' + Math.round(m.activation * 100) + '%' : '—',
               ),
-              React.createElement('div', { style: Object.assign({}, S.dim, { width: 62, flex: 'none' }) }, impName(m.importance)),
+              React.createElement('div', { style: Object.assign({}, S.dim, { whiteSpace: 'nowrap', flex: 'none', fontSize: 'var(--fish-small)' }) }, impName(m.importance)),
               m.textBefore
                 ? React.createElement(
                     'div',
@@ -3107,7 +3139,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           { className: 'fish-module fish-memory', style: S.wrap },
           React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => setOpen(null) }, '← 所有会话'),
           React.createElement('div', { style: S.h }, s.title || s.id),
-          React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId }),
+          React.createElement('div', { className: 'fish-subnav' }, ...['记忆与档案', '语义索引'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (detailPage === name ? ' fish-primary' : ''), 'aria-pressed': detailPage === name, onClick: () => setDetailPage(name) }, name))),
+          React.createElement('div', { hidden: detailPage !== '语义索引' }, React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId })),
+          React.createElement('div', { hidden: detailPage !== '记忆与档案' },
           s.qq ? React.createElement('div', { style: S.dim }, '记忆库：' + s.storeId) : null,
           React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
           React.createElement(
@@ -3170,17 +3204,16 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           // （开关管的是「他自己记不记、注不注入」，管不到她手动写）
           React.createElement(
             'div',
-            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 16 }), onClick: () => set加展开(!加展开) },
-            (加展开 ? '▾ ' : '▸ ') + '＋ 自己加一条（开关关着也能加）',
+            { style: S.h },
+            '新增记忆（开关关闭时也能添加）',
           ),
-          加展开
-            ? React.createElement(
+          React.createElement(
                 'div',
                 { style: S.editBox },
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.nameBox, { margin: '0 0 8px' }) },
-                  React.createElement('div', { style: { flex: 'none', width: 44 } }, '加到哪里'),
+                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '加到哪里'),
                   React.createElement(
                     'select',
                     {'aria-label': '加到哪里',
@@ -3205,7 +3238,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.nameBox, { margin: '8px 0 0' }) },
-                  React.createElement('div', { style: { flex: 'none', width: 44 } }, '时间'),
+                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '时间'),
                   React.createElement('input', {'aria-label': '这件事什么时候发生的（留空＝现在）',
                     style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 150 }),
                     placeholder: '这件事什么时候发生的（留空＝现在）',
@@ -3217,7 +3250,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.nameBox, { margin: '6px 0 0' }) },
-                  React.createElement('div', { style: { flex: 'none', width: 44 } }, '重要'),
+                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '重要'),
                   ['0', '0.5', '1'].map((v) =>
                     React.createElement(
                       'button',
@@ -3230,7 +3263,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                     ),
                   ),
                   React.createElement('input', {'aria-label': '记忆重要度',
-                    style: Object.assign({}, S.inp, { width: 58 }),
+                    style: Object.assign({}, S.inp, { width: 88 }),
                     value: 加重要,
                     onChange: (e) => set加重要(e.target.value),
                   }),
@@ -3239,7 +3272,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.nameBox, { margin: '6px 0 0' }) },
-                  React.createElement('div', { style: { flex: 'none', width: 44 } }, '关键词'),
+                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '关键词'),
                   React.createElement('input', {'aria-label': '空格分开，方便以后被想起来（可留空）',
                     style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 150 }),
                     placeholder: '空格分开，方便以后被想起来（可留空）',
@@ -3250,7 +3283,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.askBox, { margin: '8px 0 0' }) },
-                  React.createElement('button', {type: 'button',  style: S.btn, onClick: 提交一条 }, '加进这个会话'),
+                  React.createElement('button', {type: 'button', className: 'fish-primary', style: { ...S.btn, background: 'var(--fish-action)', color: 'var(--fish-on-accent)' }, onClick: 提交一条 }, '加进这个会话'),
                   React.createElement(
                     'span',
                     { style: Object.assign({}, 加结果 && 加结果.ok ? S.ok : S.drop, { fontSize: 'var(--fish-small)' }) },
@@ -3262,10 +3295,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
                   '加完记得点一下「开始扩词」—— 不然这条只有正文能搜到，检索词还是空的。',
                 ),
-              )
-            : null,
-          // 注意：记忆列表**默认折叠** —— 库里几百条的时候，它压在中间会把
-          //   「提炼 / 扩词」那些按钮顶到很下面，她得一直翻才够得着 ✗
+              ),
+          // 常用列表默认展开，管理工具保持在列表前面。
           React.createElement(
             'div',
             { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: 16 } },
@@ -3342,7 +3373,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: S.nameBox },
-                  React.createElement('div', { style: { flex: 'none', width: 44 } }, '找'),
+                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '找'),
                   React.createElement('input', {'aria-label': '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
                     style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
                     placeholder: '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
@@ -4558,6 +4589,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             '记忆一变就会自动备份：上一版存在同目录的 .bak，另外每天存一份，留 14 天。' +
               '「补日期」「补标不淡」「改」「删」之前也都会先备一份。',
           ),
+          ),
         )
       }
 
@@ -4660,6 +4692,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       return React.createElement(
         'div',
         { className: 'fish-module fish-memory', style: S.wrap },
+        React.createElement('div', { className: 'fish-subnav' }, ...['记忆库', '语义召回', '召回与遗忘'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''), 'aria-pressed': memoryPage === name, onClick: () => setMemoryPage(name) }, name))),
+        React.createElement('div', { hidden: memoryPage !== '记忆库' },
         React.createElement(
           'div',
           { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 8, marginBottom: 10 } },
@@ -4735,7 +4769,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           { style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
           React.createElement(
             'button',
-            {type: 'button',
+            {type: 'button', role: 'switch', 'aria-checked': d.全局开关 !== false, 'aria-label': '启用长期记忆',
               style: Object.assign({}, S.btn, {
                 flex: 'none',
                 color: d.全局开关 !== false ? 'var(--fish-success)' : 'inherit',
@@ -4762,7 +4796,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               : '全关着 —— 哪个会话都不记也不读，工具列表里也不会出现它。',
           ),
         ),
-        React.createElement(EmbeddingSettings, {}),
+
         React.createElement('div', { className: 'fish-record', style: S.条 },
           React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
           React.createElement('label', null, '主人 QQ ', React.createElement('input', {
@@ -4853,7 +4887,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             { key: s.id, className: 'fish-library-row', style: Object.assign({}, S.row, S.条) },
             React.createElement(
               'button',
-              {type: 'button',
+              {type: 'button', role: 'switch', 'aria-checked': !!s.enabled, 'aria-label': '启用记忆：' + (s.title || s.id),
                 style: Object.assign({}, S.btn, {
                   flex: 'none',
                   minWidth: 72,
@@ -4879,15 +4913,9 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             React.createElement('div', { style: Object.assign({}, S.dim, { width: 90 }) }, s.lastTrace ? rel(s.lastTrace, now) : '—'),
           ),
         ),
-        // ⭐ 2026-09-22（「设置页面会不会有点乱」）：**参数默认收起来**
-        //   那是**调一次就不动**的东西，原来直接铺在会话列表下面，占了大半屏，
-        //   把常用的（会话列表）挤到上面去了。收成一行，想看再点开
-        React.createElement(
-          'div',
-          {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => set看参数(!看参数) },
-          (看参数 ? '▾ ' : '▸ ') + '召回与遗忘参数',
-        ),
-        看参数
+        React.createElement('p', { style: S.dim }, '点击记忆库名称，查看、编辑记忆和档案。')),
+        React.createElement('div', { hidden: memoryPage !== '语义召回' }, React.createElement(EmbeddingSettings, {})),
+        memoryPage === '召回与遗忘'
           ? React.createElement(
               'div',
               null,
@@ -4913,8 +4941,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               '　· ' + notes.join('\n　· '),
             )
           : null,
-        React.createElement('div', { style: S.h }, '打开一个记忆库'),
-        React.createElement('div', { style: S.dim }, '选择上方名称，查看、编辑记忆和档案，或使用管理工具。'),
+
       )
     }
 
@@ -5151,7 +5178,7 @@ moduleLoader.load({
       if (!cfg) return h('div', { 'data-fm-wrap': '' }, h('div', { 'data-fm-note': '' }, '读取中…'))
 
       const sw = (key, label) => h('input', {
-        type: 'checkbox', 'aria-label': label,
+        type: 'checkbox', role: 'switch', 'aria-label': label,
         checked: Boolean(cfg[key]),
         onChange: (e) => patch({ [key]: e.target.checked }, label),
       })
@@ -5566,7 +5593,7 @@ moduleLoader.load({
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 8, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
@@ -5584,7 +5611,7 @@ moduleLoader.load({
       btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
-      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
+      grid: { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 20, alignItems: 'start' },
       group: { borderTop: '1px solid var(--fish-border)', padding: '20px 0' },
       summary: { fontWeight: 600, fontSize: 16, cursor: 'pointer', padding: '8px 0 16px' },
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
@@ -5610,11 +5637,11 @@ moduleLoader.load({
     const 按钮 = (文字, onClick, 亮, 关) =>
       h(
         'button',
-        { type: 'button', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 },
+        { type: 'button', className: 亮 ? 'fish-primary' : '', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 },
         文字,
       )
     const 勾 = (值, onChange) =>
-      h('input', {'aria-label': '设置值',  type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+      h('input', {'aria-label': '设置值',  type: 'checkbox', role: 'switch', checked: !!值, onChange: (e) => onChange(e.target.checked) })
     const 数 = (值, onChange, 步) =>
       h('input', {'aria-label': '设置值',
         type: 'number',
@@ -5943,9 +5970,8 @@ moduleLoader.load({
               )
             : h('div', { style: { ...S.dim, marginTop: 8 } }, '现在没有开着的会话（在 DSH 里打开一个再回来点「刷新清单」）。'),
 
-          h('div', { style: { marginTop: 8 } },
+          h('div', { className: 'fish-actions' },
             按钮('刷新清单', 拉, false, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('新建并选中会话', 新建小屋, false, 忙),
           ),
 
@@ -5999,13 +6025,10 @@ moduleLoader.load({
         // —— 动作 ——
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '保存与手动操作'),
-          h('div', null,
+          h('div', { className: 'fish-actions' },
             按钮('保存设置', 存, true, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('演练一次（绝不真发）', () => 掷('演练'), false, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('真发一次（跳过等待）', () => 掷('真发'), false, 忙),
-            h('span', { style: S.dim }, '　'),
             按钮('刷新', 拉, false, 忙),
           ),
           h('div', { style: { marginTop: 6 } },
@@ -6291,7 +6314,7 @@ function Page() {
   }, [])
   const render = [() => h(Overview, { navigate }), () => h(QQ), () => h(Memory), () => h(Mood), () => h(Speak), () => h(Updates)]
   const descriptions = ['连接、记忆与陪伴，都在这里。', '连接 QQ 与 DSH，让每段对话找到自己的去处。', '整理值得留下的事，照看每一段共同的记忆。', '看见情绪的变化，也给伙伴一点平复的时间。', '把主动交给恰当的时机，让问候自然发生。', '管理更新渠道，了解大肥鱼的来处。']
-  return h('div', { className: 'big-fish' }, h('style', null, css),
+  return h('div', { className: 'big-fish' + (tab === 0 ? '' : ' fish-flat') }, h('style', null, css),
     h('div', { className: 'fish-shell' },
       h('aside', { className: 'fish-sidebar' },
         h('div', { className: 'fish-brand' }, h('span', { className: 'fish-logo' }, h(FishIcon, { size: 32 })), h('span', { className: 'fish-brand-name' }, '大肥鱼')),
@@ -6305,7 +6328,7 @@ function Page() {
         h('figure', { className: 'fish-sidebar-scene', 'aria-hidden': true }, h('img', { src: '/dsh-feiyu-mood/sticker-book.png', alt: '', width: 1254, height: 1254, decoding: 'async' }), h(Wave), h(OceanDecor)),
         h('div', { className: 'fish-sidebar-note' }, '一点连接，一点陪伴。', h('br'), '仓库 v' + META.repositoryVersion, h('br'), 'npm 包 v' + META.version)),
       h('main', { className: 'fish-workspace' + (tab === 0 ? ' fish-workspace-overview' : '') },
-        tab === 0 ? null : h('header', { className: 'fish-page-header' }, h('div', null, h('h1', null, tabs[tab]), h('p', { className: 'fish-muted' }, descriptions[tab])), h('span', { className: 'fish-badge' }, '跟随宿主主题'), h(Wave), h(OceanDecor, { kind: 'star' })),
+        tab === 0 ? null : h('header', { className: 'fish-page-header' }, h('div', null, h('h1', null, tabs[tab]), h('p', { className: 'fish-muted' }, descriptions[tab])), h('span', { className: 'fish-badge' }, '跟随宿主主题')),
         ...visited.map(id => h('section', { key: id, id: 'fish-panel-' + id, role: 'tabpanel', 'aria-labelledby': 'fish-tab-' + id, hidden: tab !== id }, render[id]())),
         h('footer', { className: 'fish-footer' }, '派生自 Yuuyuko-uu · QQ、记忆、心情与主动搭话 · 原作者许可与来源见「更新与来源」'))))
 }

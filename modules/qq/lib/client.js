@@ -28,7 +28,7 @@ window.__ModuleLoader__.load({
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
       h: { fontFamily: 'var(--fish-title)', fontSize: 20, fontWeight: 700, margin: '0 0 16px', lineHeight: 1.5 },
       dim: { color: 'var(--fish-muted)', fontSize: 'var(--fish-small)' },
-      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 20, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
+      card: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius)', padding: '24px', marginBottom: 8, minWidth: 0, background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)' },
       row: { display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' },
       lab: { flex: '0 1 200px', paddingTop: 8, fontSize: 'var(--fish-label)', fontWeight: 550 },
       ctl: { flex: '1 1 260px', minWidth: 0 },
@@ -46,7 +46,7 @@ window.__ModuleLoader__.load({
       btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
       stack: { display: 'grid', gap: 20 },
-      grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 20, alignItems: 'start' },
+      grid: { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 20, alignItems: 'start' },
       group: { borderTop: '1px solid var(--fish-border)', padding: '20px 0' },
       summary: { fontWeight: 600, fontSize: 16, cursor: 'pointer', padding: '8px 0 16px' },
       日志行: { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: 'var(--fish-small)', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '8px 0', borderBottom: '1px solid var(--fish-line)' },
@@ -63,21 +63,77 @@ window.__ModuleLoader__.load({
     const 行 = (标签, 控件, 说明) =>
       h('div', { className: 'fish-form-row', style: S.row }, h('div', { className: 'fish-form-label', style: S.lab }, 标签), h('div', { className: 'fish-control', style: S.ctl }, (['input', 'select', 'textarea'].includes(控件?.type) ? React.cloneElement(控件, { 'aria-label': 标签 }) : 控件), 说明 ? 提示(说明) : null))
     const 按钮 = (文字, onClick, 亮, 关) =>
-      h('button', { type: 'button', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 }, 文字)
-    const 勾 = (值, onChange, label = '切换设置') => h('input', {'aria-label': label, type: 'checkbox', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+      h('button', { type: 'button', className: 亮 ? 'fish-primary' : '', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 }, 文字)
+    const 勾 = (值, onChange, label = '切换设置') => h('input', {'aria-label': label, type: 'checkbox', role: 'switch', checked: !!值, onChange: (e) => onChange(e.target.checked) })
     const 短id = (id) => {
       const s = String(id)
       return s.length <= 8 ? s : s.slice(-8)
     }
 
-    const 页签们 = ['总览', '绑定', '历史导入']
+    const 页签们 = ['连接', '绑定', '消息策略', '图片与语音', 'QQ 空间', '历史导入', '运行日志']
+
+    function QQActions({ mode, 配置, 脏, 改 }) {
+      const [busy, setBusy] = React.useState(false)
+      const [message, setMessage] = React.useState('')
+      const [session, setSession] = React.useState('')
+      const [images, setImages] = React.useState('')
+      const [content, setContent] = React.useState('')
+      const [right, setRight] = React.useState('4')
+      const [targets, setTargets] = React.useState('')
+      const [qq, setQQ] = React.useState('')
+      const [tid, setTid] = React.useState('')
+      const [result, setResult] = React.useState('')
+      const imageList = images.split(/\r?\n/).map(x => x.trim()).filter(Boolean)
+      const limit = mode === 'images' ? 4 : 9
+      const run = async (path, body, read = false) => {
+        setBusy(true); setMessage('处理中…')
+        try {
+          const r = await post(path, body)
+          if (!r?.ok) throw new Error(r?.说 || '请求失败，请检查后端连接')
+          if (read) setResult(r.说)
+          setMessage(r.说 || '已完成')
+        } catch (e) { setMessage(e.message) }
+        finally { setBusy(false) }
+      }
+      const imageField = 行('图片地址（每行一张）', h('textarea', { style: S.ta, value: images, placeholder: mode === 'images' ? 'https://example.com/happy.gif\n_stickers/happy.png' : 'https://example.com/photo.jpg', onChange: e => setImages(e.target.value) }),
+        '已填写 ' + imageList.length + ' / ' + limit + ' 张。支持 HTTP(S) 地址和本地图片路径；图片发送路径由 DSH 读取，空间配图路径由 QQ 后端读取。')
+      const blocked = busy || 脏
+      if (mode === 'images') return h('section', { style: S.card },
+        h('h2', null, '发送图片与表情包'),
+        h('p', { style: S.dim }, '静态表情和 GIF 均走原图发送；GIF 不会在这里转成静态图。发送到已保存的会话绑定，遵守总开关、试运行和发送图片开关。'),
+        行('发送目标', h('select', { style: S.wide, value: session, onChange: e => setSession(e.target.value) },
+          h('option', { value: '' }, '选择 QQ 聊天'), ...(配置.绑定 || []).filter(b => b.开 !== false).map(b => h('option', { key: b.会话, value: b.会话 }, b.类型 + ' ' + b.号码)))),
+        imageField,
+        h('div', { className: 'fish-actions' }, 按钮('发送图片到 QQ', () => run('/send-images', { session, images: imageList }), true, blocked || !session || !imageList.length || imageList.length > 4 || !配置.总开关 || !配置.发图)),
+        h('p', { role: 'status', className: 'fish-message' }, message || (脏 ? '请先保存设置，再发送。' : 配置.试运行 ? '当前为试运行：只校验并记录，不实际发送。' : '点击后立即发送至所选 QQ 聊天。')),
+        h('div', { className: 'fish-rule-section' }, h('h3', null, '让模型按语境选择表情'),
+          h('p', { style: S.dim }, '现有插件没有自动素材库或独立选图器。可将素材路径和使用场景写入角色设定，让模型输出 Markdown 图片；具体选择由模型决定。'),
+          行('表情素材与选择规则', h('textarea', { style: S.ta, value: String(配置.人设 || ''), placeholder: '例如：开心时可用 ![开心](_stickers/happy.gif)，安慰时可用 ![拥抱](_stickers/hug.png)。没有合适素材就只回复文字。', onChange: e => 改('人设', e.target.value) }), '与「绑定 → 全局角色设定」共用同一份文本；保留已有角色描述，在末尾补充规则。'),
+          行('启用角色设定', 勾(配置.人设开, v => 改('人设开', v)), '有独立角色设定的绑定需要在对应绑定中补充规则。')))
+      return h('div', { className: 'fish-settings-stack' },
+        h('section', { style: S.card }, h('h2', null, '发布说说'),
+          行('说说正文', h('textarea', { style: S.ta, value: content, onChange: e => setContent(e.target.value), placeholder: '分享今天想说的话…' })), imageField,
+          行('可见范围', h('select', { style: S.wide, value: right, onChange: e => setRight(e.target.value) }, ...[['1','所有人'],['4','好友'],['16','部分可见'],['64','仅自己'],['128','部分不可见']].map(([value, label]) => h('option', { key: value, value }, label)))),
+          ['16','128'].includes(right) ? 行('QQ 号名单', h('input', { style: S.wide, value: targets, onChange: e => setTargets(e.target.value), placeholder: '多个 QQ 号用逗号或空格分隔' })) : null,
+          h('div', { className: 'fish-actions' }, 按钮('发布到 QQ 空间', () => run('/space', { action: 'qq_space_post', args: { content, images: imageList, ugc_right: Number(right), target_uins: targets.split(/[\s,，]+/).filter(Boolean) } }), true,
+            blocked || !配置.允许发空间动态 || (!content.trim() && !imageList.length) || imageList.length > 9 || (['16','128'].includes(right) && !targets.trim()))),
+          h('p', { style: S.dim }, 脏 ? '请先保存设置，再发布。' : '手动发布会立即发送，不受消息转发的试运行控制；受「允许发布 QQ 空间动态」控制。'),
+          h('p', { className: 'fish-message', role: 'status' }, message)),
+        h('section', { style: S.card }, h('h2', null, '浏览动态与评论'),
+          h('p', { style: S.dim }, '空间功能要求 QQ 后端支持相应接口；此处查看不会点赞或发表评论。'),
+          行('查看谁的空间', h('input', { style: S.wide, value: qq, inputMode: 'numeric', placeholder: '留空查看机器人自己的空间', onChange: e => setQQ(e.target.value) })),
+          h('div', { className: 'fish-actions' }, 按钮('查看好友动态', () => run('/space', { action: 'qq_space_feeds', args: { count: 20 } }, true), false, busy), 按钮('查看说说列表', () => run('/space', { action: 'qq_space_list', args: { qq, num: 20 } }, true), false, busy)),
+          行('说说 ID', h('input', { style: S.wide, value: tid, inputMode: 'numeric', placeholder: '填写上方说说列表中的 tid', onChange: e => setTid(e.target.value) })),
+          按钮('查看正文与评论', () => run('/space', { action: 'qq_space_detail', args: { qq, tid: Number(tid) } }, true), false, busy || !/^\d+$/.test(tid)),
+          h('pre', { className: 'fish-feed-result', role: 'status' }, result || '选择上方操作，动态会显示在这里。')))
+    }
 
     function Section() {
       const [态, 设态] = React.useState(null)
       const [脏, 设脏] = React.useState(false)
       const [忙, 设忙] = React.useState(false)
       const [说, 设说] = React.useState('')
-      const [页, 设页] = React.useState('总览')
+      const [页, 设页] = React.useState('连接')
       const [asr, 设asr] = React.useState(null)
       const [asr忙, 设asr忙] = React.useState(false)
       const [人设行, 设人设行] = React.useState(null) // 哪一行展开了「单独的人设」
@@ -206,7 +262,7 @@ window.__ModuleLoader__.load({
             : null)
 
       const 页签 = h('div', { className: 'fish-subnav', style: S.tabBar },
-        ...页签们.map((名) => 按钮(名 === '绑定' ? '配置' : 名, () => 设页(名), 页 === 名, false)))
+        ...页签们.map((名) => h('button', { type: 'button', key: 名, 'aria-pressed': 页 === 名, style: 页 === 名 ? S.btnOn : S.btn, onClick: () => 设页(名) }, 名)))
 
       const 历史请求 = async (path, body, memory = false) => {
         const response = await fetch((memory ? '/dsh-fish-memory' : B + '/history') + path, {
@@ -344,17 +400,6 @@ window.__ModuleLoader__.load({
           h('div', { style: { marginTop: 6 } }, 按钮('管理配置', () => 设页('绑定'))),
         ),
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '操作与诊断'),
-          h('div', null,
-            按钮('保存设置', 存, true, 忙),
-            h('span', { style: S.dim }, '　'),
-            按钮('发送测试消息', 试一句, false, 忙),
-            h('span', { style: S.dim }, '　'),
-            按钮('刷新', 拉, false, 忙)),
-          h('div', { style: { ...S.dim, marginTop: 4 } }, '测试消息会实际发送至 QQ，不受试运行限制。'),
-          说 ? h('div', { role: 'status', 'aria-live': 'polite', style: { ...S.ok, color: 'var(--fish-text)', marginTop: 6 } }, 说) : null,
-        ),
-        h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '最近 ' + 日志.length + ' 条日志（按时间升序）'),
           h('div', { style: { marginTop: 6, maxHeight: 220, overflowY: 'auto' } },
             日志.length === 0
@@ -369,7 +414,7 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '全局角色设定'),
           h('div', { style: S.dim },
             '未配置独立角色的会话使用全局设定。'),
-          h('div', { style: { marginTop: 6 } }, 勾(配置.人设开, (v) => 改('人设开', v)), ' ', '启用角色设定'),
+          h('div', { style: { marginTop: 6 } }, 勾(配置.人设开, (v) => 改('人设开', v), '启用角色设定'), ' ', '启用角色设定'),
           h('textarea', {'aria-label': '人设',
             style: { ...S.input, display: 'block', width: '100%', height: 88, marginTop: 6, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
             value: String(配置.人设 || ''),
@@ -388,7 +433,7 @@ window.__ModuleLoader__.load({
           h('div', { style: S.dim },
             '私聊填写 QQ 号，群聊填写群号；回复按绑定关系转发。'
             + '每个聊天必须绑定独立 DSH 会话；普通群通过记忆库共享，不会转发彼此的回复。'),
-          h('div', { style: { ...S.表头, marginTop: 10 } },
+          h('div', { className: 'fish-binding-row fish-binding-head', style: { ...S.表头, marginTop: 10 } },
             h('div', { style: S.表头字 }, '类型'),
             h('div', { style: S.表头字 }, '号码'),
             h('div', { style: S.表头字 }, '称呼'),
@@ -421,13 +466,13 @@ window.__ModuleLoader__.load({
                 h('div', { style: S.表头字 }, '会话'),
                 会话选项(x.会话, (v) => 改绑定(i, { 会话: v }))),
               // ⭐ 1.1.8：这一行自己的开关 —— 不想理就把「启用」取消，不用删掉
-              h('div', { style: { display: 'flex', gap: 16, alignItems: 'center', margin: '0 0 10px', paddingLeft: 2 } },
+              h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', margin: '0 0 10px', paddingLeft: 2 } },
                 h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
                   勾(x.开 !== false, (v) => 改绑定(i, { 开: v }), '启用收发'),
                   h('span', { style: S.dim }, '启用收发')),
                 x.类型 === '群'
                   ? h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
-                      勾(x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名), (v) => 改绑定(i, { 只听点名: v })),
+                      勾(x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名), (v) => 改绑定(i, { 只听点名: v }), '仅接收点名消息'),
                       h('span', { style: S.dim }, '仅接收点名消息'))
                   : null),
               i === 人设行
@@ -475,7 +520,7 @@ window.__ModuleLoader__.load({
           行('私聊来源标识', h('select', {'aria-label': '私聊署名',  style: S.small, value: String(配置.私聊署名 || '关'), onChange: (e) => 改('私聊署名', e.target.value) },
             h('option', { value: '关' }, '无标识'), h('option', { value: '前缀' }, '[QQ] 前缀'), h('option', { value: '署名' }, '署名（对方：…）')),
             '区分 QQ 消息与 DSH 手动输入，默认不标记。'),
-          行('点名消息必回', h('input', {'aria-label': '点名必回',  type: 'checkbox', checked: 配置.点名必回 !== false, onChange: (e) => 改('点名必回', Boolean(e.target.checked)) }), '默认启用；禁用后，点名消息也受回复概率限制。'),
+          行('点名消息必回', h('input', {'aria-label': '点名必回',  type: 'checkbox', role: 'switch', checked: 配置.点名必回 !== false, onChange: (e) => 改('点名必回', Boolean(e.target.checked)) }), '默认启用；禁用后，点名消息也受回复概率限制。'),
           行('回复概率（%）', h('input', {'aria-label': '回复概率',  type: 'number', min: 0, max: 100, style: S.small, value: String(配置.回复概率 ?? 100), onChange: (e) => 改('回复概率', Number(e.target.value)) }), '默认 100%；未选中的消息不进入模型上下文。'),
           h('div', { style: { ...S.dim, marginTop: 4 } }, '合并窗口可在「消息收发」中配置，默认 3 秒。'),
         ),
@@ -507,7 +552,7 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '图片'),
           行('接收图片（QQ → DSH）', 勾(配置.收图, (v) => 改('收图', v)), '图片转入目标会话；纯文本模型仅接收图片数量和路径。'),
           行('发送图片（DSH → QQ）', 勾(配置.发图, (v) => 改('发图', v)), '将模型输出的图片转发至 QQ。'),
-          行('单条图片上限（张）', h('input', {'aria-label': '收图最多',  type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '最多 10 张，超出部分不转发。'),
+          行('接收图片上限（张）', h('input', {'aria-label': '收图最多',  type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '接收最多 10 张；发送每条最多 4 张。超出部分不转发。'),
           行('单张图片上限（MB）', h('input', {'aria-label': '图上限MB',  type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: (e) => 改('图上限MB', Number(e.target.value)) }), '收发共用，超出上限时跳过。'),
           行('图片根目录', h('input', {'aria-label': '图片根目录',  style: S.wide, placeholder: '留空使用会话工作区', value: String(配置.图片根目录 || ''), onChange: (e) => 改('图片根目录', e.target.value) }), '用于解析 Markdown 图片的相对路径。'),
           h('div', { style: S.dim }, '接收图片保存在 DSH 数据目录的 qq-bridge-inbox 中。'),
@@ -632,10 +677,10 @@ window.__ModuleLoader__.load({
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '定时发布'),
-          h('div', { style: S.dim }, '按计划触发绑定会话，动态内容由模型生成。'),
+          h('div', { style: S.dim }, '按宿主所在时区，每分钟检查一次；到点提醒一个已绑定且打开的会话。模型自行决定是否发布，不保证每次都发；可见范围作为提示传给模型，实际以其调用参数为准。发布需开启空间发布开关；空间任务独立于消息转发总开关和试运行。'),
           h('div', { className: 'fish-schedule-row fish-binding-head', style: { ...S.空间表头, marginTop: 10 } },
             h('div', { style: S.表头字 }, '时间'),
-            h('div', { style: S.表头字 }, '可见范围'),
+            h('div', { style: S.表头字 }, '提示可见范围'),
             h('div', { style: S.表头字 }, '启用'),
             h('div', { style: S.表头字 }, '')),
           空间定时().length === 0
@@ -652,7 +697,7 @@ window.__ModuleLoader__.load({
                 h('option', { value: '1' }, '所有人'),
                 h('option', { value: '4' }, '好友'),
                 h('option', { value: '64' }, '仅自己')),
-              h('div', { style: { textAlign: 'center' } }, 勾(x.开 !== false, (v) => 改空间定时(i, { 开: v }))),
+              h('div', null, 勾(x.开 !== false, (v) => 改空间定时(i, { 开: v }), '启用计划 ' + (i + 1))),
               h('div', null, 按钮('删除', () => 删空间定时(i), false, false))))),
           h('div', { style: { marginTop: 8 } },
             按钮('+ 添加条目', 加空间定时, false, false),
@@ -661,53 +706,40 @@ window.__ModuleLoader__.load({
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '好友动态同步'),
           行('同步间隔（分钟）', h('input', {'aria-label': '空间看圈分',  type: 'number', min: 5, max: 1440, style: S.small, value: String(配置.空间看圈分 ?? 30), onChange: (e) => 改('空间看圈分', Number(e.target.value)) }), '5～1440，默认 30。'),
-          行('启用同步', 勾(配置.空间看圈开, (v) => 改('空间看圈开', v)), '启用后定时获取好友动态。'),
+          行('启用同步', 勾(配置.空间看圈开, (v) => 改('空间看圈开', v)), '至少启用点赞或动态递送之一才会请求好友动态；空间任务不受消息转发总开关和试运行控制。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '点赞 / 评论'),
           行('自动点赞', 勾(配置.空间点赞开, (v) => 改('空间点赞开', v)), '同步时点赞近期未处理动态，每次最多 3 条、每日最多 20 条。'),
-          行('允许评论', 勾(配置.空间评论开, (v) => 改('空间评论开', v)), '将新动态转入会话，由模型决定是否评论及评论内容。'),
+          行('递送动态给模型（评论提醒）', 勾(配置.空间评论开, (v) => 改('空间评论开', v)), '将新动态转入会话。当前模块没有发表评论的工具，真正评论需要会话另有可用工具；打开此开关不代表会自动发表评论。'),
         ),
       ]
 
-      const 总览页 = h('div', { style: S.stack }, 总览卡片[1], 总览卡片[3])
-      const 配置页 = h('div', { style: S.stack },
-        h('div', { style: S.dim }, '统一管理连接、会话和收发策略。修改后请保存设置。'),
-        h('details', { style: S.group, open: true },
-          h('summary', { style: S.summary }, '连接与通知'),
-          h('div', { style: S.grid }, 消息卡片[0], 总览卡片[0])),
-        h('details', { style: S.group, open: true },
-          h('summary', { style: S.summary }, '会话绑定与角色'),
-          h('div', { style: S.stack }, 绑定卡片[1], 绑定卡片[0])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, '消息收发'),
-          h('div', { style: S.grid }, 消息卡片[1], 消息卡片[2])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, '群聊回复策略'),
-          h('div', { style: S.grid }, 绑定卡片[2], 门槛卡片[0])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, '图片、文件与语音'),
-          h('div', { style: S.stack }, h('div', { style: S.grid }, 消息卡片[3], 消息卡片[4]), 消息卡片[5])),
-        h('details', { style: S.group },
-          h('summary', { style: S.summary }, 'QQ 空间'),
-          h('div', { style: S.grid }, ...空间卡片)),
-      )
+      const 分区 = (...内容) => h('div', { className: 'fish-settings-stack' }, ...内容)
+      const 页面 = {
+        '连接': 分区(消息卡片[0], 总览卡片[0]),
+        '绑定': 分区(绑定卡片[1], 绑定卡片[0]),
+        '消息策略': 分区(消息卡片[1], 消息卡片[2], 绑定卡片[2], 门槛卡片[0]),
+        '历史导入': 历史页,
+        '运行日志': 分区(总览卡片[1], 总览卡片[2]),
+      }
 
       return h(
         'div',
         { className: 'fish-module fish-qq', style: S.wrap },
-        h('div', { className: 'fish-section-title', style: S.h }, '连接与转发'),
-        h('div', { style: S.dim }, 'QQ 与 DSH 双向消息转发及历史记忆导入。'),
+
         NapCat && !NapCat.错
           ? h('div', { style: S.已同步 }, '已连接 QQ：' + NapCat.昵称 + '（' + NapCat.用户 + '）')
           : h('div', { style: S.未保存 }, '注意：QQ 后端未连接（NapCat / SnowLuma）' + (NapCat && NapCat.错 ? '：' + NapCat.错 : '')),
         页签,
-        h('div', { style: 脏 ? S.未保存 : S.已同步 },
-          脏 ? '存在未保存的配置' : '配置已保存'),
-        h('div', { style: { marginBottom: 14 } }, 总览卡片[2]),
-        页 === '总览' ? 总览页 : null,
-        页 === '绑定' ? 配置页 : null,
-        页 === '历史导入' ? 历史页 : null,
+        h('div', { className: 'fish-toolbar' },
+          h('span', { style: { ...S.dim, flex: '1 1 160px' } }, 脏 ? '存在未保存的配置' : '配置已保存'),
+          按钮('刷新状态', 拉, false, 忙 || 脏), 按钮('保存设置', 存, true, 忙)),
+        说 ? h('p', { role: 'status', className: 'fish-message' }, 说) : null,
+        页 === '连接' || 页 === '运行日志' ? h('div', { className: 'fish-test-action' }, 按钮('发送测试消息', 试一句, false, 忙 || 脏), h('span', { style: S.dim }, '会实际发送至首个绑定的 QQ 聊天，不受试运行限制。')) : null,
+        页面[页] || null,
+        h('div', { hidden: 页 !== '图片与语音' }, h(QQActions, { mode: 'images', 配置, 脏, 改 }), 分区(消息卡片[3], 消息卡片[4], 消息卡片[5])),
+        h('div', { hidden: 页 !== 'QQ 空间' }, 空间卡片[0], h(QQActions, { mode: 'space', 配置, 脏, 改 }), 分区(...空间卡片.slice(1))),
         h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
           h('p', null, '模块版本 ' + String(态.版本 || '?')),
           h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),

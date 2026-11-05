@@ -71,14 +71,15 @@ const 初始态 = {
 下标 = 0
 状态槽 = [初始态]
 const 树 = 组件()
-const 文 = JSON.stringify(树)
-const 要有 = ['连接与转发', '配置', '历史导入', '总览', '发送测试消息', '保存设置', '已连接 QQ：测试号（10001）']
+const 可见文 = node => JSON.stringify(node, (key, value) => value?.p?.hidden ? undefined : value)
+const 文 = 可见文(树)
+const 要有 = ['连接', '绑定', '历史导入', '运行日志', '发送测试消息', '保存设置', '已连接 QQ：测试号（10001）']
 const 缺 = 要有.filter((x) => !文.includes(x))
 报('关键元素都渲染出来（含连接状态 + 目标会话标题）', 缺.length === 0, 缺.length ? '缺：' + 缺.join('、') : 文.length + ' 字节')
 
 // ⭐ 1.1.0：点进「绑定」页 —— 人设卡、那一列「单独」都得出来
 const 找按钮 = (节点, 文字) => {
-  if (!节点 || typeof 节点 !== 'object') return null
+  if (!节点 || typeof 节点 !== 'object' || 节点.p?.hidden) return null
   if (Array.isArray(节点)) {
     for (const x of 节点) {
       const r = 找按钮(x, 文字)
@@ -89,14 +90,14 @@ const 找按钮 = (节点, 文字) => {
   if (Array.isArray(节点.kids) && 节点.kids.includes(文字) && 节点.p && typeof 节点.p.onClick === 'function') return 节点
   return 找按钮(节点.kids, 文字)
 }
-const 绑定钮 = 找按钮(树, '配置')
+const 绑定钮 = 找按钮(树, '绑定')
 报('能找到统一配置入口', Boolean(绑定钮))
 if (绑定钮) {
   绑定钮.p.onClick()
   下标 = 0
   const 树2 = 组件()
-  const 文2 = JSON.stringify(树2)
-  const 要有2 = ['全局角色设定', '启用角色设定', '独立', '群聊频率与概率', '回复冷却时间（秒）']
+  const 文2 = 可见文(树2)
+  const 要有2 = ['全局角色设定', '启用角色设定', '独立', 'QQ 与 DSH 会话映射']
   const 缺2 = 要有2.filter((x) => !文2.includes(x))
   报('绑定行保留收发与点名开关',
     文2.includes('启用收发') && 文2.includes('仅接收点名消息'), '')
@@ -104,14 +105,14 @@ if (绑定钮) {
 }
 
 // ⭐ 1.5.0：页签改成 总览 / 绑定 / 消息 / 空间 / 门槛 / 更新，六个都得在
-const 页签名们 = ['总览', '配置', '历史导入']
+const 页签名们 = ['连接', '绑定', '消息策略', '图片与语音', 'QQ 空间', '历史导入', '运行日志']
 const 缺页签 = 页签名们.filter((名) => !找按钮(树, 名))
-报('三个模块页签完整，配置入口统一', 缺页签.length === 0,
+报('七个功能页签完整，常用设置直接可见', 缺页签.length === 0,
   缺页签.length ? '缺：' + 缺页签.join('、') : 页签名们.join(' / '))
 
 // 通用查找：按类型 + 属性找控件（input 的 type / select 之类）
 const 找控件 = (节点, 条件, 出 = []) => {
-  if (!节点 || typeof 节点 !== 'object') return 出
+  if (!节点 || typeof 节点 !== 'object' || 节点.p?.hidden) return 出
   if (Array.isArray(节点)) {
     for (const x of 节点) 找控件(x, 条件, 出)
     return 出
@@ -129,29 +130,29 @@ const 历史文 = JSON.stringify(历史树)
 报('文件选择限定 JSON / TXT', 找控件(历史树, n => n.t === 'input' && n.p.type === 'file').some(n => n.p.accept === '.json,.txt'))
 
 // ⭐ 1.5.0：「消息」页不再有「QQ 空间」那张卡（搬到「空间」页了）
-const 消息钮 = 找按钮(树, '配置')
+const 消息钮 = 找按钮(树, '消息策略')
 报('消息设置可从配置页访问', Boolean(消息钮))
 if (消息钮) {
   消息钮.p.onClick()
   下标 = 0
   const 树3 = 组件()
-  const 文3 = JSON.stringify(树3)
-  const 要有3 = ['QQ 后端连接', '发送格式', '接收与合并', '图片', '语音转写']
+  const 文3 = 可见文(树3)
+  const 要有3 = ['发送格式', '接收与合并', '群聊频率与概率', '回复冷却时间（秒）']
   const 缺3 = 要有3.filter((x) => !文3.includes(x))
   报('配置页保留全部消息与媒体设置', 缺3.length === 0, 缺3.length ? '缺：' + 缺3.join('、') : 文3.length + ' 字节')
-  报('配置页集中显示空间设置', 文3.includes('允许发布 QQ 空间动态'))
+  报('消息策略页不混入空间设置', !文3.includes('允许发布 QQ 空间动态'))
 }
 
 // ⭐ 1.5.0：「空间」页四张卡的关键控件
-const 空间钮 = 找按钮(树, '配置')
+const 空间钮 = 找按钮(树, 'QQ 空间')
 报('空间设置可从配置页访问', Boolean(空间钮))
 if (空间钮) {
   空间钮.p.onClick()
   下标 = 0
   const 树4 = 组件()
-  const 文4 = JSON.stringify(树4)
+  const 文4 = 可见文(树4)
   const 要有4 = ['允许发布 QQ 空间动态', '定时发布', '可见范围', '所有人', '好友', '仅自己',
-    '同步间隔（分钟）', '自动点赞', '允许评论']
+    '同步间隔（分钟）', '自动点赞', '递送动态给模型（评论提醒）']
   const 缺4 = 要有4.filter((x) => !文4.includes(x))
   报('空间区域保留全部关键控件', 缺4.length === 0, 缺4.length ? '缺：' + 缺4.join('、') : 文4.length + ' 字节')
   报('定时条目保留时间、可见范围、开关与删除操作',
@@ -162,24 +163,25 @@ if (空间钮) {
   const 数字框 = 找控件(树4, (n) => n.t === 'input' && n.p.type === 'number')
   报('看圈分钟是个 5～1440 的数字框', 数字框.some((n) => String(n.p.min) === '5' && String(n.p.max) === '1440'),
     JSON.stringify(数字框.map((n) => [n.p.min, n.p.max])))
+  报('空间开关统一使用 switch 语义', 找控件(树4, n => n.t === 'input' && n.p.type === 'checkbox').every(n => n.p.role === 'switch'))
   报('点赞 / 评论是两个 checkbox（默认都不勾）', 找控件(树4, (n) => n.t === 'input' && n.p.type === 'checkbox' && n.p.checked === false).length >= 2)
 
   // 定时表空着的时候要有一句提示（另起一次渲染，配置里清空）
-  状态槽 = [{ ...初始态, 配置: { ...初始态.配置, 空间定时发: [] } }, false, false, '', '绑定']
+  状态槽 = [{ ...初始态, 配置: { ...初始态.配置, 空间定时发: [] } }, false, false, '', 'QQ 空间']
   下标 = 0
   const 树空 = 组件()
   报('空列表显示添加提示',
-    JSON.stringify(树空).includes('暂无条目，请添加。'))
+    可见文(树空).includes('暂无条目，请添加。'))
 }
 
 // ⭐ 1.5.0：「门槛」页里「转发进来会变成什么样」那张卡整块删掉了
-const 门槛钮 = 找按钮(树, '配置')
+const 门槛钮 = 找按钮(树, '消息策略')
 报('回复门槛可从配置页访问', Boolean(门槛钮))
 if (门槛钮) {
   门槛钮.p.onClick()
   下标 = 0
   const 树5 = 组件()
-  const 文5 = JSON.stringify(树5)
+  const 文5 = 可见文(树5)
   const 要有5 = ['点名后续接收上限（条）', '点名后续接收时限（秒）']
   const 缺5 = 要有5.filter((x) => !文5.includes(x))
   报('群聊区域保留后续消息数量及时限设置', 缺5.length === 0, 缺5.length ? '缺：' + 缺5.join('、') : 文5.length + ' 字节')
