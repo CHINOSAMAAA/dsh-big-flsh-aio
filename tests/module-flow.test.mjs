@@ -113,7 +113,7 @@ test('四模块联调：搭话 → 记忆上下文 → 心情判断与注入 →
     await emit(hostEvents, 'webserver/index-inject', table)
     assert.equal(table.length, 1, '挂饰只注入一次')
     new vm.Script((await call('/dsh-feiyu-mood/widget.js')).raw)
-    for (const filename of ['welcome', 'feiyu', 'feiyu-great', 'feiyu-good', 'feiyu-worry', 'feiyu-sad', 'face-great', 'face-good', 'face-ok', 'face-worry', 'face-sad']) {
+    for (const filename of ['welcome', 'sticker-book', 'sticker-chat', 'sticker-read', 'feiyu', 'feiyu-great', 'feiyu-good', 'feiyu-worry', 'feiyu-sad', 'face-great', 'face-good', 'face-ok', 'face-worry', 'face-sad']) {
       const { raw } = await call('/dsh-feiyu-mood/' + filename + '.png')
       assert.equal(raw.subarray(1, 4).toString(), 'PNG')
     }

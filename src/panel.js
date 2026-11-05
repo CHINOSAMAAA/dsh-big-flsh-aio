@@ -21,6 +21,24 @@ function NavIcon({ index }) {
   return h('svg', { className: 'fish-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }, h('path', { d: paths[index] }))
 }
 
+function Wave() {
+  return h('svg', { className: 'fish-waves', viewBox: '0 0 1000 160', preserveAspectRatio: 'none', 'aria-hidden': true, focusable: 'false' },
+    h('path', { className: 'fish-wave-back', d: 'M0 58Q125 8 250 56T500 52T750 44T1000 54V160H0Z' }),
+    h('path', { className: 'fish-wave-front', d: 'M0 112Q140 40 280 98T560 92T800 90T1000 100V160H0Z' }),
+    h('path', { className: 'fish-wave-foam', d: 'M0 82Q140 18 280 76T560 70T800 68T1000 78' }))
+}
+
+function OceanDecor({ kind = 'bubbles', className = '' }) {
+  const paths = {
+    heart: 'M18 82Q52 92 84 56C110 24 78 18 72 42C55 18 36 40 58 57L78 70',
+    chat: 'M22 24Q14 24 14 36V60Q14 72 28 72H47L64 88V72H86Q98 72 98 58V38Q98 24 84 24Z M38 46v2 M56 46v2 M74 46v2',
+    tail: 'M61 88C62 63 32 76 25 48C20 28 31 25 39 38C48 36 56 42 61 52C66 42 75 36 84 38C92 25 103 29 96 49C89 77 64 62 61 88Z',
+    star: 'M60 15Q64 43 84 47Q64 51 60 76Q56 51 36 47Q56 43 60 15Z M95 9Q97 21 106 24Q97 27 95 38Q93 27 84 24Q93 21 95 9Z',
+  }
+  return h('svg', { className: 'fish-decoration fish-decor-' + kind + ' ' + className, viewBox: '0 0 120 100', fill: 'none', 'aria-hidden': true, focusable: 'false' },
+    kind === 'bubbles' ? [h('circle', { key: 'a', cx: 80, cy: 30, r: 19 }), h('circle', { key: 'b', cx: 28, cy: 74, r: 9 }), h('circle', { key: 'c', cx: 101, cy: 82, r: 5 }), h('path', { key: 'd', d: 'M69 24q1-6 8-7 M20 72q1-4 5-4' })] : h('path', { d: paths[kind] }))
+}
+
 async function request(path, options) {
   const response = await fetch(path, { cache: 'no-store', ...options })
   const data = await response.json()
@@ -50,33 +68,45 @@ function Overview({ navigate }) {
     ['鱼的心情', state.mood ? String(state.mood.mood ?? '—') : '—', '按会话或工作区绑定，保留情绪时间线与挂饰'],
     ['主动搭话', !state.speak ? '—' : state.speak.配置?.总开关 ? state.speak.配置?.试运行 ? '试运行' : '已开启' : '已关闭', '复用目标会话的人格、历史、工具和记忆'],
   ]
-  return h('div', null,
-    h('section', { className: 'fish-hero' },
+  return h('div', { className: 'fish-overview' },
+    h('section', { className: 'fish-ocean-intro' },
+      h('header', { className: 'fish-overview-header' }, h('h1', null, '总览'), h('p', { className: 'fish-muted' }, '连接、记忆与陪伴，都在这里。')),
+      h('span', { className: 'fish-badge fish-intro-status' }, '跟随宿主主题'),
       h('div', { className: 'fish-hero-copy' },
         h('span', { className: 'fish-badge fish-eyebrow' }, '大肥鱼 · 伙伴工作台'),
         h('h2', null, '把日常，慢慢记在心上。'),
-        h('p', { className: 'fish-muted' }, '连接 QQ、照看记忆与心情，让伙伴主动来找你。'),
-        h('div', { className: 'fish-actions' }, button(busy ? '读取中…' : '刷新状态', refresh, false, busy))),
-      h('figure', { className: 'fish-welcome' }, h('img', { src: '/dsh-feiyu-mood/welcome.png', alt: '大肥鱼挥手欢迎你', width: 1254, height: 1254, decoding: 'async' })),
-      h('svg', { className: 'fish-waves', viewBox: '0 0 1000 100', preserveAspectRatio: 'none', 'aria-hidden': true },
-        h('path', { className: 'fish-wave-back', d: 'M0 46Q125 8 250 48T500 44T750 40T1000 46V100H0Z' }),
-        h('path', { className: 'fish-wave-front', d: 'M0 70Q150 30 300 65T600 64T1000 62V100H0Z' }))),
+        h('svg', { className: 'fish-love-line', viewBox: '0 0 600 35', preserveAspectRatio: 'none', 'aria-hidden': true, focusable: 'false' },
+          h('path', { d: 'M3 24Q180 8 370 23T553 15C578-12 597 6 577 21C550 9 555-7 567 7' })),
+        h('p', { className: 'fish-muted' }, '连接 QQ、照看记忆与心情，让伙伴主动来找你。')),
+      h('figure', { className: 'fish-welcome', 'aria-hidden': true }, h('img', { src: '/dsh-feiyu-mood/welcome.png', alt: '', width: 1254, height: 1254, decoding: 'async' })),
+      h('div', { className: 'fish-intro-tools' }, button(busy ? '读取中…' : '刷新状态', refresh, false, busy)),
+      h(Wave), h(OceanDecor, { className: 'fish-intro-bubbles' }), h(OceanDecor, { kind: 'star', className: 'fish-intro-stars' })),
     state.errors?.length ? h('p', { className: 'fish-message', role: 'alert' }, state.errors.join('\n')) : null,
-    h('div', { className: 'fish-stats' }, ...stats.map(([label, value, hint]) => h('article', { className: 'fish-card', key: label },
+    h('div', { className: 'fish-stats' }, h(OceanDecor, { kind: 'tail', className: 'fish-stats-tail' }), ...stats.map(([label, value, hint]) => h('article', { className: 'fish-card', key: label },
       h('div', { className: 'fish-muted' }, label), h('div', { className: 'fish-value' }, value), h('div', { className: 'fish-muted' }, hint)))),
     h('div', { className: 'fish-grid' },
-      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, 'QQ 互通'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 1 }))),
-        h('p', { className: 'fish-muted' }, '统一设置后端连接、私聊与群聊绑定、回复策略。历史记录按段整理后写入目标会话记忆。'),
-        h('div', { className: 'fish-actions' }, button('管理 QQ 与历史导入 →', () => navigate(1)))),
-      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, '长期记忆'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 2 }))),
-        h('p', { className: 'fish-muted' }, '浏览与编辑记忆，整理档案，配置遗忘与召回。Qwen 语义检索按需启用，保留原有来源隔离。'),
-        h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2)))),
-      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, '鱼的心情'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 3 }))),
-        h('p', { className: 'fish-muted' }, '自动判断心情、查看情绪时间线，管理会话或工作区绑定与挂饰。'),
-        h('div', { className: 'fish-actions' }, button('照看心情 →', () => navigate(3)))),
-      h('article', { className: 'fish-card' }, h('div', { className: 'fish-feature-heading' }, h('h2', null, '主动搭话'), h('span', { className: 'fish-feature-icon' }, h(NavIcon, { index: 4 }))),
-        h('p', { className: 'fish-muted' }, '配置空闲触发、时段与目标会话，先演练，再按需启用真发。'),
-        h('div', { className: 'fish-actions' }, button('管理主动搭话 →', () => navigate(4))))),
+      h('article', { className: 'fish-card fish-feature fish-feature-character', 'data-fish-feature': 'qq' },
+        h('div', { className: 'fish-feature-copy' }, h('span', { className: 'fish-badge fish-feature-number' }, '01 · 连接'), h('h2', null, 'QQ 互通'),
+          h('p', { className: 'fish-muted' }, '统一设置后端连接、私聊与群聊绑定、回复策略。历史记录按段整理后写入目标会话记忆。'),
+          h('div', { className: 'fish-actions' }, button('管理 QQ 与历史导入 →', () => navigate(1)))),
+        h('figure', { className: 'fish-feature-sticker', 'aria-hidden': true }, h('img', { src: '/dsh-feiyu-mood/sticker-chat.png', alt: '', width: 1254, height: 1254, decoding: 'async' })),
+        h(Wave), h(OceanDecor, { className: 'fish-feature-bubbles' })),
+      h('article', { className: 'fish-card fish-feature fish-feature-character', 'data-fish-feature': 'memory' },
+        h('div', { className: 'fish-feature-copy' }, h('span', { className: 'fish-badge fish-feature-number' }, '02 · 记忆'), h('h2', null, '长期记忆'),
+          h('p', { className: 'fish-muted' }, '浏览与编辑记忆，整理档案，配置遗忘与召回。Qwen 语义检索按需启用，保留原有来源隔离。'),
+          h('div', { className: 'fish-actions' }, button('打开记忆管理 →', () => navigate(2)))),
+        h('figure', { className: 'fish-feature-sticker', 'aria-hidden': true }, h('img', { src: '/dsh-feiyu-mood/sticker-read.png', alt: '', width: 1254, height: 1254, decoding: 'async' })),
+        h(Wave), h(OceanDecor, { kind: 'star', className: 'fish-feature-bubbles' })),
+      h('article', { className: 'fish-card fish-feature fish-feature-light', 'data-fish-feature': 'mood' },
+        h('div', { className: 'fish-feature-copy' }, h('h2', null, '鱼的心情'),
+          h('p', { className: 'fish-muted' }, '自动判断心情、查看情绪时间线，管理会话或工作区绑定与挂饰。'),
+          h('div', { className: 'fish-actions' }, button('照看心情 →', () => navigate(3)))),
+        h(OceanDecor, { kind: 'heart', className: 'fish-feature-symbol' }), h(Wave)),
+      h('article', { className: 'fish-card fish-feature fish-feature-light', 'data-fish-feature': 'speak' },
+        h('div', { className: 'fish-feature-copy' }, h('h2', null, '主动搭话'),
+          h('p', { className: 'fish-muted' }, '配置空闲触发、时段与目标会话，先演练，再按需启用真发。'),
+          h('div', { className: 'fish-actions' }, button('管理主动搭话 →', () => navigate(4)))),
+        h(OceanDecor, { kind: 'chat', className: 'fish-feature-symbol' }), h(Wave))),
     h('p', { className: 'fish-start fish-muted' }, '首次使用：配置 QQ 后端与会话绑定 → 启用目标会话记忆 → 按需导入历史。历史整理会调用目标会话模型并消耗额度。'))
 }
 
@@ -152,9 +182,10 @@ function Page() {
             if (next !== null) { e.preventDefault(); navigate(next); e.currentTarget.parentElement.querySelectorAll('[role=tab]')[next].focus() }
           },
         }, h(NavIcon, { index: id }), h('span', null, label)))),
+        h('figure', { className: 'fish-sidebar-scene', 'aria-hidden': true }, h('img', { src: '/dsh-feiyu-mood/sticker-book.png', alt: '', width: 1254, height: 1254, decoding: 'async' }), h(Wave), h(OceanDecor)),
         h('div', { className: 'fish-sidebar-note' }, '一点连接，一点陪伴。', h('br'), '仓库 v' + META.repositoryVersion, h('br'), 'npm 包 v' + META.version)),
-      h('main', { className: 'fish-workspace' },
-        h('header', { className: 'fish-page-header' }, h('div', null, h('h1', null, tabs[tab]), h('p', { className: 'fish-muted' }, descriptions[tab])), h('span', { className: 'fish-badge' }, '跟随宿主主题')),
+      h('main', { className: 'fish-workspace' + (tab === 0 ? ' fish-workspace-overview' : '') },
+        tab === 0 ? null : h('header', { className: 'fish-page-header' }, h('div', null, h('h1', null, tabs[tab]), h('p', { className: 'fish-muted' }, descriptions[tab])), h('span', { className: 'fish-badge' }, '跟随宿主主题'), h(Wave), h(OceanDecor, { kind: 'star' })),
         ...visited.map(id => h('section', { key: id, id: 'fish-panel-' + id, role: 'tabpanel', 'aria-labelledby': 'fish-tab-' + id, hidden: tab !== id }, render[id]())),
         h('footer', { className: 'fish-footer' }, '派生自 Yuuyuko-uu · QQ、记忆、心情与主动搭话 · 原作者许可与来源见「更新与来源」'))))
 }

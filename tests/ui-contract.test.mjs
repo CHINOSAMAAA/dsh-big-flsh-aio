@@ -30,11 +30,28 @@ test('六入口支持图标、键盘切换及已访问面板保留', () => {
   let tree = render(), tabs = tree.filter(n => n.props?.role === 'tab')
   assert.deepEqual(tabs.map(t => t.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源'])
   const overview = tree.find(n => n.props?.id === 'fish-panel-0').children[0]
-  const images = walk(overview.type(overview.props)).filter(n => n.type === 'img')
-  assert.equal(images.length, 1, '总览只放一张角色图')
-  assert.equal(images[0].props.src, '/dsh-feiyu-mood/welcome.png')
-  assert.equal(images[0].props.width, images[0].props.height, '保留方形原图比例')
-  assert.ok(images[0].props.alt)
+  const overviewTree = walk(overview.type(overview.props))
+  const welcome = overviewTree.find(n => n.props?.className === 'fish-welcome')
+  const chat = overviewTree.find(n => n.props?.['data-fish-feature'] === 'qq')
+  const memory = overviewTree.find(n => n.props?.['data-fish-feature'] === 'memory')
+  const sidebar = tree.find(n => n.props?.className === 'fish-sidebar-scene')
+  const slots = [welcome, chat, memory, sidebar]
+  const resources = ['welcome.png', 'sticker-chat.png', 'sticker-read.png', 'sticker-book.png']
+  slots.forEach((slot, i) => {
+    assert.ok(slot, resources[i] + ' 有独立位置')
+    const images = walk(slot).filter(n => n.type === 'img')
+    assert.equal(images.length, 1, '每处点缀使用一个角色')
+    assert.equal(images[0].props.src, '/dsh-feiyu-mood/' + resources[i])
+    assert.equal(images[0].props.width, 1254)
+    assert.equal(images[0].props.height, 1254)
+    assert.equal(images[0].props.alt, '', '装饰图不重复朗读界面文字')
+    assert.ok(walk(slot).some(n => n.props?.['aria-hidden'] === true))
+  })
+  assert.equal(new Set(overviewTree.filter(n => n.type === 'img').map(n => n.props.src)).size, 3)
+  for (const feature of ['mood', 'speak']) {
+    const card = overviewTree.find(n => n.props?.['data-fish-feature'] === feature)
+    assert.equal(walk(card).filter(n => n.type === 'img').length, 0, '轻装饰卡不重复人物')
+  }
 
   tabs[1].props.onClick()
   tree = render()
@@ -52,4 +69,13 @@ test('六入口支持图标、键盘切换及已访问面板保留', () => {
   assert.equal(tree.find(n => n.props?.id === 'fish-tab-5').props['aria-selected'], true)
   assert.equal(tree.filter(n => n.props?.role === 'tabpanel').length, 3)
   assert.equal(tree.find(n => n.props?.id === 'fish-panel-1').props.hidden, true)
+  for (const [key, expected] of [['Home', 0], ['ArrowLeft', 5], ['ArrowRight', 0], ['ArrowDown', 1], ['ArrowUp', 0]]) {
+    tabs = tree.filter(n => n.props?.role === 'tab')
+    const active = tabs.find(n => n.props['aria-selected'])
+    active.props.onKeyDown({ key, preventDefault() {}, currentTarget: { parentElement: { querySelectorAll: () => tabs.map((_, i) => ({ focus() { focused = i } })) } } })
+    tree = render()
+    assert.equal(focused, expected)
+    assert.equal(tree.find(n => n.props?.id === 'fish-tab-' + expected).props['aria-selected'], true)
+  }
+
 })
