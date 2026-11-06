@@ -143,3 +143,24 @@ test('共享表情自动复用绑定 DeepSeek，旧视觉配置不再改变路�
   assert.equal(f.lib.view().settings.visionModel,undefined)
  }finally{f.close()}
 })
+
+
+test('扫描只识别未打标签素材，超过 32 张完整排队且重复扫描去重',async()=>{
+ const f=fixture();let release;try{
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  const manual=f.lib.add({bytes:gif,tags:['人工标签'],scenes:[]})
+  for(let i=0;i<40;i++)f.lib.add({bytes:Buffer.concat([gif,Buffer.from(String(i))]),scope:'a'})
+  const gate=new Promise(r=>release=r)
+  f.ctx.llm.stream=async function*(input){f.requests.push(input);await gate;yield{type:'text-delta',text:JSON.stringify({tags:['开心'],scenes:['庆祝']})}}
+  f.lib.enqueueTags(undefined,false,true);f.lib.enqueueTags(undefined,false,true)
+  assert.equal(f.lib.view().tagging.pending,40)
+  release()
+  for(let i=0;i<100&&f.lib.view().tagging.pending;i++)await new Promise(setImmediate)
+  assert.equal(f.lib.view().tagging.pending,0);assert.equal(f.requests.length,40)
+  const items=f.lib.view().items
+  assert.equal(items.filter(x=>x.tagStatus==='complete').length,40)
+  assert.deepEqual(items.find(x=>x.id===manual.id).tags,['人工标签'])
+  assert.deepEqual(items.find(x=>x.id===manual.id).scenes,[])
+  f.lib.enqueueTags(undefined,false,true);assert.equal(f.requests.length,40)
+ }finally{release?.();f.close()}
+})

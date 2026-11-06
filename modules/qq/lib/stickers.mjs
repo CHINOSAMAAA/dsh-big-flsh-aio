@@ -234,12 +234,11 @@ export function createStickers({ home, ctx, findAgent, sourceFor = () => '', def
       }
     } finally { taggingActive = false }
   }
-  const enqueueTags = (id, automatic = false) => {
-    const data = read(), items = id ? data.items.filter(x => x.id === id) : data.items.filter(x => !x.tags.length || !x.scenes.length)
+  const enqueueTags = (id, automatic = false, onlyUntagged = false) => {
+    const data = read(), items = id ? data.items.filter(x => x.id === id) : data.items.filter(x => !x.tags.length || (!onlyUntagged && !x.scenes.length))
     if (id && !items.length) throw new Error('表情不存在')
     for (const item of items) {
       if (tagging.has(item.id)) continue
-      if (tagQueue.length >= 32) { item.tagStatus = 'error'; item.tagError = '标注队列已满，请分批补齐'; continue }
       item.tagStatus = 'pending'; item.tagError = ''; item.tagAutomatic = automatic; tagging.add(item.id); tagQueue.push({ id: item.id, automatic })
     }
     save(data); void runTags().catch(e => log('表情标注队列停止：' + e.message))
@@ -280,7 +279,7 @@ export function createStickers({ home, ctx, findAgent, sourceFor = () => '', def
     }))
     post('settings', settings)
     post('classify', body => classify(body.id))
-    post('tag', body => enqueueTags(body.id))
+    post('tag', body => enqueueTags(body.id, false, body.onlyUntagged === true))
     post('import', body => {
       if (body.scope && !(config().绑定 || []).some(b => b.会话 === body.scope)) throw new Error('素材来源会话未绑定')
       if (typeof body.base64 !== 'string' || !/^[A-Za-z0-9+/]+={0,2}$/.test(body.base64)) throw new Error('无效图片数据')
