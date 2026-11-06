@@ -38,7 +38,16 @@ function FishStickers({ notify }) {
   const sw = (key, label, note) => h('div', { className: 'fish-form-row' }, h('div', { className: 'fish-form-label' }, label), h('div', { className: 'fish-control' },
     h('input', { type: 'checkbox', role: 'switch', 'aria-label': label, checked: !!data.settings[key], disabled: busy, onChange: async e => { const value = e.target.checked, previous = data.settings[key]; setData(old => ({ ...old, settings: { ...old.settings, [key]: value } })); if (!await act('/settings', { [key]: value })) setData(old => ({ ...old, settings: { ...old.settings, [key]: previous } })) } }), h('p', { className: 'fish-muted' }, note)))
   if (!data) return h('p', { role: 'status' }, error || '正在读取表情库…')
-  return h('div', { className: 'fish-settings-stack' },
+  return h('div', { className: 'fish-settings-stack fish-stickers' },
+    h('style', null, `
+.big-fish .fish-stickers label{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0}
+.big-fish .fish-stickers .fish-form-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 0}
+.big-fish .fish-stickers label>input:not([role=switch]),.big-fish .fish-stickers label>select{flex:1 1 240px;min-width:0;max-width:100%}
+.big-fish .fish-stickers article{display:grid;gap:12px;padding:20px 16px;border-top:1px solid var(--fish-border);margin-top:16px}
+.big-fish .fish-stickers article label{margin:0}
+.big-fish .fish-stickers article>button{justify-self:start}
+.big-fish .fish-stickers .fish-actions{display:flex;flex-wrap:wrap;gap:12px}
+`),
     h('section', { className: 'fish-card' }, h('h2', null, '表情包自动化'),
       sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行、收发开关和素材来源隔离。'),
       sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，原文件按来源隔离与内容去重。不会重新扫描启动前的历史记录。'),
