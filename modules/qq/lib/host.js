@@ -17,6 +17,7 @@ import { randomUUID } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { exclusiveBinding, recordSource, invalidateSource, bindingSource, endpointKey } from './memory-sources.mjs'
 import { registerHistoryImport } from './history-import.mjs'
+import { createStickers } from './stickers.mjs'
 
 export const name = 'qq-bridge'
 
@@ -1060,6 +1061,7 @@ export function 抠QQ标记(文字, 只发标记内) {
   return { 发: false, 文字: '', 原因: '没写块' }
 }
 export function apply(ctx) {
+  const stickers = createStickers({ home: 目录, ctx, findAgent: id => 找agent(id), log: text => 记账(text) })
   /**
    * ⭐ 1.5.0：管理类接口只认「本人」。
    *
@@ -1500,7 +1502,12 @@ export function apply(ctx) {
     if (配置.试运行) {
       return 记账(`试运行：本来要发到 QQ →「${净文.slice(0, 40)}${净文.length > 40 ? '…' : ''}」${图标}`)
     }
-    const 结果 = await 发到QQ(配置, 待发文字, 图们, 方向)
+    let 自动表情 = []
+    const binding = (配置.绑定 || []).find(b => 会话键(b.会话) === 会话键(方向) && b.开 !== false)
+    if (配置.发图 && !几张 && 净文 && binding && exclusiveBinding(配置.绑定, binding.会话) && (binding.类型 === '群' ? 配置.转群 : 配置.转私聊)) {
+      try { 自动表情 = await stickers.select(净文, binding.会话) } catch (e) { 记账('自动表情不可用，本轮只发正文：' + e.message) }
+    }
+    const 结果 = await 发到QQ(配置, 待发文字, 图们, 方向, 自动表情)
     const 全过 = 结果.length > 0 && 结果.every((r) => r.ok)
     if (结果.length === 0) {
       记账('这一边（' + (方向 || '私聊+群') + '）没开或没填号，或者这轮既没有文字也没有图（而且图都没转成）：没地方发')
@@ -3129,6 +3136,7 @@ export function apply(ctx) {
     if (req.headers?.origin && new URL(req.headers.origin).host !== req.headers.host) return 回(res, { ok: false, 说: 'management_forbidden' })
     return handler(req, res)
   }
+  stickers.register({ route: 路线, protect: 手动操作, json: 回, config: 读配置 })
   路线(`${路由前缀}/space`, 手动操作(async (req, res) => {
     const body = await 读体(req)
     const tool = 做空间工具().find(t => t.name === body.action)

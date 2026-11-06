@@ -1,0 +1,58 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { Readable } from 'node:stream'
+import { createStickers } from '../modules/qq/lib/stickers.mjs'
+const gif = Buffer.from('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==', 'base64')
+function fixture() {
+  const home = mkdtempSync(join(tmpdir(), 'fish-stickers-')), requests = [], logs = []
+  let result = { id: null }
+  const ctx = { llm: { async *stream(input) { requests.push(input); yield { type: 'text-delta', text: JSON.stringify(result) } } }, get: () => ({ requestRejection: () => undefined }) }
+  const agent = { options: { provider: 'fake', model: 'fake' }, session: { snapshotEvents: () => [{ type: 'user/message', data: { source: { kind: 'qq' }, content: [{type:'text',text:'终于考过了'}] } }] } }
+  const create = () => createStickers({ home, ctx, findAgent: () => agent, log: x => logs.push(x) })
+  return { home, ctx, requests, logs, lib: create(), create, result: x => { result = x }, close: () => rmSync(home, {recursive:true,force:true}) }
+}
+test('表情原文件、去重、来源隔离、持久保存与元数据更新', () => {
+  const f=fixture();try {
+    const a=f.lib.add({bytes:gif,name:'开心.gif',scope:'a',tags:'开心,开心',scenes:'祝贺'})
+    assert.equal(f.lib.add({bytes:gif,scope:'a'}).id,a.id)
+    assert.notEqual(f.lib.add({bytes:gif,scope:'b'}).id,a.id)
+    assert.deepEqual(readFileSync(join(f.home,'qq-stickers',a.id+'.gif')),gif)
+    f.lib.update(a.id,{tags:['庆祝'],name:'庆祝'});assert.deepEqual(f.create().view().items[0].tags,['庆祝'])
+    assert.throws(()=>f.lib.add({bytes:Buffer.from('<svg/>')}),/只接受/)
+    assert.throws(()=>f.lib.add({bytes:Buffer.alloc(9*1048576)}),/8 MB/)
+    f.lib.remove(a.id);assert.equal(f.lib.view().items.length,1)
+    writeFileSync(join(f.home,'qq-stickers/catalog.json'),'broken')
+    assert.throws(()=>f.lib.add({bytes:gif}),/JSON/);assert.equal(readFileSync(join(f.home,'qq-stickers/catalog.json'),'utf8'),'broken')
+  }finally{f.close()}
+})
+test('语境选择携带上下文、严格候选 ID、会话隔离及冷却；默认不消耗模型',async()=>{
+ const f=fixture();try{
+  const a=f.lib.add({bytes:gif,scope:'a',name:'庆祝',tags:'开心',scenes:'考试成功'})
+  const b=f.lib.add({bytes:gif,scope:'b',name:'其他聊天私有素材'})
+  f.result({id:a.id});assert.deepEqual(await f.lib.select('太好了，恭喜你','a'),[]);assert.equal(f.requests.length,0)
+  f.lib.settings({autoSend:true});assert.equal((await f.lib.select('太好了，恭喜你','a')).length,1)
+  assert.match(JSON.stringify(f.requests[0]),/终于考过了/);assert.ok(!JSON.stringify(f.requests[0]).includes(b.id))
+  assert.deepEqual(await f.lib.select('继续庆祝','a'),[]);assert.equal(f.requests.length,1)
+  const reloaded=f.create();f.result({id:b.id});assert.deepEqual(await reloaded.select('开心','a'),[])
+  f.result({id:null});assert.deepEqual(await reloaded.select('我难过','a'),[])
+  f.ctx.llm.stream=async function*(){throw new Error('offline')};assert.deepEqual(await reloaded.select('开心','a'),[])
+  assert.throws(()=>f.lib.settings({cooldownSeconds:0}),/冷却/)
+ }finally{f.close()}
+})
+test('表情管理路由拒绝未授权、路径穿越、超限和无效文件',async()=>{
+ const f=fixture();try{
+  const routes=new Map();let denied=false
+  f.ctx.get=()=>({requestRejection:()=>denied?403:undefined})
+  f.lib.register({route:(path,handler)=>routes.set(path,handler),protect:fn=>async(req,res)=>{if(denied)throw new Error('forbidden');return fn(req,res)},json:(res,value)=>res.end(JSON.stringify(value)),config:()=>({绑定:[{会话:'a'}]})})
+  const call=async(path,body)=>{let raw;const req=Readable.from(body===undefined?[]:[JSON.stringify(body)]);Object.assign(req,{method:body===undefined?'GET':'POST',url:'/dsh-qq-bridge/stickers'+path});await routes.get('/dsh-qq-bridge/stickers'+path.split('?')[0])(req,{setHeader(){},end(v){raw=v}});return raw}
+  denied=true;await assert.rejects(call(''),/forbidden/);denied=false
+  await assert.rejects(call('/import',{scope:'foreign',base64:gif.toString('base64')}),/未绑定/)
+  await assert.rejects(call('/file?id=../../password'),/无效/)
+  await call('/import',{scope:'a',base64:gif.toString('base64'),name:'原图'})
+  const item=JSON.parse(await call('')).items[0]
+  assert.deepEqual(await call('/file?id='+item.id),gif)
+ }finally{f.close()}
+})

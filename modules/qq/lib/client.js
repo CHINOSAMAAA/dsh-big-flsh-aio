@@ -70,7 +70,7 @@ window.__ModuleLoader__.load({
       return s.length <= 8 ? s : s.slice(-8)
     }
 
-    const 页签们 = ['连接', '绑定', '消息策略', '图片与语音', 'QQ 空间', '历史导入', '运行日志']
+    const 页签们 = ['连接', '绑定', '消息策略', '图片与语音', '表情包', 'QQ 空间', '历史导入', '运行日志']
 
     function QQActions({ mode, 配置, 脏, 改 }) {
       const [busy, setBusy] = React.useState(false)
@@ -720,6 +720,7 @@ window.__ModuleLoader__.load({
         '连接': 分区(消息卡片[0], 总览卡片[0]),
         '绑定': 分区(绑定卡片[1], 绑定卡片[0]),
         '消息策略': 分区(消息卡片[1], 消息卡片[2], 绑定卡片[2], 门槛卡片[0]),
+        '表情包': typeof FishStickers === 'function' ? h(FishStickers, { notify: typeof notify === 'function' ? notify : undefined }) : h('p', null, '请在大肥鱼整合界面使用表情库'),
         '历史导入': 历史页,
         '运行日志': 分区(总览卡片[1], 总览卡片[2]),
       }

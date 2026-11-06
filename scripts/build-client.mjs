@@ -8,6 +8,7 @@ const output = `// 自动生成：修改 src/panel.js 或 modules/*/lib/client.j
   `window.__ModuleLoader__.load({ id: ${JSON.stringify(meta.name)}, factory(require) {\n` +
   `const FISH_THEME_CSS = ${JSON.stringify(read('src/theme.css'))};\n` +
   `const components = {};\nconst moduleLoader = { load({id, factory}) { components[id] = factory(require) } };\n` +
+  read('src/stickers.js') + '\n' +
   read('modules/qq/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
   read('modules/memory/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
   read('modules/mood/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
