@@ -6943,7 +6943,7 @@ moduleLoader.load({
   },
 })
 
-const META = {"name":"dsh-big-flsh-aio","version":"0.0.1","repositoryVersion":"0.1.5","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
+const META = {"name":"dsh-big-flsh-aio","version":"0.2.1","repositoryVersion":"0.2.1","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
 let NativeToast = null
 try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
 
@@ -7575,7 +7575,12 @@ function Updates({ notify } = {}) {
     finally { setBusy(false) }
   }
   React.useEffect(() => { void check(false) }, [channel])
-  const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
+  const status = !update ? (busy ? '正在检查…' : '暂未取得更新信息')
+    : update.error ? '检查失败，可重试'
+    : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步'
+    : update.hasUpdate ? (update.commitUpdate ? '仓库有新提交 ' + String(update.latestCommit || '').slice(0, 7) : '可更新至 v' + update.latest)
+    : update.ahead ? '本地版本高于仓库版本'
+    : '已是最新版本'
   const changeChannel = async next => {
     if (next === 'github') {
       const ok = await fishAskConfirm({
@@ -7597,7 +7602,7 @@ function Updates({ notify } = {}) {
           h('div', null,
             h('h2', null, '大肥鱼超进化！'),
             h('p', { className: 'fish-update-desc fish-muted' }, '普通用户只建议使用国内镜像更新')),
-          h('p', { className: 'fish-update-status', role: 'status', 'aria-live': 'polite' }, h('span', { className: 'fish-update-dot' }), status)),
+          h('p', { className: 'fish-update-status', role: 'status', 'aria-live': 'polite', title: update?.error || undefined }, h('span', { className: 'fish-update-dot' }), status)),
         h('div', { className: 'fish-update-controls' },
           h('label', { className: 'fish-channel-field', htmlFor: 'fish-update-channel' },
             h('span', null, '更新渠道'),
@@ -7615,6 +7620,8 @@ function Updates({ notify } = {}) {
             }, busy
               ? h(Glyph, { name: 'update', size: 18, className: 'fish-spin' })
               : (update?.hasUpdate ? '立即更新' : '检查更新')))),
+        update?.error ? h('p', { className: 'fish-update-note fish-muted' }, '检查更新失败：' + update.error) : null,
+        update?.commitUpdate ? h('p', { className: 'fish-update-note fish-muted' }, 'GitHub main 有新提交，仓库版本仍是 v' + update.latest + '；点「立即更新」会安装该提交。') : null,
         update?.devCopy ? h('p', { className: 'fish-update-note fish-muted' }, '当前是本地开发副本，自动安装已禁用。请在项目目录执行 git pull，再运行 npm run build 并重载 DSH。') : null),
       h('figure', { className: 'fish-update-art', 'aria-hidden': true },
         h('span', { className: 'fish-tape fish-update-tape' }),
@@ -7723,6 +7730,7 @@ function Page() {
   const [leavePrompt, setLeavePrompt] = React.useState(false)
   const [leaveBusy, setLeaveBusy] = React.useState(false)
   const [leaveError, setLeaveError] = React.useState('')
+  const [versionInfo, setVersionInfo] = React.useState(null)
   const navRef = React.useRef(null), workspaceRef = React.useRef(null), contentRef = React.useRef(null), highlightRef = React.useRef(null)
   const enterAnimation = React.useRef(null)
   const pendingLeave = React.useRef(null)
@@ -7814,6 +7822,21 @@ function Page() {
   }
   navigateRef.current = navigate
   React.useEffect(() => {
+    let active = true
+    const loadVersion = () => request('/dsh-big-flsh-aio/version')
+      .then(info => { if (active && info && info.version) setVersionInfo(info) })
+      .catch(() => {})
+    void loadVersion()
+    const onFocus = () => { void loadVersion() }
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('focus', onFocus)
+    const timer = setInterval(loadVersion, 30000)
+    return () => {
+      active = false
+      clearInterval(timer)
+      if (typeof window !== 'undefined' && typeof window.removeEventListener === 'function') window.removeEventListener('focus', onFocus)
+    }
+  }, [])
+  React.useEffect(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
         window.localStorage.setItem(LOCATION_KEY, JSON.stringify({ tab, subpage, memoryDetail, memoryPage }))
@@ -7901,7 +7924,7 @@ function Page() {
           h('span', { className: 'fish-brand-text' },
             h('span', { className: 'fish-brand-name' }, '大肥鱼'),
             h('span', { className: 'fish-brand-sub' }, 'QQ陪伴手帐')),
-          h('span', { className: 'fish-version-pin', title: '仓库 v' + META.repositoryVersion + ' · npm 包 v' + META.version }, 'v' + META.repositoryVersion)),
+          h('span', { className: 'fish-version-pin', title: '项目 v' + (versionInfo?.version || META.version) + ' · 仓库 v' + (versionInfo?.repositoryVersion || META.repositoryVersion) }, 'v' + (versionInfo?.version || META.version))),
         h('nav', { ref: navRef, className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist', 'aria-orientation': 'vertical' },
           h('span', { ref: highlightRef, className: 'fish-nav-highlight', 'aria-hidden': true }),
           ...tabs.map((label, id) => {

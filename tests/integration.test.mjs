@@ -42,6 +42,13 @@ test('整合包只注册一个侧栏和主面板，八个入口直接挂载四�
     assert.ok(htmlTree.includes(source.version)); assert.ok(htmlTree.includes(source.commit.slice(0, 7)))
   }
   assert.equal(htmlTree.includes('仓库 v' + meta.repositoryVersion + ' / npm 包 v' + meta.version), false)
+  // 检查失败时必须说明失败，不能伪装成“已是最新版本”。
+  const errorReact = [{ ok: false, error: '连接更新服务超时', hasUpdate: false, ahead: false, latest: null }, false, 'github']
+  index = 0; React.useState = () => [errorReact[index++], () => {}]
+  const errorTree = JSON.stringify(updates())
+  assert.ok(errorTree.includes('检查失败'))
+  assert.ok(errorTree.includes('连接更新服务超时'))
+  assert.equal(errorTree.includes('已是最新版本'), false)
   const overviewStates = [{ memory: { sessions: [{ id: 'a', storeId: 'shared', count: 3 }, { id: 'b', storeId: 'shared', count: 3 }] } }, false]
   index = 0; React.useState = () => [overviewStates[index++], () => {}]
   const overview = JSON.stringify(panels[0].children[0].type({ navigate() {} }))
@@ -123,7 +130,7 @@ test('Host 统一加载四个子插件并注册整合包更新路由', async () 
     const plugins = [], routes = []
     host.apply({ plugin: p => plugins.push(p.name), effect: fn => fn(), webServer: { register: route => routes.push(route.path) } })
     assert.deepEqual(plugins, ['memory', 'qq-bridge', 'feiyu-mood', 'speak-up'])
-    assert.deepEqual(routes, ['/dsh-big-flsh-aio/update', '/dsh-big-flsh-aio/install'])
+    assert.deepEqual(routes, ['/dsh-big-flsh-aio/version', '/dsh-big-flsh-aio/update', '/dsh-big-flsh-aio/install'])
     assert.ok(host.inject.includes('llm') && host.inject.includes('attachments'))
   } finally { if (previous === undefined) delete process.env.DSH_HOME; else process.env.DSH_HOME = previous; rmSync(home, { recursive: true, force: true }) }
 })
@@ -134,6 +141,8 @@ test('GitHub API 限流时使用 Git 解析本仓库 main，仍校验固定提�
   const sha = 'c'.repeat(40)
   t.mock.method(childProcess, 'execFile', (command, args, options, callback) => {
     assert.equal(command, 'git')
+    if (args.includes('rev-parse')) return callback(null, 'e'.repeat(40) + '\n', '')
+    if (args.includes('merge-base')) return callback(Object.assign(new Error('exit 1'), { stderr: '' }), '', '')
     assert.deepEqual(args, ['ls-remote', '--exit-code', 'https://github.com/CHINOSAMAAA/dsh-big-flsh-aio.git', 'refs/heads/main'])
     assert.equal(options.env.GIT_TERMINAL_PROMPT, '0')
     callback(null, sha + '\trefs/heads/main\n')

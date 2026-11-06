@@ -581,7 +581,12 @@ function Updates({ notify } = {}) {
     finally { setBusy(false) }
   }
   React.useEffect(() => { void check(false) }, [channel])
-  const status = !update ? busy ? '正在检查…' : '暂未取得更新信息' : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步' : update.hasUpdate ? '可更新至 v' + update.latest : update.ahead ? '本地版本高于仓库版本' : '已是最新版本'
+  const status = !update ? (busy ? '正在检查…' : '暂未取得更新信息')
+    : update.error ? '检查失败，可重试'
+    : update.legacyRelease ? '此渠道仍为旧编号版本，请等待新系列同步'
+    : update.hasUpdate ? (update.commitUpdate ? '仓库有新提交 ' + String(update.latestCommit || '').slice(0, 7) : '可更新至 v' + update.latest)
+    : update.ahead ? '本地版本高于仓库版本'
+    : '已是最新版本'
   const changeChannel = async next => {
     if (next === 'github') {
       const ok = await fishAskConfirm({
@@ -603,7 +608,7 @@ function Updates({ notify } = {}) {
           h('div', null,
             h('h2', null, '大肥鱼超进化！'),
             h('p', { className: 'fish-update-desc fish-muted' }, '普通用户只建议使用国内镜像更新')),
-          h('p', { className: 'fish-update-status', role: 'status', 'aria-live': 'polite' }, h('span', { className: 'fish-update-dot' }), status)),
+          h('p', { className: 'fish-update-status', role: 'status', 'aria-live': 'polite', title: update?.error || undefined }, h('span', { className: 'fish-update-dot' }), status)),
         h('div', { className: 'fish-update-controls' },
           h('label', { className: 'fish-channel-field', htmlFor: 'fish-update-channel' },
             h('span', null, '更新渠道'),
@@ -621,6 +626,8 @@ function Updates({ notify } = {}) {
             }, busy
               ? h(Glyph, { name: 'update', size: 18, className: 'fish-spin' })
               : (update?.hasUpdate ? '立即更新' : '检查更新')))),
+        update?.error ? h('p', { className: 'fish-update-note fish-muted' }, '检查更新失败：' + update.error) : null,
+        update?.commitUpdate ? h('p', { className: 'fish-update-note fish-muted' }, 'GitHub main 有新提交，仓库版本仍是 v' + update.latest + '；点「立即更新」会安装该提交。') : null,
         update?.devCopy ? h('p', { className: 'fish-update-note fish-muted' }, '当前是本地开发副本，自动安装已禁用。请在项目目录执行 git pull，再运行 npm run build 并重载 DSH。') : null),
       h('figure', { className: 'fish-update-art', 'aria-hidden': true },
         h('span', { className: 'fish-tape fish-update-tape' }),
@@ -729,6 +736,7 @@ function Page() {
   const [leavePrompt, setLeavePrompt] = React.useState(false)
   const [leaveBusy, setLeaveBusy] = React.useState(false)
   const [leaveError, setLeaveError] = React.useState('')
+  const [versionInfo, setVersionInfo] = React.useState(null)
   const navRef = React.useRef(null), workspaceRef = React.useRef(null), contentRef = React.useRef(null), highlightRef = React.useRef(null)
   const enterAnimation = React.useRef(null)
   const pendingLeave = React.useRef(null)
@@ -820,6 +828,21 @@ function Page() {
   }
   navigateRef.current = navigate
   React.useEffect(() => {
+    let active = true
+    const loadVersion = () => request('/dsh-big-flsh-aio/version')
+      .then(info => { if (active && info && info.version) setVersionInfo(info) })
+      .catch(() => {})
+    void loadVersion()
+    const onFocus = () => { void loadVersion() }
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('focus', onFocus)
+    const timer = setInterval(loadVersion, 30000)
+    return () => {
+      active = false
+      clearInterval(timer)
+      if (typeof window !== 'undefined' && typeof window.removeEventListener === 'function') window.removeEventListener('focus', onFocus)
+    }
+  }, [])
+  React.useEffect(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
         window.localStorage.setItem(LOCATION_KEY, JSON.stringify({ tab, subpage, memoryDetail, memoryPage }))
@@ -907,7 +930,7 @@ function Page() {
           h('span', { className: 'fish-brand-text' },
             h('span', { className: 'fish-brand-name' }, '大肥鱼'),
             h('span', { className: 'fish-brand-sub' }, 'QQ陪伴手帐')),
-          h('span', { className: 'fish-version-pin', title: '仓库 v' + META.repositoryVersion + ' · npm 包 v' + META.version }, 'v' + META.repositoryVersion)),
+          h('span', { className: 'fish-version-pin', title: '项目 v' + (versionInfo?.version || META.version) + ' · 仓库 v' + (versionInfo?.repositoryVersion || META.repositoryVersion) }, 'v' + (versionInfo?.version || META.version))),
         h('nav', { ref: navRef, className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist', 'aria-orientation': 'vertical' },
           h('span', { ref: highlightRef, className: 'fish-nav-highlight', 'aria-hidden': true }),
           ...tabs.map((label, id) => {
