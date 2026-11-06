@@ -4013,3 +4013,27 @@ body[data-ds-dark-theme] .big-fish .fish-button.fish-danger {
   color: var(--fish-muted);
   font-size: var(--fish-small);
 }
+
+.big-fish .qq-bind-modal-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.big-fish .qq-bind-modal-name-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.big-fish .qq-bind-modal-name-row .fish-button {
+  flex: none;
+  min-height: 38px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.big-fish .qq-bind-modal-lookup {
+  margin-top: -6px;
+  color: var(--fish-muted);
+  font-size: var(--fish-small);
+}
