@@ -40,11 +40,14 @@ const 装提交 = (sha, remote = META) => async url => {
 test('仓库版本没变时，GitHub main 的新提交也会提示更新并安装到该提交', async () => {
   const home = mkdtempSync(join(tmpdir(), 'fish-commit-'))
   const original = globalThis.fetch
+  const requests = []
   try {
     const root = 建安装副本(home, OLD)
-    globalThis.fetch = 装提交(NEW)
+    const reply = 装提交(NEW)
+    globalThis.fetch = async url => { requests.push(String(url)); return reply(url) }
     const updater = createSelfUpdate({ packageRoot: root })
     const result = await updater.check(true, 'github')
+    assert.match(requests[0], /api\.github\.com\/repos\/CHINOSAMAAA\/dsh-big-flsh-aio\/commits\/main\?t=\d+/)
     assert.equal(result.ok, true)
     assert.equal(result.current, '0.1.5')
     assert.equal(result.latest, '0.1.5')
