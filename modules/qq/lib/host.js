@@ -1061,7 +1061,7 @@ export function 抠QQ标记(文字, 只发标记内) {
   return { 发: false, 文字: '', 原因: '没写块' }
 }
 export function apply(ctx) {
-  const stickers = createStickers({ home: 目录, ctx, findAgent: id => 找agent(id), log: text => 记账(text), sourceFor: id => {
+  const stickers = createStickers({ home: 目录, ctx, findAgent: id => 找agent(id), log: text => 记账(text), defaultSession: () => 读配置().绑定.find(b => { const o = 找agent(b.会话)?.options; return b.开 !== false && o?.provider && o?.model })?.会话 || '', sourceFor: id => {
     const config = 读配置(), binding = config.绑定.find(b => b.会话 === id)
     if (!binding) return ''
     const source = bindingSource(目录, binding)

@@ -11,8 +11,8 @@ function fixture() {
   let result = { id: null }
   const ctx = { llm: { async *stream(input) { requests.push(input); yield { type: 'text-delta', text: JSON.stringify(result) } } }, get: () => ({ requestRejection: () => undefined }) }
   const agent = { options: { provider: 'fake', model: 'fake' }, session: { snapshotEvents: () => [{ type: 'user/message', data: { source: { kind: 'qq' }, content: [{type:'text',text:'终于考过了'}] } }] } }
-  const create = () => createStickers({ home, ctx, findAgent: () => agent, log: x => logs.push(x) })
-  return { home, ctx, requests, logs, lib: create(), create, result: x => { result = x }, close: () => rmSync(home, {recursive:true,force:true}) }
+  const create = () => createStickers({ home, ctx, findAgent: () => agent, defaultSession: () => 'a', log: x => logs.push(x) })
+  return { home, ctx, agent, requests, logs, lib: create(), create, result: x => { result = x }, close: () => rmSync(home, {recursive:true,force:true}) }
 }
 test('表情原文件、去重、来源隔离、持久保存与元数据更新', () => {
   const f=fixture();try {
@@ -92,7 +92,7 @@ test('自动视觉标签：真实图片入参、已有标签保护、错误重�
   let release;const gate=new Promise(r=>release=r)
   f.ctx.llm.stream=async function*(){await gate;yield{type:'text-delta',text:JSON.stringify({tags:['迟到'],scenes:['迟到结果']})}}
   const c=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('c')]),scope:'a'});await new Promise(setImmediate);f.lib.remove(c.id);release();await wait();assert.ok(!f.lib.view().items.some(x=>x.id===c.id))
-  assert.throws(()=>f.lib.settings({visionProvider:'provider'}),/同时/)
+  f.lib.settings({visionProvider:'旧配置'});assert.equal(f.lib.view().settings.visionProvider,undefined)
  }finally{f.close()}
 })
 
@@ -125,5 +125,21 @@ test('进行中的选图遵守关闭开关；标注遵守手动编辑版本',asy
   assert.deepEqual(f.lib.view().items[0].tags,['手动保留']);assert.equal(f.lib.view().items[0].tagStatus,'error')
   let calls=0;gate=new Promise(r=>release=r);f.ctx.llm.stream=async function*(){calls++;await gate;yield{type:'text-delta',text:JSON.stringify({tags:['开心'],scenes:['庆祝']})}}
   f.lib.settings({autoTag:true});const b=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('paused-b')]),scope:'a'}),c=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('paused-c')]),scope:'a'});await new Promise(setImmediate);f.lib.settings({autoTag:false});release();for(let i=0;i<40;i++)await new Promise(setImmediate);assert.equal(calls,1);assert.equal(f.lib.view().items.find(x=>x.id===b.id).tagStatus,'cancelled');assert.equal(f.lib.view().items.find(x=>x.id===c.id).tagStatus,'cancelled')
+ }finally{f.close()}
+})
+
+
+test('共享表情自动复用绑定 DeepSeek，旧视觉配置不再改变路由',async()=>{
+ const f=fixture();try{
+  f.agent.options={provider:'deepseek',model:'bound-session-model'}
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  const a=f.lib.add({bytes:gif,name:'共享表情'})
+  const path=join(f.home,'qq-stickers/catalog.json'),data=JSON.parse(readFileSync(path,'utf8'))
+  data.settings={...data.settings,visionProvider:'obsolete-provider',visionModel:'obsolete-model',analysisSession:'obsolete-session'}
+  writeFileSync(path,JSON.stringify(data));f.result({tags:['开心'],scenes:['庆祝']});f.lib.enqueueTags(a.id)
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  assert.equal(f.lib.view().items[0].tagStatus,'complete');assert.equal(f.requests[0].provider,'deepseek');assert.equal(f.requests[0].model,'bound-session-model');assert.equal(f.requests[0].sessionId,'a')
+  assert.ok(f.requests[0].messages[0].content.some(x=>x.type==='image'))
+  assert.equal(f.lib.view().settings.visionModel,undefined)
  }finally{f.close()}
 })
