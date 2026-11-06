@@ -56,3 +56,22 @@ test('表情管理路由拒绝未授权、路径穿越、超限和无效文件',
   assert.deepEqual(await call('/file?id='+item.id),gif)
  }finally{f.close()}
 })
+
+test('自动收藏独立于回复：识别表情、保留 GIF、去重、普通图片开关和错误回退',async()=>{
+ const f=fixture(),original=globalThis.fetch;try{
+  const settle=async()=>{for(let i=0;i<30;i++)await new Promise(setImmediate)}
+  const face={message_id:1,message:[{type:'mface',data:{file:'base64://'+gif.toString('base64'),summary:'开心'}}]}
+  f.lib.capture(face,'a','source-a');await settle();assert.equal(f.lib.view().items.length,0)
+  f.lib.settings({autoCollect:true});f.lib.capture(face,'a','source-a');await settle()
+  const item=f.lib.view().items[0];assert.equal(item.scope,'a');assert.equal(item.source,'source-a');assert.deepEqual(readFileSync(join(f.home,'qq-stickers',item.id+'.gif')),gif)
+  f.lib.capture({...face,message_id:2},'a','source-a');await settle();assert.equal(f.lib.view().items.length,1)
+  const plain={message_id:3,message:[{type:'image',data:{file:'base64://'+Buffer.concat([gif,Buffer.from('more')]).toString('base64')}}]}
+  f.lib.capture(plain,'a','source-a');await settle();assert.equal(f.lib.view().items.length,1)
+  f.lib.settings({collectAllImages:true});f.lib.capture(plain,'a','source-a');await settle();assert.equal(f.lib.view().items.length,2)
+  f.lib.capture({...face,message_id:4},'a','source-a',()=>false);await settle();assert.equal(f.lib.view().items.length,2)
+  let downloads=0;globalThis.fetch=async()=>{downloads++;return new Response(gif)}
+  f.lib.capture({message_id:5,message:[{type:'mface',data:{url:'http://127.0.0.1/secrets'}}]},'a','source-a');await settle();assert.equal(downloads,0);assert.match(f.lib.view().collection.error,/QQ 官方/)
+  f.lib.capture({message_id:6,message:[{type:'mface',data:{url:'https://gchat.qpic.cn/sticker.gif'}}]},'a','source-a');await settle();assert.equal(downloads,1)
+  f.lib.settings({autoSend:true});f.result({id:item.id});assert.deepEqual(await f.lib.select('开心','a'),[]);assert.equal(f.requests.length,0)
+ }finally{globalThis.fetch=original;f.close()}
+})

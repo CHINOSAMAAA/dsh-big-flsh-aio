@@ -4,7 +4,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { writeFileAtomicSync } from './atomic-file.mjs'
 
 const MAX_BYTES = 8 * 1024 * 1024
-const DEFAULTS = { autoSend: false, cooldownSeconds: 120 }
+const DEFAULTS = { autoSend: false, cooldownSeconds: 120, autoCollect: false, collectAllImages: false }
 const clean = (v, limit) => String(v ?? '').trim().slice(0, limit)
 const words = v => [...new Set((Array.isArray(v) ? v : String(v || '').split(/[,，、;；\n]+/)).map(x => clean(x, 30)).filter(Boolean))].slice(0, 12)
 const validId = id => /^[a-f0-9]{64}$/.test(String(id))
@@ -16,7 +16,9 @@ export function imageType(buf) {
   throw new Error('只接受 PNG、JPEG、GIF、WebP 图片原文件')
 }
 
-export function createStickers({ home, ctx, findAgent, log = () => {} }) {
+export const stickerSource = (endpoint, bot, type, chat) => createHash('sha256').update(JSON.stringify([endpoint, String(bot), type, String(chat)])).digest('hex')
+
+export function createStickers({ home, ctx, findAgent, sourceFor = () => '', log = () => {} }) {
   const dir = join(home, 'qq-stickers'), catalog = join(dir, 'catalog.json')
   const sent = new Map(), pending = new Set()
   const read = () => {
@@ -27,15 +29,15 @@ export function createStickers({ home, ctx, findAgent, log = () => {} }) {
   }
   const save = data => { mkdirSync(dir, { recursive: true }); writeFileAtomicSync(catalog, JSON.stringify(data, null, 2)) }
   const file = item => join(dir, item.id + '.' + item.ext)
-  const view = () => { const data = read(); return { ok: true, ...data, items: data.items.map(x => ({ ...x, url: '/dsh-qq-bridge/stickers/file?id=' + x.id })) } }
-  const add = ({ bytes, name, scope = '', tags = [], scenes = [] }) => {
+  const view = () => { const data = read(); return { ok: true, ...data, collection: { pending: queue.length + Number(collecting), error: collectionError }, items: data.items.map(x => ({ ...x, url: '/dsh-qq-bridge/stickers/file?id=' + x.id })) } }
+  const add = ({ bytes, name, scope = '', tags = [], scenes = [], source = '' }) => {
     if (!Buffer.isBuffer(bytes) || !bytes.length || bytes.length > MAX_BYTES) throw new Error('单张表情须为 1 字节～8 MB')
     const ext = imageType(bytes), data = read()
-    const id = createHash('sha256').update(String(scope)).update('\0').update(bytes).digest('hex')
+    const id = createHash('sha256').update(String(scope)).update(String(source)).update('\0').update(bytes).digest('hex')
     const existing = data.items.find(x => x.id === id)
     if (existing) return existing
     if (data.items.length >= 500 || data.items.reduce((n, x) => n + x.size, 0) + bytes.length > 256 * 1024 * 1024) throw new Error('素材库达到 500 张或 256 MB 上限，请先整理')
-    const item = { id, ext, size: bytes.length, name: clean(name, 80) || '未命名表情', scope: clean(scope, 160), tags: words(tags), scenes: words(scenes), createdAt: Date.now() }
+    const item = { id, ext, size: bytes.length, name: clean(name, 80) || '未命名表情', scope: clean(scope, 160), source: clean(source, 64), tags: words(tags), scenes: words(scenes), createdAt: Date.now() }
     mkdirSync(dir, { recursive: true })
     writeFileSync(file(item), bytes, { flag: 'wx', mode: 0o600 })
     try { data.items.push(item); save(data) } catch (e) { unlinkSync(file(item)); throw e }
@@ -58,6 +60,7 @@ export function createStickers({ home, ctx, findAgent, log = () => {} }) {
   const settings = patch => {
     const data = read()
     if ('autoSend' in patch) { if (typeof patch.autoSend !== 'boolean') throw new Error('自动发送必须是布尔值'); data.settings.autoSend = patch.autoSend }
+    for (const key of ['autoCollect','collectAllImages']) if (key in patch) { if (typeof patch[key] !== 'boolean') throw new Error('开关必须是布尔值'); data.settings[key] = patch[key] }
     if ('cooldownSeconds' in patch) { const n = Number(patch.cooldownSeconds); if (!Number.isFinite(n) || n < 10 || n > 86400) throw new Error('冷却应在 10～86400 秒'); data.settings.cooldownSeconds = n }
     save(data)
   }
@@ -85,7 +88,7 @@ export function createStickers({ home, ctx, findAgent, log = () => {} }) {
   const select = async (text, session) => {
     const data = read(), key = String(session)
     if (!data.settings.autoSend || pending.has(key) || Date.now() - (sent.get(key) || 0) < data.settings.cooldownSeconds * 1000) return []
-    const all = data.items.filter(x => !x.scope || x.scope === key)
+    const all = data.items.filter(x => (!x.scope || x.scope === key) && (!x.source || x.source === sourceFor(session)))
     if (!all.length) return []
     pending.add(key)
     try {
@@ -103,6 +106,64 @@ export function createStickers({ home, ctx, findAgent, log = () => {} }) {
       return [{ kind: 'path', value: file(picked) }]
     } finally { pending.delete(key) }
   }
+  let stopped = false, collecting = false, collectionError = ''
+  const queue = [], attempts = new Map()
+  const download = async data => {
+    const encoded = String(data.file || '')
+    if (encoded.startsWith('base64://')) {
+      if (encoded.length > MAX_BYTES * 1.4) throw new Error('表情超过 8 MB')
+      return Buffer.from(encoded.slice(9), 'base64')
+    }
+    let url = String(data.url || '')
+    for (let redirects = 0; redirects < 3; redirects++) {
+      const parsed = new URL(url)
+      if (!/^https?:$/.test(parsed.protocol) || parsed.username || parsed.password || parsed.port || !/(^|\.)(qpic\.cn|gtimg\.cn|qq\.com|qq\.com\.cn)$/i.test(parsed.hostname)) throw new Error('自动收藏仅下载 QQ 官方图片域名或内联图片')
+      const response = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(10000) })
+      if ([301,302,303,307,308].includes(response.status)) { const next = response.headers.get('location'); await response.body?.cancel(); if (!next) throw new Error('图片跳转地址为空'); url = new URL(next, url).href; continue }
+      if (!response.ok) throw new Error('图片下载失败：' + response.status)
+      if (Number(response.headers.get('content-length')) > MAX_BYTES) { await response.body?.cancel(); throw new Error('表情超过 8 MB') }
+      const chunks = []; let size = 0
+      for await (const chunk of response.body) { size += chunk.length; if (size > MAX_BYTES) throw new Error('表情超过 8 MB'); chunks.push(Buffer.from(chunk)) }
+      return Buffer.concat(chunks)
+    }
+    throw new Error('图片跳转过多')
+  }
+  const drain = async () => {
+    if (collecting) return
+    collecting = true
+    try {
+      while (queue.length && !stopped) {
+        const job = queue.shift()
+        try {
+          if (!read().settings.autoCollect || !job.active()) continue
+          const bytes = await download(job.data)
+          if (stopped || !read().settings.autoCollect || !job.active()) continue
+          add({ bytes, name: job.name, scope: job.session, source: job.source })
+          collectionError = ''; log('已收藏表情原图：' + job.name)
+        } catch (e) { collectionError = e.message; log('自动收藏表情失败：' + e.message) }
+      }
+    } finally { collecting = false }
+  }
+  const capture = (message, session, source, active = () => true) => {
+    const settings = read().settings
+    if (!settings.autoCollect || stopped) return
+    let segments = message.message
+    if (typeof segments === 'string') { try { segments = JSON.parse(segments) } catch { return } }
+    if (!Array.isArray(segments)) return
+    for (const segment of segments) {
+      if (queue.length >= 16) { collectionError = '收藏队列已满，本批其余图片跳过'; break }
+      const d = segment?.data || {}
+      const sticker = segment?.type === 'mface' || (segment?.type === 'image' && (settings.collectAllImages || Number(d.sub_type) === 1 || /\.gif(?:[?#]|$)/i.test(String(d.url || d.file || ''))))
+      if (!sticker) continue
+      const key = createHash('sha256').update(JSON.stringify([source, message.message_id, d.file || d.url || d.emoji_id])).digest('hex')
+      if (Date.now() - (attempts.get(key) || 0) < 60000) continue
+      attempts.set(key, Date.now()); if (attempts.size > 1000) attempts.delete(attempts.keys().next().value)
+      queue.push({ session, source, data: d, active, name: clean(d.summary, 80) || '收藏表情' })
+    }
+    void drain()
+  }
+  ctx.effect?.(() => () => { stopped = true; queue.length = 0 })
+
   const register = ({ route, protect, json, config }) => {
     const authorize = req => {
       const connection = ctx.get?.('connection')
@@ -133,5 +194,5 @@ export function createStickers({ home, ctx, findAgent, log = () => {} }) {
     post('edit', body => update(body.id, body))
     post('remove', body => remove(body.id))
   }
-  return { view, add, update, remove, settings, select, infer, register }
+  return { view, add, update, remove, settings, select, infer, capture, register }
 }

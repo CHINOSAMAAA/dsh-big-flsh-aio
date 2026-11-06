@@ -17,7 +17,7 @@ import { randomUUID } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { exclusiveBinding, recordSource, invalidateSource, bindingSource, endpointKey } from './memory-sources.mjs'
 import { registerHistoryImport } from './history-import.mjs'
-import { createStickers } from './stickers.mjs'
+import { createStickers, stickerSource } from './stickers.mjs'
 
 export const name = 'qq-bridge'
 
@@ -1061,7 +1061,12 @@ export function 抠QQ标记(文字, 只发标记内) {
   return { 发: false, 文字: '', 原因: '没写块' }
 }
 export function apply(ctx) {
-  const stickers = createStickers({ home: 目录, ctx, findAgent: id => 找agent(id), log: text => 记账(text) })
+  const stickers = createStickers({ home: 目录, ctx, findAgent: id => 找agent(id), log: text => 记账(text), sourceFor: id => {
+    const config = 读配置(), binding = config.绑定.find(b => b.会话 === id)
+    if (!binding) return ''
+    const source = bindingSource(目录, binding)
+    return source && !source.unverified && source.endpoint === endpointKey(config) ? stickerSource(source.endpoint, source.botId, binding.类型, binding.号码) : ''
+  } })
   /**
    * ⭐ 1.5.0：管理类接口只认「本人」。
    *
@@ -3657,6 +3662,18 @@ export function apply(ctx) {
         //   拉回来的历史里一直躺着已经转过的旧消息，先滤掉它们，接听的条数才不会被旧消息吃掉。
         if ((条.time || 0) < 上次) continue           // 旧的，跳过
         if (已转消息.has(条.message_id) || 攒?.ids.includes(条.message_id)) continue // 转过了或已在本批里
+        try {
+          if (stickers.view().settings.autoCollect) {
+            const bot = await 拿自己QQ(拉任意)
+            if (bot && String(条.user_id) !== String(bot) && (是群 || String(条.user_id) === String(行.号码))) {
+              const endpoint = endpointKey(配置)
+              stickers.capture(条, 行.会话, stickerSource(endpoint, bot, 行.类型, 行.号码), () => {
+                const latest = 读配置()
+                return latest.总开关 && endpointKey(latest) === endpoint && latest.绑定.some(b => b.会话 === 行.会话 && b.类型 === 行.类型 && b.号码 === 行.号码 && b.开 !== false)
+              })
+            }
+          }
+        } catch (e) { 记账('收藏表情未完成，消息接收照常：' + e.message) }
         // 私聊：只认对面那个号；群：只认你自己—— 别人的话不转（防噪音，也防被别人的话牵着走）
         if (!是群) {
           // 私聊：只认对面那个号
