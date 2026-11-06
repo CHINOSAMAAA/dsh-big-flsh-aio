@@ -7,6 +7,8 @@ function FishStickers({ notify }) {
   const React = require('react'), h = React.createElement
   const [data, setData] = React.useState(null), [busy, setBusy] = React.useState(false), [error, setError] = React.useState('')
   const [bindings, setBindings] = React.useState([]), [scope, setScope] = React.useState(''), [query, setQuery] = React.useState('')
+  const [analysisSession, setAnalysisSession] = React.useState(''), [visionProvider, setVisionProvider] = React.useState(''), [visionModel, setVisionModel] = React.useState('')
+  const fileRef = React.useRef(null)
   const [file, setFile] = React.useState(null), [name, setName] = React.useState(''), [tags, setTags] = React.useState(''), [scenes, setScenes] = React.useState('')
   const base = '/dsh-qq-bridge/stickers'
   const load = async (path = '', body) => {
@@ -19,11 +21,12 @@ function FishStickers({ notify }) {
     load().catch(e => setError(e.message))
     fetch('/dsh-qq-bridge/state', { cache: 'no-store' }).then(r => r.json()).then(r => setBindings(r.配置?.绑定 || [])).catch(e => setError(e.message))
   }, [])
+  React.useEffect(() => { if (data) { setAnalysisSession(data.settings.analysisSession || ''); setVisionProvider(data.settings.visionProvider || ''); setVisionModel(data.settings.visionModel || '') } }, [data?.settings.analysisSession, data?.settings.visionProvider, data?.settings.visionModel])
   React.useEffect(() => {
-    if (!data?.settings.autoCollect) return
+    if (!data?.settings.autoCollect && !data?.tagging?.pending) return
     const timer = setInterval(() => load().catch(e => setError(e.message)), 5000)
     return () => clearInterval(timer)
-  }, [data?.settings.autoCollect])
+  }, [data?.settings.autoCollect, data?.tagging?.pending])
   const act = async (path, body) => {
     setBusy(true); setError('')
     try { await load(path, body); notify?.('表情库已更新', { tone: 'success' }); return true }
@@ -34,7 +37,7 @@ function FishStickers({ notify }) {
     setBusy(true)
     try {
       const base64 = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result).split(',')[1]); reader.onerror = () => reject(new Error('读取图片失败')); reader.readAsDataURL(file) })
-      if (await act('/import', { base64, name: name || file.name, tags, scenes, scope })) { setFile(null); setName(''); setTags(''); setScenes('') }
+      if (await act('/import', { base64, name: name || file.name, tags, scenes, scope })) { setFile(null); if (fileRef.current) fileRef.current.value = ''; setName(''); setTags(''); setScenes('') }
     } catch (e) { setError(e.message) } finally { setBusy(false) }
   }
   const sw = (key, label, note) => h('div', { className: 'fish-form-row' }, h('div', { className: 'fish-form-label' }, label), h('div', { className: 'fish-control' },
@@ -45,11 +48,18 @@ function FishStickers({ notify }) {
       sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行、收发开关和素材来源隔离。'),
       sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，原文件按来源隔离与内容去重。不会重新扫描启动前的历史记录。'),
       sw('collectAllImages', '同时收藏普通图片', '默认关闭，避免把普通照片收进素材库；只对自动收藏生效。'),
+      sw('autoTag', '自动给新表情打标签', '导入或收藏新素材后，通过图片识别生成情绪、动作、可见文字标签及使用场景。使用支持图片的模型，会发送图片并产生用量；已有手动标签不会被覆盖，失败可重试。'),
       data.collection?.error ? h('p', { role: 'status', className: 'fish-message' }, data.collection.error) : null,
       h('label', null, '自动发送冷却（秒） ', h('input', { type: 'number', min: 10, max: 86400, 'aria-label': '自动发送冷却', defaultValue: data.settings.cooldownSeconds, disabled: busy, onBlur: e => act('/settings', { cooldownSeconds: Number(e.target.value) }) }))),
+    h('section', { className: 'fish-card' }, h('h2', null, '视觉标注模型'),
+      h('label', { className: 'fish-form-row' }, '共享素材标注会话 ', h('select', { 'aria-label': '标注会话', value: analysisSession, onChange: e => setAnalysisSession(e.target.value) }, h('option', {value:''}, '请选择绑定会话'), ...bindings.map(b => h('option', {key:b.会话,value:b.会话}, b.类型+' '+b.号码)))),
+      h('label', { className: 'fish-form-row' }, '视觉服务商 ID ', h('input', { 'aria-label': '视觉服务商 ID', value: visionProvider, onChange: e => setVisionProvider(e.target.value) })),
+      h('label', { className: 'fish-form-row' }, '视觉模型 ', h('input', { 'aria-label': '视觉模型', value: visionModel, onChange: e => setVisionModel(e.target.value) })),
+      h('p', { className: 'fish-muted' }, '服务商 ID 与模型同时留空时使用素材所属会话的模型；共享素材使用上方标注会话。GIF 根据可解码画面分析，原文件保持不变。'),
+      h('div', { className: 'fish-actions' }, h('button', { type:'button',className:'fish-button',disabled:busy,onClick:()=>act('/settings',{analysisSession,visionProvider,visionModel}) },'保存标注模型'), h('button', {type:'button',className:'fish-button',disabled:busy,onClick:()=>act('/tag',{})}, '补齐缺失标签与场景'))),
     h('section', { className: 'fish-card' }, h('h2', null, '导入表情原图'),
       h('p', { className: 'fish-muted' }, '支持 PNG、JPEG、GIF、WebP，每张最多 8 MB；GIF 保留原字节。相同来源内按内容去重。'),
-      h('div', { className: 'fish-form-row' }, h('label', null, '图片文件 ', h('input', { type: 'file', accept: '.png,.jpg,.jpeg,.gif,.webp', disabled: busy, onChange: e => setFile(e.target.files?.[0] || null) }))),
+      h('div', { className: 'fish-form-row' }, h('label', null, '图片文件 ', h('input', { ref: fileRef, type: 'file', accept: '.png,.jpg,.jpeg,.gif,.webp', disabled: busy, onChange: e => setFile(e.target.files?.[0] || null) }))),
       h('div', { className: 'fish-form-row' }, h('label', null, '使用范围 ', h('select', { 'aria-label': '素材使用范围', value: scope, disabled: busy, onChange: e => setScope(e.target.value) }, h('option', { value: '' }, '共享素材（所有绑定可用）'), ...bindings.map(b => h('option', { key: b.会话, value: b.会话 }, b.类型 + ' ' + b.号码))))),
       ...[['名称',name,setName],['标签（逗号分隔）',tags,setTags],['使用场景（逗号分隔）',scenes,setScenes]].map(([label,value,set]) => h('label', { key: label, className: 'fish-form-row' }, label, h('input', { 'aria-label': label, value, disabled: busy, onChange: e => set(e.target.value) }))),
       h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || !file, onClick: upload }, '导入表情')),
@@ -62,14 +72,17 @@ function FishStickers({ notify }) {
 }
 function FishStickerCard({ item, busy, act, bindings }) {
   const React = require('react'), h = React.createElement
+  const [dirty,setDirty] = React.useState(false)
   const [name,setName] = React.useState(item.name), [tags,setTags] = React.useState(item.tags.join(',')), [scenes,setScenes] = React.useState(item.scenes.join(','))
-  React.useEffect(() => { setName(item.name); setTags(item.tags.join(',')); setScenes(item.scenes.join(',')) }, [item])
+  React.useEffect(() => { if (!dirty) { setName(item.name); setTags(item.tags.join(',')); setScenes(item.scenes.join(',')) } }, [dirty, item.name, item.tags.join(','), item.scenes.join(',')])
   const binding = bindings.find(b => b.会话 === item.scope)
   return h('article', { className: 'qq-bind-detail' },
     h('img', { src: item.url, alt: item.name, loading: 'lazy', width: 100, height: 100, style: { objectFit: 'contain' } }),
+    h('p', { className: 'fish-muted', role: 'status' }, '标签状态：' + ({pending:'等待处理',running:'识别中',complete:'已完成',error:'失败'}[item.tagStatus] || '未自动标注') + (item.tagError ? ' · '+item.tagError : '')),
+    h('button', { type:'button',className:'fish-button',disabled:busy || ['pending','running'].includes(item.tagStatus),onClick:()=>act('/tag',{id:item.id}) }, '识别 / 重试标签'),
     h('p', { className: 'fish-muted' }, item.scope ? (binding ? binding.类型 + ' ' + binding.号码 : '原来源绑定已移除') : '共享素材'),
-    ...[['名称',name,setName],['标签',tags,setTags],['场景',scenes,setScenes]].map(([label,value,set]) => h('label', { key: label, className: 'fish-form-row' }, label, h('input', { 'aria-label': item.id + ' ' + label, value, disabled: busy, onChange: e => set(e.target.value) }))),
-    h('div', { className: 'fish-actions' }, h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => act('/edit', { id: item.id, name, tags, scenes }) }, '保存素材描述'),
+    ...[['名称',name,setName],['标签',tags,setTags],['场景',scenes,setScenes]].map(([label,value,set]) => h('label', { key: label, className: 'fish-form-row' }, label, h('input', { 'aria-label': item.id + ' ' + label, value, disabled: busy, onChange: e => { setDirty(true); set(e.target.value) } }))),
+    h('div', { className: 'fish-actions' }, h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: async () => { if (await act('/edit', { id: item.id, name, tags, scenes })) setDirty(false) } }, '保存素材描述'),
       h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => { if (window.confirm('删除这张表情及其本地原文件？')) act('/remove', { id: item.id }) } }, '删除表情')))
 }
 
@@ -6163,7 +6176,7 @@ moduleLoader.load({
   },
 })
 
-const META = {"name":"dsh-big-flsh-aio","version":"0.0.1","repositoryVersion":"0.1.3","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
+const META = {"name":"dsh-big-flsh-aio","version":"0.0.1","repositoryVersion":"0.1.4","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-3","forkCommit":"1d49ee06a1300277d9d8f7e22fb8c75614218cc4"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.4","forkCommit":"10b5765ef7f2013fb2c17615c3c6fcf05b8776b7"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
 let NativeToast = null
 try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
 
