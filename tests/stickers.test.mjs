@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, rmSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Readable } from 'node:stream'
@@ -8,18 +8,22 @@ import { createStickers } from '../modules/qq/lib/stickers.mjs'
 const gif = Buffer.from('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==', 'base64')
 function fixture() {
   const home = mkdtempSync(join(tmpdir(), 'fish-stickers-')), requests = [], logs = []
+  mkdirSync(join(home,'storages'));mkdirSync(join(home,'BigFish'))
+  writeFileSync(join(home,'storages/workspace.json'),JSON.stringify({tables:{workspaces:{fish:{path:join(home,'BigFish')}}}}))
   let result = { id: null }
   const ctx = { llm: { async *stream(input) { requests.push(input); yield { type: 'text-delta', text: JSON.stringify(result) } } }, get: () => ({ requestRejection: () => undefined }) }
   const agent = { options: { provider: 'fake', model: 'fake' }, session: { snapshotEvents: () => [{ type: 'user/message', data: { source: { kind: 'qq' }, content: [{type:'text',text:'终于考过了'}] } }] } }
-  const create = () => createStickers({ home, ctx, findAgent: () => agent, defaultSession: () => 'a', log: x => logs.push(x) })
-  return { home, ctx, agent, requests, logs, lib: create(), create, result: x => { result = x }, close: () => rmSync(home, {recursive:true,force:true}) }
+  let resolveAgent = () => agent
+  const create = () => createStickers({ home, ctx, findAgent: id => resolveAgent(id), defaultSession: () => 'a', log: x => logs.push(x) })
+  const lib=create();lib.settings({processingSession:'a'})
+  return { resolve: fn => { resolveAgent = fn }, home, pictures:join(home,'BigFish','表情包'), ctx, agent, requests, logs, lib, create, result: x => { result = x }, close: () => rmSync(home, {recursive:true,force:true}) }
 }
 test('表情原文件、去重、来源隔离、持久保存与元数据更新', () => {
   const f=fixture();try {
     const a=f.lib.add({bytes:gif,name:'开心.gif',scope:'a',tags:'开心,开心',scenes:'祝贺'})
     assert.equal(f.lib.add({bytes:gif,scope:'a'}).id,a.id)
     assert.notEqual(f.lib.add({bytes:gif,scope:'b'}).id,a.id)
-    assert.deepEqual(readFileSync(join(f.home,'qq-stickers',a.id+'.gif')),gif)
+    assert.deepEqual(readFileSync(join(f.pictures,a.id+'.gif')),gif)
     f.lib.update(a.id,{tags:['庆祝'],name:'庆祝'});assert.deepEqual(f.create().view().items[0].tags,['庆祝'])
     assert.throws(()=>f.lib.add({bytes:Buffer.from('<svg/>')}),/只接受/)
     assert.throws(()=>f.lib.add({bytes:Buffer.alloc(9*1048576)}),/8 MB/)
@@ -64,7 +68,7 @@ test('自动收藏独立于回复：识别表情、保留 GIF、去重、普通�
   const face={message_id:1,message:[{type:'mface',data:{file:'base64://'+gif.toString('base64'),summary:'开心'}}]}
   f.lib.capture(face,'a','source-a');await settle();assert.equal(f.lib.view().items.length,0)
   f.lib.settings({autoCollect:true});f.lib.capture(face,'a','source-a');await settle()
-  const item=f.lib.view().items[0];assert.equal(item.scope,'a');assert.equal(item.source,'source-a');assert.deepEqual(readFileSync(join(f.home,'qq-stickers',item.id+'.gif')),gif)
+  const item=f.lib.view().items[0];assert.equal(item.scope,'a');assert.equal(item.source,'source-a');assert.deepEqual(readFileSync(join(f.pictures,item.id+'.gif')),gif)
   f.lib.capture({...face,message_id:2},'a','source-a');await settle();assert.equal(f.lib.view().items.length,1)
   const plain={message_id:3,message:[{type:'image',data:{file:'base64://'+Buffer.concat([gif,Buffer.from('more')]).toString('base64')}}]}
   f.lib.capture(plain,'a','source-a');await settle();assert.equal(f.lib.view().items.length,1)
@@ -129,7 +133,7 @@ test('进行中的选图遵守关闭开关；标注遵守手动编辑版本',asy
 })
 
 
-test('共享表情自动复用绑定 DeepSeek，旧视觉配置不再改变路由',async()=>{
+test('素材处理会话使用现有 DeepSeek，旧视觉配置不再改变路由',async()=>{
  const f=fixture();try{
   f.agent.options={provider:'deepseek',model:'bound-session-model'}
   f.ctx.attachments={async admitPromptContent(content){return content}}
@@ -163,4 +167,61 @@ test('扫描只识别未打标签素材，超过 32 张完整排队且重复扫�
   assert.deepEqual(items.find(x=>x.id===manual.id).scenes,[])
   f.lib.enqueueTags(undefined,false,true);assert.equal(f.requests.length,40)
  }finally{release?.();f.close()}
+})
+
+
+test('专用会话处理手动导入和扫描，自动命名短标题且保护人工标签，自动收藏仍使用原绑定',async()=>{
+ const f=fixture();try{
+  const processor={options:{provider:'deepseek',model:'processor-model'}},chat={...f.agent,options:{provider:'deepseek',model:'chat-model'}}
+  f.resolve(id=>id==='processor'?processor:id==='a'?chat:undefined)
+  assert.throws(()=>f.lib.settings({processingSession:'missing'}),/打开/)
+  f.lib.settings({processingSession:'processor'})
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  f.result({tags:['模型标签'],scenes:['安慰朋友'],description:'小猫歪头轻轻挥手并露出笑容很开心',category:'安慰陪伴'})
+  const routes=new Map()
+  f.lib.register({route:(path,handler)=>routes.set(path,handler),protect:fn=>fn,json:(res,value)=>res.end(JSON.stringify(value)),config:()=>({绑定:[{会话:'a'}]})})
+  const call=async(path,body)=>{let raw;const req=Readable.from([JSON.stringify(body)]);Object.assign(req,{method:'POST',url:'/dsh-qq-bridge/stickers'+path});await routes.get(req.url)(req,{setHeader(){},end(value){raw=value}});return JSON.parse(raw)}
+  await call('/import',{base64:gif.toString('base64'),scope:'a',tags:'人工标签',name:'不接受上传名称',scenes:['不接受上传场景']})
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  const item=f.lib.view().items[0]
+  assert.equal(item.tagStatus,'complete');assert.deepEqual(item.tags,['人工标签']);assert.ok(item.name.startsWith('人工标签-'));assert.ok(Array.from(item.name).length<=23)
+  assert.equal(item.category,'安慰陪伴');assert.equal(item.autoName,false)
+  assert.equal(f.requests[0].sessionId,'processor');assert.equal(f.requests[0].model,'processor-model');assert.equal(f.requests[0].messages.length,1)
+  assert.deepEqual(f.requests[0].messages[0].content.filter(x=>x.type==='image').length,1)
+  const scanned=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('scan')]),scope:'a'})
+  await call('/tag',{onlyUntagged:true});for(let i=0;i<40;i++)await new Promise(setImmediate)
+  assert.equal(f.requests[1].sessionId,'processor');assert.equal(f.lib.view().items.find(x=>x.id===scanned.id).tagStatus,'complete')
+  f.lib.settings({autoTag:true});f.lib.add({bytes:Buffer.concat([gif,Buffer.from('auto')]),scope:'a'})
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  assert.equal(f.requests[2].sessionId,'a');assert.equal(f.requests[2].model,'chat-model')
+  f.lib.settings({autoSend:true});f.result({id:item.id});await f.lib.select('安慰朋友','a');assert.equal(f.requests[3].sessionId,'a')
+  f.lib.settings({processingSession:''})
+  const before=f.lib.view().items.length;await assert.rejects(call('/import',{base64:gif.toString('base64')}),/素材处理会话/);assert.equal(f.lib.view().items.length,before)
+ }finally{f.close()}
+})
+
+test('命名失败保留原图和待处理状态，可在专用会话重试成功',async()=>{
+ const f=fixture();try{
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  f.result({tags:['开心'],scenes:['庆祝']})
+  const item=f.lib.add({bytes:gif,manualImport:true})
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  let current=f.lib.view().items[0];assert.equal(current.tagStatus,'error');assert.equal(current.autoName,true);assert.match(current.tagError,/命名/)
+  assert.deepEqual(readFileSync(join(f.pictures,item.id+'.gif')),gif)
+  f.result({tags:['开心'],scenes:['庆祝'],description:'猫猫挥手',category:'问候告别'});assert.equal(f.lib.add({bytes:gif,manualImport:true}).id,item.id)
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  current=f.lib.view().items[0];assert.equal(current.name,'开心-猫猫挥手');assert.equal(current.tagStatus,'complete')
+ }finally{f.close()}
+})
+
+test('原图存入 BigFish 专用文件夹，旧图迁移保留备份，冲突与缺失工作区不覆盖数据',()=>{
+ const f=fixture();try{
+  const item=f.lib.add({bytes:gif}),target=join(f.pictures,item.id+'.gif'),legacy=join(f.home,'qq-stickers',item.id+'.gif')
+  writeFileSync(legacy,gif);rmSync(target)
+  assert.equal(f.create().view().storage.path,f.pictures);assert.deepEqual(readFileSync(target),gif);assert.equal(existsSync(legacy),true)
+  writeFileSync(target,Buffer.concat([gif,Buffer.from('conflict')]))
+  const conflict=f.create();assert.match(conflict.view().storage.error,/不一致/);assert.throws(()=>conflict.remove(item.id),/不一致/);assert.equal(conflict.view().items.length,1)
+  rmSync(join(f.home,'storages/workspace.json'))
+  const missing=f.create();assert.match(missing.view().storage.error,/BigFish/);assert.throws(()=>missing.add({bytes:Buffer.concat([gif,Buffer.from('new')])}),/BigFish/);assert.equal(missing.view().items.length,1)
+ }finally{f.close()}
 })

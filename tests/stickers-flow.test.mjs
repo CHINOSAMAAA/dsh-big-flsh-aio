@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createStickers } from '../modules/qq/lib/stickers.mjs'
@@ -12,6 +12,7 @@ test('实际宿主代码 + 模拟 QQ：未点名表情收藏 → 视觉标签分
  const sid='session-sticker-flow',gif=Buffer.from('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==','base64')
  const config={NapCat:'http://127.0.0.1:3000',总开关:true,试运行:false,发图:true,转群:true,合并窗口秒:0,拆段间隔毫秒:0,群里听所有人:false,绑定:[{类型:'群',号码:'654321',会话:sid,只听点名:true}]}
  try{
+  mkdirSync(join(home,'storages'));mkdirSync(join(home,'BigFish'));writeFileSync(join(home,'storages/workspace.json'),JSON.stringify({tables:{workspaces:{fish:{path:join(home,'BigFish')}}}}))
   process.env.DSH_HOME=home;writeFileSync(join(home,'qq-bridge-config.json'),JSON.stringify(config));recordSource(home,config,'998877',config.绑定[0],'verified',['123456'])
   const agent={session:{id:sid,snapshotEvents:()=>events},options:{provider:'fake',model:'vision'},async followup(message){turns.push(message);events.push({type:'user/message',data:message})}}
   const ctx={effect(fn){const off=fn();if(off)cleanups.push(off)},on:()=>()=>{},interval(fn){tick=fn;return()=>{}},webServer:{register(){return()=>{}}},agents:{get:id=>id===sid?agent:undefined},sessions:{flush:async()=>{}},logger:{info(){}},get(name){return name==='connection'?{requestRejection:()=>undefined}:this[name]},attachments:{async admitPromptContent(content){return content}},
