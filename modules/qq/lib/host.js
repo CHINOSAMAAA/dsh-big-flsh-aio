@@ -1512,7 +1512,9 @@ export function apply(ctx) {
     if (配置.发图 && !几张 && 净文 && binding && exclusiveBinding(配置.绑定, binding.会话) && (binding.类型 === '群' ? 配置.转群 : 配置.转私聊)) {
       try { 自动表情 = await stickers.select(净文, binding.会话) } catch (e) { 记账('自动表情不可用，本轮只发正文：' + e.message) }
     }
-    const 结果 = await 发到QQ(配置, 待发文字, 图们, 方向, 自动表情)
+    const 最新配置 = binding && 配置.发图 && !几张 && 净文 ? 读配置() : 配置, 最新绑定 = exclusiveBinding(最新配置.绑定, 方向)
+    if (!最新配置.总开关 || 最新配置.试运行 || endpointKey(最新配置) !== endpointKey(配置) || !最新绑定 || 最新绑定.类型 !== binding?.类型 || 最新绑定.号码 !== binding?.号码) return 记账('选图期间收发配置或绑定发生变化，本轮取消发送')
+    const 结果 = await 发到QQ(最新配置, 待发文字, 图们, 方向, 最新配置.发图 ? 自动表情 : [])
     const 全过 = 结果.length > 0 && 结果.every((r) => r.ok)
     if (结果.length === 0) {
       记账('这一边（' + (方向 || '私聊+群') + '）没开或没填号，或者这轮既没有文字也没有图（而且图都没转成）：没地方发')

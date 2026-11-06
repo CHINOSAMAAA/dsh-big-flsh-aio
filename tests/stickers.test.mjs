@@ -23,6 +23,7 @@ test('表情原文件、去重、来源隔离、持久保存与元数据更新',
     f.lib.update(a.id,{tags:['庆祝'],name:'庆祝'});assert.deepEqual(f.create().view().items[0].tags,['庆祝'])
     assert.throws(()=>f.lib.add({bytes:Buffer.from('<svg/>')}),/只接受/)
     assert.throws(()=>f.lib.add({bytes:Buffer.alloc(9*1048576)}),/8 MB/)
+    const snapshot=JSON.parse(readFileSync(join(f.home,'qq-stickers/catalog.json'),'utf8'));snapshot.items=snapshot.items.filter(x=>x.id!==a.id);writeFileSync(join(f.home,'qq-stickers/catalog.json'),JSON.stringify(snapshot));assert.equal(f.lib.add({bytes:gif,scope:'a'}).id,a.id,'崩溃留下的原文件可重新入库')
     f.lib.remove(a.id);assert.equal(f.lib.view().items.length,1)
     writeFileSync(join(f.home,'qq-stickers/catalog.json'),'broken')
     assert.throws(()=>f.lib.add({bytes:gif}),/JSON/);assert.equal(readFileSync(join(f.home,'qq-stickers/catalog.json'),'utf8'),'broken')
@@ -92,5 +93,37 @@ test('自动视觉标签：真实图片入参、已有标签保护、错误重�
   f.ctx.llm.stream=async function*(){await gate;yield{type:'text-delta',text:JSON.stringify({tags:['迟到'],scenes:['迟到结果']})}}
   const c=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('c')]),scope:'a'});await new Promise(setImmediate);f.lib.remove(c.id);release();await wait();assert.ok(!f.lib.view().items.some(x=>x.id===c.id))
   assert.throws(()=>f.lib.settings({visionProvider:'provider'}),/同时/)
+ }finally{f.close()}
+})
+
+test('自动分类随导入、编辑和视觉结果更新；手动分类不被覆盖',async()=>{
+ const f=fixture();try{
+  f.lib.settings({autoClassify:true})
+  const a=f.lib.add({bytes:gif,scope:'a',tags:'开心,庆祝',scenes:'恭喜朋友'})
+  assert.equal(f.lib.view().items[0].category,'开心庆祝')
+  f.lib.update(a.id,{tags:['抱抱'],scenes:['安慰朋友']});assert.equal(f.lib.view().items[0].category,'安慰陪伴')
+  f.lib.update(a.id,{category:'日常互动'});f.lib.update(a.id,{tags:['生气']});f.lib.classify();assert.equal(f.lib.view().items[0].category,'日常互动')
+  f.lib.update(a.id,{category:''});assert.notEqual(f.lib.view().items[0].categorySource,'manual')
+  assert.throws(()=>f.lib.update(a.id,{category:'<script>'}),/不支持/)
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  f.result({tags:['惊讶'],scenes:['看到意外消息'],category:'惊讶震惊'})
+  const b=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('classified')]),scope:'a'})
+  f.lib.enqueueTags(b.id);for(let i=0;i<40;i++)await new Promise(setImmediate)
+  assert.equal(f.lib.view().items.find(x=>x.id===b.id).category,'惊讶震惊')
+  assert.equal(f.lib.view().items.find(x=>x.id===b.id).categorySource,'vision')
+ }finally{f.close()}
+})
+
+test('进行中的选图遵守关闭开关；标注遵守手动编辑版本',async()=>{
+ const f=fixture();try{
+  const a=f.lib.add({bytes:gif,scope:'a'});f.lib.settings({autoSend:true})
+  let release;let gate=new Promise(r=>release=r)
+  f.ctx.llm.stream=async function*(){await gate;yield{type:'text-delta',text:JSON.stringify({id:a.id,tags:['模型标签'],scenes:['安慰']})}}
+  const pending=f.lib.select('可以抱抱吗','a');await new Promise(setImmediate);f.lib.settings({autoSend:false});release();assert.deepEqual(await pending,[])
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  gate=new Promise(r=>release=r);f.lib.enqueueTags(a.id);await new Promise(setImmediate);f.lib.update(a.id,{tags:['手动保留']});release();for(let i=0;i<40;i++)await new Promise(setImmediate)
+  assert.deepEqual(f.lib.view().items[0].tags,['手动保留']);assert.equal(f.lib.view().items[0].tagStatus,'error')
+  let calls=0;gate=new Promise(r=>release=r);f.ctx.llm.stream=async function*(){calls++;await gate;yield{type:'text-delta',text:JSON.stringify({tags:['开心'],scenes:['庆祝']})}}
+  f.lib.settings({autoTag:true});const b=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('paused-b')]),scope:'a'}),c=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('paused-c')]),scope:'a'});await new Promise(setImmediate);f.lib.settings({autoTag:false});release();for(let i=0;i<40;i++)await new Promise(setImmediate);assert.equal(calls,1);assert.equal(f.lib.view().items.find(x=>x.id===b.id).tagStatus,'cancelled');assert.equal(f.lib.view().items.find(x=>x.id===c.id).tagStatus,'cancelled')
  }finally{f.close()}
 })
