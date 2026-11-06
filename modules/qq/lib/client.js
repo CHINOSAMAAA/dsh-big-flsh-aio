@@ -141,6 +141,9 @@ window.__ModuleLoader__.load({
       // 新增状态放在 hook 列表末尾，避免影响旧测试和宿主的状态槽顺序。
       const [编辑行, 设编辑行] = React.useState(null)
       const [启动检查中, 设启动检查中] = React.useState(false)
+      const [新建映射, 设新建映射] = React.useState(null)
+      const [新建忙, 设新建忙] = React.useState(false)
+      const [新建错误, 设新建错误] = React.useState('')
       const saveRef = React.useRef(null)
       const 总开关校验 = React.useRef(0)
       const 编辑快照 = React.useRef(null)
@@ -238,6 +241,29 @@ window.__ModuleLoader__.load({
         编辑快照.current = { index: 下一份.length - 1, existed: false, row: null, dirtyBefore: 脏前 }
         设编辑行(下一份.length - 1)
         void 刷新会话()
+      }
+      const 打开新建 = (类型) => {
+        if (编辑行 != null) { 告知('请先完成当前的映射编辑'); return }
+        设新建错误('')
+        设新建映射({ 类型, 号码: '', 称呼: '', 门槛: false, 主动: false, 开: true })
+      }
+      const 创建映射 = async () => {
+        if (!新建映射 || 新建忙) return
+        const 号码 = String(新建映射.号码 || '').trim()
+        const 名称 = String(新建映射.称呼 || '').trim()
+        if (!/^[1-9]\d*$/.test(号码)) { 设新建错误(新建映射.类型 === '群' ? '请填写有效的群号' : '请填写有效的 QQ 号'); return }
+        if (!名称) { 设新建错误(新建映射.类型 === '群' ? '请填写群名' : '请填写 QQ 名'); return }
+        设新建忙(true); 设新建错误('')
+        try {
+          const r = await post('/create-session', { 名称: 名称 + ' - ' + 号码 })
+          if (!r || !r.ok) throw new Error((r && (r.说 || r.error)) || '创建会话失败')
+          const 行 = { 类型: 新建映射.类型, 号码, 会话: r.会话, 称呼: 名称, 门槛: Boolean(新建映射.门槛), 开: 新建映射.开 !== false }
+          if (新建映射.类型 === '群') 行.只听点名 = !新建映射.主动
+          设绑定([...绑定们(), 行])
+          设新建映射(null); 设编辑行(null)
+          告知('会话已创建，映射已加入草稿；请保存设置。', { tone: 'success' })
+          await 刷新会话()
+        } catch (e) { 设新建错误(e.message) } finally { 设新建忙(false) }
       }
       const 删绑定 = (i) => {
         设绑定(绑定们().filter((_, j) => j !== i))
@@ -494,7 +520,7 @@ window.__ModuleLoader__.load({
         'aria-disabled': 编辑行 != null || undefined,
         onClick: () => {
           if (编辑行 != null) { 告知('请先完成当前的映射编辑'); return }
-          加绑定(类型)
+          打开新建(类型)
         },
       }, 文字)
 
@@ -530,7 +556,7 @@ window.__ModuleLoader__.load({
 
       const 绑定提醒 = h('div', { className: 'qq-bind-reminder', role: 'note' },
         h('span', { className: 'qq-bind-reminder-icon', 'aria-hidden': true }, '!'),
-        h('span', null, '新增映射前请先在 DSH 中新建一个会话用于绑定聊天。'))
+        h('span', null, '点击添加映射后，会自动在工作区创建一间会话；创建后可在表格中修改会话。'))
 
       const 页签 = h('div', { className: 'fish-subnav', style: S.tabBar },
         ...页签们.map((名) => h('button', { type: 'button', key: 名, 'aria-pressed': 页 === 名, style: 页 === 名 ? S.btnOn : S.btn, onClick: () => 设页(名) }, 名)))
@@ -731,7 +757,27 @@ window.__ModuleLoader__.load({
             onChange: (e) => 改('人设', e.target.value),
           }),
         ),
-        h('div', { className: 'qq-binding-groups' }, 私聊卡, 群卡),
+        h('div', { className: 'qq-binding-groups' }, 私聊卡, 群卡,
+        新建映射 ? h('div', { className: 'fish-modal', onMouseDown: (e) => { if (e.target === e.currentTarget && !新建忙) { 设新建映射(null); 设新建错误('') } } },
+          h('div', { className: 'fish-modal-card qq-bind-add-modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'qq-bind-add-title',
+            onKeyDown: (e) => { if (e.key === 'Escape' && !新建忙) { 设新建映射(null); 设新建错误('') } } },
+            h('span', { className: 'fish-kicker' }, 'BIND · 新建映射'),
+            h('h2', { id: 'qq-bind-add-title' }, 新建映射.类型 === '群' ? '添加群聊映射' : '添加私聊映射'),
+            h('div', { className: 'qq-bind-modal-fields' },
+              h('label', { className: 'qq-bind-modal-field' },
+                h('span', null, 新建映射.类型 === '群' ? '群号' : 'QQ 号'),
+                h('input', { style: S.wide, value: 新建映射.号码, inputMode: 'numeric', placeholder: 新建映射.类型 === '群' ? '填写群号' : '填写 QQ 号', onChange: (e) => 设新建映射(old => ({ ...old, 号码: e.target.value.trim() })) })),
+              h('label', { className: 'qq-bind-modal-field' },
+                h('span', null, 新建映射.类型 === '群' ? '群名' : 'QQ 名'),
+                h('input', { style: S.wide, value: 新建映射.称呼, placeholder: 新建映射.类型 === '群' ? '例如：大肥鱼后援群' : '例如：小明', onChange: (e) => 设新建映射(old => ({ ...old, 称呼: e.target.value })) })),
+              新建映射.类型 === '群' ? h('div', { className: 'qq-bind-modal-toggles' },
+                h('label', { className: 'qq-bind-modal-toggle' }, h('span', null, '启用回复门槛'), 勾(新建映射.门槛, (v) => 设新建映射(old => ({ ...old, 门槛: v })), '启用回复门槛')),
+                h('label', { className: 'qq-bind-modal-toggle' }, h('span', null, '主动回应'), 勾(新建映射.主动, (v) => 设新建映射(old => ({ ...old, 主动: v })), '主动回应'))) : null,
+              h('label', { className: 'qq-bind-modal-toggle' }, h('span', null, '启用收发'), 勾(新建映射.开 !== false, (v) => 设新建映射(old => ({ ...old, 开: v })), '启用收发'))),
+            新建错误 ? h('p', { className: 'fish-modal-error', role: 'alert' }, 新建错误) : null,
+            h('div', { className: 'fish-modal-actions' },
+              h('button', { type: 'button', className: 'fish-button fish-primary', disabled: 新建忙, onClick: () => { void 创建映射() } }, 新建忙 ? '创建中…' : '创建并绑定'),
+              h('button', { type: 'button', className: 'fish-button fish-modal-cancel', disabled: 新建忙, onClick: () => { 设新建映射(null); 设新建错误('') } }, '取消')))) : null),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '群聊频率与概率'),
           h('div', { style: S.dim },

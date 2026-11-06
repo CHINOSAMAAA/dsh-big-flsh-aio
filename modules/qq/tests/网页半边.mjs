@@ -302,7 +302,7 @@ let 绑定界面 = 渲绑定({})
 const 帮助们 = 找控件(绑定界面, n => n.p.className === 'qq-field-help')
 报('私聊 / 群聊称呼、回复门槛和主动回应都有自绘悬浮说明', 帮助们.length === 4 && 帮助们.every(n => typeof n.p.onMouseEnter === 'function' && n.p['data-help'] && n.p['aria-label']))
 报('主动回应说明保留引用和关键词，排除全体', 帮助们.some(n => n.p['data-help'].includes('引用大肥鱼') && n.p['data-help'].includes('点名关键词') && n.p['data-help'].includes('@全体不算')))
-报('绑定页常驻新建会话提醒', 可见文(绑定界面).includes('新增映射前请先在 DSH 中新建一个会话用于绑定聊天'))
+报('绑定页提示自动创建会话', 可见文(绑定界面).includes('点击添加映射后，会自动在工作区创建一间会话'))
 报('刷新会话列表按钮已删除', !找按钮(绑定界面, '刷新会话列表'))
 const 标记们 = 找控件(绑定界面, n => n.p.className === 'qq-bind-mark')
 报('非编辑态回复门槛与主动回应用勾叉而非开关', 标记们.length === 2 && 标记们.every(n => n.kids.includes('✓') || n.kids.includes('✗')) && !找控件(绑定界面, n => n.p['aria-label'] === '主动回应').length)
@@ -334,17 +334,15 @@ let 编辑界面 = 渲绑定编辑({})
 const 添加群钮 = 找按钮(绑定界面, '+ 添加群聊')
 报('非编辑态添加按钮可用', 添加群钮.p['aria-disabled'] == null)
 添加群钮.p.onClick()
-const 新群 = 状态槽[0].配置.绑定[状态槽[0].配置.绑定.length - 1]
-报('新群默认显式仅点名且不启用', 新群.类型 === '群' && 新群.只听点名 === true && 新群.开 === false)
 下标 = 0
-const 编辑树 = 组件()
-const 添加们 = 找控件(编辑树, n => n.t === 'button' && (n.kids.includes('+ 添加私聊') || n.kids.includes('+ 添加群聊')))
-报('编辑态添加按钮无效化并标记 aria-disabled', 添加们.length === 2 && 添加们.every(n => n.p['aria-disabled'] === true))
-const 前数 = 状态槽[0].配置.绑定.length
-添加们[0].p.onClick()
-报('编辑态点击添加不会新增映射', 状态槽[0].配置.绑定.length === 前数)
-报('编辑态操作列有保存和取消', 找控件(编辑树, n => n.t === 'button' && n.kids.includes('保存')).length === 1
-  && 找控件(编辑树, n => n.t === 'button' && n.kids.includes('取消')).length === 1)
+const 弹窗树 = 组件()
+const 弹窗 = 找控件(弹窗树, n => String(n.p?.className || '').includes('qq-bind-add-modal'))[0]
+const 弹窗文 = 可见文(弹窗)
+报('新增映射弹出竖向表单且不显示目标会话', Boolean(弹窗)
+  && ['添加群聊映射', '群号', '群名', '启用回复门槛', '主动回应', '启用收发'].every(x => 弹窗文.includes(x))
+  && !弹窗文.includes('目标会话'))
+报('新增映射表单不直接写入表格', 状态槽[0].配置.绑定.length === 初始态.配置.绑定.length)
+找按钮(弹窗树, '取消').p.onClick()
 
 // 删除先弹确认，取消保留，确认后才从草稿移除。
 let 删除确认参数 = null

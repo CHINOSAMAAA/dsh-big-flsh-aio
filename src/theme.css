@@ -3976,3 +3976,40 @@ body[data-ds-dark-theme] .big-fish .fish-button.fish-danger {
     animation-duration: 2.4s;
   }
 }
+
+/* 新建 QQ 映射：字段竖向排列，不显示目标会话。 */
+.big-fish .fish-modal-card.qq-bind-add-modal {
+  width: min(520px, 100%);
+}
+
+.big-fish .qq-bind-modal-fields {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0 4px;
+}
+
+.big-fish .qq-bind-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--fish-muted);
+  font-size: var(--fish-small);
+}
+
+.big-fish .qq-bind-modal-field input {
+  width: 100%;
+}
+
+.big-fish .qq-bind-modal-toggles {
+  display: grid;
+  gap: 10px;
+}
+
+.big-fish .qq-bind-modal-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--fish-muted);
+  font-size: var(--fish-small);
+}
