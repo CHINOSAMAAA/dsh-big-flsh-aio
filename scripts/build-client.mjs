@@ -9,6 +9,8 @@ const output = `// 自动生成：修改 src/panel.js 或 modules/*/lib/client.j
   `const FISH_THEME_CSS = ${JSON.stringify(read('src/theme.css'))};\n` +
   `const components = {};\nconst moduleLoader = { load({id, factory}) { components[id] = factory(require) } };\n` +
   read('src/stickers.js') + '\n' +
+  read('src/qq-storage.js') + '\n' +
+  read('src/controls.js') + '\n' +
   read('modules/qq/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
   read('modules/memory/lib/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +
   read('modules/mood/client.js').replaceAll('window.__ModuleLoader__.load(', 'moduleLoader.load(') + '\n' +

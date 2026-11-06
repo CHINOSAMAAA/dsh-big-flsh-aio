@@ -49,7 +49,6 @@ window.__ModuleLoader__.load({
       warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: 16, marginBottom: 16 },
       已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
       未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
-      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 'var(--fish-radius-mid)', border: '1px solid var(--fish-border)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
       btn: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-control-fill)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
@@ -107,18 +106,25 @@ window.__ModuleLoader__.load({
 
     // ---------- 设置页 ----------
 
-    function Section() {
+    function Section({ guard, notify } = {}) {
       const [态, 设态] = React.useState(null)
-      const [说, 设说] = React.useState('')
+      const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
       const [忙, 设忙] = React.useState(false)
       // 次要路径（手填 id）的草稿：null = 没动过，直接显示配置里那份
       const [手填, 设手填] = React.useState(null)
       // 「改了但还没按保存」——填了不按保存等于没填，这个标志就是让这件事写在脸上
       const [脏, 设脏] = React.useState(false)
       const [同步话, 设同步话] = React.useState('')
+      const saveRef = React.useRef(null)
+
+      React.useEffect(() => {
+        if (!guard) return
+        guard.current = { dirty: 脏, save: () => saveRef.current?.() }
+        return () => { if (guard) guard.current = { dirty: false, save: null } }
+      }, [脏, guard])
 
       const 拉 = React.useCallback(
-        () => get('/state').then((r) => { if (r && r.ok) 设态(r); else 设说('读不到宿主那边的状态（插件加载了吗？）') }),
+        () => get('/state').then((r) => { if (r && r.ok) 设态(r); else 告知('读不到宿主那边的状态（插件加载了吗？）', { holdMs: 6000 }) }),
         [],
       )
 
@@ -192,19 +198,22 @@ window.__ModuleLoader__.load({
           设手填(null)
           设脏(false)
           设同步话('已保存')
-          设说(r.说 || '保存好了')
-        } else {
-          设说((r && r.说) || '保存失败')
-          设同步话('保存失败 ✗')
+          告知(r.说 || '保存好了', { tone: 'success' })
+          设忙(false)
+          return true
         }
+        告知((r && r.说) || '保存失败', { holdMs: 6000 })
+        设同步话('保存失败 ✗')
         设忙(false)
+        return false
       }
+      saveRef.current = 存
 
       const 掷 = async (模式) => {
         设忙(true)
         const r = await post('/roll', { 模式 })
         if (r && r.ok) 设态((旧) => ({ ...旧, 日志: r.日志 }))
-        设说((r && r.说) || '跑完了')
+        告知((r && r.说) || '跑完了')
         设忙(false)
       }
 
@@ -223,7 +232,7 @@ window.__ModuleLoader__.load({
             活着的会话: r.活着的会话,
           }))
         }
-        设说((r && r.说) || '做完了')
+        告知((r && r.说) || '做完了')
         设忙(false)
       }
 
@@ -273,9 +282,11 @@ window.__ModuleLoader__.load({
 
         // 注意：「填了不按保存等于没填」这件事必须写在脸上（踩过坑：她在输入框里填了 id
         //   却没按保存，host 一直报「还没配目标会话」，而她不知道差在哪一步）
-        h('div', { style: 脏 ? S.未保存 : S.已同步 },
-          (脏 ? '有未保存的改动，请保存设置' : '设置' + (同步话 || '已同步')) +
-            '（勾选会话不用点保存，点一下立刻生效）'),
+        h('div', { className: 'fish-toolbar' },
+          h('span', { style: { ...(脏 ? S.未保存 : S.已同步), flex: '1 1 220px', margin: 0 } },
+            (脏 ? '有未保存的改动，请保存设置' : '设置' + (同步话 || '已同步')) +
+              '（勾选会话不用点保存，点一下立刻生效）'),
+          按钮('保存设置', 存, true, 忙)),
 
         // —— 总开关 + 试运行 ——
         h('div', { style: S.card },
@@ -481,7 +492,6 @@ window.__ModuleLoader__.load({
               '「演练一次」会完整走一遍判断（安静时段、概率、因子都跳过，一定走到最后一步），但绝不真发，' +
                 '只告诉你「本来要发什么」。「真发一次」会当场真的送出去一轮，用于验证能不能跑通。'),
           ),
-          说 ? h('div', { role: 'status', 'aria-live': 'polite', style: { ...S.ok, color: 'var(--fish-text)', marginTop: 6 } }, 说) : null,
         ),
 
         // —— 记录 ——
@@ -502,18 +512,6 @@ window.__ModuleLoader__.load({
         h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
           h('p', null, '模块版本 ' + String(态.版本 || '?')),
           h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),
-
-        // —— 悬浮的保存条：**只要有没保存的改动，就贴在底下冒出来** ——
-        // 她原话：「只要上面有改动，那个按钮就会在下面弹出来，就不用每次往下面翻了」。
-        // 注意：用 position: sticky + bottom: 0（不是 fixed）：它只在这张设置页里浮着，
-        //   不会跑到别的设置页上去。没改动（脏=false）就完全不渲染 —— 不挡视线。
-        脏
-          ? h('div', { style: S.悬浮保存条 },
-              h('span', { style: { fontWeight: 600, color: 'var(--fish-danger)' } }, '有未保存的改动'),
-              h('span', { style: S.dim }, '保存后生效'),
-              按钮('保存设置', 存, true, 忙),
-            )
-          : null,
       )
     }
 

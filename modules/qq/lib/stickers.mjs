@@ -1,7 +1,8 @@
-import { mkdirSync, readFileSync, writeFileSync, unlinkSync, existsSync, statSync } from 'node:fs'
-import { join, basename, isAbsolute } from 'node:path'
+import { mkdirSync, readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { writeFileAtomicSync } from './atomic-file.mjs'
+import { createWorkspaceBinding } from './workspace.mjs'
 
 const MAX_BYTES = 8 * 1024 * 1024
 const DEFAULTS = { autoSend: false, cooldownSeconds: 120, autoCollect: false, collectAllImages: false, autoTag: false, autoClassify: false, processingSession: '' }
@@ -32,7 +33,7 @@ export function categorize(item) {
   return best ? CATEGORIES[scores.indexOf(best)] : '未分类'
 }
 
-export function createStickers({ home, ctx, findAgent, sourceFor = () => '', defaultSession = () => '', log = () => {} }) {
+export function createStickers({ home, ctx, workspace = createWorkspaceBinding({ home, ctx }), findAgent, sourceFor = () => '', defaultSession = () => '', log = () => {} }) {
   const dir = join(home, 'qq-stickers'), catalog = join(dir, 'catalog.json')
   const sent = new Map(), pending = new Set()
   const read = () => {
@@ -47,12 +48,8 @@ export function createStickers({ home, ctx, findAgent, sourceFor = () => '', def
   let pictures = ''
   const migrated = new Set()
   const pictureDirectory = () => {
-    if (pictures) return pictures
-    const registry = join(home, 'storages', 'workspace.json')
-    const workspaces = existsSync(registry) ? Object.values(JSON.parse(readFileSync(registry, 'utf8')).tables?.workspaces || {}) : []
-    const matches = workspaces.filter(w => w && typeof w.path === 'string' && /^(bigfish|bigbish)$/i.test(basename(w.path)))
-    if (matches.length !== 1 || !isAbsolute(matches[0].path) || !statSync(matches[0].path).isDirectory()) throw new Error('未找到唯一的 BigFish 工作区，请先在 DSH 中打开该工作区')
-    const target = join(matches[0].path, '表情包')
+    const target = join(workspace.directory(), '表情包')
+    if (target !== pictures) migrated.clear()
     mkdirSync(target, { recursive: true })
     return pictures = target
   }
@@ -65,6 +62,13 @@ export function createStickers({ home, ctx, findAgent, sourceFor = () => '', def
         else writeFileAtomicSync(target, bytes)
       }
       migrated.add(name)
+    }
+    if (!existsSync(target)) {
+      // Switching the home workspace changes new writes; existing originals remain readable in their registered workspace.
+      for (const old of workspace.list()) {
+        const path = join(old.path, '表情包', name)
+        if (existsSync(path)) return path
+      }
     }
     return target
   }
@@ -330,5 +334,5 @@ export function createStickers({ home, ctx, findAgent, sourceFor = () => '', def
     post('edit', body => update(body.id, body))
     post('remove', body => remove(body.id))
   }
-  return { view, add, update, remove, settings, select, infer, capture, enqueueTags, classify, register }
+  return { view, add, update, remove, settings, select, infer, capture, enqueueTags, classify, register, folder: pictureDirectory }
 }

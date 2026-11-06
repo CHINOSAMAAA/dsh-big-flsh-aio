@@ -9,10 +9,10 @@ import { createSelfUpdate } from '../lib/selfupdate.mjs'
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('整合包只注册一个侧栏和主面板，六个入口直接挂载四个模块', () => {
+test('整合包只注册一个侧栏和主面板，八个入口直接挂载四个模块', () => {
   let plugin, index = 0
-  const states = [0, [0, 1, 2, 3, 4, 5]]
-  const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: () => [states[index++], () => {}], useEffect() {} }
+  const states = [0, [0, 1, 2, 3, 4, 5, 6, 7]]
+  const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: init => [index in states ? states[index++] : (index++, init), () => {}], useEffect() {}, useLayoutEffect() {}, useRef: value => ({ current: value }) }
   vm.runInNewContext(read('../client.js'), { window: { __ModuleLoader__: { load: ({ id, factory }) => {
     assert.equal(id, 'dsh-big-flsh-aio'); plugin = factory(() => React)
   } } } })
@@ -24,19 +24,24 @@ test('整合包只注册一个侧栏和主面板，六个入口直接挂载四�
   const nodes = []
   const walk = x => { if (x && typeof x === 'object') { nodes.push(x); for (const c of x.children || []) (Array.isArray(c) ? c : [c]).forEach(walk) } }
   walk(tree)
-  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '更新与来源'])
+  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '文件管理', '运行日志', '更新与来源'])
   const panels = nodes.filter(n => n.props?.role === 'tabpanel')
-  assert.equal(panels.length, 6)
+  assert.equal(panels.length, 8)
   assert.equal(panels[1].children[0].type.name, 'Section')
   assert.equal(panels[2].children[0].type.name, 'Section')
   assert.equal(panels[3].children[0].type.name, 'MoodSection')
   assert.equal(panels[4].children[0].type.name, 'Section')
-  const updates = panels[5].children[0].type
+  const updates = panels[7].children[0].type
   const compatReact = [null, false, '', 'mirror']; index = 0; React.useState = () => [compatReact[index++], () => {}]; React.useEffect = () => {}
   const htmlTree = JSON.stringify(updates())
   const meta = JSON.parse(read('../package.json'))
-  for (const source of meta.upstreamCompatibility) { assert.ok(htmlTree.includes(source.url)); assert.ok(htmlTree.includes(source.forkUrl || source.modulePath)); assert.ok(htmlTree.includes(source.version)); assert.ok(htmlTree.includes(source.commit.slice(0, 7))) }
-  assert.ok(htmlTree.includes(meta.repositoryVersion) && htmlTree.includes(meta.version))
+  for (const source of meta.upstreamCompatibility) {
+    assert.ok(htmlTree.includes(source.url))
+    if (source.forkUrl) assert.ok(htmlTree.includes(source.forkUrl))
+    else assert.ok(htmlTree.includes('"-"'), '直接使用原作者仓库的子仓库列显示 -')
+    assert.ok(htmlTree.includes(source.version)); assert.ok(htmlTree.includes(source.commit.slice(0, 7)))
+  }
+  assert.equal(htmlTree.includes('仓库 v' + meta.repositoryVersion + ' / npm 包 v' + meta.version), false)
   const overviewStates = [{ memory: { sessions: [{ id: 'a', storeId: 'shared', count: 3 }, { id: 'b', storeId: 'shared', count: 3 }] } }, false]
   index = 0; React.useState = () => [overviewStates[index++], () => {}]
   const overview = JSON.stringify(panels[0].children[0].type({ navigate() {} }))

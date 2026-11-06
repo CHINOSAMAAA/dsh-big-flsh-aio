@@ -41,7 +41,6 @@ window.__ModuleLoader__.load({
       warn: { color: 'var(--fish-warning)', border: '1px solid var(--fish-border)', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)', padding: 16, marginBottom: 16 },
       已同步: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-success)' },
       未保存: { margin: '8px 0 20px', fontSize: 'var(--fish-small)', color: 'var(--fish-warning)', fontWeight: 550 },
-      悬浮保存条: { position: 'sticky', bottom: 12, marginTop: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '16px 20px', borderRadius: 'var(--fish-radius-mid)', border: '1px solid var(--fish-border)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-shadow)', zIndex: 5 },
       btn: { border: '1px solid var(--fish-border)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-control-fill)', color: 'var(--fish-text)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       btnOn: { border: '1px solid var(--fish-action)', borderRadius: 'var(--fish-radius-sm)', padding: '8px 16px', background: 'var(--fish-action)', color: 'var(--fish-on-accent)', fontSize: 'var(--fish-label)', cursor: 'pointer' },
       tabBar: { display: 'flex', gap: 8, overflowX: 'auto', margin: '16px 0 24px', paddingBottom: 16, borderBottom: '1px solid var(--fish-border)' },
@@ -64,65 +63,69 @@ window.__ModuleLoader__.load({
       h('div', { className: 'fish-form-row', style: S.row }, h('div', { className: 'fish-form-label', style: S.lab }, 标签), h('div', { className: 'fish-control', style: S.ctl }, (['input', 'select', 'textarea'].includes(控件?.type) ? React.cloneElement(控件, { 'aria-label': 标签 }) : 控件), 说明 ? 提示(说明) : null))
     const 按钮 = (文字, onClick, 亮, 关) =>
       h('button', { type: 'button', className: 亮 ? 'fish-primary' : '', style: 亮 ? S.btnOn : S.btn, onClick, disabled: !!关, title: 文字 }, 文字)
-    const 勾 = (值, onChange, label = '切换设置') => h('input', {'aria-label': label, type: 'checkbox', role: 'switch', checked: !!值, onChange: (e) => onChange(e.target.checked) })
+    const 勾 = (值, onChange, label = '切换设置', disabled = false) => h('input', {'aria-label': label, type: 'checkbox', role: 'switch', checked: !!值, disabled, onChange: (e) => onChange(e.target.checked) })
     const 短id = (id) => {
       const s = String(id)
       return s.length <= 8 ? s : s.slice(-8)
     }
 
-    const 页签们 = ['连接', '绑定', '消息策略', '图片', '表情包', '语音转写', 'QQ 空间', '历史导入', '运行日志']
+    const 页签们 = ['连接', '绑定', '消息策略', '角色设定', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件']
 
-    function QQSpaceActions({ 配置, 脏 }) {
+    function QQSpaceActions({ 配置, 脏, notify }) {
       const [busy, setBusy] = React.useState(false)
+      // 旧的内联操作提示保留占位，实际消息已走 DSH Toast。
       const [message, setMessage] = React.useState('')
       const [images, setImages] = React.useState('')
-      const [content, setContent] = React.useState('')
-      const [right, setRight] = React.useState('4')
-      const [targets, setTargets] = React.useState('')
       const [qq, setQQ] = React.useState('')
       const [tid, setTid] = React.useState('')
       const [result, setResult] = React.useState('')
       const imageList = images.split(/\r?\n/).map(x => x.trim()).filter(Boolean)
+      const tell = (text, options) => { if (typeof notify === 'function') notify(text, options) }
       const run = async (path, body, read = false) => {
-        setBusy(true); setMessage('处理中…')
+        setBusy(true)
         try {
           const r = await post(path, body)
           if (!r?.ok) throw new Error(r?.说 || '请求失败，请检查后端连接')
           if (read) setResult(r.说)
-          setMessage(r.说 || '已完成')
-        } catch (e) { setMessage(e.message) }
+          tell(r.说 || '已完成', { tone: 'success' })
+        } catch (e) { tell('操作失败：' + e.message, { holdMs: 6000 }) }
         finally { setBusy(false) }
       }
       const imageField = 行('图片地址（每行一张）', h('textarea', { style: S.ta, value: images, placeholder: 'https://example.com/photo.jpg', onChange: e => setImages(e.target.value) }),
         '已填写 ' + imageList.length + ' / ' + 9 + ' 张。支持 HTTP(S) 地址和本地图片路径；空间配图路径由 QQ 后端读取。')
       const blocked = busy || 脏
-      return h('div', { className: 'fish-settings-stack' },
-        h('section', { style: S.card }, h('h2', null, '发布说说'),
-          行('说说正文', h('textarea', { style: S.ta, value: content, onChange: e => setContent(e.target.value), placeholder: '分享今天想说的话…' })), imageField,
-          行('可见范围', h('select', { style: S.wide, value: right, onChange: e => setRight(e.target.value) }, ...[['1','所有人'],['4','好友'],['16','部分可见'],['64','仅自己'],['128','部分不可见']].map(([value, label]) => h('option', { key: value, value }, label)))),
-          ['16','128'].includes(right) ? 行('QQ 号名单', h('input', { style: S.wide, value: targets, onChange: e => setTargets(e.target.value), placeholder: '多个 QQ 号用逗号或空格分隔' })) : null,
-          h('div', { className: 'fish-actions' }, 按钮('发布到 QQ 空间', () => run('/space', { action: 'qq_space_post', args: { content, images: imageList, ugc_right: Number(right), target_uins: targets.split(/[\s,，]+/).filter(Boolean) } }), true,
-            blocked || !配置.允许发空间动态 || (!content.trim() && !imageList.length) || imageList.length > 9 || (['16','128'].includes(right) && !targets.trim()))),
-          h('p', { style: S.dim }, 脏 ? '请先保存设置，再发布。' : '手动发布会立即发送，不受消息转发的试运行控制；受「允许发布 QQ 空间动态」控制。'),
-          h('p', { className: 'fish-message', role: 'status' }, message)),
-        h('section', { style: S.card }, h('h2', null, '浏览动态与评论'),
-          h('p', { style: S.dim }, '空间功能要求 QQ 后端支持相应接口；此处查看不会点赞或发表评论。'),
-          行('查看谁的空间', h('input', { style: S.wide, value: qq, inputMode: 'numeric', placeholder: '留空查看机器人自己的空间', onChange: e => setQQ(e.target.value) })),
-          h('div', { className: 'fish-actions' }, 按钮('查看好友动态', () => run('/space', { action: 'qq_space_feeds', args: { count: 20 } }, true), false, busy), 按钮('查看说说列表', () => run('/space', { action: 'qq_space_list', args: { qq, num: 20 } }, true), false, busy)),
-          行('说说 ID', h('input', { style: S.wide, value: tid, inputMode: 'numeric', placeholder: '填写上方说说列表中的 tid', onChange: e => setTid(e.target.value) })),
-          按钮('查看正文与评论', () => run('/space', { action: 'qq_space_detail', args: { qq, tid: Number(tid) } }, true), false, busy || !/^\d+$/.test(tid)),
-          h('pre', { className: 'fish-feed-result', role: 'status' }, result || '选择上方操作，动态会显示在这里。')))
+      if (配置.空间浏览开 === false) return null
+      return h('section', { className: 'fish-card qq-space-browse', style: S.card },
+        h('div', { className: 'qq-space-browse-head' },
+          h('h2', null, '浏览动态与评论'),
+          h('p', { className: 'fish-muted' }, '查看好友动态、说说正文和评论；此处只读，不会点赞或代发评论。')),
+        h('div', { className: 'qq-space-browse-grid' },
+          h('label', { className: 'qq-space-field' },
+            h('span', null, '查看谁的空间'),
+            h('input', { style: S.wide, value: qq, inputMode: 'numeric', placeholder: '留空查看机器人自己的空间', onChange: e => setQQ(e.target.value) })),
+          h('label', { className: 'qq-space-field' },
+            h('span', null, '说说 ID'),
+            h('input', { style: S.wide, value: tid, inputMode: 'numeric', placeholder: '填写说说列表中的 tid', onChange: e => setTid(e.target.value) }))),
+        h('div', { className: 'fish-actions qq-space-browse-actions' },
+          按钮('查看好友动态', () => run('/space', { action: 'qq_space_feeds', args: { count: 20 } }, true), false, busy),
+          按钮('查看说说列表', () => run('/space', { action: 'qq_space_list', args: { qq, num: 20 } }, true), false, busy),
+          按钮('查看正文与评论', () => run('/space', { action: 'qq_space_detail', args: { qq, tid: Number(tid) } }, true), false, busy || !/^\d+$/.test(tid))),
+        h('pre', { className: 'fish-feed-result', role: 'status' }, result || '选择上方操作，动态会显示在这里。'))
     }
 
-    function Section() {
+    function Section({ page, onPageChange, guard, notify, help, hideHelp, laterHideHelp, confirm, editRole, openRoleWriter, openFileManager, embedded = false } = {}) {
       const [态, 设态] = React.useState(null)
       const [脏, 设脏] = React.useState(false)
       const [忙, 设忙] = React.useState(false)
+      // 旧的内联提示状态保留占位：提示已改由 DSH Toast 显示，保持 hook 顺序与旧测试/宿主兼容。
       const [说, 设说] = React.useState('')
-      const [页, 设页] = React.useState('连接')
+      const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
+      const [localPage, setLocalPage] = React.useState('连接')
+      const 页 = page ?? localPage
+      const 设页 = onPageChange ?? setLocalPage
       const [asr, 设asr] = React.useState(null)
       const [asr忙, 设asr忙] = React.useState(false)
-      const [人设行, 设人设行] = React.useState(null) // 哪一行展开了「单独的人设」
+      const [群规则行, 设群规则行] = React.useState(null) // 哪一行展开了群规则
       const [人设忙, 设人设忙] = React.useState(false)
       const [人设说, 设人设说] = React.useState('')
       const [历史绑定, 设历史绑定] = React.useState('')
@@ -134,10 +137,19 @@ window.__ModuleLoader__.load({
       const [历史忙, 设历史忙] = React.useState(false)
       const [历史说, 设历史说] = React.useState('')
       const [历史控制] = React.useState({ stop: false, running: false })
+      const [已存绑定, 设已存绑定] = React.useState([])
+      // 新增状态放在 hook 列表末尾，避免影响旧测试和宿主的状态槽顺序。
+      const [编辑行, 设编辑行] = React.useState(null)
+      const [启动检查中, 设启动检查中] = React.useState(false)
+      const saveRef = React.useRef(null)
+      const 总开关校验 = React.useRef(0)
+      const 编辑快照 = React.useRef(null)
+      const 最新配置 = React.useRef(null)
+      最新配置.current = 态?.配置
 
       React.useEffect(() => {
         get('/history/jobs').then(r => r && r.ok && 设历史列表(r.jobs))
-        return () => { 历史控制.stop = true }
+        return () => { 历史控制.stop = true; 总开关校验.current += 1 }
       }, [])
 
       React.useEffect(() => {
@@ -155,26 +167,55 @@ window.__ModuleLoader__.load({
 
       const 拉 = async () => {
         const s = await get('/state')
-        if (s) 设态(s)
+        if (s) { 设态(s); 设已存绑定(Array.isArray(s.配置?.绑定) ? s.配置.绑定 : []); 设编辑行(null); 编辑快照.current = null }
+      }
+      // 只刷新会话下拉需要的数据，不覆盖正在编辑的绑定草稿。
+      const 刷新会话 = async () => {
+        const s = await get('/state')
+        if (!s) return
+        设态(旧 => 旧 ? {
+          ...旧,
+          活着的会话: Array.isArray(s.活着的会话) ? s.活着的会话 : 旧.活着的会话,
+          日志: Array.isArray(s.日志) ? s.日志 : 旧.日志,
+          NapCat状态: s.NapCat状态 ?? 旧.NapCat状态,
+          工作区列表: Array.isArray(s.工作区列表) ? s.工作区列表 : 旧.工作区列表,
+          工作区错误: s.工作区错误 || '',
+        } : 旧)
       }
       // ⭐ 1.1.2：人设「现在就生效」—— 不用等 QQ 那边来一条消息
-      const 人设现在生效 = async () => {
+      const 应用人设 = async () => {
         设人设忙(true)
-        设人设说('')
         const r = await post('/persona-apply', {})
         设人设忙(false)
         if (!r || !r.ok) {
-          设人设说('失败：' + ((r && r.说) || '请求未响应'))
+          告知('角色设定应用失败：' + ((r && r.说) || '请求未响应'), { holdMs: 6000 })
           return
         }
         const 行们 = Array.isArray(r.结果们) ? r.结果们 : []
         if (!行们.length) {
-          设人设说('暂无会话绑定')
+          告知('暂无可以应用角色设定的会话绑定')
           return
         }
         const 不顺 = 行们.filter((x) => !x.生效)
-        设人设说((r.生效 ? '' + r.生效 + ' 个会话已应用' : '未应用到任何会话')
-          + (不顺.length ? '；' + 不顺.map((x) => x.聊天 + '：' + x.说).join('；') : ''))
+        告知((r.生效 ? '' + r.生效 + ' 个会话已应用' : '未应用到任何会话')
+          + (不顺.length ? '；' + 不顺.map((x) => x.聊天 + '：' + x.说).join('；') : ''), { tone: r.生效 ? 'success' : undefined })
+      }
+      const 切换人设 = async (v) => {
+        if (人设忙 || 忙) return
+        if (v && !String(配置.人设 || '').trim()) {
+          告知('请先填写全局角色设定，再打开开关', { holdMs: 6000 })
+          return
+        }
+        const 旧状态 = Boolean(配置.人设开)
+        if (Boolean(v) === 旧状态) return
+        const 下一份配置 = { ...((态 && 态.配置) || {}), 人设开: Boolean(v) }
+        改('人设开', Boolean(v))
+        const 保存成功 = await 存(下一份配置)
+        if (!保存成功) {
+          改('人设开', 旧状态)
+          return
+        }
+        await 应用人设()
       }
       const 改 = (k, v) => {
         设态((旧) => (旧 ? { ...旧, 配置: { ...(旧.配置 || {}), [k]: v } } : 旧))
@@ -187,25 +228,93 @@ window.__ModuleLoader__.load({
       }
       const 设绑定 = (下一份) => 改('绑定', 下一份)
       const 改绑定 = (i, 补) => 设绑定(绑定们().map((x, j) => (j === i ? { ...x, ...补 } : x)))
-      const 加绑定 = () => 设绑定([...绑定们(), { 类型: '群', 号码: '', 会话: '', 称呼: '', 门槛: false }])
-      const 删绑定 = (i) => 设绑定(绑定们().filter((_, j) => j !== i))
+      const 加绑定 = (类型 = '群') => {
+        const 脏前 = 脏
+        const 新行 = { 类型, 号码: '', 会话: '', 称呼: '', 门槛: false, 开: false }
+        // 群聊的收消息范围改为每条绑定自己说了算；新群默认仅点名（主动回应关闭）。
+        if (类型 === '群') 新行.只听点名 = true
+        const 下一份 = [...绑定们(), 新行]
+        设绑定(下一份)
+        编辑快照.current = { index: 下一份.length - 1, existed: false, row: null, dirtyBefore: 脏前 }
+        设编辑行(下一份.length - 1)
+        void 刷新会话()
+      }
+      const 删绑定 = (i) => {
+        设绑定(绑定们().filter((_, j) => j !== i))
+        设编辑行(old => old === null ? null : old === i ? null : old > i ? old - 1 : old)
+        const 快照 = 编辑快照.current
+        if (快照) {
+          if (快照.index === i) 编辑快照.current = null
+          else if (快照.index > i) 快照.index--
+        }
+        void 刷新会话()
+      }
+      const 开始编辑 = (i) => {
+        const 目标 = 绑定们()[i]
+        if (!目标) return
+        编辑快照.current = { index: i, existed: true, row: { ...目标 }, dirtyBefore: 脏 }
+        设编辑行(i)
+        void 刷新会话()
+      }
+      const 结束编辑 = () => {
+        const 快照 = 编辑快照.current
+        if (快照 && 快照.index != null) {
+          const 当前 = 绑定们()
+          if (!快照.existed) 设绑定(当前.filter((_, j) => j !== 快照.index))
+          else if (当前[快照.index]) 设绑定(当前.map((x, j) => j === 快照.index ? 快照.row : x))
+          设脏(快照.dirtyBefore)
+        }
+        设编辑行(null)
+        编辑快照.current = null
+        void 刷新会话()
+      }
+      const 取消行编辑 = async () => {
+        if (typeof confirm !== 'function') { 结束编辑(); return }
+        const ok = await confirm({
+          title: '是否取消编辑？',
+          description: '当前行尚未保存的修改将被撤销。',
+          confirmText: '取消编辑',
+          cancelText: '继续编辑',
+        })
+        if (ok) 结束编辑()
+      }
 
-      const 存 = async () => {
+      const 存 = async (覆盖配置) => {
         设忙(true)
-        const s = await post('/save', (态 && 态.配置) || {})
+        const 当前配置 = 覆盖配置 || (态 && 态.配置) || {}
+        // 旧群没有 只听点名 时沿用全局「群里听所有人」。首次保存把当前有效值固化到每条群绑定，
+        // 之后每条群都用「主动回应」自己的开关，不再需要在回复门槛里保留全局开关。
+        const 待存 = Array.isArray(当前配置.绑定)
+          ? { ...当前配置, 绑定: 当前配置.绑定.map(x => (x && (x.类型 || '群') === '群' && x.只听点名 == null)
+              ? { ...x, 只听点名: !当前配置.群里听所有人 }
+              : x) }
+          : 当前配置
+        const s = await post('/save', 待存)
         设忙(false)
         if (s && s.ok) {
           设态(s)
+          设已存绑定(Array.isArray(s.配置?.绑定) ? s.配置.绑定 : [])
+          设编辑行(null)
+          编辑快照.current = null
           设脏(false)
-          设说(s.说 || '设置已保存')
-        } else {
-          设说((s && s.说) || '保存失败')
+          告知(s.说 || '设置已保存', { tone: 'success' })
+          void 刷新会话()
+          return true
         }
+        if (s?.启动检查失败) 改('总开关', false)
+        告知((s && s.说) || '保存失败', { holdMs: s?.启动检查失败 ? 14000 : 6000 })
+        return false
       }
+      saveRef.current = 存
+      React.useEffect(() => {
+        if (!guard) return
+        guard.current = { dirty: 脏, save: () => saveRef.current?.() }
+        return () => { if (guard) guard.current = { dirty: false, save: null } }
+      }, [脏, guard])
       const 装语音 = async () => {
         设asr忙(true)
         const r = await post('/asr-install', {})
-        设说((r && r.说) || '任务已启动')
+        告知((r && r.说) || '任务已启动', { tone: 'success' })
         设asr忙(false)
         const s2 = await get('/asr-status')
         if (s2) 设asr(s2)
@@ -216,18 +325,18 @@ window.__ModuleLoader__.load({
         if (r && r.就绪 && r.命令) {
           改('语音转写', true)
           改('转写命令', r.命令)
-          设说(String(配置.语音模型目录 || '').trim()
+          告知(String(配置.语音模型目录 || '').trim()
             ? '命令已填写，请保存设置'
             : '请填写语音模型目录后重新生成命令')
-        } else if (r && !r.就绪) 设说('请先安装语音依赖')
-        else 设说('无法读取状态')
+        } else if (r && !r.就绪) 告知('请先安装语音依赖')
+        else 告知('无法读取状态')
       }
 
       const 试一句 = async () => {
         设忙(true)
         const s = await post('/test-send', {})
         设忙(false)
-        设说((s && s.说) || '请求未响应')
+        告知((s && s.说) || '请求未响应')
         await 拉()
       }
 
@@ -235,7 +344,6 @@ window.__ModuleLoader__.load({
 
       const 配置 = 态.配置 || {}
       const 目标们 = Array.isArray(态.活着的会话) ? 态.活着的会话 : []
-      const NapCat = 态.NapCat状态 || null
       const 日志 = Array.isArray(态.日志) ? 态.日志 : []
       const 绑定 = 绑定们()
 
@@ -246,6 +354,183 @@ window.__ModuleLoader__.load({
           值 && !目标们.some((s) => s.id === 值)
             ? h('option', { value: 值 }, '（当前：' + 短id(值) + '）')
             : null)
+
+      // ── 绑定表格：私聊和群聊分开，一行一条；长会话名也不换行 ──
+      const 私聊们 = 绑定.map((x, i) => ({ x, i })).filter(({ x }) => (x.类型 || '群') === '私聊')
+      const 群们 = 绑定.map((x, i) => ({ x, i })).filter(({ x }) => (x.类型 || '群') === '群')
+      const 私聊编辑中 = 编辑行 != null && 私聊们.some(({ i }) => i === 编辑行)
+      const 群编辑中 = 编辑行 != null && 群们.some(({ i }) => i === 编辑行)
+      const 点名开 = x => x.类型 === '群' && (x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名))
+      const 字段说明 = {
+        '称呼': '转给模型时对消息来源的描述，主要用于图片提示；例如私聊填“小明”，模型会看到“小明发来了图片”；群聊建议填“群友”等统称。',
+        '回复门槛': '开启后，模型判断消息是否需要回复；未通过判断时不向 QQ 发送回复。',
+        '主动回应': '控制这个群是否只接收点名大肥鱼的消息。关闭后，通常需要 @大肥鱼、引用大肥鱼的消息，或正文命中配置的“点名关键词”才接收；@全体不算。开启后，普通群消息也可以进入后续处理。',
+      }
+      const 会话名 = (id) => {
+        if (!id) return '未选择会话'
+        const 会话 = 目标们.find((s) => s.id === id)
+        return 会话 ? (会话.标题 || '…' + 短id(会话.id)) : '…' + 短id(id)
+      }
+      const 状态标 = (开, 名称) => h('span', {
+        className: 'qq-bind-mark', 'data-on': 开 ? 'true' : 'false', role: 'img',
+        'aria-label': 名称 + (开 ? '：已开启' : '：未开启'),
+      }, 开 ? '✓' : '✗')
+      const 跳到回复门槛 = () => {
+        if (typeof hideHelp === 'function') hideHelp()
+        设页('消息策略')
+        let 尝试 = 0
+        const 滚动到卡片 = () => {
+          const 目标 = typeof document !== 'undefined' ? document.getElementById('qq-reply-threshold') : null
+          if (目标 && 目标.getClientRects().length) {
+            目标.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            目标.classList.remove('fish-jump-flash')
+            void 目标.offsetWidth
+            目标.classList.add('fish-jump-flash')
+            setTimeout(() => 目标.classList.remove('fish-jump-flash'), 1500)
+            return
+          }
+          if (++尝试 < 20) setTimeout(滚动到卡片, 60)
+        }
+        setTimeout(滚动到卡片, 80)
+      }
+      const 表头格 = 文字 => {
+        const 说明 = 字段说明[文字]
+        const 帮助链接 = 文字 === '回复门槛' ? { text: '点击跳转回复门槛设置', onClick: 跳到回复门槛 } : null
+        const 显示说明 = (e) => { if (typeof help === 'function') help(说明, e.currentTarget, 文字, 帮助链接) }
+        const 稍后收起 = () => {
+          if (typeof laterHideHelp === 'function') laterHideHelp()
+          else if (typeof hideHelp === 'function') hideHelp()
+        }
+        const 立即收起 = () => { if (typeof hideHelp === 'function') hideHelp() }
+        return h('div', { className: 说明 ? 'qq-bind-field-label' : undefined, style: S.表头字 }, 文字,
+          说明 ? h('button', {
+            type: 'button', className: 'qq-field-help',
+            'aria-label': 文字 + '说明：' + 说明, 'data-help': 说明,
+            onMouseEnter: 显示说明, onFocus: 显示说明, onClick: 显示说明,
+            onMouseLeave: 稍后收起, onBlur: 稍后收起,
+            onKeyDown: (e) => { if (e.key === 'Escape') 立即收起() },
+          }, '?') : null)
+      }
+
+      const 保存行 = async () => {
+        if (忙) return
+        await 存()
+      }
+
+      const 绑定行 = (x, i, 类型) => {
+        const 编辑 = 编辑行 === i
+        const 是群 = 类型 === '群'
+        const 本表编辑中 = 编辑行 != null && ((绑定[编辑行] && (绑定[编辑行].类型 || '群')) === 类型)
+        const 请求删除 = async () => {
+          if (typeof confirm !== 'function') { 删绑定(i); return }
+          const ok = await confirm({
+            title: '删除这条映射？',
+            description: (是群 ? '群 ' : '私聊 ') + String(x.号码 || '未填写') + ' → ' + 会话名(x.会话)
+              + '。确认后会从当前草稿移除，保存设置后才真正生效。',
+            confirmText: '删除',
+            cancelText: '取消',
+            danger: true,
+          })
+          if (ok) 删绑定(i)
+        }
+        return h(React.Fragment, { key: i },
+          h('div', { className: 'qq-bind-row ' + (是群 ? 'qq-bind-row-group' : 'qq-bind-row-private') + (编辑 ? ' qq-bind-editing' : '') },
+            !编辑
+              ? h('span', { className: 'qq-bind-read', title: String(x.号码 || '') }, String(x.号码 || '—'))
+              : h('input', {
+                  'aria-label': 是群 ? '群号' : 'QQ 号',
+                  style: S.wide, value: String(x.号码 || ''), placeholder: 是群 ? '群号' : 'QQ 号',
+                  onChange: (e) => 改绑定(i, { 号码: e.target.value.trim() }),
+                }),
+            !编辑
+              ? h('span', { className: 'qq-bind-read', title: String(x.称呼 || '') }, String(x.称呼 || '—'))
+              : h('input', {
+                  'aria-label': '对方称呼', style: S.wide, value: String(x.称呼 || ''),
+                  placeholder: 是群 ? '群成员' : '对方',
+                  onChange: (e) => 改绑定(i, { 称呼: e.target.value }),
+                }),
+            !编辑
+              ? h('span', { className: 'qq-bind-read qq-bind-session-read', title: 会话名(x.会话) }, 会话名(x.会话))
+              : h('div', { className: 'qq-bind-session' }, 会话选项(x.会话, (v) => 改绑定(i, { 会话: v }))),
+            是群 ? h('div', { className: 'qq-bind-cell qq-bind-center' },
+              编辑 ? 勾(x.门槛, (v) => 改绑定(i, { 门槛: v }), '启用回复门槛') : 状态标(Boolean(x.门槛), '回复门槛')) : null,
+            是群 ? h('div', { className: 'qq-bind-cell qq-bind-center' },
+              编辑 ? 勾(!点名开(x), (v) => 改绑定(i, { 只听点名: !v }), '主动回应') : 状态标(!点名开(x), '主动回应')) : null,
+            h('div', { className: 'qq-bind-cell qq-bind-actions' },
+              编辑
+                ? [
+                    h('button', { key: 'save', type: 'button', className: 'fish-button fish-primary qq-bind-save', disabled: 忙, onClick: 保存行 }, 忙 ? '保存中…' : '保存'),
+                    h('button', { key: 'cancel', type: 'button', className: 'fish-button fish-modal-cancel', disabled: 忙, onClick: 取消行编辑 }, '取消'),
+                  ]
+                : [
+                    h('button', { key: 'edit', type: 'button', className: 'fish-button', disabled: 忙, onClick: () => 开始编辑(i) }, '修改'),
+                    h('button', { key: 'delete', type: 'button', className: 'fish-button', disabled: 忙, onClick: 请求删除 }, '删除'),
+                  ]),
+            编辑 || 本表编辑中
+              ? h('div', { className: 'qq-bind-cell', 'aria-hidden': true })
+              : h('div', { className: 'qq-bind-cell qq-bind-center' },
+                  勾(x.开 !== false, (v) => 改绑定(i, { 开: v }), '启用收发 ' + String(x.号码 || '')))),
+          是群 && 编辑
+            ? h('div', { className: 'qq-bind-detail' },
+                h('div', { className: 'qq-bind-detail-head' }, '群规则'),
+                h('p', { style: S.dim }, 点名开(x)
+                  ? '当前只接收点名消息；下面名单里的号码即使没有点名也会被接收。'
+                  : '当前会主动回应普通群消息；关闭主动回应后，可在这里配置点名豁免名单。'),
+                点名开(x) ? h('label', { className: 'qq-bind-extra' },
+                  h('span', { className: 'qq-bind-extra-label' }, '点名豁免名单（QQ 号，以逗号或空格分隔）'),
+                  h('input', {
+                    'aria-label': '点名豁免名单',
+                    style: { ...S.input, display: 'block', width: '100%', marginTop: 4, boxSizing: 'border-box' },
+                    value: String(x.点名例外 || ''),
+                    placeholder: '例如 3274796953',
+                    onChange: (e) => 改绑定(i, { 点名例外: e.target.value }),
+                  })) : null)
+            : null)
+      }
+
+      const 加映射按钮 = (类型, 文字) => h('button', {
+        type: 'button',
+        className: 'fish-button' + (编辑行 != null ? ' qq-bind-add-disabled' : ''),
+        'aria-disabled': 编辑行 != null || undefined,
+        onClick: () => {
+          if (编辑行 != null) { 告知('请先完成当前的映射编辑'); return }
+          加绑定(类型)
+        },
+      }, 文字)
+
+      const 私聊卡 = h('div', { style: S.card },
+        h('div', { className: 'qq-bind-group-head' },
+          h('h3', null, '私聊映射'),
+          h('span', { className: 'fish-muted' }, 'QQ 号 → DSH 会话，一行一条。'),
+          加映射按钮('私聊', '+ 添加私聊')),
+        h('div', { className: 'qq-bind-scroll' },
+          h('div', { className: 'qq-bind-table' + (私聊编辑中 ? ' qq-bind-hide-enable' : '') },
+            h('div', { className: 'qq-bind-row qq-bind-row-private qq-bind-head' },
+              表头格('QQ 号'), 表头格('称呼'), 表头格('目标会话'), 表头格('操作'),
+              私聊编辑中 ? h('div', { 'aria-hidden': true, style: S.表头字 }) : 表头格('启用')),
+            ...私聊们.map(({ x, i }) => 绑定行(x, i, '私聊')),
+            私聊们.length ? null : h('div', { className: 'qq-bind-empty' }, '还没有私聊映射。')),
+        ),
+        h('div', { className: 'qq-bind-note' }, '新增或修改时只显示保存和取消；保存成功后才会出现启用、修改和删除操作。'))
+
+      const 群卡 = h('div', { style: S.card },
+        h('div', { className: 'qq-bind-group-head' },
+          h('h3', null, '群聊映射'),
+          h('span', { className: 'fish-muted' }, '群号 → DSH 会话；回复门槛与主动回应只对群生效。'),
+          加映射按钮('群', '+ 添加群聊')),
+        h('div', { className: 'qq-bind-scroll' },
+          h('div', { className: 'qq-bind-table' + (群编辑中 ? ' qq-bind-hide-enable' : '') },
+            h('div', { className: 'qq-bind-row qq-bind-row-group qq-bind-head' },
+              表头格('群号'), 表头格('称呼'), 表头格('目标会话'), 表头格('回复门槛'), 表头格('主动回应'), 表头格('操作'),
+              群编辑中 ? h('div', { 'aria-hidden': true, style: S.表头字 }) : 表头格('启用')),
+            ...群们.map(({ x, i }) => 绑定行(x, i, '群')),
+            群们.length ? null : h('div', { className: 'qq-bind-empty' }, '还没有群聊映射。')),
+        ),
+        h('div', { className: 'qq-bind-note' }, '回复门槛与主动回应仅适用于群聊；新增或修改时只显示保存和取消，保存成功后才会出现启用、修改和删除操作。'))
+
+      const 绑定提醒 = h('div', { className: 'qq-bind-reminder', role: 'note' },
+        h('span', { className: 'qq-bind-reminder-icon', 'aria-hidden': true }, '!'),
+        h('span', null, '新增映射前请先在 DSH 中新建一个会话用于绑定聊天。'))
 
       const 页签 = h('div', { className: 'fish-subnav', style: S.tabBar },
         ...页签们.map((名) => h('button', { type: 'button', key: 名, 'aria-pressed': 页 === 名, style: 页 === 名 ? S.btnOn : S.btn, onClick: () => 设页(名) }, 名)))
@@ -285,7 +570,8 @@ window.__ModuleLoader__.load({
           const list = await get('/history/jobs')
           if (list?.ok) 设历史列表(list.jobs)
           设历史说('读取完成，请核对记录范围和发言人身份。')
-        } catch (e) { 设历史说('失败：' + e.message) }
+          告知('历史记录读取完成，请核对范围。', { tone: 'success' })
+        } catch (e) { 设历史说('失败：' + e.message); 告知('历史记录读取失败：' + e.message, { holdMs: 6000 }) }
         finally { 历史控制.running = false; 设历史忙(false) }
       }
       const 整理历史 = async () => {
@@ -314,9 +600,10 @@ window.__ModuleLoader__.load({
           }
           设历史任务(job)
           设历史说(job.done ? '处理完成，可在「鱼的记忆」核查结果。' : '已暂停，可从已保存进度继续。')
+          告知(job.done ? '历史整理完成，可在「鱼的记忆」核查结果。' : '历史整理已暂停，进度已保存。', { tone: job.done ? 'success' : undefined, holdMs: 6000 })
           const list = await get('/history/jobs')
           if (list?.ok) 设历史列表(list.jobs)
-        } catch (e) { 设历史说('失败：' + e.message + '；进度已保存，可重试。') }
+        } catch (e) { 设历史说('失败：' + e.message + '；进度已保存，可重试。'); 告知('历史整理失败：' + e.message + '；进度已保存，可重试。', { holdMs: 7000 }) }
         finally { 历史控制.running = false; 设历史忙(false) }
       }
       const 历史页 = h('div', { style: S.stack },
@@ -355,10 +642,39 @@ window.__ModuleLoader__.load({
       )
 
       // ───────────── 总览 ─────────────
+      const 总开关卡片 = h('div', { style: S.card },
+        h('div', { style: { ...S.h, margin: '0 0 8px' } }, '大肥鱼，启动！'),
+        行('总开关', 勾(配置.总开关, async v => {
+          if (v && (启动检查中 || 忙)) return
+          const 校验号 = ++总开关校验.current
+          if (!v) { 设启动检查中(false); 改('总开关', false); return }
+          const 快照 = JSON.stringify(配置)
+          设启动检查中(true)
+          const r = await post('/startup-check', { ...配置, 总开关: true })
+          if (总开关校验.current !== 校验号) return
+          设启动检查中(false)
+          if (!r?.ok) {
+            告知(r?.说 || '无法完成启动检查，请确认 DSH 后端正在运行后重试。', { holdMs: 14000 })
+            return
+          }
+          if (JSON.stringify(最新配置.current) !== 快照) {
+            告知('检查期间配置已修改，请重新开启总开关进行检查。', { holdMs: 8000 })
+            return
+          }
+          改('总开关', true)
+          if (r.用户) 设态(旧 => 旧 ? { ...旧, NapCat状态: { 用户: r.用户, 昵称: r.昵称 } } : 旧)
+          告知(r.说 || '启动检查已通过，请保存设置后启动大肥鱼。', { tone: 'success', holdMs: 6000 })
+        }, '大肥鱼总开关', 启动检查中 || 忙), 启动检查中 ? '正在检查 QQ 连接、聊天映射和 DSH 会话…' : undefined),
+        行('绑定工作区', h('select', { 'aria-label': '绑定工作区', style: S.input, value: 配置.工作区 || '', onFocus: 刷新会话, onChange: e => 改('工作区', e.target.value) },
+          h('option', { value: '' }, '请选择工作区'),
+          配置.工作区 && !(态.工作区列表 || []).some(w => w.id === 配置.工作区) ? h('option', { value: 配置.工作区, disabled: true }, '原绑定工作区已不可用，请重新选择') : null,
+          ...(态.工作区列表 || []).map(w => h('option', { key: w.id, value: w.id, disabled: w.available === false }, w.title + ' · ' + w.path + (w.available === false ? '（目录不可用）' : '')))),
+          '选择将大肥鱼养在哪个工作区中'),
+        态.工作区错误 ? h('p', { style: S.dim, role: 'alert' }, 态.工作区错误) : null,
+      )
       const 总览卡片 = [
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '基础策略与通知'),
-          行('总开关', 勾(配置.总开关, (v) => 改('总开关', v)), '禁用后停止转发。'),
           行('试运行', 勾(配置.试运行, (v) => 改('试运行', v)), '仅记录发送日志，不实际发送 QQ 消息。'),
           // ⭐ 1.5.0（issue #29）：戳一戳这类通知 —— 它们不是消息，拉历史拉不到，只能让 OneBot 主动推
           行('接收 QQ 通知', 勾(配置.收通知, (v) => 改('收通知', v)),
@@ -397,105 +713,25 @@ window.__ModuleLoader__.load({
       // ───────────── 绑定 ─────────────
       const 绑定卡片 = [
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '全局角色设定'),
-          h('div', { style: S.dim },
-            '未配置独立角色的会话使用全局设定。'),
-          h('div', { style: { marginTop: 6 } }, 勾(配置.人设开, (v) => 改('人设开', v), '启用角色设定'), ' ', '启用角色设定'),
+          h('div', { className: 'qq-role-head' },
+            h('h2', { style: { ...S.h, margin: 0 } }, '全局角色设定'),
+            h('label', { className: 'qq-role-toggle', title: String(配置.人设 || '').trim() || 配置.人设开 ? '启用或停用全局角色设定' : '请先填写全局角色设定' },
+              h('input', {
+                'aria-label': '启用角色设定', type: 'checkbox', role: 'switch',
+                checked: Boolean(配置.人设开),
+                disabled: 人设忙 || 忙 || (!配置.人设开 && !String(配置.人设 || '').trim()),
+                onChange: (e) => 切换人设(e.target.checked),
+              }))),
+          h('p', { className: 'qq-role-desc' }, '未配置独立角色的会话使用全局设定。'),
+          h('p', { className: 'qq-role-hint' }, '建议简洁描述，减少上下文占用。'),
           h('textarea', {'aria-label': '人设',
-            style: { ...S.input, display: 'block', width: '100%', height: 88, marginTop: 6, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
+            style: { ...S.input, display: 'block', width: '100%', height: 88, marginTop: 14, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
             value: String(配置.人设 || ''),
             placeholder: '输入角色身份、表达风格与交互要求。',
             onChange: (e) => 改('人设', e.target.value),
           }),
-          h('div', { style: { ...S.dim, marginTop: 4 } },
-            '建议简洁描述，减少上下文占用。'),
-          h('div', { style: { marginTop: 6 } },
-            按钮('立即应用', 人设现在生效, false, 人设忙),
-            h('span', { style: S.dim }, '　应用至已打开的目标会话。')),
-          人设说 ? h('div', { style: { ...S.dim, marginTop: 4 } }, 人设说) : null,
         ),
-        h('div', { style: { ...S.card, overflowX: 'auto' } },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, 'QQ 与 DSH 会话映射'),
-          h('div', { style: S.dim },
-            '私聊填写 QQ 号，群聊填写群号；回复按绑定关系转发。'
-            + '每个聊天必须绑定独立 DSH 会话；普通群通过记忆库共享，不会转发彼此的回复。'),
-          h('div', { className: 'fish-binding-row fish-binding-head', style: { ...S.表头, marginTop: 10 } },
-            h('div', { style: S.表头字 }, '类型'),
-            h('div', { style: S.表头字 }, '号码'),
-            h('div', { style: S.表头字 }, '称呼'),
-            h('div', { style: S.表头字 }, '门槛'),
-            h('div', { style: S.表头字 }, '角色'),
-            h('div', { style: S.表头字 }, '')),
-          绑定.length === 0
-            ? h('div', { style: { ...S.dim, margin: '8px 0' } }, '暂无条目，请添加。')
-            : h('div', null, ...绑定.map((x, i) => h(React.Fragment, { key: i },
-              h('div', { className: 'fish-binding-row', style: S.表格行 },
-                h('select', {'aria-label': '绑定类型', style: S.wide, value: x.类型 || '群', onChange: (e) => 改绑定(i, { 类型: e.target.value }) },
-                  h('option', { value: '私聊' }, '私聊'),
-                  h('option', { value: '群' }, '群')),
-                h('input', {'aria-label': 'QQ 号或群号',
-                  style: S.wide, value: String(x.号码 || ''), placeholder: x.类型 === '私聊' ? 'QQ 号' : '群号',
-                  onChange: (e) => 改绑定(i, { 号码: e.target.value.trim() }),
-                }),
-                h('input', {'aria-label': '对方称呼',
-                  style: S.wide, value: String(x.称呼 || ''),
-                  placeholder: x.类型 === '私聊' ? '对方' : '群成员',
-                  onChange: (e) => 改绑定(i, { 称呼: e.target.value }),
-                }),
-                h('div', { style: { textAlign: 'center' } },
-                  勾(x.门槛, (v) => 改绑定(i, { 门槛: v }), '启用回复门槛')),
-                h('div', { style: { textAlign: 'center' } },
-                  按钮(String(x.人设 || '').trim() ? '独立' : '独立', () => 设人设行(人设行 === i ? null : i), false, false)),
-                h('div', null, 按钮('删除', () => 删绑定(i), false, false))),
-              // ⭐ 1.1.0：会话单独占一整行，宽度给够
-              h('div', { style: { display: 'grid', gridTemplateColumns: '70px 1fr', gap: 6, alignItems: 'center', margin: '0 0 6px' } },
-                h('div', { style: S.表头字 }, '会话'),
-                会话选项(x.会话, (v) => 改绑定(i, { 会话: v }))),
-              // ⭐ 1.1.8：这一行自己的开关 —— 不想理就把「启用」取消，不用删掉
-              h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', margin: '0 0 10px', paddingLeft: 2 } },
-                h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
-                  勾(x.开 !== false, (v) => 改绑定(i, { 开: v }), '启用收发'),
-                  h('span', { style: S.dim }, '启用收发')),
-                x.类型 === '群'
-                  ? h('span', { style: { display: 'flex', gap: 4, alignItems: 'center' } },
-                      勾(x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名), (v) => 改绑定(i, { 只听点名: v }), '仅接收点名消息'),
-                      h('span', { style: S.dim }, '仅接收点名消息'))
-                  : null),
-              i === 人设行
-                ? h('div', { style: { margin: '0 0 8px', padding: '6px 8px', background: 'var(--fish-soft)', borderRadius: 'var(--fish-radius-sm)' } },
-                    h('div', { style: { ...S.dim, marginBottom: 4 } }, '独立角色设定（留空使用全局设定）'),
-                    h('textarea', {'aria-label': '输入此会话的角色设定。',
-                      style: { ...S.input, display: 'block', width: '100%', height: 72, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' },
-                      value: String(x.人设 || ''),
-                      placeholder: '输入此会话的角色设定。',
-                      onChange: (e) => 改绑定(i, { 人设: e.target.value }),
-                    }),
-                    h('div', { style: { marginTop: 4 } },
-                      按钮('清空', () => 改绑定(i, { 人设: '' }), false, false),
-                      h('span', { style: S.dim }, '　'),
-                      按钮('收起', () => 设人设行(null), false, false)))
-                : null,
-              // ⭐ 1.4.3：这个群里「不听点名也直接收」的 QQ 号。
-              //   「只听点名」一开，群里**所有人**（包括自己）都要点名才收；这里列出来的号例外。
-              x.类型 === '群' && (x.只听点名 == null ? !配置.群里听所有人 : Boolean(x.只听点名))
-                ? h('div', { style: { margin: '0 0 8px' } },
-                    h('div', { style: { ...S.dim, marginBottom: 3 } },
-                      '点名豁免名单（QQ 号，以逗号或空格分隔）'),
-                    h('input', {'aria-label': '例如 3274796953',
-                      style: { ...S.input, display: 'block', width: '100%', boxSizing: 'border-box' },
-                      value: String(x.点名例外 || ''),
-                      placeholder: '例如 3274796953',
-                      onChange: (e) => 改绑定(i, { 点名例外: e.target.value }),
-                    }))
-                : null))),
-          h('div', { style: { marginTop: 8 } },
-            按钮('+ 添加条目', 加绑定, false, false),
-            h('span', { style: S.dim }, '　'),
-            按钮('刷新会话列表', 拉, false, 忙)),
-          h('div', { style: { ...S.dim, marginTop: 6 } },
-            '回复门槛仅适用于群聊，用于判断是否需要回复。'
-            + '私聊不执行门槛判断。'),
-        ),
+        h('div', { className: 'qq-binding-groups' }, 私聊卡, 群卡),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '群聊频率与概率'),
           h('div', { style: S.dim },
@@ -516,8 +752,8 @@ window.__ModuleLoader__.load({
       const 消息卡片 = [
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, 'QQ 后端连接'),
-          行('接口地址', h('input', {'aria-label': 'QQ 后端连接',  style: S.wide, value: String(配置.NapCat || ''), onChange: (e) => 改('NapCat', e.target.value) }), 'OneBot HTTP 地址，默认 http://127.0.0.1:3000。'),
-          行('接口令牌', h('input', {'aria-label': '令牌',  type: 'password', style: S.small, value: String(配置.令牌 || ''), onChange: (e) => 改('令牌', e.target.value) }), '后端启用鉴权时填写 access_token。'),
+          行('接口地址', h('input', {'aria-label': 'QQ 后端连接', style: S.wide, value: String(配置.NapCat || 'http://127.0.0.1:3000'), onChange: (e) => 改('NapCat', e.target.value) }), 'OneBot HTTP 地址'),
+          行('接口令牌', h('input', {'aria-label': '令牌', type: 'password', style: S.wide, value: String(配置.令牌 || ''), onChange: (e) => 改('令牌', e.target.value) }), 'HTTP API 服务 -> 鉴权 -> 授权 Token'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '发送格式'),
@@ -538,24 +774,24 @@ window.__ModuleLoader__.load({
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, 'QQ 图片接收'),
           行('接收图片（QQ → DSH）', 勾(配置.收图, (v) => 改('收图', v)), '将 QQ 消息中的图片交给 DSH 理解，受图片页的单张大小上限约束。'),
           行('每条消息最多接收图片', h('input', {'aria-label': '收图最多', type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '接收最多 10 张，超出部分跳过。'),
+          行('开启图片存储', 勾(配置.图片存储, v => 改('图片存储', v)), '默认关闭。开启后额外保存 QQ 接收图片的原图；关闭只停止新增归档，不影响 DSH 正常接收与理解图片。'),
         ),
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '文件'),
-          行('发送文件（DSH → QQ）', 勾(配置.发文件, (v) => 改('发文件', v)), '将正文中的本地文件链接上传至 QQ；图片语法单独处理。'),
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, 'DSH 生成文件转发'),
+          行('发送文件（DSH → QQ）', 勾(配置.发文件, (v) => 改('发文件', v)), '将 DSH 会话回复中的生成文件链接上传至 QQ；图片语法单独处理。'),
           行('单文件上限（MB）', h('input', {'aria-label': '文件上限MB',  type: 'number', min: 1, max: 2048, style: S.small, value: String(配置.文件上限MB ?? 50), onChange: (e) => 改('文件上限MB', Number(e.target.value)) }), '超限时发送说明；同时受 QQ 后端限制。'),
           行('文件仅发送至私聊', 勾(配置.文件仅私聊 !== false, (v) => 改('文件仅私聊', v)), '默认启用；禁用后允许向群聊上传文件。'),
           h('div', { style: S.dim }, '含空格的路径需使用尖括号：[报告](<D:\\我的 文档\\报告.docx>)。网页链接不作为文件处理。'),
         ),
-        h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '语音转写'),
-          行('转写语音', 勾(配置.语音转写, (v) => 改('语音转写', v)), '通过指定命令转写语音；禁用时仅保留语音标记。'),
+        h('div', { className: 'qq-voice-card', style: S.card },
+          h('div', { style: { ...S.h, margin: '0 0 18px' } }, '语音转写'),
+          行('转写语音（DSH → QQ）', 勾(配置.语音转写, (v) => 改('语音转写', v)), '通过指定命令转写语音；禁用时仅保留语音标记。'),
           // —— 一键装依赖 ——
-          h('div', { style: { ...S.row, alignItems: 'center' } },
+          h('div', { className: 'fish-form-row qq-voice-env', style: { ...S.row, alignItems: 'flex-start' } },
             h('div', { className: 'fish-form-label', style: S.lab }, '语音识别环境'),
             h('div', { className: 'fish-control', style: S.ctl },
-              h('div', null,
+              h('div', { className: 'qq-voice-actions' },
                 按钮(asr忙 ? '…' : (asr && asr.就绪 ? '重新安装' : '安装语音依赖'), 装语音, !(asr && asr.就绪), asr忙 || Boolean(asr && asr.进行中)),
-                h('span', { style: S.dim }, '　'),
                 按钮('生成转写命令', 填语音命令, false, false)),
               h('div', { style: S.hint },
                 asr && asr.就绪 && asr.模型就绪
@@ -606,14 +842,25 @@ window.__ModuleLoader__.load({
             onChange: (e) => 改('语音模型目录', e.target.value),
           }), '安装时自动下载模型并填写目录；使用自备模型时可手动修改。'),
           行('超时（秒）', h('input', {'aria-label': '转写超时秒',  type: 'number', min: 5, max: 600, style: S.small, value: String(配置.转写超时秒 ?? 60), onChange: (e) => 改('转写超时秒', Number(e.target.value)) }), '超时后终止命令，默认 60 秒。'),
-          h('div', { style: S.dim },
-            '内置 tools/asr_cli.py 支持本机 SenseVoice，也可配置其他转写命令。'),
+          h('div', { className: 'qq-voice-cost' },
+            h('p', { className: 'qq-voice-cost-intro' }, '语音转写的本地性能开销如下'),
+            h('table', { className: 'qq-voice-cost-table' },
+              h('thead', null, h('tr', null, h('th', { scope: 'col' }, '项目'), h('th', { scope: 'col' }, '预计开销'))),
+              h('tbody', null, ...[
+                ['CPU', '当前默认使用 4 个推理线程，转写期间短暂占用 CPU'],
+                ['内存', '每次识别进程可先预留约 0.5～1.5GB'],
+                ['本地处理延迟', '可先按每条约 1～5 秒预留，另加下载及格式转换时间'],
+                ['磁盘', '模型约 230MB，连同 Python 环境和依赖建议预留 1～2GB'],
+                ['API 费用', '本地识别不产生 API 费用；转写文字交给 DeepSeek 后，对话用量照常计算'],
+              ].map(([项目, 开销]) => h('tr', { key: 项目 }, h('th', { scope: 'row' }, 项目), h('td', null, 开销))))),
+            h('p', { className: 'qq-voice-cost-note' },
+              '当前每条语音都会重新启动 Python、加载模型，结束后识别进程退出，模型不常驻。低频聊天负担通常可控；连续语音会反复加载，而且转写等待会拖延当前收消息流程。')),
         ),
       ]
 
       // ───────────── 门槛 ─────────────
       const 门槛卡片 = [
-        h('div', { style: S.card },
+        h('div', { id: 'qq-reply-threshold', style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '回复门槛'),
           h('div', { style: S.dim },
             '回复门槛按绑定单独启用。'
@@ -629,10 +876,10 @@ window.__ModuleLoader__.load({
             placeholder: '留空仅识别 @ 和引用',
             onChange: (e) => 改('点名关键词', e.target.value),
           }), '正文匹配关键词时视为点名；多个关键词以逗号或空格分隔。'),
-          h('div', { style: { ...S.dim, marginTop: 8, fontWeight: 600 } }, '群聊接收范围'),
-          行('接收全部群消息', 勾(配置.群里听所有人, (v) => 改('群里听所有人', v)),
-            '默认仅接收 @ 或引用消息。'
-            + '启用后接收全部群消息，由回复门槛判断是否回复。'),
+          // ⭐ 群聊接收范围已挪到「绑定」页每条群绑定自己的「主动回应」开关；
+          //    旧配置里 只听点名 == null 的群会在保存时固化，不再需要这个全局开关。
+          h('div', { style: { ...S.dim, marginTop: 8 } },
+            '每个群是否接收全部消息，改由「绑定」页对应群的「主动回应」单独控制；旧配置会在下次保存时固化当前值。'),
           // ⭐ 1.4.1：被点名之后，同一个群后面紧跟着的几句也放进来（不然接话接不上前文）
           行('点名后续接收上限（条）', h('input', {'aria-label': '点名后接听条',  type: 'number', min: 0, max: 50, style: S.small, value: String(配置.点名后接听条 ?? 5), onChange: (e) => 改('点名后接听条', Number(e.target.value)) }),
             '点名后继续接收同群后续消息，默认 5 条；0 为禁用。'),
@@ -655,7 +902,7 @@ window.__ModuleLoader__.load({
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '开关'),
           行('允许发布 QQ 空间动态', 勾(配置.允许发空间动态, (v) => 改('允许发空间动态', v)), '默认禁用发布，不影响查看动态。'),
-          h('div', { style: S.dim }, '共用 QQ 后端连接地址和令牌。'),
+          行('浏览动态与评论', 勾(配置.空间浏览开 !== false, (v) => 改('空间浏览开', v)), '关闭后隐藏手动浏览卡片；不影响定时发布和自动同步。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '定时发布'),
@@ -697,46 +944,118 @@ window.__ModuleLoader__.load({
         ),
       ]
 
+      const 角色编辑图标 = () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, focusable: 'false' },
+        h('path', { d: 'M4 20h4l10-10-4-4L4 16v4Z' }), h('path', { d: 'm13 7 4 4' }))
+      const 角色删除图标 = () => h('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, focusable: 'false' },
+        h('path', { d: 'M4 7h16' }), h('path', { d: 'M9 7V4h6v3' }), h('path', { d: 'm6 7 1 13h10l1-13' }), h('path', { d: 'M10 11v5M14 11v5' }))
+
+      const 角色会话名 = id => {
+        if (!id) return '未选择会话'
+        const 会话 = 目标们.find(s => s.id === id)
+        return 会话 ? (会话.标题 || '…' + 短id(会话.id)) : '…' + 短id(id)
+      }
+      const 编辑角色 = async (i, x, label) => {
+        if (i < 0 || typeof editRole !== 'function') return
+        const 文字 = await editRole({
+          title: '编辑角色设定',
+          description: label + ' · 目标会话：' + 角色会话名(x.会话),
+          value: String((绑定[i] && 绑定[i].人设) || ''),
+          placeholder: '留空表示继承全局角色设定。',
+          confirmText: '保存',
+          cancelText: '取消',
+        })
+        if (文字 !== null) 改绑定(i, { 人设: 文字 })
+      }
+      const 删除角色 = async (i, label) => {
+        if (i < 0) return
+        if (typeof confirm === 'function') {
+          const ok = await confirm({
+            title: '删除后本会话的角色设定将还原到全局角色设定，是否确认删除？',
+            description: label + '。只清除这个会话的单独设定，不会删除聊天绑定。',
+            confirmText: '删除',
+            cancelText: '取消',
+            danger: true,
+          })
+          if (!ok) return
+        }
+        改绑定(i, { 人设: '' })
+      }
+      const 映射角色 = 类型 => {
+        const 行们 = 已存绑定.filter(x => x.类型 === 类型)
+        const 标题 = 类型 === '群' ? '群聊角色设定' : '私聊角色设定'
+        return h('section', { style: S.card, className: 'qq-role-card' },
+          h('h3', null, 标题),
+          行们.length ? h('div', { className: 'qq-role-table-wrap' },
+            h('table', { className: 'qq-role-table' },
+              h('thead', null, h('tr', null,
+                h('th', null, 类型 === '群' ? '群号' : 'QQ 号'),
+                h('th', null, '目标会话'),
+                h('th', null, '角色设定文字'),
+                h('th', { className: 'qq-role-col-icon' }, '编辑'),
+                h('th', { className: 'qq-role-col-icon' }, '删除'))),
+              h('tbody', null, ...行们.map(x => {
+                const i = 绑定.findIndex(b => b.类型 === x.类型 && b.号码 === x.号码 && b.会话 === x.会话)
+                const row = i >= 0 ? 绑定[i] : x
+                const label = 类型 + ' ' + x.号码 + ' 的角色设定'
+                const 文字 = String((row && row.人设) || '').trim()
+                const 会话 = 角色会话名(x.会话)
+                return h('tr', { key: JSON.stringify([x.类型, x.号码, x.会话]) },
+                  h('td', { className: 'qq-role-number' }, String(x.号码 || '—')),
+                  h('td', { className: 'qq-role-session', title: 会话 }, 会话),
+                  h('td', { className: 'qq-role-text-cell' },
+                    文字 ? h('span', { className: 'qq-role-text', title: 文字 }, 文字) : h('span', { className: 'qq-role-inherit' }, '继承全局角色设定')),
+                  h('td', { className: 'qq-role-col-icon' },
+                    h('button', { type: 'button', className: 'qq-role-icon', 'aria-label': '编辑 ' + label, title: i < 0 ? '请先保存绑定页的改动' : '编辑角色设定', disabled: i < 0 || 忙, onClick: () => 编辑角色(i, x, label) }, 角色编辑图标())),
+                  h('td', { className: 'qq-role-col-icon' },
+                    h('button', { type: 'button', className: 'qq-role-icon qq-role-icon-danger', 'aria-label': '删除 ' + label, title: i < 0 ? '请先保存绑定页的改动' : '删除角色设定', disabled: i < 0 || 忙, onClick: () => 删除角色(i, label) }, 角色删除图标())))
+              }))))
+            : h('p', { style: S.dim }, '暂无已保存的' + 类型 + '映射，请先在「绑定」中添加并保存。'))
+      }
+
+      const 代写按钮 = h('button', {
+        type: 'button', className: 'fish-button fish-primary qq-role-writer-open',
+        onClick: () => { if (typeof openRoleWriter === 'function') openRoleWriter(); else 告知('代写功能当前不可用') },
+      }, '大肥鱼专业代写')
+
+      const 文件接收卡片 = h('section', { style: S.card },
+        h('h2', null, 'QQ 文件接收'),
+        h('p', { style: S.dim, role: 'status' }, '文件接收通道：' + (态?.文件接收通道 || '等待宿主连接')),
+        行('接收文件（QQ → DSH）', 勾(配置.收文件, v => 改('收文件', v)), '将 QQ 文件作为附件提交到对应绑定的 DSH 会话，默认关闭。遵守现有群聊接收规则；文件不会被自动执行。'),
+        行('接收单文件上限（MB）', h('input', { type: 'number', min: 1, max: 100, style: S.small, value: String(配置.收文件上限MB ?? 20), onChange: e => 改('收文件上限MB', Number(e.target.value)) }), '默认 20 MB，最多 100 MB；下载过程中也会校验实际大小，超限跳过。'),
+        行('每次最多接收文件', h('input', { type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收文件最多 ?? 3), onChange: e => 改('收文件最多', Number(e.target.value)) }), '默认 3 个，最多 10 个；连续消息合并后共用此数量限制。'),
+        行('开启文件存储', 勾(配置.文件存储, v => 改('文件存储', v)), '默认关闭。开启后额外保存 QQ 接收文件；关闭不删除已有归档，也不影响 DSH 文件附件处理。'),
+        h('p', { style: S.dim }, '自动适配 NapCat / SnowLuma，复用已保存的连接配置接收文件消息与上传通知；直链不可用时尝试由后端传回文件内容，兼容 Docker 部署，无需填写额外 HTTP 地址或 API。图片与文件归档在「文件管理」中管理；具体格式的读取能力取决于 DSH、模型及工具，失败原因会随消息告知。'))
+
       const 分区 = (...内容) => h('div', { className: 'fish-settings-stack' }, ...内容)
       const 页面 = {
-        '连接': 分区(消息卡片[0], 总览卡片[0]),
-        '绑定': 分区(绑定卡片[1], 绑定卡片[0]),
-        '消息策略': 分区(消息卡片[1], 消息卡片[2], 消息卡片[3], 消息卡片[4], 绑定卡片[2], 门槛卡片[0]),
-        '图片': 分区(h('section', { style: S.card },
+        '连接': 分区(总开关卡片, 消息卡片[0], 总览卡片[0]),
+        '绑定': 分区(绑定提醒, 绑定卡片[1]),
+        '消息策略': 分区(消息卡片[1], 消息卡片[2], 绑定卡片[2], 门槛卡片[0]),
+        '角色设定': 分区(代写按钮, 绑定卡片[0], 映射角色('私聊'), 映射角色('群')),
+        '图片与文件': 分区(消息卡片[3], h('section', { style: S.card },
           h('h2', null, 'DSH 生成图片转发'),
-          h('p', { style: S.dim }, '仅将绑定 DSH 会话回复中生成的图片自动发送到 QQ。本页不提供手动发送、图片上传或图片存储。'),
+          h('p', { style: S.dim }, '仅将绑定 DSH 会话回复中生成的图片自动发送到 QQ。此转发功能不提供手动发送或图片上传。'),
           行('发送生成图片（DSH → QQ）', 勾(配置.发图, v => 改('发图', v)), '支持会话回复中的图片附件和 Markdown 图片，发送到该会话绑定的 QQ 聊天；遵守总开关、试运行和消息转发策略。每轮最多 4 张。'),
-          行('单张图片上限（MB）', h('input', { 'aria-label': '图上限MB', type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: e => 改('图上限MB', Number(e.target.value)) }), '读取已有的生成图片进行转发，不另建图片存储；QQ 收图也共用此大小限制。'))),
+          行('单张图片上限（MB）', h('input', { 'aria-label': '图上限MB', type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: e => 改('图上限MB', Number(e.target.value)) }), '读取会话已有生成图片进行转发；QQ 收图也共用此大小限制。')), 文件接收卡片, 消息卡片[4]),
+        '表情包': typeof FishStickers === 'function' ? h(FishStickers, { mode: 'settings', notify: typeof notify === 'function' ? notify : undefined, onOpenFiles: openFileManager }) : h('p', null, '请在大肥鱼整合界面使用表情库'),
         '语音转写': 分区(消息卡片[5]),
-        '表情包': typeof FishStickers === 'function' ? h(FishStickers, { notify: typeof notify === 'function' ? notify : undefined }) : h('p', null, '请在大肥鱼整合界面使用表情库'),
+        '语音发送': 分区(h('div', { className: 'qq-voice-send', style: S.card },
+          h('h2', null, '语音发送'),
+          行('发送语音（QQ → DSH）', 勾(false, () => {}, '发送语音（QQ → DSH）', true), '目前服务暂不可用'))),
         '历史导入': 历史页,
-        '运行日志': 分区(总览卡片[1], 总览卡片[2]),
       }
 
       return h(
         'div',
         { className: 'fish-module fish-qq', style: S.wrap },
 
-        NapCat && !NapCat.错
-          ? h('div', { style: S.已同步 }, '已连接 QQ：' + NapCat.昵称 + '（' + NapCat.用户 + '）')
-          : h('div', { style: S.未保存 }, '注意：QQ 后端未连接（NapCat / SnowLuma）' + (NapCat && NapCat.错 ? '：' + NapCat.错 : '')),
-        页签,
-        h('div', { className: 'fish-toolbar' },
-          h('span', { style: { ...S.dim, flex: '1 1 160px' } }, 脏 ? '存在未保存的配置' : '配置已保存'),
-          按钮('刷新状态', 拉, false, 忙 || 脏), 按钮('保存设置', 存, true, 忙)),
-        说 ? h('p', { role: 'status', className: 'fish-message' }, 说) : null,
-        页 === '连接' || 页 === '运行日志' ? h('div', { className: 'fish-test-action' }, 按钮('发送测试消息', 试一句, false, 忙 || 脏), h('span', { style: S.dim }, '会实际发送至首个绑定的 QQ 聊天，不受试运行限制。')) : null,
+        onPageChange ? null : 页签,
+        embedded ? null : h('div', { className: 'fish-toolbar' },
+          h('span', { style: { ...S.dim, flex: '1 1 160px', ...(脏 ? { color: 'var(--fish-warning)', fontWeight: 600 } : null) } }, 脏 ? '存在未保存的配置' : '配置已保存'),
+          按钮('保存设置', () => 存(), true, 忙)),
+        embedded ? null : (页 === '连接' ? h('div', { className: 'fish-test-action' }, 按钮('发送测试消息', 试一句, false, 忙 || 脏), h('span', { style: S.dim }, '会实际发送至首个绑定的 QQ 聊天，不受试运行限制。')) : null),
         页面[页] || null,
-        h('div', { hidden: 页 !== 'QQ 空间' }, 空间卡片[0], h(QQSpaceActions, { 配置, 脏 }), 分区(...空间卡片.slice(1))),
-        h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
-          h('p', null, '模块版本 ' + String(态.版本 || '?')),
-          h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),
-        脏
-          ? h('div', { style: S.悬浮保存条 },
-            h('span', { style: { fontWeight: 600, color: 'var(--fish-danger)' } }, '存在未保存的配置'),
-            h('span', { style: S.dim }, '保存后生效'),
-            按钮('保存设置', 存, true, 忙))
-          : null,
+        h('div', { hidden: 页 !== 'QQ 空间' }, 分区(空间卡片[0], h(QQSpaceActions, { 配置, 脏, notify }), ...空间卡片.slice(1))),
       )
     }
 

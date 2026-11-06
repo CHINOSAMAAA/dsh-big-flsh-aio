@@ -8,18 +8,18 @@ window.__ModuleLoader__.load({
 
     const React = require('react')
     const inject = ['slots']
-  function EmbeddingSettings({ session, storeId }) {
+  function EmbeddingSettings({ session, storeId, notify }) {
     const [status, setStatus] = React.useState(null)
     const [config, setConfig] = React.useState(null)
     const [key, setKey] = React.useState('')
-    const [message, setMessage] = React.useState('')
     const [busy, setBusy] = React.useState(false)
+    const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
     const base = '/dsh-fish-memory/embedding'
     const refresh = () => fetch(base + '/status' + (session ? '?session=' + encodeURIComponent(session) : ''), { cache: 'no-store' }).then(r => r.json()).then(r => { setStatus(r); setConfig(old => old || r.config) })
-    React.useEffect(() => { refresh().catch(() => setMessage('状态不可用')) }, [session])
+    React.useEffect(() => { refresh().catch(() => 告知('Embedding 状态不可用', { holdMs: 6000 })) }, [session])
     React.useEffect(() => {
       if (!status?.running) return
-      const timer = setInterval(() => refresh().catch(() => setMessage('状态刷新失败')), 1000)
+      const timer = setInterval(() => refresh().catch(() => {}), 1000)
       return () => clearInterval(timer)
     }, [status?.running, session])
     const post = async (path, body) => {
@@ -27,10 +27,10 @@ window.__ModuleLoader__.load({
       try {
         const result = await fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json())
         if (!result.ok) throw new Error(result.error || '操作失败')
-        setKey(''); setMessage('已完成'); await refresh()
-      } catch (e) { setMessage(e.message) } finally { setBusy(false) }
+        setKey(''); 告知('Embedding 操作完成', { tone: 'success' }); await refresh()
+      } catch (e) { 告知('Embedding 操作失败：' + e.message, { holdMs: 6000 }) } finally { setBusy(false) }
     }
-    if (!config) return React.createElement('div', null, 'Qwen Embedding：加载中… ', message)
+    if (!config) return React.createElement('div', null, 'Qwen Embedding：加载中…')
     const field = (name, label, type = 'text') => React.createElement('label', { key: name, style: { display: 'block', margin: '6px 0' } }, label + ' ', React.createElement('input', {
       'aria-label': label, type, value: config[name], min: type === 'number' ? 0 : undefined, style: { maxWidth: '100%', width: type === 'number' ? 100 : 500 },
       onChange: e => setConfig({ ...config, [name]: type === 'number' ? Number(e.target.value) : e.target.value }),
@@ -51,7 +51,7 @@ window.__ModuleLoader__.load({
         React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引（保留正文）'),
         React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/index', { stop: true }) }, '中断补齐'),
       ) : React.createElement('p', null, '打开下方一个记忆库后，可分批补齐或重建其索引。'),
-      React.createElement('button', {type: 'button',  onClick: () => refresh().catch(() => setMessage('状态不可用')) }, '刷新索引状态'), message,
+      React.createElement('button', {type: 'button',  onClick: () => refresh().catch(() => 告知('Embedding 状态不可用', { holdMs: 6000 })) }, '刷新索引状态'),
     )
   }
     const B = '/dsh-fish-memory'
@@ -178,7 +178,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       ['gate', '门槛与条数', '控制「一次塞多少给她」。'],
     ]
 
-    function Section() {
+    function Section({ page, onPageChange, detailPage: selectedDetailPage, onDetailPageChange, detailOpen, onDetailChange, notify, historyImport } = {}) {
+      const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
       const [d, setD] = React.useState(null)
       const post = (p, body) => {
         const selected = d?.sessions?.find(s => s.id === body?.session)
@@ -232,8 +233,14 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       // ⭐ 2026-09-22（她要的）：长期事实那个「收理的文件夹」展开没有（**默认收着**）
       const [看事实, set看事实] = React.useState(false)
       // 参数和索引使用独立页签，保留各页草稿。
-      const [memoryPage, setMemoryPage] = React.useState('记忆库')
-      const [detailPage, setDetailPage] = React.useState('记忆与档案')
+      const [localPage, setLocalPage] = React.useState('记忆库')
+      const memoryPage = page ?? localPage
+      const setMemoryPage = onPageChange ?? setLocalPage
+      const [localDetailPage, setLocalDetailPage] = React.useState('记忆与档案')
+      const detailPage = selectedDetailPage ?? localDetailPage
+      const setDetailPage = onDetailPageChange ?? setLocalDetailPage
+      React.useEffect(() => { onDetailChange?.(Boolean(open)) }, [open])
+      React.useEffect(() => { if (detailOpen === false) setOpen(null) }, [detailOpen])
       // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没找到按钮」）：
       //   去重一直有，但都是**自动**的（召回时、导入时）—— **库里已有的重复没人管** ✗
       //   这里补一个手动查重：列出来、挑、才合
@@ -287,7 +294,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [加重要, set加重要] = React.useState('0.5') // 三档是快捷，也能自己填
       const [加词, set加词] = React.useState('') // 关键词，空格分开
       const [加在谁, set加在谁] = React.useState('') // 加到哪个会话（默认第一个开着的，没有就第一个）
-      const [加结果, set加结果] = React.useState(null) // { ok, 文字 }
+      const set加结果 = result => {
+        const text = result && result.文字
+        if (text) 告知(text, result && result.ok ? { tone: 'success' } : { holdMs: 6000 })
+      }
 
       // 「指她的名字」那一格：读出来、点一下加/减
       const 名字串 = () => (impNames !== null ? impNames : (imp.data && imp.data.用户名字 ? imp.data.用户名字 : []).join(','))
@@ -380,7 +390,6 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           return
         }
         const 重要 = Number(加重要)
-        set加结果({ ok: true, 文字: '加着呢…' })
         post('/add', {
           session: 会话,
           text: 内容,
@@ -2362,8 +2371,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           { className: 'fish-module fish-memory', style: S.wrap },
           React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => setOpen(null) }, '← 所有会话'),
           React.createElement('div', { style: S.h }, s.title || s.id),
-          React.createElement('div', { className: 'fish-subnav' }, ...['记忆与档案', '语义索引'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (detailPage === name ? ' fish-primary' : ''), 'aria-pressed': detailPage === name, onClick: () => setDetailPage(name) }, name))),
-          React.createElement('div', { hidden: detailPage !== '语义索引' }, React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId })),
+          onPageChange ? null : React.createElement('div', { className: 'fish-subnav' }, ...['记忆与档案', '语义索引'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (detailPage === name ? ' fish-primary' : ''), 'aria-pressed': detailPage === name, onClick: () => setDetailPage(name) }, name))),
+          React.createElement('div', { hidden: detailPage !== '语义索引' }, React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId, notify })),
           React.createElement('div', { hidden: detailPage !== '记忆与档案' },
           s.qq ? React.createElement('div', { style: S.dim }, '记忆库：' + s.storeId) : null,
           React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
@@ -2507,11 +2516,6 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   'div',
                   { style: Object.assign({}, S.askBox, { margin: '8px 0 0' }) },
                   React.createElement('button', {type: 'button', className: 'fish-primary', style: { ...S.btn, background: 'var(--fish-action)', color: 'var(--fish-on-accent)' }, onClick: 提交一条 }, '加进这个会话'),
-                  React.createElement(
-                    'span',
-                    { style: Object.assign({}, 加结果 && 加结果.ok ? S.ok : S.drop, { fontSize: 'var(--fish-small)' }) },
-                    (加结果 && 加结果.文字) || '',
-                  ),
                 ),
                 React.createElement(
                   'div',
@@ -3915,7 +3919,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       return React.createElement(
         'div',
         { className: 'fish-module fish-memory', style: S.wrap },
-        React.createElement('div', { className: 'fish-subnav' }, ...['记忆库', '语义召回', '召回与遗忘'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''), 'aria-pressed': memoryPage === name, onClick: () => setMemoryPage(name) }, name))),
+        onPageChange ? null : React.createElement('div', { className: 'fish-subnav' }, ...['记忆库', '语义召回', '召回与遗忘', ...(historyImport ? ['历史导入'] : [])].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''), 'aria-pressed': memoryPage === name, onClick: () => setMemoryPage(name) }, name))),
+        historyImport ? React.createElement('div', { hidden: memoryPage !== '历史导入' }, historyImport) : null,
         React.createElement('div', { hidden: memoryPage !== '记忆库' },
         React.createElement(
           'div',
@@ -4137,7 +4142,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           ),
         ),
         React.createElement('p', { style: S.dim }, '点击记忆库名称，查看、编辑记忆和档案。')),
-        React.createElement('div', { hidden: memoryPage !== '语义召回' }, React.createElement(EmbeddingSettings, {})),
+        React.createElement('div', { hidden: memoryPage !== '语义召回' }, React.createElement(EmbeddingSettings, { notify })),
         memoryPage === '召回与遗忘'
           ? React.createElement(
               'div',

@@ -98,7 +98,7 @@ window.__ModuleLoader__.load({
 @container(max-width:520px){.big-fish [data-fm-tlrow]{grid-template-columns:minmax(0,1fr) 40px 48px}.big-fish [data-fm-reason]{grid-column:1/-1}.big-fish [data-fm-slot]{padding:16px}}
 `
 
-    function Panel() {
+    function Panel({ page, onPageChange, notify } = {}) {
       const [cfg, setCfg] = React.useState(null)
       const [st, setSt] = React.useState(null)
       const [sessions, setSessions] = React.useState([])
@@ -108,10 +108,12 @@ window.__ModuleLoader__.load({
       const keyNow = () => (看哪份Ref.current ? '?key=' + encodeURIComponent(看哪份Ref.current) : '')
       const [models, setModels] = React.useState([])
       const [busy, setBusy] = React.useState('')
-      const [msg, setMsg] = React.useState('')
-      const [页, set页] = React.useState('mood')       // 页签：mood / bind / judge / charm
+      const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
+      const [localPage, setLocalPage] = React.useState('mood')
+      const 页 = page ?? localPage
+      const set页 = onPageChange ?? setLocalPage       // 页签：mood / bind / judge / charm
 
-      const flash = (t) => { setMsg(t); setTimeout(() => setMsg(''), 2500) }
+      const flash = (t, options) => 告知(t, options)
 
       const load = React.useCallback(async () => {
         try {
@@ -119,7 +121,7 @@ window.__ModuleLoader__.load({
           if (c && c.config) setCfg(c.config)
           if (s && s.ok) setSt(s)
         } catch (e) {
-          setMsg('读取失败：' + (e && e.message))
+          flash('读取失败：' + (e && e.message), { holdMs: 6000 })
         }
       }, [])
 
@@ -153,7 +155,7 @@ window.__ModuleLoader__.load({
         try {
           const r = await postJson(API + '/config', p)
           if (r && r.config) setCfg(r.config)
-          flash((label || '设置') + ' 已保存')
+          flash((label || '设置') + ' 已保存', { tone: 'success' })
         } catch (e) { flash('保存失败：' + (e && e.message)) }
       }
 
@@ -568,7 +570,7 @@ window.__ModuleLoader__.load({
                 h('div', { 'data-fm-note': '' }, t))))))
 
       return h('div', { 'data-fm-wrap': '' },
-        h('div', { 'data-fm-tabs': '', role: 'tablist', 'aria-label': '心情页面' },
+        onPageChange ? null : h('div', { 'data-fm-tabs': '', role: 'tablist', 'aria-label': '心情页面' },
           页签.map(([id, 名]) => h('button', {type: 'button',
             key: id, role: 'tab', 'aria-selected': 页 === id, tabIndex: 页 === id ? 0 : -1, onKeyDown: e => { const i = 页签.findIndex(item => item[0] === id); const next = e.key === 'ArrowRight' ? (i + 1) % 页签.length : e.key === 'ArrowLeft' ? (i + 页签.length - 1) % 页签.length : e.key === 'Home' ? 0 : e.key === 'End' ? 页签.length - 1 : null; if (next !== null) { e.preventDefault(); set页(页签[next][0]); e.currentTarget.parentElement.querySelectorAll('[role=tab]')[next].focus() } }, 'data-fm-tab': '', 'data-fm-on': 页 === id ? '' : undefined,
             onClick: () => set页(id),
@@ -577,10 +579,9 @@ window.__ModuleLoader__.load({
         页 === 'bind' ? 绑定页 : null,
         页 === 'judge' ? 判断页 : null,
         页 === 'charm' ? 挂饰页 : null,
-        h('div', { 'data-fm-msg': '', role: 'status', 'aria-live': 'polite' }, msg),
       )
     }
 
-    return { Section: function MoodSection() { return h('div', null, h('style', null, CSS), h(Panel)) } }
+    return { Section: function MoodSection(props) { return h('div', null, h('style', null, CSS), h(Panel, props)) } }
   },
 })

@@ -1949,6 +1949,9 @@ export function apply(ctx) {
   try {
     const IMAGE_FILES = [
       'welcome.png', 'sticker-book.png', 'sticker-chat.png', 'sticker-read.png', // 海洋工作台装饰，固定白名单。
+      'sticker-heart.png', 'sticker-wave.png', // 深海手帐新增：心情爱心、主动问候挥手。
+      'logo.png', // 大肥鱼项目 logo（侧栏与设置页入口）
+      'update.png', // 「大肥鱼超进化！」更新卡片插画
       'feiyu.png',   // 3 档（普通）—— 也是原来的形象图，别删，老版本还在用这个路径
       'feiyu-great.png', 'feiyu-good.png', 'feiyu-worry.png', 'feiyu-sad.png',
       'face-great.png', 'face-good.png', 'face-ok.png', 'face-worry.png', 'face-sad.png',

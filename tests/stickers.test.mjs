@@ -10,6 +10,7 @@ function fixture() {
   const home = mkdtempSync(join(tmpdir(), 'fish-stickers-')), requests = [], logs = []
   mkdirSync(join(home,'storages'));mkdirSync(join(home,'BigFish'))
   writeFileSync(join(home,'storages/workspace.json'),JSON.stringify({tables:{workspaces:{fish:{path:join(home,'BigFish')}}}}))
+  writeFileSync(join(home,'qq-bridge-config.json'),JSON.stringify({工作区:'fish'}))
   let result = { id: null }
   const ctx = { llm: { async *stream(input) { requests.push(input); yield { type: 'text-delta', text: JSON.stringify(result) } } }, get: () => ({ requestRejection: () => undefined }) }
   const agent = { options: { provider: 'fake', model: 'fake' }, session: { snapshotEvents: () => [{ type: 'user/message', data: { source: { kind: 'qq' }, content: [{type:'text',text:'终于考过了'}] } }] } }
@@ -214,7 +215,7 @@ test('命名失败保留原图和待处理状态，可在专用会话重试成�
  }finally{f.close()}
 })
 
-test('原图存入 BigFish 专用文件夹，旧图迁移保留备份，冲突与缺失工作区不覆盖数据',()=>{
+test('原图存入绑定工作区的专用文件夹，旧图迁移保留备份，冲突与缺失工作区不覆盖数据',()=>{
  const f=fixture();try{
   const item=f.lib.add({bytes:gif}),target=join(f.pictures,item.id+'.gif'),legacy=join(f.home,'qq-stickers',item.id+'.gif')
   writeFileSync(legacy,gif);rmSync(target)
@@ -222,6 +223,6 @@ test('原图存入 BigFish 专用文件夹，旧图迁移保留备份，冲突�
   writeFileSync(target,Buffer.concat([gif,Buffer.from('conflict')]))
   const conflict=f.create();assert.match(conflict.view().storage.error,/不一致/);assert.throws(()=>conflict.remove(item.id),/不一致/);assert.equal(conflict.view().items.length,1)
   rmSync(join(f.home,'storages/workspace.json'))
-  const missing=f.create();assert.match(missing.view().storage.error,/BigFish/);assert.throws(()=>missing.add({bytes:Buffer.concat([gif,Buffer.from('new')])}),/BigFish/);assert.equal(missing.view().items.length,1)
+  const missing=f.create();assert.match(missing.view().storage.error,/工作区/);assert.throws(()=>missing.add({bytes:Buffer.concat([gif,Buffer.from('new')])}),/工作区/);assert.equal(missing.view().items.length,1)
  }finally{f.close()}
 })

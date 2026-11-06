@@ -1,4 +1,4 @@
-function FishStickers({ notify }) {
+function FishStickers({ notify, mode = 'full', onOpenFiles }) {
   const React = require('react'), h = React.createElement
   const [data, setData] = React.useState(null), [busy, setBusy] = React.useState(false), [error, setError] = React.useState('')
   const [bindings, setBindings] = React.useState([]), [sessions, setSessions] = React.useState([]), [processingSession, setProcessingSession] = React.useState('')
@@ -47,6 +47,15 @@ function FishStickers({ notify }) {
       if (done) notify?.('表情已入库，正在排队处理', { tone: 'success' })
     } finally { setBusy(false); if (batchRef.current) batchRef.current.value = '' }
   }
+  const openFolder = async () => {
+    setBusy(true); setError('')
+    try {
+      const response = await fetch('/dsh-qq-bridge/open-folder', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'stickers' }) })
+      const result = await response.json().catch(() => null)
+      if (!response.ok || !result?.ok) throw new Error(result?.说 || '打开文件夹失败')
+      notify?.('已打开本地文件夹', { tone: 'success' })
+    } catch (e) { setError(e.message) } finally { setBusy(false) }
+  }
   const sw = (key, label, note) => h('div', { className: 'fish-form-row' }, h('div', { className: 'fish-form-label' }, label), h('div', { className: 'fish-control' },
     h('input', { type: 'checkbox', role: 'switch', 'aria-label': label, checked: !!data.settings[key], disabled: busy, onChange: async e => { const value = e.target.checked, previous = data.settings[key]; setData(old => ({ ...old, settings: { ...old.settings, [key]: value } })); if (!await act('/settings', { [key]: value })) setData(old => ({ ...old, settings: { ...old.settings, [key]: previous } })) } }), h('p', { className: 'fish-muted' }, note)))
   const tagGroups = fishStickerTagGroups(data?.items || [])
@@ -56,7 +65,72 @@ function FishStickers({ notify }) {
   React.useEffect(() => { if (selected && !preview) setSelected(null) }, [selected, Boolean(preview)])
   if (!data) return h('p', { role: 'status' }, error || '正在读取表情库…')
   const ready = Boolean(data.settings.processingSession) && processingSession.trim() === data.settings.processingSession
+  const 存储提示 = data.storage?.path ? '素材原图目录：' + data.storage.path : (data.storage?.error && !/工作区/.test(data.storage.error) ? data.storage.error : '素材原图目录暂不可用。')
   const tagPrefix = tags.match(/^.*[,，、;；]/)?.[0] || ''
+  const 自动化卡 = h('section', { className: 'fish-card' }, h('h2', null, '表情包自动化'),
+    sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行、收发开关和素材来源隔离。'),
+    sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，原文件按来源隔离与内容去重。不会重新扫描启动前的历史记录。'),
+    sw('collectAllImages', '同时收藏普通图片', '默认关闭，避免把普通照片收进素材库；只对自动收藏生效。'),
+    sw('autoTag', '自动给新表情打标签', '自动收藏的表情使用所属绑定会话的模型标注。手动导入和扫描补标签使用下方专用会话，不受此开关影响。已有手动标签不会被覆盖，会产生模型用量。'),
+    sw('autoClassify', '自动分类表情包', '按视觉结果和标签、场景自动归类，手动选定的分类保持不变。手动导入及扫描识别完成后自动分类。'),
+    data.collection?.error ? h('p', { role: 'status', className: 'fish-message' }, data.collection.error) : null,
+    h('label', null, '自动发送冷却（秒） ', h('input', { type: 'number', min: 10, max: 86400, 'aria-label': '自动发送冷却', defaultValue: data.settings.cooldownSeconds, disabled: busy, onBlur: e => act('/settings', { cooldownSeconds: Number(e.target.value) }) })),
+    h('label', null, '素材处理会话 ', h('input', { value: processingSession, list: sessionList, placeholder: '输入专用 DSH 会话 ID', 'aria-label': '素材处理会话', 'aria-describedby': sessionList + '-help', disabled: busy, onChange: e => setProcessingSession(e.target.value), onBlur: () => { if (processingSession.trim() !== data.settings.processingSession) act('/settings', { processingSession: processingSession.trim() }) } })),
+    h('datalist', { id: sessionList }, ...sessions.map(s => h('option', { key: s.id, value: s.id }, s.标题 || s.id))),
+    h('p', { id: sessionList + '-help', className: 'fish-muted' }, '先在 DSH 中创建并打开一个专用会话，选择现有 DeepSeek 模型，再填入会话 ID；离开输入框自动保存。仅用于手动导入、批量导入、扫描补标签及重试，每张图片独立处理，不向聊天记录追加消息。请勿将该会话绑定到 QQ、记忆或主动搭话。'),
+    h('p', { className: 'fish-muted', role: data.storage?.error && !/工作区/.test(data.storage.error) ? 'status' : undefined }, 存储提示))
+
+  const 素材库按钮 = h('button', { type: 'button', className: 'fish-button fish-primary', onClick: () => {
+    if (typeof onOpenFiles === 'function') { onOpenFiles(); return }
+    setLibraryOpen(true); load().catch(e => setError(e.message))
+  } }, '打开表情包素材库')
+  const 素材库弹窗 = h(FishStickerDialog, { open: libraryOpen, onClose: () => { setLibraryOpen(false); setSelected(null) }, title: '表情包素材库' },
+    h('div', { className: 'fish-actions' },
+      h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || !ready || !!data.tagging?.pending || !data.items.some(x => !x.tags.length), onClick: () => act('/tag', { onlyUntagged: true }) }, '扫描并识别未打标签表情'),
+      h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => load().catch(e => setError(e.message)) }, '刷新素材库')),
+    h('p', { className: 'fish-muted', role: 'status' }, data.tagging?.pending ? '正在处理 ' + data.tagging.pending + ' 张表情，可关闭窗口，任务继续运行。' : '扫描全部素材，只给无标签的图片排队；使用配置的专用会话识别，会产生模型用量。'),
+    h('label', null, '搜索名称、标签和场景 ', h('input', { value: query, onChange: e => setQuery(e.target.value), 'aria-label': '搜索表情' })),
+    h('div', { className: 'fish-actions fish-sticker-tags', role: 'group', 'aria-label': '表情标签筛选' }, ...tagGroups.map(tag => h('button', { type: 'button', key: tag.id, className: 'fish-button' + (activeTag === tag.id ? ' fish-primary' : ''), 'aria-pressed': activeTag === tag.id, onClick: () => setCategory(tag.id) }, tag.name + '（' + tag.count + '）'))),
+    h('div', { className: 'fish-sticker-grid' }, ...filtered.map(item => h('article', { className: 'fish-sticker-tile', key: item.id },
+      h('button', { className: 'fish-sticker-thumb', type: 'button', 'aria-label': '预览 ' + item.name, onClick: () => setSelected(item.id) }, h('img', { src: item.url, alt: '', loading: 'lazy', width: 144, height: 120 })),
+      h('h3', null, item.name), h('p', { className: 'fish-muted' }, item.tags.length ? item.tags.join(' · ') : '未分类')))),
+    filtered.length ? null : h('p', { className: 'fish-muted' }, data.items.length ? '当前标签或搜索下没有表情。' : '素材库为空，可关闭窗口后导入表情包。'),
+    error ? h('p', { className: 'fish-message', role: 'alert' }, error) : null)
+  const 预览弹窗 = h(FishStickerDialog, { open: Boolean(preview) && libraryOpen, onClose: () => setSelected(null), title: '表情预览与编辑' },
+    preview ? h(FishStickerCard, { key: preview.id, item: preview, busy, processingReady: ready, act, bindings, categories: data.categories }) : null,
+    error ? h('p', { className: 'fish-message', role: 'alert' }, error) : null)
+
+  if (mode === 'settings') {
+    return h('div', { className: 'fish-settings-stack fish-stickers' },
+      h('style', null, FISH_STICKER_CSS),
+      自动化卡,
+      素材库按钮,
+      素材库弹窗,
+      预览弹窗,
+      !libraryOpen && error ? h('p', { className: 'fish-message', role: 'alert', style: { whiteSpace: 'pre-wrap' } }, error) : null)
+  }
+
+  if (mode === 'files') {
+    return h('div', { className: 'fish-settings-stack fish-stickers' },
+      h('style', null, FISH_STICKER_CSS),
+      h('section', { id: 'fish-sticker-files-card', className: 'fish-card fish-sticker-files' },
+        h('h2', null, '表情包'),
+        h('p', { className: 'fish-muted', role: data.storage?.error && !/工作区/.test(data.storage.error) ? 'status' : undefined }, 存储提示),
+        h('input', { ref: fileRef, type: 'file', accept: '.png,.jpg,.jpeg,.gif,.webp', hidden: true, style: { display: 'none' }, 'aria-label': '单张表情文件', onChange: e => { const f = e.target.files?.[0]; if (f) uploadFiles([f], false) } }),
+        h('input', { ref: batchRef, type: 'file', multiple: true, accept: '.png,.jpg,.jpeg,.gif,.webp', hidden: true, style: { display: 'none' }, 'aria-label': '批量表情文件', onChange: e => uploadFiles(Array.from(e.target.files || []), true) }),
+        h('div', { className: 'fish-actions' },
+          h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: openFolder }, '打开本地文件夹'),
+          h('button', { type: 'button', className: 'fish-button', onClick: () => { setLibraryOpen(true); load().catch(e => setError(e.message)) } }, '管理素材库（' + data.items.length + '）'),
+          h('button', { type: 'button', className: 'fish-button', disabled: busy || !ready || !!data.storage?.error, onClick: () => fileRef.current?.click() }, '单张导入'),
+          h('button', { type: 'button', className: 'fish-button', disabled: busy || !ready || !!data.storage?.error, onClick: () => batchRef.current?.click() }, '批量导入')),
+        h('p', { className: 'fish-muted' }, ready ? '单张 / 批量导入会使用「QQ 互通 → 表情包」中配置的素材处理会话进行识别、命名和分类。' : '先在「QQ 互通 → 表情包」配置素材处理会话后，才能导入。'),
+        importStatus ? h('p', { role: 'status', className: 'fish-muted' }, importStatus) : null,
+        data.tagging?.pending ? h('p', { role: 'status', className: 'fish-muted' }, '正在识别 ' + data.tagging.pending + ' 张表情，处理完成后可在素材库中查看。') : null,
+        !libraryOpen && error ? h('p', { className: 'fish-message', role: 'alert', style: { whiteSpace: 'pre-wrap' } }, error) : null),
+      素材库弹窗,
+      预览弹窗)
+  }
+
   return h('div', { className: 'fish-settings-stack fish-stickers' },
     h('style', null, FISH_STICKER_CSS),
     h('section', { className: 'fish-card' }, h('h2', null, '表情包自动化'),
@@ -70,7 +144,7 @@ function FishStickers({ notify }) {
       h('label', null, '素材处理会话 ', h('input', { value: processingSession, list: sessionList, placeholder: '输入专用 DSH 会话 ID', 'aria-label': '素材处理会话', 'aria-describedby': sessionList + '-help', disabled: busy, onChange: e => setProcessingSession(e.target.value), onBlur: () => { if (processingSession.trim() !== data.settings.processingSession) act('/settings', { processingSession: processingSession.trim() }) } })),
       h('datalist', { id: sessionList }, ...sessions.map(s => h('option', { key: s.id, value: s.id }, s.标题 || s.id))),
       h('p', { id: sessionList + '-help', className: 'fish-muted' }, '先在 DSH 中创建并打开一个专用会话，选择现有 DeepSeek 模型，再填入会话 ID；离开输入框自动保存。仅用于手动导入、批量导入、扫描补标签及重试，每张图片独立处理，不向聊天记录追加消息。请勿将该会话绑定到 QQ、记忆或主动搭话。'),
-      h('p', { className: 'fish-muted', role: data.storage?.error ? 'status' : undefined }, data.storage?.path ? '素材原图目录：' + data.storage.path : data.storage?.error || '素材原图保存在 BigFish 工作区的“表情包”文件夹。')),
+      h('p', { className: 'fish-muted', role: data.storage?.error && !/工作区/.test(data.storage.error) ? 'status' : undefined }, 存储提示)),
     h('button', { type: 'button', className: 'fish-button fish-primary', onClick: () => { setLibraryOpen(true); load().catch(e => setError(e.message)) } }, '打开表情包素材库（' + data.items.length + '）'),
     h('section', { className: 'fish-card fish-sticker-import' }, h('h2', null, '单张导入'),
       h('label', null, '图片文件 ', h('input', { ref: fileRef, type: 'file', accept: '.png,.jpg,.jpeg,.gif,.webp', disabled: busy, onChange: e => setFile(e.target.files?.[0] || null) })),
