@@ -1,11 +1,11 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Readable } from 'node:stream'
 
-test('QQ 操作入口：权限、原图、试运行、绑定、空间复用及失败反馈', async () => {
+test('QQ 图片边界：拒绝手动发送，保留会话生成图、试运行及空间操作', async () => {
   const home = mkdtempSync(join(tmpdir(), 'fish-actions-'))
   const previous = process.env.DSH_HOME, fetch = globalThis.fetch, interval = globalThis.setInterval
   let spaceTick; const reminders = []
@@ -23,7 +23,7 @@ test('QQ 操作入口：权限、原图、试运行、绑定、空间复用及�
       return Response.json(backendOK ? { status: 'ok', retcode: 0, data: { tid: 42, feeds: [{ nickname: '朋友', html: '<p>早上好</p>', time: 1 }] } } : { status: 'failed', wording: 'backend-test-error' })
     }
     const host = await import('../modules/qq/lib/host.js?actions-test')
-    host.apply({ effect(fn) { const f = fn(); if (f) off.push(f) }, on: () => () => {}, interval: () => () => {},
+    const bridge = host.apply({ effect(fn) { const f = fn(); if (f) off.push(f) }, on: () => () => {}, interval: () => () => {},
       agents: { list: () => [], get: () => ({ session: { id: 'session-test' }, followup: async message => reminders.push(message) }) }, sessions: { list: () => [] }, logger: { info() {} },
       get: name => name === 'connection' && auth ? { requestRejection: () => denied } : undefined,
       webServer: { register(r) { routes.set(r.path, r.handler); return () => {} } } })
@@ -44,14 +44,25 @@ test('QQ 操作入口：权限、原图、试运行、绑定、空间复用及�
     assert.equal((await call('send-images', { ...images, images: Array(5).fill(images.images[0]) })).ok, false)
     assert.equal((await call('send-images', { ...images, images: ['/tmp/secrets.txt'] })).ok, false)
     assert.equal(sent.length, 0)
-    save({ 总开关: false }); assert.equal((await call('send-images', images)).ok, false)
-    save({ 总开关: true, 试运行: true }); assert.match((await call('send-images', images)).说, /未实际发送/); assert.equal(sent.length, 0)
-    save({ 试运行: false }); assert.equal((await call('send-images', images)).ok, true)
-    assert.equal(sent.at(-1).body.user_id, 123456)
-    assert.deepEqual(sent.at(-1).body.message, [{ type: 'image', data: { file: images.images[0], url: images.images[0] } }])
-    const gif = join(home, 'sticker.gif'); writeFileSync(gif, Buffer.from('GIF89a-test-original'))
-    assert.equal((await call('send-images', { ...images, images: [gif] })).ok, true)
-    assert.equal(sent.at(-1).body.message[0].data.file, 'base64://' + Buffer.from('GIF89a-test-original').toString('base64'))
+    for (const patch of [{总开关:false},{总开关:true,试运行:true},{试运行:false}]) {
+      save(patch);const rejected=await call('send-images',images);assert.equal(rejected.ok,false);assert.match(rejected.说,/不支持手动发送/)
+    }
+    assert.equal(sent.length,0)
+    const gif=join(home,'generated.gif'),bytes=Buffer.from('GIF89a-test-original');writeFileSync(gif,bytes)
+    assert.equal((await call('send-images',{...images,images:[gif]})).ok,false);assert.equal(sent.length,0)
+    const reply=async(turn,text)=>{
+      bridge.收到事件({id:'session-test'},{type:'user/message',data:{source:{kind:'qq'},content:[]}})
+      bridge.收到事件({id:'session-test'},{type:'assistant/message',data:{turn,message:{role:'assistant',content:[{type:'text',text}]}}})
+      bridge.收到事件({id:'session-test'},{type:'turn/end',data:{turn,reason:{kind:'completed'}}})
+      for(let i=0;i<20;i++)await new Promise(setImmediate)
+    }
+    await reply(1,'![会话生成图片]('+gif+')')
+    assert.equal(sent.length,1);assert.equal(sent[0].body.user_id,123456)
+    assert.equal(sent[0].body.message[0].data.file,'base64://'+bytes.toString('base64'))
+    assert.deepEqual(readFileSync(gif),bytes);assert.equal(existsSync(join(home,'qq-bridge-inbox')),false)
+    save({试运行:true});await reply(2,'![会话生成图片]('+gif+')');assert.equal(sent.length,1)
+    save({试运行:false,发图:false});await reply(3,'![会话生成图片]('+gif+')');assert.ok(!sent.slice(1).some(x=>x.body.message?.some(p=>p.type==='image')))
+    save({发图:true})
     const publish = { action: 'qq_space_post', args: { content: '今天好', images: Array(9).fill('https://example.com/image.png'), ugc_right: 64 } }
     const before = sent.length
     assert.equal((await call('space', publish)).ok, false); assert.equal(sent.length, before)

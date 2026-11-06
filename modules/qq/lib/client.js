@@ -70,12 +70,11 @@ window.__ModuleLoader__.load({
       return s.length <= 8 ? s : s.slice(-8)
     }
 
-    const 页签们 = ['连接', '绑定', '消息策略', '图片与语音', '表情包', 'QQ 空间', '历史导入', '运行日志']
+    const 页签们 = ['连接', '绑定', '消息策略', '图片', '表情包', '语音转写', 'QQ 空间', '历史导入', '运行日志']
 
-    function QQActions({ mode, 配置, 脏, 改 }) {
+    function QQSpaceActions({ 配置, 脏 }) {
       const [busy, setBusy] = React.useState(false)
       const [message, setMessage] = React.useState('')
-      const [session, setSession] = React.useState('')
       const [images, setImages] = React.useState('')
       const [content, setContent] = React.useState('')
       const [right, setRight] = React.useState('4')
@@ -84,7 +83,6 @@ window.__ModuleLoader__.load({
       const [tid, setTid] = React.useState('')
       const [result, setResult] = React.useState('')
       const imageList = images.split(/\r?\n/).map(x => x.trim()).filter(Boolean)
-      const limit = mode === 'images' ? 4 : 9
       const run = async (path, body, read = false) => {
         setBusy(true); setMessage('处理中…')
         try {
@@ -95,21 +93,9 @@ window.__ModuleLoader__.load({
         } catch (e) { setMessage(e.message) }
         finally { setBusy(false) }
       }
-      const imageField = 行('图片地址（每行一张）', h('textarea', { style: S.ta, value: images, placeholder: mode === 'images' ? 'https://example.com/happy.gif\n_stickers/happy.png' : 'https://example.com/photo.jpg', onChange: e => setImages(e.target.value) }),
-        '已填写 ' + imageList.length + ' / ' + limit + ' 张。支持 HTTP(S) 地址和本地图片路径；图片发送路径由 DSH 读取，空间配图路径由 QQ 后端读取。')
+      const imageField = 行('图片地址（每行一张）', h('textarea', { style: S.ta, value: images, placeholder: 'https://example.com/photo.jpg', onChange: e => setImages(e.target.value) }),
+        '已填写 ' + imageList.length + ' / ' + 9 + ' 张。支持 HTTP(S) 地址和本地图片路径；空间配图路径由 QQ 后端读取。')
       const blocked = busy || 脏
-      if (mode === 'images') return h('section', { style: S.card },
-        h('h2', null, '发送图片与表情包'),
-        h('p', { style: S.dim }, '静态表情和 GIF 均走原图发送；GIF 不会在这里转成静态图。发送到已保存的会话绑定，遵守总开关、试运行和发送图片开关。'),
-        行('发送目标', h('select', { style: S.wide, value: session, onChange: e => setSession(e.target.value) },
-          h('option', { value: '' }, '选择 QQ 聊天'), ...(配置.绑定 || []).filter(b => b.开 !== false).map(b => h('option', { key: b.会话, value: b.会话 }, b.类型 + ' ' + b.号码)))),
-        imageField,
-        h('div', { className: 'fish-actions' }, 按钮('发送图片到 QQ', () => run('/send-images', { session, images: imageList }), true, blocked || !session || !imageList.length || imageList.length > 4 || !配置.总开关 || !配置.发图)),
-        h('p', { role: 'status', className: 'fish-message' }, message || (脏 ? '请先保存设置，再发送。' : 配置.试运行 ? '当前为试运行：只校验并记录，不实际发送。' : '点击后立即发送至所选 QQ 聊天。')),
-        h('div', { className: 'fish-rule-section' }, h('h3', null, '让模型按语境选择表情'),
-          h('p', { style: S.dim }, '现有插件没有自动素材库或独立选图器。可将素材路径和使用场景写入角色设定，让模型输出 Markdown 图片；具体选择由模型决定。'),
-          行('表情素材与选择规则', h('textarea', { style: S.ta, value: String(配置.人设 || ''), placeholder: '例如：开心时可用 ![开心](_stickers/happy.gif)，安慰时可用 ![拥抱](_stickers/hug.png)。没有合适素材就只回复文字。', onChange: e => 改('人设', e.target.value) }), '与「绑定 → 全局角色设定」共用同一份文本；保留已有角色描述，在末尾补充规则。'),
-          行('启用角色设定', 勾(配置.人设开, v => 改('人设开', v)), '有独立角色设定的绑定需要在对应绑定中补充规则。')))
       return h('div', { className: 'fish-settings-stack' },
         h('section', { style: S.card }, h('h2', null, '发布说说'),
           行('说说正文', h('textarea', { style: S.ta, value: content, onChange: e => setContent(e.target.value), placeholder: '分享今天想说的话…' })), imageField,
@@ -549,13 +535,9 @@ window.__ModuleLoader__.load({
           行('消息轮询间隔（毫秒）', h('input', {'aria-label': '轮询间隔毫秒',  type: 'number', min: 800, max: 30000, style: S.small, value: String(配置.轮询间隔毫秒 ?? 2000), onChange: (e) => 改('轮询间隔毫秒', Number(e.target.value)) }), '默认 2000 毫秒，修改后需重启 DSH。'),
         ),
         h('div', { style: S.card },
-          h('div', { style: { ...S.h, margin: '0 0 8px' } }, '图片'),
-          行('接收图片（QQ → DSH）', 勾(配置.收图, (v) => 改('收图', v)), '图片转入目标会话；纯文本模型仅接收图片数量和路径。'),
-          行('发送图片（DSH → QQ）', 勾(配置.发图, (v) => 改('发图', v)), '将模型输出的图片转发至 QQ。'),
-          行('接收图片上限（张）', h('input', {'aria-label': '收图最多',  type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '接收最多 10 张；发送每条最多 4 张。超出部分不转发。'),
-          行('单张图片上限（MB）', h('input', {'aria-label': '图上限MB',  type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: (e) => 改('图上限MB', Number(e.target.value)) }), '收发共用，超出上限时跳过。'),
-          行('图片根目录', h('input', {'aria-label': '图片根目录',  style: S.wide, placeholder: '留空使用会话工作区', value: String(配置.图片根目录 || ''), onChange: (e) => 改('图片根目录', e.target.value) }), '用于解析 Markdown 图片的相对路径。'),
-          h('div', { style: S.dim }, '接收图片保存在 DSH 数据目录的 qq-bridge-inbox 中。'),
+          h('div', { style: { ...S.h, margin: '0 0 8px' } }, 'QQ 图片接收'),
+          行('接收图片（QQ → DSH）', 勾(配置.收图, (v) => 改('收图', v)), '将 QQ 消息中的图片交给 DSH 理解，受图片页的单张大小上限约束。'),
+          行('每条消息最多接收图片', h('input', {'aria-label': '收图最多', type: 'number', min: 1, max: 10, style: S.small, value: String(配置.收图最多 ?? 4), onChange: (e) => 改('收图最多', Number(e.target.value)) }), '接收最多 10 张，超出部分跳过。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '文件'),
@@ -719,7 +701,13 @@ window.__ModuleLoader__.load({
       const 页面 = {
         '连接': 分区(消息卡片[0], 总览卡片[0]),
         '绑定': 分区(绑定卡片[1], 绑定卡片[0]),
-        '消息策略': 分区(消息卡片[1], 消息卡片[2], 绑定卡片[2], 门槛卡片[0]),
+        '消息策略': 分区(消息卡片[1], 消息卡片[2], 消息卡片[3], 消息卡片[4], 绑定卡片[2], 门槛卡片[0]),
+        '图片': 分区(h('section', { style: S.card },
+          h('h2', null, 'DSH 生成图片转发'),
+          h('p', { style: S.dim }, '仅将绑定 DSH 会话回复中生成的图片自动发送到 QQ。本页不提供手动发送、图片上传或图片存储。'),
+          行('发送生成图片（DSH → QQ）', 勾(配置.发图, v => 改('发图', v)), '支持会话回复中的图片附件和 Markdown 图片，发送到该会话绑定的 QQ 聊天；遵守总开关、试运行和消息转发策略。每轮最多 4 张。'),
+          行('单张图片上限（MB）', h('input', { 'aria-label': '图上限MB', type: 'number', min: 1, max: 30, style: S.small, value: String(配置.图上限MB ?? 5), onChange: e => 改('图上限MB', Number(e.target.value)) }), '读取已有的生成图片进行转发，不另建图片存储；QQ 收图也共用此大小限制。'))),
+        '语音转写': 分区(消息卡片[5]),
         '表情包': typeof FishStickers === 'function' ? h(FishStickers, { notify: typeof notify === 'function' ? notify : undefined }) : h('p', null, '请在大肥鱼整合界面使用表情库'),
         '历史导入': 历史页,
         '运行日志': 分区(总览卡片[1], 总览卡片[2]),
@@ -739,8 +727,7 @@ window.__ModuleLoader__.load({
         说 ? h('p', { role: 'status', className: 'fish-message' }, 说) : null,
         页 === '连接' || 页 === '运行日志' ? h('div', { className: 'fish-test-action' }, 按钮('发送测试消息', 试一句, false, 忙 || 脏), h('span', { style: S.dim }, '会实际发送至首个绑定的 QQ 聊天，不受试运行限制。')) : null,
         页面[页] || null,
-        h('div', { hidden: 页 !== '图片与语音' }, h(QQActions, { mode: 'images', 配置, 脏, 改 }), 分区(消息卡片[3], 消息卡片[4], 消息卡片[5])),
-        h('div', { hidden: 页 !== 'QQ 空间' }, 空间卡片[0], h(QQActions, { mode: 'space', 配置, 脏, 改 }), 分区(...空间卡片.slice(1))),
+        h('div', { hidden: 页 !== 'QQ 空间' }, 空间卡片[0], h(QQSpaceActions, { 配置, 脏 }), 分区(...空间卡片.slice(1))),
         h('details', { className: 'fish-diagnostics' }, h('summary', null, '诊断信息'),
           h('p', null, '模块版本 ' + String(态.版本 || '?')),
           h('p', null, '配置文件：' + String(态.配置文件 || '未知'))),
