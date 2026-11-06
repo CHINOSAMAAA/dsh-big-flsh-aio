@@ -665,3 +665,10 @@ git diff --check
 - 实际能否取到取决于 NapCat / SnowLuma 支持及机器人是否已加好友 / 在群内；拿不到时显示后端错误，不阻止手动填写。
 - Node.js 22.23.1：AIO 全套通过；QQ Plus 18 项通过。
 
+## QQ 名称自动拉取交互 · 本地验证，2026-11-07
+
+- 移除新增映射模态框里的「获取名称」按钮；号码输入停止 450ms 后自动请求 `/lookup-name`，成功直接写入下方 QQ 昵称 / 群名输入框，失败显示固定文案「拉取失败，请自行填写 QQ 昵称/群名称」。
+- 浏览器 mock 验证：群号 123456 600ms 后自动填入「自动群名」，请求体 `{类型:'群',号码:'123456'}`；失败路径显示固定提示；无「获取名称」按钮。
+- 宿主 `/lookup-name` 仍按 get_group_info → get_group_list、get_stranger_info → get_friend_list 取名称。
+- Node.js 22.23.1：AIO 全套通过；QQ Plus 18 项通过。
+

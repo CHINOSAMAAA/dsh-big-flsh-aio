@@ -150,6 +150,7 @@ window.__ModuleLoader__.load({
       const 总开关校验 = React.useRef(0)
       const 编辑快照 = React.useRef(null)
       const 最新配置 = React.useRef(null)
+      const 新建计时 = React.useRef(null)
       最新配置.current = 态?.配置
 
       React.useEffect(() => {
@@ -247,19 +248,29 @@ window.__ModuleLoader__.load({
       const 打开新建 = (类型) => {
         if (编辑行 != null) { 告知('请先完成当前的映射编辑'); return }
         设新建错误(''); 设新建查名说('')
+        if (新建计时.current) { clearTimeout(新建计时.current); 新建计时.current = null }
         设新建映射({ 类型, 号码: '', 称呼: '', 门槛: false, 主动: false, 开: true })
       }
-      const 拉名称 = async () => {
-        if (!新建映射 || 新建查名忙) return
-        const 号码 = String(新建映射.号码 || '').trim()
-        if (!/^[1-9]\d*$/.test(号码)) { 设新建查名说(新建映射.类型 === '群' ? '请先填写有效的群号' : '请先填写有效的 QQ 号'); return }
-        设新建查名忙(true); 设新建查名说('')
+      const 自动拉名称 = async (类型, 号码) => {
+        if (!/^[1-9]\d*$/.test(号码)) return
+        设新建查名忙(true)
         try {
-          const r = await post('/lookup-name', { 类型: 新建映射.类型, 号码 })
-          if (!r || !r.ok) throw new Error((r && (r.说 || r.error)) || '没有查到名称')
-          设新建映射(old => old ? { ...old, 称呼: String(r.名称 || '') } : old)
-          设新建查名说('已获取：' + String(r.名称 || ''))
-        } catch (e) { 设新建查名说(e.message) } finally { 设新建查名忙(false) }
+          const r = await post('/lookup-name', { 类型, 号码 })
+          if (!r || !r.ok) throw new Error('lookup failed')
+          设新建映射(old => old && String(old.号码) === 号码 ? { ...old, 称呼: String(r.名称 || '') } : old)
+          设新建查名说('')
+        } catch (e) {
+          设新建查名说('拉取失败，请自行填写 QQ 昵称/群名称')
+        } finally { 设新建查名忙(false) }
+      }
+      const 安排拉名称 = (类型, 号码) => {
+        if (新建计时.current) { clearTimeout(新建计时.current); 新建计时.current = null }
+        设新建查名说('')
+        if (!/^[1-9]\d*$/.test(号码)) return
+        新建计时.current = setTimeout(() => {
+          新建计时.current = null
+          void 自动拉名称(类型, 号码)
+        }, 450)
       }
       const 创建映射 = async () => {
         if (!新建映射 || 新建忙) return
@@ -780,12 +791,10 @@ window.__ModuleLoader__.load({
             h('div', { className: 'qq-bind-modal-fields' },
               h('label', { className: 'qq-bind-modal-field' },
                 h('span', null, 新建映射.类型 === '群' ? '群号' : 'QQ 号'),
-                h('input', { style: S.wide, value: 新建映射.号码, inputMode: 'numeric', placeholder: 新建映射.类型 === '群' ? '填写群号' : '填写 QQ 号', onChange: (e) => { 设新建查名说(''); 设新建映射(old => ({ ...old, 号码: e.target.value.trim() })) } })),
+                h('input', { style: S.wide, value: 新建映射.号码, inputMode: 'numeric', placeholder: 新建映射.类型 === '群' ? '填写群号' : '填写 QQ 号', onChange: (e) => { const v = e.target.value.trim(); 设新建映射(old => ({ ...old, 号码: v })); 安排拉名称(新建映射.类型, v) } })),
               h('label', { className: 'qq-bind-modal-field' },
-                h('span', null, 新建映射.类型 === '群' ? '群名' : 'QQ 名'),
-                h('div', { className: 'qq-bind-modal-name-row' },
-                  h('input', { style: S.wide, value: 新建映射.称呼, placeholder: 新建映射.类型 === '群' ? '例如：大肥鱼后援群' : '例如：小明', onChange: (e) => 设新建映射(old => ({ ...old, 称呼: e.target.value })) }),
-                  h('button', { type: 'button', className: 'fish-button', disabled: 新建查名忙 || !新建映射.号码, onClick: () => { void 拉名称() } }, 新建查名忙 ? '获取中…' : '获取名称'))),
+                h('span', null, 新建映射.类型 === '群' ? '群名' : 'QQ 昵称'),
+                h('input', { style: S.wide, value: 新建映射.称呼, placeholder: 新建映射.类型 === '群' ? '填写或自动获取群名' : '填写或自动获取 QQ 昵称', onChange: (e) => 设新建映射(old => ({ ...old, 称呼: e.target.value })) })),
               新建查名说 ? h('div', { className: 'qq-bind-modal-lookup', role: 'status' }, 新建查名说) : null,
               新建映射.类型 === '群' ? h('div', { className: 'qq-bind-modal-toggles' },
                 h('label', { className: 'qq-bind-modal-toggle' }, h('span', null, '启用回复门槛'), 勾(新建映射.门槛, (v) => 设新建映射(old => ({ ...old, 门槛: v })), '启用回复门槛')),
