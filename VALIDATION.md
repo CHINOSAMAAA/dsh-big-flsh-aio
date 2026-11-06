@@ -672,3 +672,10 @@ git diff --check
 - 宿主 `/lookup-name` 仍按 get_group_info → get_group_list、get_stranger_info → get_friend_list 取名称。
 - Node.js 22.23.1：AIO 全套通过；QQ Plus 18 项通过。
 
+## 映射自动创建 Agent · 本地验证，2026-11-07
+
+- `/dsh-qq-bridge/create-session` 改为调用 `ctx.agents.create({sessionId, meta:{cwd}, agentOptions})`，同时写入 `session/title`；不再只调用 `ctx.sessions.create`。
+- Agent 会使用当前可用会话的 provider/model，取不到则使用 `agentDefaultModel`；工作区路径来自已绑定工作区。
+- 临时宿主验证：创建参数含工作区 B 的绝对 cwd、provider/model，返回 `session-*`，并写入「小明 - 12345」标题事件。
+- Node.js 22.23.1：AIO 根 71、QQ 18、记忆 144 通过；QQ Plus 18 通过。主动搭话仍有 5 项时间相关用例受当前安静时段影响。
+
