@@ -36,7 +36,7 @@ export function categorize(item) {
   return best ? CATEGORIES[scores.indexOf(best)] : '未分类'
 }
 
-export function createStickers({ home, ctx, workspace = createWorkspaceBinding({ home, ctx }), findAgent, sourceFor = () => '', log = () => {} }) {
+export function createStickers({ home, ctx, workspace = createWorkspaceBinding({ home, ctx }), findAgent, log = () => {} }) {
   const dir = join(home, 'qq-stickers'), catalog = join(dir, 'catalog.json')
   const 选素材模型 = () => {
     let fallback = null
@@ -203,7 +203,7 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
   const select = async (text, session) => {
     const data = read(), key = String(session)
     if (!data.settings.autoSend || pending.has(key) || Date.now() - (sent.get(key) || 0) < data.settings.cooldownSeconds * 1000) return []
-    const all = data.items.filter(x => (!x.scope || x.scope === key) && (!x.source || x.source === sourceFor(session)))
+    const all = data.items
     if (!all.length) return []
     pending.add(key)
     try {
@@ -218,7 +218,7 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
         picked = candidates.find(x => x.item.id === result.id)?.item
       } catch (e) { log('语境选表情失败，本轮不附图：' + e.message) }
       const current = read()
-      if (stopped || !current.settings.autoSend || !picked || !current.items.some(x => x.id === picked.id) || (picked.source && picked.source !== sourceFor(session))) return []
+      if (stopped || !current.settings.autoSend || !picked || !current.items.some(x => x.id === picked.id)) return []
       sent.set(key, Date.now())
       return [{ kind: 'path', value: file(picked) }]
     } finally { pending.delete(key) }
@@ -349,7 +349,7 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
     save(data)
   }
 
-  const register = ({ route, protect, json, config }) => {
+  const register = ({ route, protect, json }) => {
     const authorize = req => {
       const connection = ctx.get?.('connection')
       if (!connection?.requestRejection || connection.requestRejection(req)) throw new Error('management_forbidden')
@@ -374,7 +374,6 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
     post('classify', body => classify(body.id))
     post('tag', body => enqueueTags(body.id, false, body.onlyUntagged === true))
     post('import', body => {
-      if (body.scope && !(config().绑定 || []).some(b => b.会话 === body.scope)) throw new Error('素材来源会话未绑定')
       if (typeof body.base64 !== 'string' || !/^[A-Za-z0-9+/]+={0,2}$/.test(body.base64)) throw new Error('无效图片数据')
       add({ bytes: Buffer.from(body.base64, 'base64'), scope: body.scope, tags: body.tags, manualImport: true })
     })

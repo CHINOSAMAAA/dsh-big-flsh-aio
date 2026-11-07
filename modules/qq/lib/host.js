@@ -1093,16 +1093,11 @@ export function 抠QQ标记(文字, 只发标记内) {
 }
 export function apply(ctx) {
   const workspace = createWorkspaceBinding({ home: 目录, ctx, config: 读配置 })
-  const mediaStorage = createMediaStorage({ home: 目录, workspace })
+  const mediaStorage = createMediaStorage({ home: 目录, workspace, sessionFor: id => 找agent(id)?.session })
   const 新建Agent们 = new Set()
   const sessionTools = createSessionTools({ ctx, log: text => 记账(text) })
   ctx.effect(() => () => sessionTools.dispose(), 'qq-bridge: 会话联网工具')
-  const stickers = createStickers({ home: 目录, ctx, workspace, findAgent: id => 找agent(id), log: text => 记账(text), sourceFor: id => {
-    const config = 读配置(), binding = config.绑定.find(b => b.会话 === id)
-    if (!binding) return ''
-    const source = bindingSource(目录, binding)
-    return source && !source.unverified && source.endpoint === endpointKey(config) ? stickerSource(source.endpoint, source.botId, binding.类型, binding.号码) : ''
-  } })
+  const stickers = createStickers({ home: 目录, ctx, workspace, findAgent: id => 找agent(id), log: text => 记账(text) })
   /**
    * ⭐ 1.5.0：管理类接口只认「本人」。
    *
@@ -1364,6 +1359,7 @@ export function apply(ctx) {
       if (换) 值 = 换
       const 全 = 找本地图(值, 配置) || 值
       try {
+        mediaStorage.assertReadable(全, 候选[0].会话)
         const buf = readFileSync(全)
         if (buf.length > 最大) { 记账(`这张图太大（${Math.round(buf.length / 1048576)}MB），跳过`); return }
         图数据.push({ b64: buf.toString('base64') })
@@ -1405,6 +1401,7 @@ export function apply(ctx) {
           } catch (error) { /* 试下一个 */ }
         }
         if (!真) { 记账('文件「' + (f.label || f.value) + '」在本机找不到，跳过（这条不会发出去）'); continue }
+        mediaStorage.assertReadable(真, 候选[0].会话)
         const 大小 = statSync(真).size
         if (大小 > 文件上限) {
           记账('文件「' + basename(真) + '」有 ' + Math.round(大小 / 1048576) + 'MB，超过上限 ' + 配置.文件上限MB + 'MB，跳过')
@@ -2751,6 +2748,24 @@ export function apply(ctx) {
       : ''
     await 备人设(agent, 会话键(这间), 人设文)
 
+    const id = 新id()
+    let source = { kind: 'qq' }
+    try {
+      if (可信发送者) {
+        // 不复用跨账号的缓存；此处核验的是当前 OneBot 端点登录账号。
+        const response = await 带超时(配置.NapCat + '/get_login_info', { method: 'POST', headers: 请求头(配置), body: '{}' }, 5000)
+        const result = await response.json()
+        const login = result?.status === 'ok' ? result.data : null
+        const fresh = 读配置()
+        if (JSON.stringify(fresh) !== JSON.stringify(配置)) throw new Error('绑定配置已变化，请重试')
+        if (收消息信号?.aborted || !fresh.总开关) return { ok: false, 说: '收消息已停止' }
+        if (/^\d+$/.test(String(login?.user_id))) {
+          const trusted = recordSource(目录, 配置, login.user_id, 这条, id, 可信发送者)
+          source = { kind: 'qq', botId: trusted.botId, type: trusted.type, chatId: trusted.chatId, messageId: id, senders: trusted.senders }
+        } else invalidateSource(目录, 这间)
+      }
+    } catch (error) { return { ok: false, 说: 'QQ 来源核验失败：' + error.message } }
+
     // ── 收图：限量、限重，失败就跳过，不挡住文字 ──
     const 收下 = []
     if (配置.收图 && Array.isArray(图们) && 图们.length) {
@@ -2855,21 +2870,6 @@ export function apply(ctx) {
       //   catch 根本看不到（try 早就退出了）⇒ 未处理的 rejection ⇒ **整个 DSH 宿主退出**
       //   （2026-10-21：speak-up 同一个坑已经被用户报成"装了鱼就死了"，这里一并修）
       if (收消息信号?.aborted || !读配置().总开关) return { ok: false, 说: '收消息已停止' }
-      const id = 新id()
-      let source = { kind: 'qq' }
-      if (可信发送者) {
-        // 不复用跨账号的缓存；此处核验的是当前 OneBot 端点登录账号。
-        const response = await 带超时(配置.NapCat + '/get_login_info', { method: 'POST', headers: 请求头(配置), body: '{}' }, 5000)
-        const result = await response.json()
-        const login = result?.status === 'ok' ? result.data : null
-        const fresh = 读配置()
-        if (JSON.stringify(fresh) !== JSON.stringify(配置)) throw new Error('绑定配置已变化，请重试')
-        if (收消息信号?.aborted || !fresh.总开关) return { ok: false, 说: '收消息已停止' }
-        if (/^\d+$/.test(String(login?.user_id))) {
-          const trusted = recordSource(目录, 配置, login.user_id, 这条, id, 可信发送者)
-          source = { kind: 'qq', botId: trusted.botId, type: trusted.type, chatId: trusted.chatId, messageId: id, senders: trusted.senders }
-        } else invalidateSource(目录, 这间)
-      }
       await agent.followup({ id, role: 'user', content, source })
       已受理?.() // 先记宿主受理，不让后面的 flush 或卸载延迟去重落盘
       if (收消息信号?.aborted) return { ok: true, 说: '转入后收消息已停止' }
@@ -3726,7 +3726,7 @@ export function apply(ctx) {
       return 回(res, { ok: false, 说: '创建会话失败：' + String((error && error.message) || error) })
     }
   }))
-  stickers.register({ route: 路线, protect: 手动操作, json: 回, config: 读配置 })
+  stickers.register({ route: 路线, protect: 手动操作, json: 回 })
   mediaStorage.register({ route: 路线, protect: 手动操作, json: 回, config: 读配置, ctx })
 
   // 文件管理页：打开 QQ 图片 / QQ 文件 / 表情包的本地目录。

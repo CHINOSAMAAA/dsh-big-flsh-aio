@@ -6,8 +6,7 @@ const moduleLoader = { load({id, factory}) { components[id] = factory(require) }
 function FishStickers({ notify, mode = 'full', onOpenFiles }) {
   const React = require('react'), h = React.createElement
   const [data, setData] = React.useState(null), [busy, setBusy] = React.useState(false), [error, setError] = React.useState('')
-  const [bindings, setBindings] = React.useState([])
-  const [scope, setScope] = React.useState(''), [query, setQuery] = React.useState(''), [category, setCategory] = React.useState('')
+  const [query, setQuery] = React.useState(''), [category, setCategory] = React.useState('')
   const fileRef = React.useRef(null), batchRef = React.useRef(null), tagList = React.useId()
   const [file, setFile] = React.useState(null), [tags, setTags] = React.useState(''), [importStatus, setImportStatus] = React.useState('')
   const [libraryOpen, setLibraryOpen] = React.useState(false), [selected, setSelected] = React.useState(null)
@@ -20,7 +19,6 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
   }
   React.useEffect(() => {
     load().catch(e => setError(e.message))
-    fetch('/dsh-qq-bridge/state', { cache: 'no-store' }).then(r => r.json()).then(r => setBindings(r.配置?.绑定 || [])).catch(e => setError(e.message))
   }, [])
   React.useEffect(() => {
     if (!data?.settings.autoCollect && !data?.tagging?.pending) return
@@ -42,7 +40,7 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
         try {
           if (!image.size || image.size > 8 * 1048576) throw new Error('单张图片须为 1 字节～8 MB')
           const base64 = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result).split(',')[1]); reader.onerror = () => reject(new Error('读取图片失败')); reader.readAsDataURL(image) })
-          await load('/import', { base64, tags: batch ? '' : tags, scope: batch ? '' : scope }); done++
+          await load('/import', { base64, tags: batch ? '' : tags, scope: '' }); done++
         } catch (e) { failed.push(image.name + '：' + e.message) }
       }
       setImportStatus('导入完成：' + done + ' / ' + files.length + ' 张已入库，正在排队识别、命名和分类。' + (failed.length ? '失败 ' + failed.length + ' 张。' : ''))
@@ -71,8 +69,8 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
   const 存储提示 = data.storage?.path ? '素材原图目录：' + data.storage.path : (data.storage?.error && !/工作区/.test(data.storage.error) ? data.storage.error : '素材原图目录暂不可用。')
   const tagPrefix = tags.match(/^.*[,，、;；]/)?.[0] || ''
   const 自动化卡 = h('section', { className: 'fish-card' }, h('h2', null, '表情包自动化'),
-    sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行、收发开关和素材来源隔离。'),
-    sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，原文件按来源隔离与内容去重。不会重新扫描启动前的历史记录。'),
+    sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行与收发开关，全部表情在所有聊天共享。'),
+    sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，所有聊天共享素材库，原文件按来源与内容去重。不会重新扫描启动前的历史记录。'),
     sw('collectAllImages', '同时收藏普通图片', '默认关闭，避免把普通照片收进素材库；只对自动收藏生效。'),
     sw('autoTag', '自动给新表情打标签', '自动收藏的表情直接调用当前 DeepSeek 模型标注；手动导入和扫描补标签也直接调用模型，已有手动标签不会被覆盖，会产生模型用量。'),
     sw('autoClassify', '自动分类表情包', '按视觉结果和标签、场景自动归类，手动选定的分类保持不变。手动导入及扫描识别完成后自动分类。'),
@@ -97,7 +95,7 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
     filtered.length ? null : h('p', { className: 'fish-muted' }, data.items.length ? '当前标签或搜索下没有表情。' : '素材库为空，可关闭窗口后导入表情包。'),
     error ? h('p', { className: 'fish-message', role: 'alert' }, error) : null)
   const 预览弹窗 = h(FishStickerDialog, { open: Boolean(preview) && libraryOpen, onClose: () => setSelected(null), title: '表情预览与编辑' },
-    preview ? h(FishStickerCard, { key: preview.id, item: preview, busy, act, bindings, categories: data.categories }) : null,
+    preview ? h(FishStickerCard, { key: preview.id, item: preview, busy, act, categories: data.categories }) : null,
     error ? h('p', { className: 'fish-message', role: 'alert' }, error) : null)
 
   if (mode === 'settings') {
@@ -134,8 +132,8 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
   return h('div', { className: 'fish-settings-stack fish-stickers' },
     h('style', null, FISH_STICKER_CSS),
     h('section', { className: 'fish-card' }, h('h2', null, '表情包自动化'),
-      sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行、收发开关和素材来源隔离。'),
-      sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，原文件按来源隔离与内容去重。不会重新扫描启动前的历史记录。'),
+      sw('autoSend', '根据语境自动发送表情', '每轮最多附一张，已有图片时不追加。使用目标会话模型判断是否合适，会产生模型用量；没有合适素材或判断失败时不发图。遵守 QQ 试运行与收发开关，全部表情在所有聊天共享。'),
+      sw('autoCollect', '自动收藏收到的表情', '从已启用绑定的聊天中自动收藏 QQ 大表情、表情图片和 GIF；无需触发模型回复，所有聊天共享素材库，原文件按来源与内容去重。不会重新扫描启动前的历史记录。'),
       sw('collectAllImages', '同时收藏普通图片', '默认关闭，避免把普通照片收进素材库；只对自动收藏生效。'),
       sw('autoTag', '自动给新表情打标签', '自动收藏的表情直接调用当前 DeepSeek 模型标注；手动导入和扫描补标签也直接调用模型，已有手动标签不会被覆盖，会产生模型用量。'),
       sw('autoClassify', '自动分类表情包', '按视觉结果和标签、场景自动归类，手动选定的分类保持不变。手动导入及扫描识别完成后自动分类。'),
@@ -145,7 +143,6 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
     h('button', { type: 'button', className: 'fish-button fish-primary', onClick: () => { setLibraryOpen(true); load().catch(e => setError(e.message)) } }, '打开表情包素材库（' + data.items.length + '）'),
     h('section', { className: 'fish-card fish-sticker-import' }, h('h2', null, '单张导入'),
       h('label', null, '图片文件 ', h('input', { ref: fileRef, type: 'file', accept: '.png,.jpg,.jpeg,.gif,.webp', disabled: busy, onChange: e => setFile(e.target.files?.[0] || null) })),
-      h('label', null, '使用范围 ', h('select', { 'aria-label': '素材使用范围', value: scope, disabled: busy, onChange: e => setScope(e.target.value) }, h('option', { value: '' }, '共享素材（所有绑定可用）'), ...bindings.map(b => h('option', { key: b.会话, value: b.会话 }, b.类型 + ' ' + b.号码)))),
       h('label', null, '标签 ', h('input', { 'aria-label': '导入标签', value: tags, list: tagList, placeholder: '选择已有标签或输入新标签，多个用逗号分隔', disabled: busy, onChange: e => setTags(e.target.value) })),
       h('datalist', { id: tagList }, ...tagGroups.filter(t => t.id.startsWith('tag:')).map(t => h('option', { key: t.id, value: tagPrefix + t.id.slice(4) }))),
       h('p', { className: 'fish-muted' }, '支持 PNG、JPEG、GIF、WebP，单张最多 8 MB。标签留空则自动识别；DeepSeek 自动生成“标签-图片描述”短名称、使用场景和分类。'),
@@ -168,7 +165,7 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
       filtered.length ? null : h('p', { className: 'fish-muted' }, data.items.length ? '当前标签或搜索下没有表情。' : '素材库为空，可关闭窗口后导入表情包。'),
       error ? h('p', { className: 'fish-message', role: 'alert' }, error) : null),
     h(FishStickerDialog, { open: Boolean(preview) && libraryOpen, onClose: () => setSelected(null), title: '表情预览与编辑' },
-      preview ? h(FishStickerCard, { key: preview.id, item: preview, busy, act, bindings, categories: data.categories }) : null,
+      preview ? h(FishStickerCard, { key: preview.id, item: preview, busy, act, categories: data.categories }) : null,
       error ? h('p', { className: 'fish-message', role: 'alert' }, error) : null),
     !libraryOpen && error ? h('p', { className: 'fish-message', role: 'alert', style: { whiteSpace: 'pre-wrap' } }, error) : null)
 }
@@ -220,19 +217,18 @@ const FISH_STICKER_CSS = `
 @media(max-width:520px){.big-fish .fish-sticker-dialog-header{padding:16px}.big-fish .fish-sticker-dialog-body{padding:0 16px 8px}.big-fish .fish-sticker-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.big-fish .fish-sticker-dialog-header h2{font-size:20px}}
 `
 
-function FishStickerCard({ item, busy, act, bindings, categories }) {
+function FishStickerCard({ item, busy, act, categories }) {
   const React = require('react'), h = React.createElement
   const [dirty,setDirty] = React.useState(false)
   const [name,setName] = React.useState(item.name), [tags,setTags] = React.useState(item.tags.join(',')), [scenes,setScenes] = React.useState(item.scenes.join(','))
   React.useEffect(() => { if (!dirty) { setName(item.name); setTags(item.tags.join(',')); setScenes(item.scenes.join(',')) } }, [dirty, item.name, item.tags.join(','), item.scenes.join(',')])
-  const binding = bindings.find(b => b.会话 === item.scope)
   return h('article', { className: 'qq-bind-detail' },
     h('img', { className: 'fish-sticker-preview-image', src: item.url, alt: item.name }),
     h('p', { className: 'fish-muted' }, '文件类型 · ' + (item.ext === 'jpg' ? 'JPEG' : item.ext.toUpperCase()) + (item.fileName ? ' · ' + item.fileName : '')),
     h('label', {className:'fish-form-row'}, '分类 ', h('select', { 'aria-label': item.id+' 分类', value:item.categorySource==='manual'?item.category:'',disabled:busy,onChange:e=>act('/edit',{id:item.id,category:e.target.value}) }, h('option',{value:''}, '自动归类 · '+(item.category || '未分类')), ...(categories || []).map(c=>h('option',{key:c,value:c},c)))),
     h('p', { className: 'fish-muted', role: 'status' }, '标签状态：' + ({pending:'等待处理',running:'识别中',complete:'已完成',error:'失败',cancelled:'已取消'}[item.tagStatus] || '未自动标注') + (item.tagError ? ' · '+item.tagError : '')),
     h('button', { type:'button',className:'fish-button',disabled:busy || ['pending','running'].includes(item.tagStatus),onClick:()=>act('/tag',{id:item.id}) }, '识别 / 重试标签'),
-    h('p', { className: 'fish-muted' }, item.scope ? (binding ? binding.类型 + ' ' + binding.号码 : '原来源绑定已移除') : '共享素材'),
+    h('p', { className: 'fish-muted' }, '共享素材（所有聊天可用）'),
     ...[['名称',name,setName],['标签',tags,setTags],['场景',scenes,setScenes]].map(([label,value,set]) => h('label', { key: label, className: 'fish-form-row' }, label, h('input', { 'aria-label': item.id + ' ' + label, value, disabled: busy, onChange: e => { setDirty(true); set(e.target.value) } }))),
     h('div', { className: 'fish-actions' }, h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: async () => { if (await act('/edit', { id: item.id, name, tags, scenes })) setDirty(false) } }, '保存素材描述'),
       h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => { if (window.confirm('删除这张表情及其本地原文件？')) act('/remove', { id: item.id }) } }, '删除表情')))
