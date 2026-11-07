@@ -597,6 +597,10 @@ function Rice({ notify } = {}) {
     if (v >= 1e3) return (v / 1e3).toFixed(1).replace(/\.?0+$/, '') + 'K'
     return Math.round(v).toLocaleString('zh-CN')
   }
+  const money = (n) => {
+    const v = Math.max(0, Number(n) || 0)
+    return '$' + (v >= 100 ? v.toFixed(2) : v >= 1 ? v.toFixed(3) : v.toFixed(4))
+  }
   const dayKey = (d) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
   const add = (a, b) => ({ input: a.input + b.input, output: a.output + b.output, cacheRead: a.cacheRead + b.cacheRead, cacheWrite: a.cacheWrite + b.cacheWrite, total: a.total + b.total })
   const zero = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 })
@@ -643,12 +647,14 @@ function Rice({ notify } = {}) {
       h('div', null, h('span', { className: 'fish-kicker' }, 'RICE · 每日用量'), h('h2', null, '吃大米饭')),
       h('div', { className: 'fish-actions' }, h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => { void load() } }, busy ? '读取中…' : '刷新'))),
     h('p', { className: 'fish-muted' }, '只统计当前绑定工作区（' + (data?.工作区?.path || '读取中…') + '）的 DSH 会话 Token。数据来自会话 usage 事件。'),
+    h('p', { className: 'fish-muted rice-rate-note' }, '金额按模型公开单价估算（USD / 百万 token）；未知模型按 DeepSeek Flash 价兜底。'),
     error ? h('p', { className: 'fish-modal-error', role: 'alert' }, error) : null,
     h('div', { className: 'rice-stats' },
       [['今天', todayTotal], ['近 7 天', sumRange(7)], ['近 30 天', sumRange(30)], ['全部', data?.全部 || zero()]].map(([label, v]) =>
         h('article', { key: label, className: 'fish-card rice-stat' },
           h('span', { className: 'rice-stat-label' }, label),
           h('strong', { className: 'rice-stat-value' }, fmt(v.total)),
+          h('span', { className: 'rice-stat-cost' }, '≈ ' + money(v.cost || 0)),
           h('span', { className: 'rice-stat-sub' }, '输入 ' + fmt(v.input) + ' · 输出 ' + fmt(v.output)),
           h('span', { className: 'rice-stat-sub' }, '缓存 ' + fmt(v.cacheRead + v.cacheWrite))))),
     h('div', { className: 'rice-grid' },
@@ -672,7 +678,7 @@ function Rice({ notify } = {}) {
       h('div', { className: 'fish-section-head' }, h('div', null, h('span', { className: 'fish-kicker' }, 'SESSIONS'), h('h3', null, '每个会话的用量')), h('span', { className: 'fish-muted' }, sessions.length + ' 个会话')),
       sessions.length ? h('div', { className: 'rice-table-wrap' },
         h('table', { className: 'rice-table' },
-          h('thead', null, h('tr', null, ...['会话', '今日', '全部', '输入', '输出', '缓存'].map(x => h('th', { key: x }, x)))),
+          h('thead', null, h('tr', null, ...['会话', '今日', '全部', '输入', '输出', '缓存', '金额'].map(x => h('th', { key: x }, x)))),
           h('tbody', null,
             ...sessions.map(s => h('tr', { key: s.id },
               h('td', null, h('span', { className: 'rice-session-title' }, s.title || s.id.slice(-12)), h('span', { className: 'rice-session-id' }, s.id.slice(-8))),
@@ -680,7 +686,8 @@ function Rice({ notify } = {}) {
               h('td', null, fmt(s.全部?.total)),
               h('td', null, fmt(s.全部?.input)),
               h('td', null, fmt(s.全部?.output)),
-              h('td', null, fmt((s.全部?.cacheRead || 0) + (s.全部?.cacheWrite || 0)))))
+              h('td', null, fmt((s.全部?.cacheRead || 0) + (s.全部?.cacheWrite || 0))),
+              h('td', null, money(s.全部?.cost || 0))))
           )
         )
       ) : h('p', { className: 'fish-muted' }, '这个工作区还没有可统计的会话。')))

@@ -3615,14 +3615,23 @@ export function apply(ctx) {
     try { path = workspace.directory() } catch (error) { return 回(res, { ok: false, 说: error.message }) }
     const 键 = 工作区目录名(path)
     const 根 = join(目录, 'sessions', 键)
-    const 空 = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 })
-    const 加 = (a, u) => {
+    const 空 = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0, cost: 0 })
+    // 按公开价估算（USD / 百万 token）：其余模型按 flash 价兜底。
+    const 单价 = (model) => {
+      const m = String(model || '').toLowerCase()
+      if (m.includes('reasoner')) return { input: 0.55, cacheRead: 0.14, cacheWrite: 0.55, output: 2.19 }
+      if (m.includes('flash')) return { input: 0.28, cacheRead: 0.028, cacheWrite: 0.28, output: 0.42 }
+      if (m.includes('chat')) return { input: 0.27, cacheRead: 0.07, cacheWrite: 0.27, output: 1.10 }
+      return { input: 0.28, cacheRead: 0.028, cacheWrite: 0.28, output: 0.42 }
+    }
+    const 加 = (a, u, model) => {
       if (!u || typeof u !== 'object') return
-      a.input += Number(u.inputTokens) || 0
-      a.output += Number(u.outputTokens) || 0
-      a.cacheRead += Number(u.cacheReadTokens) || 0
-      a.cacheWrite += Number(u.cacheWriteTokens) || 0
+      const i = Number(u.inputTokens) || 0, o = Number(u.outputTokens) || 0
+      const cr = Number(u.cacheReadTokens) || 0, cw = Number(u.cacheWriteTokens) || 0
+      a.input += i; a.output += o; a.cacheRead += cr; a.cacheWrite += cw
       a.total = a.input + a.output + a.cacheRead + a.cacheWrite
+      const p = 单价(model)
+      a.cost += (i * p.input + o * p.output + cr * p.cacheRead + cw * p.cacheWrite) / 1000000
     }
     const 天 = new Map()
     const 会话 = []
@@ -3650,12 +3659,13 @@ export function apply(ctx) {
         if (e.type !== 'assistant/message' || !e.data || !e.data.usage) continue
         const t = Number(e.time) || Number(e.data.time) || Date.now()
         条目.last = Math.max(条目.last, t)
-        加(条目.全部, e.data.usage)
+        const 模型 = String(e.data.message?.source?.model || '')
+        加(条目.全部, e.data.usage, 模型)
         const d = new Date(t)
         const key = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
         if (!天.has(key)) 天.set(key, 空())
-        加(天.get(key), e.data.usage)
-        if (key === 今) 加(条目.今天, e.data.usage)
+        加(天.get(key), e.data.usage, 模型)
+        if (key === 今) 加(条目.今天, e.data.usage, 模型)
       }
       if (!条目.title) { try { 条目.title = String(ctx.sessionTitle?.get(sid)?.title || '') } catch (error) {} }
       if (!条目.title) 条目.title = sid.slice(-12)
@@ -3664,7 +3674,7 @@ export function apply(ctx) {
     会话.sort((a, b) => b.今天.total - a.今天.total || b.全部.total - a.全部.total)
     const days = [...天.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, u]) => ({ date, ...u }))
     const 全 = 空()
-    for (const u of 天.values()) { 全.input += u.input; 全.output += u.output; 全.cacheRead += u.cacheRead; 全.cacheWrite += u.cacheWrite; 全.total += u.total }
+    for (const u of 天.values()) { 全.input += u.input; 全.output += u.output; 全.cacheRead += u.cacheRead; 全.cacheWrite += u.cacheWrite; 全.total += u.total; 全.cost += u.cost }
     return 回(res, { ok: true, 工作区: { path, key: 键 }, 今天: 今, 会话, days, 全部: 全 })
   })
 

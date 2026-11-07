@@ -4330,3 +4330,15 @@ body[data-ds-dark-theme] .big-fish .fish-button.fish-danger {
   .big-fish .rice-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .big-fish .rice-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+.big-fish .rice-stat-cost {
+  color: var(--fish-success);
+  font-family: var(--fish-title);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.big-fish .rice-rate-note {
+  margin-top: -6px;
+  font-size: 11px;
+}
