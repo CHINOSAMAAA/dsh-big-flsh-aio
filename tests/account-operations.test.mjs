@@ -11,7 +11,7 @@ function fixture() {
   const owner = '10001', bot = '90001', sid = 'session-owner'
   const config = { NapCat: 'http://qq-test', 总开关: true, 试运行: false, 允许改签名: true, 允许改头像: true, 好友申请审批: true, 群邀请审批: true,
     绑定: [{ 类型: '私聊', 号码: owner, 会话: sid, 开: true }] }
-  const agents = new Map(), registered = new Map(), calls = [], events = []
+  const agents = new Map(), registered = new Map(), calls = [], events = [], responses = new Map()
   const agent = { session: { id: sid, snapshotEvents: () => events }, ctx: { tools: { register(tool) { registered.set(tool.name, tool); return () => registered.delete(tool.name) } } } }
   agents.set(sid, agent)
   writeFileSync(join(home, 'fish-memory-config.json'), JSON.stringify({ qqOwner: owner }))
@@ -28,13 +28,15 @@ function fixture() {
     call: async (_config, action, body) => {
       calls.push({ action, body })
       if (action === 'get_login_info') { onLogin(++logins); return { user_id: bot } }
+      if (responses.has(action)) return responses.get(action)(body)
       if (failDecision && action.startsWith('set_') && action.endsWith('_request')) throw new Error('timeout')
       return {}
     } })
   const event = (kind = 'friend', flag = 'first') => ({ post_type: 'request', request_type: kind, sub_type: kind === 'group' ? 'invite' : undefined, self_id: bot, user_id: '20001', group_id: '30001', flag, comment: '你好' })
   const flush = async () => { for (let i = 0; i < 20; i++) await new Promise(setImmediate) }
   const reply = async (id, text) => { receipt(id); return manager.handleOwnerReply({ session: sid, messageId: id, text }) }
-  return { home, config, manager, calls, registered, agent, event, flush, receipt, reply, persist,
+  return { home, config, manager, calls, registered, agent, event, flush, receipt, reply, persist, bot,
+    respond: (action, fn) => responses.set(action, fn),
     advance: ms => { clock += ms }, fail: () => { failDecision = true }, onLogin: fn => { onLogin = fn },
     close() { manager.stop(); rmSync(home, { recursive: true, force: true }) } }
 }
@@ -109,5 +111,48 @@ test('审批在关闭开关、试运行、过期或主人变化时拒绝执行',
     writeFileSync(join(f.home, 'fish-memory-config.json'), JSON.stringify({ qqOwner: '10002' }))
     assert.equal(await f.manager.handleOwnerReply({ session: f.agent.session.id, messageId: 'expired', text: '同意申请 ' + id }), null)
     assert.equal(f.calls.filter(c => c.action === 'set_friend_add_request').length, 0)
+  } finally { f.close() }
+})
+
+
+test('账号权限全部关闭时仍给已核验主人挂载群历史工具，且只读同一机器人授权群', async () => {
+  const f = fixture()
+  try {
+    for (const key of ['允许改签名', '允许改头像', '好友申请审批', '群邀请审批']) f.config[key] = false
+    const group = { 类型: '群', 号码: '20001', 会话: 'session-group', 称呼: '读书群', 开: true }
+    const unverified = { 类型: '群', 号码: '30001', 会话: 'session-unverified', 称呼: '未核验群', 开: true }
+    f.config.绑定.push(group, unverified); f.persist()
+    recordSource(f.home, f.config, f.bot, group, 'group-receipt', ['10001'])
+    f.respond('get_group_list', () => [{ group_id: 20001, group_name: '读书交流群' }])
+    f.respond('get_group_msg_history', () => ({ messages: [{ message_id: 10, message_seq: 10, time: Date.now() / 1000, sender: { user_id: 10001 }, message: [{ type: 'text', data: { text: '今天一起读书' } }] }] }))
+    f.manager.tick(); await f.flush()
+    const exec = { agent: f.agent, signal: new AbortController().signal }
+    const list = await f.registered.get('qq_list_group_chats').execute({}, exec)
+    assert.equal(list.ok, true)
+    assert.equal(list.groups.find(row => row.group === '20001').readable, true)
+    assert.equal(list.groups.find(row => row.group === '30001').readable, false)
+    const tool = f.registered.get('qq_read_group_history')
+    assert.equal((await tool.execute({ group: '读书交流群' }, exec)).ok, true)
+    assert.equal((await tool.execute({ group: '30001' }, exec)).ok, false)
+    const count = f.calls.filter(call => call.action === 'get_group_msg_history').length
+    assert.equal((await tool.execute({ group: '20001' }, { ...exec, agent: { ...f.agent } })).ok, false)
+    f.receipt('forged', ['20002'])
+    assert.equal((await tool.execute({ group: '20001' }, exec)).ok, false)
+    assert.equal(f.calls.filter(call => call.action === 'get_group_msg_history').length, count)
+  } finally { f.close() }
+})
+
+test('群历史读取过程中解绑后不返回已取到的群资料', async () => {
+  const f = fixture()
+  try {
+    const group = { 类型: '群', 号码: '20001', 会话: 'session-group', 称呼: '读书群', 开: true }
+    f.config.绑定.push(group); f.persist()
+    recordSource(f.home, f.config, f.bot, group, 'group-receipt', ['10001'])
+    f.respond('get_group_msg_history', () => { group.开 = false; f.persist(); return { messages: [] } })
+    f.manager.tick(); await f.flush()
+    const result = await f.registered.get('qq_read_group_history').execute({ group: '20001' }, { agent: f.agent, signal: new AbortController().signal })
+    assert.equal(result.ok, false)
+    assert.equal('messages' in result, false)
+    assert.match(result.message, /权限|绑定/)
   } finally { f.close() }
 })

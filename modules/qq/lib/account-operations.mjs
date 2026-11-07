@@ -4,13 +4,13 @@ import { createHash } from 'node:crypto'
 import { writeFileAtomicSync } from './atomic-file.mjs'
 import { bindingSource, endpointKey, exclusiveBinding, sessionKey } from './memory-sources.mjs'
 import { latestUserId, qqScope } from '../../memory/lib/qq-scope.mjs'
+import { readGroupHistory } from './group-history.mjs'
 
 const DAY = 86400000
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex')
 const text = value => String(value || '').replace(/[\r\n\x00-\x1f]/g, ' ').slice(0, 300)
-const enabled = c => c.允许改签名 || c.允许改头像 || c.好友申请审批 || c.群邀请审批
 
-export function createAccountOperations({ home, config, findAgent, call, loadAvatar, log = () => {}, now = Date.now }) {
+export function createAccountOperations({ home, config, findAgent, call, loadAvatar, getSession = async () => null, log = () => {}, now = Date.now }) {
   const path = join(home, 'qq-account-requests.json')
   let mounted = null, notifying = false, stopped = false, nextNotice = 0
   const read = () => {
@@ -138,8 +138,27 @@ export function createAccountOperations({ home, config, findAgent, call, loadAva
     try { await sendOwner(t, messageText) } catch (e) { log('QQ 审批结果通知失败：' + e.message) }
     return { ok: true, message: messageText }
   }
-  const makeTool = (agent, name, description, parameters, permission, run) => ({
-    name, description, parameters: { type: 'object', properties: parameters, required: Object.keys(parameters), additionalProperties: false },
+  const groupsFor = (agent, t) => {
+    const memorySettings = settings()
+    const ownerScope = qqScope(home, t.row.会话, memorySettings, latestUserId(agent.session))
+    return (t.c.绑定 || []).filter(row => row.类型 === '群').map(row => {
+      const scope = qqScope(home, row.会话, memorySettings)
+      const readable = Boolean(ownerScope?.owner && scope && !scope.blocked && scope.source?.botId === t.bot && ownerScope.readIds.includes(scope.writeId))
+      return { group: String(row.号码), name: row.称呼 || String(row.号码), session: row.会话, readable,
+        reason: readable ? '' : '群绑定未启用、不独占、来源未核验或所属机器人账号不同' }
+    })
+  }
+  const loadGroups = async (agent, t, signal) => {
+    let names = []
+    try { names = await call(t.c, 'get_group_list', {}, signal) } catch { /* 部分后端不提供群名清单，仍可使用绑定称呼和群号。 */ }
+    await verify(t, null, signal)
+    authorize(agent)
+    return groupsFor(agent, target()).map(group => ({ ...group,
+      qqName: (Array.isArray(names) ? names : []).find(row => String(row.group_id) === group.group)?.group_name || '',
+    }))
+  }
+  const makeTool = (agent, name, description, parameters, permission, run, required = Object.keys(parameters)) => ({
+    name, description, parameters: { type: 'object', properties: parameters, required, additionalProperties: false },
     output: { schema: { type: 'object', additionalProperties: true }, render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }] },
     async execute(args, exec) {
       try {
@@ -151,6 +170,36 @@ export function createAccountOperations({ home, config, findAgent, call, loadAva
     },
   })
   const tools = agent => [
+    makeTool(agent, 'qq_list_group_chats', '列出主人可以查询的已绑定 QQ 群、群名和对应 DSH 会话。主人私聊询问某群今天聊了什么时先定位群，再调用 qq_read_group_history，不能只根据长期记忆判断是否能查看。', {}, null,
+      async (_args, exec, t) => ({ ok: true, groups: await loadGroups(agent, t, exec.signal) })),
+    makeTool(agent, 'qq_read_group_history', '只读查询已授权 QQ 群指定日期的原始聊天记录，默认北京时间今天，支持昨天及 YYYY-MM-DD。群号、绑定称呼或群名均可定位。返回 next_cursor 时可继续翻页。后端不可用时尝试对应 DSH 群会话，并明确覆盖范围。只能由主人可信私聊调用。', {
+      group: { type: 'string', description: '群号、绑定称呼或 QQ 群名，重名时先询问主人确认群号' },
+      date: { type: 'string', description: '今天、昨天或 YYYY-MM-DD，省略时为今天' },
+      cursor: { type: 'string', description: '首次省略，继续读取时原样填写返回的 next_cursor' },
+    }, null, async (args, exec, t) => {
+      if (typeof args.group !== 'string' || !args.group.trim()) throw new Error('请指定群号或群名')
+      const groups = await loadGroups(agent, t, exec.signal), query = args.group.trim()
+      const exact = groups.filter(group => group.group === query || group.name === query || group.qqName === query)
+      const matches = exact.length ? exact : groups.filter(group => group.name.includes(query) || group.qqName.includes(query))
+      if (matches.length !== 1) return { ok: false, message: matches.length ? '匹配多个群，请确认群号' : '没有找到该群的已登记绑定，请先查看群列表', groups: matches.length ? matches : groups }
+      const selected = matches[0]
+      if (!selected.readable) throw new Error(selected.reason + '，请先由群内真实消息完成来源核验')
+      const check = () => {
+        const current = authorize(agent)
+        if (current.stamp !== t.stamp || !current.c.总开关) throw new Error('主人或连接配置已变化，群记录读取取消')
+        const group = groupsFor(agent, current).find(row => row.group === selected.group && row.session === selected.session && row.readable)
+        if (!group) throw new Error('群绑定或读取权限已变化，群记录读取取消')
+      }
+      check()
+      const row = t.c.绑定.find(row => row.类型 === '群' && String(row.号码) === selected.group)
+      const result = await readGroupHistory({ row, bot: t.bot, date: args.date, cursor: args.cursor,
+        call: async (action, body) => { check(); return { status: 'ok', retcode: 0, data: await call(t.c, action, body, exec.signal) } },
+        getSession: async sid => { check(); return getSession(sid) }, now: now(),
+      })
+      await verify(t, null, exec.signal)
+      check()
+      return result
+    }, ['group']),
     makeTool(agent, 'qq_set_signature', '修改机器人自己的 QQ 个性签名。仅主人可信私聊且设置开关已开启时可用。', { signature: { type: 'string', maxLength: 255 } }, '允许改签名', async (args, exec, t) => {
       if (typeof args.signature !== 'string' || args.signature.length > 255) throw new Error('个性签名最多 255 个字符')
       await verify(t, '允许改签名', exec.signal)
@@ -169,7 +218,7 @@ export function createAccountOperations({ home, config, findAgent, call, loadAva
   const unmount = () => { for (const off of mounted?.off || []) off?.(); mounted = null }
   const tick = () => {
     try {
-      const t = target(), agent = enabled(t.c) && findAgent(t.row.会话)
+      const t = target(), agent = findAgent(t.row.会话)
       if (!agent?.ctx?.tools?.register || mounted?.agent !== agent || mounted?.stamp !== t.stamp) unmount()
       if (!stopped && agent?.ctx?.tools?.register && !mounted) {
         mounted = { agent, stamp: t.stamp, off: [] }

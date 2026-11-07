@@ -107,10 +107,10 @@ export function chunkMessages(messages, limit = CHUNK_CHARS) {
   return chunks
 }
 
-export async function fetchHistory(call, binding, maxPages = 100) {
+export async function fetchHistory(call, binding, maxPages = 100, options) {
   const messages = [], seen = new Set(), cursors = new Set()
   let bytes = 0
-  let cursor = '0', stop = '达到页数上限'
+  let cursor = options?.cursor || '0', stop = '达到页数上限', nextCursor = null
   const action = binding.类型 === '群' ? 'get_group_msg_history' : 'get_friend_msg_history'
   for (let page = 0; page < maxPages; page++) {
     const j = await call(action, { [binding.类型 === '群' ? 'group_id' : 'user_id']: binding.号码,
@@ -135,8 +135,16 @@ export async function fetchHistory(call, binding, maxPages = 100) {
     const next = seqs.reduce((a, b) => BigInt(a) < BigInt(b) ? a : b)
     if (cursors.has(next) || cursor !== '0' && BigInt(next) >= BigInt(cursor)) { stop = '分页游标不再向过去前进'; break }
     cursors.add(next); cursor = next
+    if (options?.since && rows.some(row => Date.parse(dateOf(row.timestamp || row.time || row.msgTime)) < options.since)) {
+      stop = '已读取到指定日期之前'; nextCursor = null; break
+    }
+    nextCursor = cursor
   }
-  return { ...normalizeMessages(messages), format: 'OneBot 分页', warning: stop + '；仅代表后端当前可见记录，不能证明 QQ 云端历史完整。' }
+  return {
+    ...(messages.length || !options ? normalizeMessages(messages) : { messages: [], duplicates: 0 }),
+    format: 'OneBot 分页', warning: stop + '；仅代表后端当前可见记录，不能证明 QQ 云端历史完整。',
+    ...(options ? { nextCursor: stop === '达到页数上限' ? nextCursor : null } : {}),
+  }
 }
 
 function parseAnalysis(text) {
