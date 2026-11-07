@@ -603,8 +603,8 @@ function Rice({ notify } = {}) {
     return '¥' + (v >= 100 ? v.toFixed(2) : v >= 1 ? v.toFixed(3) : v.toFixed(4))
   }
   const dayKey = (d) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
-  const add = (a, b) => ({ input: a.input + b.input, output: a.output + b.output, cacheRead: a.cacheRead + b.cacheRead, cacheWrite: a.cacheWrite + b.cacheWrite, total: a.total + b.total })
-  const zero = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 })
+  const add = (a, b) => ({ input: a.input + b.input, output: a.output + b.output, cacheRead: a.cacheRead + b.cacheRead, cacheWrite: a.cacheWrite + b.cacheWrite, total: a.total + b.total, cost: (a.cost || 0) + (b.cost || 0) })
+  const zero = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0, cost: 0 })
   const days = data?.days || []
   const byDay = new Map(days.map(d => [d.date, d]))
   const today = data?.今天 || dayKey(new Date())
