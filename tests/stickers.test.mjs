@@ -83,6 +83,33 @@ test('自动收藏独立于回复：识别表情、保留 GIF、去重、普通�
  }finally{globalThis.fetch=original;f.close()}
 })
 
+test('群聊收藏独立开关兼容旧设置，关闭拦截待入库群表情且不影响私聊', async () => {
+  const f = fixture()
+  const settle = async () => { for (let i = 0; i < 30; i++) await new Promise(setImmediate) }
+  const face = { message_id: 1, message_type: 'group', message: [{ type: 'mface', data: { file: 'base64://' + gif.toString('base64') } }] }
+  try {
+    assert.equal(f.lib.view().settings.collectGroupStickers, true)
+    f.lib.capture(face, 'group', 'group-source')
+    await settle()
+    assert.equal(f.lib.view().items.length, 0)
+    f.lib.settings({ autoCollect: true })
+    f.lib.capture({ ...face, message_id: 2 }, 'group', 'group-source')
+    f.lib.settings({ collectGroupStickers: false })
+    await settle()
+    assert.equal(f.lib.view().items.length, 0, '下载中关闭群聊收藏后不入库')
+    assert.equal(f.create().view().settings.collectGroupStickers, false)
+    f.lib.capture({ ...face, message_id: 3 }, 'group', 'group-source')
+    f.lib.capture({ ...face, message_id: 4, message_type: 'private' }, 'private', 'private-source')
+    await settle()
+    assert.deepEqual(f.lib.view().items.map(item => item.scope), ['private'])
+    f.lib.settings({ collectGroupStickers: true })
+    f.lib.capture({ ...face, message_id: 5, message_type: undefined }, 'group', 'group-source', () => true, '群')
+    await settle()
+    assert.equal(f.lib.view().items.length, 2, '桥接绑定类型可识别未携带 message_type 的群消息')
+    assert.throws(() => f.lib.settings({ collectGroupStickers: 'false' }), /布尔值/)
+  } finally { f.close() }
+})
+
 test('自动视觉标签：真实图片入参、已有标签保护、错误重试与删除不复活',async()=>{
  const f=fixture();try{
   const admitted=[]

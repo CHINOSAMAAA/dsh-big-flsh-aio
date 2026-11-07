@@ -4254,14 +4254,15 @@ export function apply(ctx) {
         if (!条.__文件事件 && (条.time || 0) < 上次) continue           // 旧的，跳过
         if (已转消息.has(条.message_id) || 攒?.ids.includes(条.message_id)) continue // 转过了或已在本批里
         try {
-          if (stickers.view().settings.autoCollect) {
+          const stickerSettings = stickers.view().settings
+          if (stickerSettings.autoCollect && (!是群 || stickerSettings.collectGroupStickers)) {
             const bot = await 拿自己QQ(拉任意)
             if (bot && String(条.user_id) !== String(bot) && (是群 || String(条.user_id) === String(行.号码))) {
               const endpoint = endpointKey(配置)
               stickers.capture(条, 行.会话, stickerSource(endpoint, bot, 行.类型, 行.号码), () => {
                 const latest = 读配置()
                 return latest.总开关 && endpointKey(latest) === endpoint && latest.绑定.some(b => b.会话 === 行.会话 && b.类型 === 行.类型 && b.号码 === 行.号码 && b.开 !== false)
-              })
+              }, 行.类型)
             }
           }
         } catch (e) { 记账('收藏表情未完成，消息接收照常：' + e.message) }

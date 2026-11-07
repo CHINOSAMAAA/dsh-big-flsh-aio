@@ -6,7 +6,7 @@ import { createWorkspaceBinding } from './workspace.mjs'
 import { STICKER_TAG_PROMPT } from './sticker-tag-prompt.mjs'
 
 const MAX_BYTES = 8 * 1024 * 1024
-const DEFAULTS = { autoSend: false, cooldownSeconds: 120, autoCollect: false, collectAllImages: false, autoTag: false, autoClassify: false }
+const DEFAULTS = { autoSend: false, cooldownSeconds: 120, autoCollect: false, collectGroupStickers: true, collectAllImages: false, autoTag: false, autoClassify: false }
 const clean = (v, limit) => String(v ?? '').trim().slice(0, limit)
 const words = v => [...new Set((Array.isArray(v) ? v : String(v || '').split(/[,，、;；\n]+/)).map(x => clean(x, 30)).filter(Boolean))].slice(0, 12)
 const validId = id => /^[a-f0-9]{64}$/.test(String(id))
@@ -161,7 +161,7 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
   const settings = patch => {
     const data = read()
     if ('autoSend' in patch) { if (typeof patch.autoSend !== 'boolean') throw new Error('自动发送必须是布尔值'); data.settings.autoSend = patch.autoSend }
-    for (const key of ['autoCollect','collectAllImages','autoTag','autoClassify']) if (key in patch) { if (typeof patch[key] !== 'boolean') throw new Error('开关必须是布尔值'); data.settings[key] = patch[key] }
+    for (const key of ['autoCollect','collectGroupStickers','collectAllImages','autoTag','autoClassify']) if (key in patch) { if (typeof patch[key] !== 'boolean') throw new Error('开关必须是布尔值'); data.settings[key] = patch[key] }
     if ('cooldownSeconds' in patch) { const n = Number(patch.cooldownSeconds); if (!Number.isFinite(n) || n < 10 || n > 86400) throw new Error('冷却应在 10～86400 秒'); data.settings.cooldownSeconds = n }
     save(data)
     if (patch.autoClassify === true) classify()
@@ -261,9 +261,10 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
       }
     } finally { collecting = false }
   }
-  const capture = (message, session, source, active = () => true) => {
-    const settings = read().settings
-    if (!settings.autoCollect || stopped) return
+  const capture = (message, session, source, active = () => true, type = message.message_type === 'group' ? '群' : '私聊') => {
+    const settings = read().settings, group = type === '群'
+    if (!settings.autoCollect || (group && !settings.collectGroupStickers) || stopped) return
+    const canCollect = () => active() && (!group || read().settings.collectGroupStickers)
     let segments = message.message
     if (typeof segments === 'string') { try { segments = JSON.parse(segments) } catch { return } }
     if (!Array.isArray(segments)) return
@@ -275,7 +276,7 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
       const key = createHash('sha256').update(JSON.stringify([source, message.message_id, d.file || d.url || d.emoji_id])).digest('hex')
       if (Date.now() - (attempts.get(key) || 0) < 60000) continue
       attempts.set(key, Date.now()); if (attempts.size > 1000) attempts.delete(attempts.keys().next().value)
-      queue.push({ session, source, data: d, active, name: clean(d.summary, 80) || '收藏表情' })
+      queue.push({ session, source, data: d, active: canCollect, name: clean(d.summary, 80) || '收藏表情' })
     }
     void drain()
   }
