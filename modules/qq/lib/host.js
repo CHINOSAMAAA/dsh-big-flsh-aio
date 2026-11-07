@@ -3616,23 +3616,29 @@ export function apply(ctx) {
     const 键 = 工作区目录名(path)
     const 根 = join(目录, 'sessions', 键)
     const 空 = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0, cost: 0 })
-    // 按公开价估算（USD / 百万 token）：其余模型按 flash 价兜底。
-    const 单价 = (model) => {
-      const m = String(model || '').toLowerCase()
-      if (m.includes('reasoner')) return { input: 0.55, cacheRead: 0.14, cacheWrite: 0.55, output: 2.19 }
-      if (m.includes('flash')) return { input: 0.28, cacheRead: 0.028, cacheWrite: 0.28, output: 0.42 }
-      if (m.includes('chat')) return { input: 0.27, cacheRead: 0.07, cacheWrite: 0.27, output: 1.10 }
-      return { input: 0.28, cacheRead: 0.028, cacheWrite: 0.28, output: 0.42 }
+    // DeepSeek 官方人民币价（元/百万 token）；高峰/空闲按北京时间判断。
+    // 官方规则：周一至周五 9:00-12:00、14:00-18:00 为高峰，其余为半价空闲。
+    const 高峰 = (ms) => {
+      const d = new Date((Number(ms) || Date.now()) + 8 * 3600 * 1000)
+      const day = d.getUTCDay(), h = d.getUTCHours()
+      return day >= 1 && day <= 5 && ((h >= 9 && h < 12) || (h >= 14 && h < 18))
     }
-    const 加 = (a, u, model) => {
+    const 单价 = (model, peak) => {
+      const m = String(model || '').toLowerCase()
+      if (m.includes('v4-pro') || m.includes('pro')) return {
+        cacheRead: peak ? 0.30 : 0.15, input: peak ? 9.0 : 4.5, output: peak ? 27.0 : 13.5,
+      }
+      return { cacheRead: peak ? 0.04 : 0.02, input: peak ? 2.0 : 1.0, output: peak ? 8.0 : 4.0 }
+    }
+    const 加 = (a, u, model, at) => {
       if (!u || typeof u !== 'object') return
       const i = Number(u.inputTokens) || 0, o = Number(u.outputTokens) || 0
       const cr = Number(u.cacheReadTokens) || 0, cw = Number(u.cacheWriteTokens) || 0
       a.input += i; a.output += o; a.cacheRead += cr; a.cacheWrite += cw
       a.total = a.input + a.output + a.cacheRead + a.cacheWrite
-      const p = 单价(model)
-      // 单价表按 USD/百万 token 维护；页面金额按人民币展示（固定汇率 7.2）。
-      a.cost += (i * p.input + o * p.output + cr * p.cacheRead + cw * p.cacheWrite) / 1000000 * 7.2
+      const p = 单价(model, 高峰(at))
+      // 缓存写入按未命中输入价计；官方表没有单独的缓存写入档。
+      a.cost += (i * p.input + o * p.output + cr * p.cacheRead + cw * p.input) / 1000000
     }
     const 天 = new Map()
     const 会话 = []
@@ -3661,12 +3667,12 @@ export function apply(ctx) {
         const t = Number(e.time) || Number(e.data.time) || Date.now()
         条目.last = Math.max(条目.last, t)
         const 模型 = String(e.data.message?.source?.model || '')
-        加(条目.全部, e.data.usage, 模型)
+        加(条目.全部, e.data.usage, 模型, t)
         const d = new Date(t)
         const key = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
         if (!天.has(key)) 天.set(key, 空())
-        加(天.get(key), e.data.usage, 模型)
-        if (key === 今) 加(条目.今天, e.data.usage, 模型)
+        加(天.get(key), e.data.usage, 模型, t)
+        if (key === 今) 加(条目.今天, e.data.usage, 模型, t)
       }
       if (!条目.title) { try { 条目.title = String(ctx.sessionTitle?.get(sid)?.title || '') } catch (error) {} }
       if (!条目.title) 条目.title = sid.slice(-12)
