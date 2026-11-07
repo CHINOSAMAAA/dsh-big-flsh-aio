@@ -92,7 +92,7 @@ export function createMediaStorage({ home, workspace = createWorkspaceBinding({ 
   }
   const assertReadable = (path, session) => {
     const target = realpathSync(path)
-    for (const entry of workspace.list()) for (const spec of Object.values(kinds)) {
+    for (const entry of workspace.list()) for (const [kind, spec] of Object.entries(kinds)) {
       const root = join(entry.path, spec.folder)
       if (!existsSync(root)) continue
       const inside = relative(realpathSync(root), target)
@@ -100,7 +100,7 @@ export function createMediaStorage({ home, workspace = createWorkspaceBinding({ 
       const scope = scopeFor(session)
       const item = read(root).find(x => existsSync(join(root, x.file)) && realpathSync(join(root, x.file)) === target)
       if (!item || !scope.readIds.includes(itemLibrary(item))) throw new Error('当前聊天没有此图片或文件的记忆库权限')
-      return
+      return kind
     }
   }
   const register = ({route,protect,json,config,ctx}) => {

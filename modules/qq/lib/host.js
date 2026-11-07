@@ -1002,27 +1002,36 @@ export function 按句拆(文字) {
 }
 
 /** 拼一个 OneBot「图片段」（base64 直接塞，不依赖 QQ 那边能不能访问本地文件）。 */
-export function 图片段(base64) {
-  return { type: 'image', data: { file: 'base64://' + String(base64) } }
+export function 图片段(base64, sticker = false) {
+  return {
+    type: 'image',
+    data: {
+      file: 'base64://' + String(base64),
+      sub_type: sticker ? 1 : 0,
+      ...(sticker ? { summary: '[动画表情]' } : {}),
+    },
+  }
 }
+
+const 表情标注 = text => /^(?:表情包|sticker)(?:[：:\s·\-]|$)/i.test(String(text || '').trim())
 
 /**
  * ⭐ 2026-10-22：正文里那种 markdown 图片 `![名字](路径)` 也当图片发。
  *    伙伴发贴纸就是这么发的（`![小肥鱼](_stickers/feiyu-test.webp)`）——
  *    以前只认附件块，这种一律被当成普通文字发过去，QQ 那边看到的是一串 markdown。
- * @returns {净文字, 图: [{kind:'url'|'path', value}]}
+ * 图片说明以“表情包”开头时保留明确的发送标识，本地归档在发送时优先按库来源判断。
+ * @returns {净文字, 图: [{kind:'url'|'path', value, sticker?}]}
  */
 export function 抠正文图(文字) {
   const 图 = []
   const 净文字 = String(文字 || '')
-    .replace(/!\[[^\]]*\]\(\s*([^)\s]+)\s*\)/g, (全, 路径) => {
+    .replace(/!\[([^\]]*)\]\(\s*([^)\s]+)\s*\)/g, (全, 说明, 路径) => {
       const p = String(路径 || '').trim()
       if (!p) return ''
-      if (/^https?:\/\//i.test(p)) {
-        if (!图.some((x) => x.value === p)) 图.push({ kind: 'url', value: p })
-        return ''
-      }
-      if (!图.some((x) => x.value === p)) 图.push({ kind: 'path', value: p })
+      const 已有 = 图.find(x => x.value === p)
+      const item = 已有 || { kind: /^https?:\/\//i.test(p) ? 'url' : 'path', value: p }
+      if (表情标注(说明)) item.sticker = true
+      if (!已有) 图.push(item)
       return ''
     })
     .replace(/[ \t]+$/gm, '')
@@ -1353,16 +1362,19 @@ export function apply(ctx) {
     const 图数据 = []
     const 加图 = (源) => {
       if (!源 || 图数据.length >= 4) return
-      if (源.kind === 'url') { 图数据.push({ url: 源.value }); return }
+      if (源.kind === 'url') { 图数据.push({ url: 源.value, sticker: 源.sticker === true }); return }
       let 值 = 源.value
       const 换 = 原图路径('p:' + 清路径(值).toLowerCase())
       if (换) 值 = 换
       const 全 = 找本地图(值, 配置) || 值
       try {
-        mediaStorage.assertReadable(全, 候选[0].会话)
+        const 归档类型 = mediaStorage.assertReadable(全, 候选[0].会话)
         const buf = readFileSync(全)
         if (buf.length > 最大) { 记账(`这张图太大（${Math.round(buf.length / 1048576)}MB），跳过`); return }
-        图数据.push({ b64: buf.toString('base64') })
+        图数据.push({
+          b64: buf.toString('base64'),
+          sticker: 归档类型 !== 'images' && (源.sticker === true || stickers.isStickerFile(全)),
+        })
       } catch (error) {
         记账('读图失败，跳过：' + String((error && error.message) || error))
       }
@@ -1373,11 +1385,12 @@ export function apply(ctx) {
         const 附件 = ctx.attachments || ctx.get('attachments')
         for (const 块 of 图们) {
           try {
+            const sticker = 表情标注(块.name)
             const 原 = 原图路径('id:' + String((块.attachment && 块.attachment.attachmentId) || ''))
-            if (原) { 加图({ kind: 'path', value: 原 }); continue }
+            if (原) { 加图({ kind: 'path', value: 原, sticker }); continue }
             const p = 附件 && typeof 附件.imageHostPath === 'function' ? 附件.imageHostPath(块.attachment) : undefined
             if (!p) { 记账('这张图拿不到本地文件，跳过'); continue }
-            加图({ kind: 'path', value: p })
+            加图({ kind: 'path', value: p, sticker })
           } catch (error) {
             记账('读图失败，跳过：' + String((error && error.message) || error))
           }
@@ -1385,7 +1398,16 @@ export function apply(ctx) {
       }
     }
     // 一条 OneBot 图片段：本地图走 base64，网络图直接把 url 交给 QQ
-    const 一段图 = (x) => (x.url ? { type: 'image', data: { file: x.url, url: x.url } } : 图片段(x.b64))
+    const 一段图 = x => x.url
+      ? {
+          type: 'image',
+          data: {
+            file: x.url, url: x.url,
+            sub_type: x.sticker ? 1 : 0,
+            ...(x.sticker ? { summary: '[动画表情]' } : {}),
+          },
+        }
+      : 图片段(x.b64, x.sticker)
 
     // ⭐ 1.5.0：文件先验一遍 —— 得真存在、不能超过上限。
     //   找不到 / 太大都记一笔（不然人以为发了，其实什么都没出去）。
@@ -3016,22 +3038,19 @@ export function apply(ctx) {
     return null
   }
   /**
-   * 返回 'sys' = 挂到系统提示词上了（验过确实进装配），'off' = 不带。
+   * 返回 'sys' = 角色文已挂到系统提示词，'off' = 角色文未生效。媒体发送约定随绑定会话注入。
    * ⚠ 1.1.1（她定的）：**不做「塞进消息里」那套兜底了** ——
    *   那段字会留在对话历史里越堆越多，而且只对 QQ 转进来的消息生效（自己打字时没有），
    *   两个渠道口吻会不一样。挂不上就不带，让它按原来的样子说话。
    */
   const 备人设 = async (agent, 键, 文本) => {
-    const 文 = String(文本 || '').trim()
-    if (!文) {
-      撤人设(键)
-      return 'off'
-    }
+    const 角色文 = String(文本 || '').trim()
+    const 文 = [角色文, '【QQ 图片与表情发送】从表情包库取得的素材按表情包发送，从 QQ 图片库取得的素材按普通图片发送。网上找到且已确认是表情包的素材，输出为 ![表情包：名称](图片直链或下载后的本地路径)，图片附件名称也使用“表情包：名称”。普通图片使用普通图片说明。只给具体确认是表情包的素材加此前缀。'].filter(Boolean).join('\n\n')
     const 旧 = 人设挂着.get(键)
     // ⭐ 1.4.3：缓存要**认 agent 实例** —— 会话被恢复/替换成新的 agent 之后，
     //   文本虽然没变，但旧的那段是挂在**旧实例**上的，新实例里其实没有。
     //   以前只比文本，于是判定「已经挂上了」直接返回，人设实际没挂到新会话上。
-    if (旧 && 旧.文本 === 文 && 旧.agent === agent) return 'sys'
+    if (旧 && 旧.文本 === 文 && 旧.agent === agent) return 角色文 ? 'sys' : 'off'
     try {
       const sp = 取提示服务(agent)
       if (!sp) {
@@ -3058,7 +3077,7 @@ export function apply(ctx) {
         return 'off'
       }
       人设挂着.set(键, { 文本: 文, dispose, agent })
-      return 'sys'
+      return 角色文 ? 'sys' : 'off'
     } catch (error) {
       if (!备人设.说过) {
         备人设.说过 = true
@@ -3963,15 +3982,13 @@ export function apply(ctx) {
   async function 人设心跳() {
     try {
       const 配置 = 读配置()
-      if (!配置.人设开) return
       for (const 行 of (配置.绑定 || [])) {
         if (行.开 === false) continue
         const 会话 = String(行.会话 || '').trim()
         if (!会话) continue
         const agent = 找agent(会话)
         if (!agent) continue // 会话没起来就不管，等它起来
-        const 文 = String(行.人设 || 配置.人设 || '').trim().slice(0, 20000)
-        if (!文) continue
+        const 文 = 配置.人设开 ? String(行.人设 || 配置.人设 || '').trim().slice(0, 20000) : ''
         await 备人设(agent, 会话键(会话), 文)
       }
       if (!人设心跳说过) {

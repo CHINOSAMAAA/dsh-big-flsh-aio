@@ -1,5 +1,5 @@
-import { mkdirSync, readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs'
-import { join, basename, dirname } from 'node:path'
+import { mkdirSync, readFileSync, writeFileSync, unlinkSync, existsSync, realpathSync } from 'node:fs'
+import { join, basename, dirname, relative, isAbsolute } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { writeFileAtomicSync } from './atomic-file.mjs'
 import { createWorkspaceBinding } from './workspace.mjs'
@@ -73,6 +73,15 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
     return { ...data, settings }
   }
   const save = data => { mkdirSync(dir, { recursive: true }); writeFileAtomicSync(catalog, JSON.stringify(data, null, 2)) }
+  const isStickerFile = path => {
+    const target = realpathSync(path)
+    const roots = [dir, ...workspace.list().map(w => join(w.path, '表情包'))]
+    return roots.some(root => {
+      if (!existsSync(root)) return false
+      const rel = relative(realpathSync(root), target)
+      return rel !== '' && rel.split(/[\\/]/)[0] !== '..' && !isAbsolute(rel)
+    })
+  }
   let pictures = ''
   const migrated = new Set()
   const pictureDirectory = () => {
@@ -220,7 +229,7 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
       const current = read()
       if (stopped || !current.settings.autoSend || !picked || !current.items.some(x => x.id === picked.id)) return []
       sent.set(key, Date.now())
-      return [{ kind: 'path', value: file(picked) }]
+      return [{ kind: 'path', value: file(picked), sticker: true }]
     } finally { pending.delete(key) }
   }
   let stopped = false, collecting = false, collectionError = ''
@@ -381,5 +390,5 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
     post('edit', body => update(body.id, body))
     post('remove', body => remove(body.id))
   }
-  return { view, add, update, remove, settings, select, infer, capture, enqueueTags, classify, register, folder: pictureDirectory }
+  return { view, add, update, remove, settings, select, infer, capture, enqueueTags, classify, register, isStickerFile, folder: pictureDirectory }
 }
