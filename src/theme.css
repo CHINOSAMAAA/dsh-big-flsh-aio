@@ -4344,16 +4344,12 @@ body[data-ds-dark-theme] .big-fish .fish-button.fish-danger {
 }
 
 .big-fish .fish-version-pin {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  font: inherit;
-  color: inherit;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .big-fish .fish-version-pin:hover,
 .big-fish .fish-version-pin:focus-visible {
-  color: var(--fish-accent);
+  color: #fff1c9;
   outline: none;
 }
