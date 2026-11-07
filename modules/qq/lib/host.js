@@ -22,6 +22,7 @@ import { receiveQQFiles, qqFileName } from './inbound-files.mjs'
 import { createFileEvents } from './onebot-file-events.mjs'
 import { createMediaStorage } from './media-storage.mjs'
 import { createWorkspaceBinding } from './workspace.mjs'
+import { createSessionTools } from './session-tools.mjs'
 import { loadHostDeps } from '../../memory/lib/hostdeps.mjs'
 
 export const name = 'qq-bridge'
@@ -1094,7 +1095,9 @@ export function apply(ctx) {
   const workspace = createWorkspaceBinding({ home: 目录, ctx, config: 读配置 })
   const mediaStorage = createMediaStorage({ home: 目录, workspace })
   const 新建Agent们 = new Set()
-  const stickers = createStickers({ home: 目录, ctx, workspace, findAgent: id => 找agent(id), log: text => 记账(text), defaultSession: () => 读配置().绑定.find(b => { const o = 找agent(b.会话)?.options; return b.开 !== false && o?.provider && o?.model })?.会话 || '', sourceFor: id => {
+  const sessionTools = createSessionTools({ ctx, log: text => 记账(text) })
+  ctx.effect(() => () => sessionTools.dispose(), 'qq-bridge: 会话联网工具')
+  const stickers = createStickers({ home: 目录, ctx, workspace, findAgent: id => 找agent(id), log: text => 记账(text), sourceFor: id => {
     const config = 读配置(), binding = config.绑定.find(b => b.会话 === id)
     if (!binding) return ''
     const source = bindingSource(目录, binding)
@@ -1720,7 +1723,7 @@ export function apply(ctx) {
     if (!ctx.agents || typeof ctx.agents.resume !== 'function') return false
     const 任务 = (async () => {
       try {
-        const handle = await ctx.agents.resume({ resumeSessionId: 原 })
+        const handle = await ctx.agents.resume({ resumeSessionId: 原, setup: sessionTools.resumeSetup })
         新建Agent们.add(handle)
         记账('已恢复绑定会话：' + 短id(原))
         return true
@@ -2740,6 +2743,8 @@ export function apply(ctx) {
     }
     if (!agent) return { ok: false, 说: `那间会话现在没活着（${短id(这间)}），先把它打开` }
 
+    try { await sessionTools.ensure(agent) } catch (error) { 记账('会话联网工具加载失败：' + String(error?.message || error)) }
+
     // ⭐ 1.1.0：这一段聊天的人设（这一行自己写了就用它自己的，没写就用总的那份）
     const 人设文 = 配置.人设开
       ? String((这条 && 这条.人设) || 配置.人设 || '').trim().slice(0, 20000)
@@ -3560,9 +3565,11 @@ export function apply(ctx) {
   }
   const 建映射Agent = async (名称, cwd) => {
     const 模型 = 选会话模型()
+    const { agentPreset, setup } = await sessionTools.createOptions()
     const handle = await ctx.agents.create({
       sessionId: 'session-' + randomUUID(),
-      meta: { cwd },
+      meta: { cwd, ...(agentPreset ? { agentPreset } : {}) },
+      setup,
       ...(模型 ? { agentOptions: 模型 } : {}),
     })
     try {
@@ -3586,6 +3593,7 @@ export function apply(ctx) {
         agent = 找agent(b.会话)
       }
       if (agent) {
+        try { await sessionTools.ensure(agent) } catch (error) { 记账('会话联网工具加载失败：' + String(error?.message || error)) }
         // 已有 Agent 但没有被写进选定工作区的 sessionIds：补登记（幂等）。
         try { await 加入工作区(b.会话, 当前.工作区) } catch (error) {
           记账('映射会话加入工作区失败（' + String(b.号码 || '') + '）：' + String((error && error.message) || error))
@@ -3995,6 +4003,7 @@ export function apply(ctx) {
     }
     闸门心跳()
     空间工具心跳()
+    void sessionTools.sync((读配置().绑定 || []).map(b => 找agent(b.会话))).catch(error => 记账('会话联网工具加载失败：' + String(error?.message || error)))
     void 人设心跳()
     if (收消息任务) return 收消息任务
     当前控制 = new AbortController()
