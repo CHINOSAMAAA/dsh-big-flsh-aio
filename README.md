@@ -31,48 +31,39 @@ AIO 将四个模块统一到 DSH 主界面，增加统一总览、安装更新�
 
 > **运行环境：**Node.js ≥ 22，DSH ≥ 0.2.1-rc.2。
 
-### 在 DSH 软件中安装（推荐 npm）
+### 在 DSH 软件中安装（当前使用 GitHub）
 
 1. 打开 DSH **设置 → 插件 → 安装**。
-2. 停用旧模板和单独安装的 QQ、记忆、心情、搭话插件，**保留已有数据**。
-3. 在安装来源中输入本项目的 **npm 包名**：
-
-```text
-dsh-big-fish-aio@latest
-```
-
-4. 确认安装并启用，按提示重载或重启 DSH。
-5. 点击左侧栏 **大肥鱼**，配置 QQ 后端、会话绑定，再开启需要的功能。
-
-> **版本说明：**当前仓库版本和新名称 npm 包版本均为 `0.3.15`，两个渠道独立维护；左侧栏展示仓库版本。
-
-<details>
-<summary><strong>npm 连接较慢？使用国内镜像安装包</strong></summary>
-
-在 DSH 同一个安装来源输入框中，改填以下地址：
-
-```text
-https://registry.npmmirror.com/dsh-big-fish-aio/-/dsh-big-fish-aio-0.3.15.tgz
-```
-
-这是 npm `0.3.15` 的国内镜像安装包，无需访问 GitHub。安装后同样重载或重启 DSH。
-
-</details>
-
-<details>
-<summary><strong>需要心情与搭话？使用 GitHub 仓库版</strong></summary>
-
-在 DSH 同一个安装来源输入框中，填写：
+2. 停用旧拼写整合包、旧模板和单独安装的 QQ、记忆、心情、搭话插件，**保留已有数据**。
+3. 在安装来源中输入：
 
 ```text
 github:CHINOSAMAAA/dsh-big-fish-aio#main
 ```
 
-此来源包含当前仓库中的全部模块，需要网络可以访问 GitHub。
+4. 确认安装并启用，按提示重载或重启 DSH。
+5. 点击左侧栏 **大肥鱼**，配置 QQ 后端、会话绑定，再开启需要的功能。
+
+> **版本说明：**当前仓库版本为 `0.3.15`，新名称 npm 包的预备版本为 `0.3.15`。npm 发布暂缓，当前请使用 GitHub 安装，并在 **大肥鱼 → 更新与来源** 选择 GitHub 渠道检查和安装更新。
+
+<details>
+<summary><strong>npm 和国内镜像安装方式（待发布后可用）</strong></summary>
+
+新名称 npm 包尚未发布。发布后可在 DSH 安装来源中输入：
+
+```text
+dsh-big-fish-aio@latest
+```
+
+国内镜像同步后可输入对应的安装包地址：
+
+```text
+https://registry.npmmirror.com/dsh-big-fish-aio/-/dsh-big-fish-aio-0.3.15.tgz
+```
+
+npm 发布及镜像同步完成后，再使用 **国内镜像 · npmmirror** 更新渠道。
 
 </details>
-
-**后续更新：**进入 **大肥鱼 → 更新与来源**，npm 版推荐选择 **国内镜像 · npmmirror**，点击 **检查更新 → 一键更新整合包**，完成后按提示重载。仓库版新增功能使用 GitHub 渠道更新。
 
 AIO 与独立插件共用部分接口和数据路径，同一环境只启用一套；切换前先停止正在进行的导入任务。
 
