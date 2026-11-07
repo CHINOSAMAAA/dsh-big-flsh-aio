@@ -23,7 +23,7 @@ const DESCRIPTIONS = [
 ]
 const submenus = {
   1: ['连接', '绑定', '消息策略', '角色设定', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件'].map(x => [x, x]),
-  2: ['记忆库', '语义召回', '召回与遗忘', '历史导入'].map(x => [x, x]),
+  2: ['记忆库', '召回设置', '数据管理'].map(x => [x, x]),
   3: [['mood', '心情'], ['bind', '会话绑定'], ['judge', '判断与注入'], ['charm', '挂饰']],
 }
 const css = FISH_THEME_CSS
@@ -898,8 +898,7 @@ function readSavedLocation() {
       const key = saved.subpage && saved.subpage[id]
       if (typeof key === 'string' && (submenus[id] || []).some(pair => Array.isArray(pair) && pair[0] === key)) sub[id] = key
     }
-    const detail = saved.memoryDetail === true && ['记忆与档案', '语义索引'].includes(saved.memoryPage)
-    return { tab: saved.tab, subpage: sub, memoryDetail: detail, memoryPage: detail ? saved.memoryPage : '记忆与档案' }
+    return { tab: saved.tab, subpage: sub }
   } catch (error) { return null }
 }
 
@@ -909,8 +908,6 @@ function Page() {
   const [tab, setTab] = React.useState(initialTab)
   const [visited, setVisited] = React.useState([initialTab])
   const [subpage, setSubpage] = React.useState(savedLocation?.subpage || { 1: '连接', 2: '记忆库', 3: 'mood' })
-  const [memoryDetail, setMemoryDetail] = React.useState(Boolean(savedLocation?.memoryDetail))
-  const [memoryPage, setMemoryPage] = React.useState(savedLocation?.memoryPage || '记忆与档案')
   const [qqStatus, setQQStatus] = React.useState(null)
   const [leavePrompt, setLeavePrompt] = React.useState(false)
   const [leaveBusy, setLeaveBusy] = React.useState(false)
@@ -941,14 +938,11 @@ function Page() {
     requestLeave(() => animateChange(() => { setTab(id); setVisited(old => old.includes(id) ? old : [...old, id]) }))
   }
   const selectSubpage = (id, key) => {
-    const current = id === 2 && memoryDetail ? memoryPage : subpage[id]
+    const current = subpage[id]
     if (id === tab && key === current) return
     requestLeave(() => animateChange(() => {
       setTab(id); setVisited(old => old.includes(id) ? old : [...old, id])
-      if (id === 2 && memoryDetail) {
-        if (key === 'back') setMemoryDetail(false)
-        else setMemoryPage(key)
-      } else setSubpage(old => ({ ...old, [id]: key }))
+      setSubpage(old => ({ ...old, [id]: key }))
     }))
   }
   const flashJumpTarget = (id) => {
@@ -1024,10 +1018,10 @@ function Page() {
   React.useEffect(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(LOCATION_KEY, JSON.stringify({ tab, subpage, memoryDetail, memoryPage }))
+        window.localStorage.setItem(LOCATION_KEY, JSON.stringify({ tab, subpage }))
       }
     } catch (error) {}
-  }, [tab, subpage, memoryDetail, memoryPage])
+  }, [tab, subpage])
   React.useEffect(() => {
     if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') return undefined
     const onBeforeUnload = (event) => {
@@ -1063,7 +1057,7 @@ function Page() {
     if (typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(update); observer.observe(nav)
     return () => observer.disconnect()
-  }, [tab, memoryDetail])
+  }, [tab])
   React.useLayoutEffect(() => {
     const node = contentRef.current
     if (!node) return
@@ -1072,11 +1066,11 @@ function Page() {
     enterAnimation.current?.cancel()
     if (node.animate) enterAnimation.current = node.animate([{ opacity: .35, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 260, easing: 'cubic-bezier(.22,1,.36,1)' })
     return () => enterAnimation.current?.cancel()
-  }, [tab, subpage, memoryPage, memoryDetail])
+  }, [tab, subpage])
   const render = [
     () => h(Overview, { navigate, notify: fishNotify }),
     () => h(QQ, { page: subpage[1], onPageChange: key => selectSubpage(1, key), guard: qqGuard, notify: fishNotify, help: fishShowHelp, hideHelp: fishHideHelp, laterHideHelp: fishScheduleHelpHide, confirm: fishAskConfirm, editRole: fishAskText, openRoleWriter: fishOpenRoleWriter, openFileManager }),
-    () => h(Memory, { page: subpage[2], onPageChange: key => selectSubpage(2, key), detailPage: memoryPage, onDetailPageChange: setMemoryPage, detailOpen: memoryDetail, onDetailChange: setMemoryDetail, notify: fishNotify, historyImport: subpage[2] === '历史导入' ? h(QQ, { page: '历史导入', onPageChange: () => {}, embedded: true, notify: fishNotify }) : null }),
+    () => h(Memory, { page: subpage[2], onPageChange: key => selectSubpage(2, key), notify: fishNotify, active: tab === 2, historyImport: h(QQ, { page: '历史导入', onPageChange: () => {}, embedded: true, notify: fishNotify }) }),
     () => h(Mood, { page: subpage[3], onPageChange: key => selectSubpage(3, key), notify: fishNotify }),
     () => h(Speak, { guard: speakGuard, notify: fishNotify }), () => h(Rice, { notify: fishNotify }), () => h(FileManager, { notify: fishNotify }), () => h(RunLog, { notify: fishNotify }), () => h(Updates, { notify: fishNotify }),
   ]
@@ -1118,8 +1112,8 @@ function Page() {
         h('nav', { ref: navRef, className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist', 'aria-orientation': 'vertical' },
           h('span', { ref: highlightRef, className: 'fish-nav-highlight', 'aria-hidden': true }),
           ...tabs.map((label, id) => {
-            const items = id === 2 && memoryDetail ? [['记忆与档案', '记忆与档案'], ['语义索引', '语义索引'], ['back', '返回记忆库']] : submenus[id]
-            const selected = id === 2 && memoryDetail ? memoryPage : subpage[id]
+            const items = submenus[id]
+            const selected = subpage[id]
             return h('div', { key: label, className: 'fish-nav-group' },
               h('button', {
                 type: 'button', role: 'tab', id: 'fish-tab-' + id, 'aria-label': label, 'aria-selected': tab === id, 'aria-controls': 'fish-panel-' + id,

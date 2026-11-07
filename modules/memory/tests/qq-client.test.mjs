@@ -10,7 +10,7 @@ test('设置界面渲染QQ配置及迁移入口，保存使用明确字段', asy
   const slots={inject:(_,fn)=>fn(),register:(_,fn)=>{render=fn}}
   vm.runInNewContext(readFileSync(new URL('../lib/client.js',import.meta.url),'utf8'),{window:{__ModuleLoader__:{load:({factory})=>{plugin=factory(()=>React)}}},fetch:async(url,options)=>{requests.push([url,options]);return{json:async()=>({ok:true})}}})
   plugin.apply({get:()=>slots})
-  const Section=render().children[1].type,tree=Section()
+  const Section=render().children[1].type,tree=Section({page:'数据管理'})
   const nodes=[];function visit(x){if(!x||typeof x!=='object')return;nodes.push(x);for(const c of x.children||[])Array.isArray(c)?c.forEach(visit):visit(c)}visit(tree)
   assert.ok(nodes.some(x=>x.props?.['aria-label']==='主人 QQ'))
   assert.ok(nodes.some(x=>x.props?.['aria-label']==='隔离群号'))

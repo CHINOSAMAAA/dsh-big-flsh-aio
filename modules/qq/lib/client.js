@@ -663,7 +663,10 @@ window.__ModuleLoader__.load({
           h('p', null, '按时间分段读取记录，通过摘要衔接上下文并写入「鱼的记忆 Plus」。目标会话需使用 DeepSeek。'),
           行('目标会话绑定', h('select', { style: S.wide, value: 历史绑定, disabled: 历史忙, 'aria-label': '历史导入绑定', onChange: e => 设历史绑定(e.target.value) },
             h('option', { value: '' }, '请选择已保存的绑定'),
-            ...绑定.map((b, i) => h('option', { key: i, value: String(i) }, `${b.类型} ${b.号码} → ${b.会话}`)))),
+            ...绑定.map((b, i) => {
+              const 称呼 = String(b.称呼 || '').trim() || (b.类型 === '群' ? '未命名群' : '未命名')
+              return h('option', { key: i, value: String(i) }, `${b.类型} ${称呼} - ${b.号码}`)
+            }))),
           行('AI 对应的 QQ 号（选填）', h('input', { style: S.input, value: 历史AI, disabled: 历史忙, 'aria-label': 'AI 对应的 QQ 号', onChange: e => 设历史AI(e.target.value) }),
             '指定 AI 身份对应的 QQ 号；留空则保留原发言人姓名。'),
           行('历史读取上限（页）', h('input', { style: S.small, type: 'number', min: 1, max: 1000, value: 历史页数, disabled: 历史忙, 'aria-label': '最多读取页数', onChange: e => 设历史页数(Number(e.target.value)) }),

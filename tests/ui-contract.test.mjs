@@ -73,7 +73,7 @@ test('九入口支持图标、键盘切换及已访问面板保留', () => {
   tree = render()
   const memorySubmenu = tree.find(n => n.props?.['aria-label'] === '长期记忆子菜单')
   const memoryEntries = walk(memorySubmenu).filter(n => n.type === 'button').map(n => n.children.join(''))
-  assert.equal(memoryEntries.at(-1), '历史导入')
+  assert.deepEqual(memoryEntries, ['记忆库', '召回设置', '数据管理'])
 
   let focused = -1, prevented = false
   tabs = tree.filter(n => n.props?.role === 'tab')

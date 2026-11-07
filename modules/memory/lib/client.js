@@ -7,53 +7,104 @@ window.__ModuleLoader__.load({
     var exports = module.exports
 
     const React = require('react')
+    const h = React.createElement
     const inject = ['slots']
-  function EmbeddingSettings({ session, storeId, notify }) {
-    const [status, setStatus] = React.useState(null)
-    const [config, setConfig] = React.useState(null)
-    const [key, setKey] = React.useState('')
-    const [busy, setBusy] = React.useState(false)
-    const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
-    const base = '/dsh-fish-memory/embedding'
-    const refresh = () => fetch(base + '/status' + (session ? '?session=' + encodeURIComponent(session) : ''), { cache: 'no-store' }).then(r => r.json()).then(r => { setStatus(r); setConfig(old => old || r.config) })
-    React.useEffect(() => { refresh().catch(() => 告知('Embedding 状态不可用', { holdMs: 6000 })) }, [session])
-    React.useEffect(() => {
-      if (!status?.running) return
-      const timer = setInterval(() => refresh().catch(() => {}), 1000)
-      return () => clearInterval(timer)
-    }, [status?.running, session])
-    const post = async (path, body) => {
-      setBusy(true)
-      try {
-        const result = await fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json())
-        if (!result.ok) throw new Error(result.error || '操作失败')
-        setKey(''); 告知('Embedding 操作完成', { tone: 'success' }); await refresh()
-      } catch (e) { 告知('Embedding 操作失败：' + e.message, { holdMs: 6000 }) } finally { setBusy(false) }
+    function MemoryDialog({ title, subtitle, active = true, onClose, footer, children }) {
+      const ref = React.useRef(null)
+      React.useEffect(() => {
+        const dialog = ref.current
+        if (!dialog) return
+        if (active && !dialog.open) dialog.showModal()
+        if (!active && dialog.open) dialog.close()
+        return () => { if (dialog.open) dialog.close() }
+      }, [active])
+      React.useEffect(() => { ref.current?.querySelector('button')?.focus() }, [title])
+      return h('dialog', {
+        ref, className: 'memory-dialog', 'aria-labelledby': 'memory-dialog-title',
+        onCancel: e => { e.preventDefault(); onClose() },
+        onMouseDown: e => {
+          if (e.target !== e.currentTarget) return
+          const box = e.currentTarget.getBoundingClientRect()
+          if (e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom) onClose()
+        },
+      },
+      h('header', { className: 'memory-dialog-head' },
+        h('div', null, subtitle ? h('p', null, subtitle) : null, h('h2', { id: 'memory-dialog-title' }, title)),
+        h('button', { type: 'button', className: 'fish-button', 'aria-label': '关闭' + title, onClick: onClose, autoFocus: true }, '关闭')),
+      h('div', { className: 'memory-dialog-body' }, children),
+      footer ? h('footer', { className: 'memory-dialog-foot' }, footer) : null)
     }
-    if (!config) return React.createElement('div', null, 'Qwen Embedding：加载中…')
-    const field = (name, label, type = 'text') => React.createElement('label', { key: name, style: { display: 'block', margin: '6px 0' } }, label + ' ', React.createElement('input', {
-      'aria-label': label, type, value: config[name], min: type === 'number' ? 0 : undefined, style: { maxWidth: '100%', width: type === 'number' ? 100 : 500 },
-      onChange: e => setConfig({ ...config, [name]: type === 'number' ? Number(e.target.value) : e.target.value }),
-    }))
-    return React.createElement('section', { className: 'fish-embedding', style: { margin: '24px 0' } },
-      React.createElement('h2', null, 'Qwen 语义召回（默认关闭）'),
-      React.createElement('p', null, '启用后，记忆正文与查询会发送给配置的云服务商并可能产生费用。正文仍以鱼的记忆为准，断网回退关键词；QQ 权限保持不变。'),
-      React.createElement('label', null, React.createElement('input', {'aria-label': '启用语义召回',  type: 'checkbox', role: 'switch', checked: config.enabled, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), '启用语义召回'),
-      field('endpoint', 'DashScope 完整服务地址'), field('model', 'Qwen 模型'), field('dimensions', '维度', 'number'),
-      field('minSimilarity', '语义门槛（需用自己的数据校准）', 'number'), field('topK', '语义候选上限', 'number'), field('timeoutMs', '本轮超时毫秒', 'number'),
-      React.createElement('label', null, '密钥（只写） ', React.createElement('input', { 'aria-label': 'Embedding 密钥', type: 'password', autoComplete: 'new-password', value: key, disabled: !status?.writable, onChange: e => setKey(e.target.value) })),
-      React.createElement('p', null, status?.configured ? '密钥已配置（不会返回前端）' : '未配置密钥。可用宿主凭据 FISH_MEMORY_QWEN_API_KEY；旧宿主使用同名或 DASHSCOPE_API_KEY 环境变量。'),
-      React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/settings', { config, ...(key ? { key } : {}) }) }, '保存 Embedding 设置'),
-      React.createElement('button', {type: 'button',  disabled: busy || !status?.writable, onClick: () => post('/settings', { config, clearKey: true }) }, '清除保存的密钥'),
-      session ? React.createElement('div', null,
-        React.createElement('p', null, '当前库索引：' + (status?.indexed ?? '—') + ' / ' + (status?.total ?? '—') + '；缺失 ' + (status?.missing ?? '—') + '；本次完成 ' + (status?.completed || 0) + (status?.running ? '（运行中）' : '') + (status?.error ? '；回退原因 ' + status.error : '')),
-        React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId }) }, '补齐当前库索引'),
-        React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引（保留正文）'),
-        React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/index', { stop: true }) }, '中断补齐'),
-      ) : React.createElement('p', null, '打开下方一个记忆库后，可分批补齐或重建其索引。'),
-      React.createElement('button', {type: 'button',  onClick: () => refresh().catch(() => 告知('Embedding 状态不可用', { holdMs: 6000 })) }, '刷新索引状态'),
-    )
-  }
+
+    function EmbeddingSettings({ session, storeId, notify, indexOnly = false }) {
+      const [status, setStatus] = React.useState(null)
+      const [config, setConfig] = React.useState(null)
+      const [key, setKey] = React.useState('')
+      const [busy, setBusy] = React.useState(false)
+      const [error, setError] = React.useState('')
+      const base = '/dsh-fish-memory/embedding'
+      const refresh = async (saved = false) => {
+        const response = await fetch(base + '/status' + (session ? '?session=' + encodeURIComponent(session) : ''), { cache: 'no-store' })
+        const result = await response.json()
+        if (!response.ok || !result.ok) throw Error(result.error || '无法读取语义召回状态')
+        setStatus(result)
+        setConfig(old => saved ? result.config : old || result.config)
+        setError('')
+      }
+      React.useEffect(() => { refresh().catch(e => setError(e.message)) }, [session])
+      React.useEffect(() => {
+        if (!status?.running) return
+        const timer = setInterval(() => refresh().catch(e => setError(e.message)), 1000)
+        return () => clearInterval(timer)
+      }, [status?.running, session])
+      const post = async (path, body) => {
+        setBusy(true); setError('')
+        try {
+          const response = await fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+          const result = await response.json()
+          if (!response.ok || !result.ok) throw Error(result.error || '操作失败')
+          setKey('')
+          await refresh(path === '/settings')
+          notify?.('语义召回设置已更新', { tone: 'success' })
+        } catch (e) { setError(e.message) } finally { setBusy(false) }
+      }
+      if (!config) return h('section', { className: indexOnly ? '' : 'fish-card' },
+        h('p', { role: error ? 'alert' : 'status' }, error || '正在读取语义召回设置…'),
+        error ? h('button', { type: 'button', className: 'fish-button', onClick: () => refresh().catch(e => setError(e.message)) }, '重试') : null)
+      const field = (name, label, hint, options) => h('label', { className: 'memory-field', key: name },
+        h('span', null, label),
+        options ? h('select', { 'aria-label': label, value: config[name], disabled: busy, onChange: e => setConfig({ ...config, [name]: typeof config[name] === 'number' ? Number(e.target.value) : e.target.value }) }, ...options.map(value => h('option', { key: value, value }, value)))
+        : h('input', { 'aria-label': label, type: typeof config[name] === 'number' ? 'number' : 'text', step: name === 'minSimilarity' ? 0.01 : 1, value: config[name], disabled: busy, onChange: e => setConfig({ ...config, [name]: typeof config[name] === 'number' ? Number(e.target.value) : e.target.value }) }),
+        hint ? h('small', null, hint) : null)
+      return h('section', { className: indexOnly ? 'memory-index' : 'fish-card memory-embedding' },
+        !indexOnly ? h(React.Fragment, null,
+          h('div', { className: 'memory-card-head' },
+            h('div', null, h('h3', null, '语义召回 · RAG'), h('p', null, '按含义查找已保存的记忆，服务不可用时回退到关键词检索。')),
+            h('label', { className: 'memory-switch' }, h('input', { type: 'checkbox', role: 'switch', 'aria-label': '启用语义召回', checked: config.enabled, disabled: busy, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), config.enabled ? '已开启' : '已关闭')),
+          h('p', { className: 'memory-callout' }, '启用后，记忆正文与查询会发送至配置的云服务商，并可能产生费用。QQ 记忆隔离规则继续生效。'),
+          h('div', { className: 'memory-form-grid' },
+            field('model', 'Embedding 模型', null, ['text-embedding-v4', 'text-embedding-v3']),
+            field('dimensions', '向量维度', '维度需与服务和现有索引一致。'),
+            h('label', { className: 'memory-field memory-field-wide' }, h('span', null, '服务地址'), h('input', { 'aria-label': 'DashScope 完整服务地址', type: 'url', value: config.endpoint, disabled: busy, onChange: e => setConfig({ ...config, endpoint: e.target.value }) })),
+            field('minSimilarity', '语义相似度门槛', '越高越严格，范围 0.5–0.99。'),
+            field('topK', '候选条数上限', '最多 50 条，再受整体记忆预算限制。'),
+            field('timeoutMs', '检索超时 / 毫秒', '超时回退关键词，不阻塞聊天。'),
+            h('label', { className: 'memory-field memory-field-wide' }, h('span', null, '服务密钥'), h('input', { 'aria-label': 'Embedding 密钥', type: 'password', autoComplete: 'new-password', placeholder: status?.configured ? '已配置，留空保留现有密钥' : '输入服务密钥', value: key, disabled: busy || !status?.writable, onChange: e => setKey(e.target.value) }), h('small', null, status?.writable ? '密钥只写入宿主凭据，不会返回前端。' : '当前宿主不支持写入密钥，请使用宿主凭据或环境变量。'))),
+          h('div', { className: 'memory-actions memory-save-row' },
+            h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy, onClick: () => post('/settings', { config, ...(key ? { key } : {}) }) }, busy ? '保存中…' : '保存语义设置'),
+            h('button', { type: 'button', className: 'fish-button', disabled: busy || !status?.writable || !status?.configured, onClick: () => { if (window.confirm('清除已保存的 Embedding 密钥？语义召回将无法使用该密钥。')) post('/settings', { config, clearKey: true }) } }, '清除密钥')),
+          h('p', { className: 'memory-index-hint' }, '各记忆库的索引补齐与重建，统一从“数据管理 → 索引维护”进入。')) : h(React.Fragment, null,
+          h('p', { className: 'fish-muted' }, '索引仅影响语义检索。补齐和重建都会保留原始记忆正文。'),
+          h('div', { className: 'memory-stats' }, ...[[status?.indexed ?? '—', '已索引'], [status?.missing ?? '—', '待补齐'], [status?.completed ?? 0, '本次完成']].map(([value, label]) => h('div', { key: label }, h('strong', null, value), h('span', null, label)))),
+          status?.error ? h('p', { className: 'memory-feedback', role: 'status' }, '检索回退原因 · ' + status.error) : null,
+          h('div', { className: 'memory-actions' },
+            h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || status?.running || !config.enabled, onClick: () => post('/index', { session, storeId }) }, status?.running ? '正在补齐…' : '补齐缺失索引'),
+            h('button', { type: 'button', className: 'fish-button', disabled: busy || status?.running || !config.enabled, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引'),
+            h('button', { type: 'button', className: 'fish-button', disabled: busy || !status?.running, onClick: () => post('/index', { stop: true }) }, '中断任务'),
+            h('button', { type: 'button', className: 'fish-button', onClick: () => refresh().catch(e => setError(e.message)) }, '刷新状态')),
+          !config.enabled ? h('p', { className: 'memory-feedback' }, '语义召回尚未开启，请先到“召回设置”保存配置。') : null),
+        error ? h('p', { role: 'alert', className: 'memory-feedback' }, error) : null)
+    }
+
     const B = '/dsh-fish-memory'
 
     const get = (p) => fetch(B + p, { cache: 'no-store' }).then((r) => r.json())
@@ -138,7 +189,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
 
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
-      dim: { color: 'var(--dsw-alias-label-tertiary, #8a8a8a)' },
+      dim: { color: 'var(--fish-muted)' },
       h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 700, lineHeight: 1.5 },
       // ⚠注意：2026-09-23（她的反馈：「右边堆的东西太多，左边的文字成了竖着的一条」）：
       //   这一行**必须能换行** ✗
@@ -161,7 +212,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-danger)', fontSize: 'var(--fish-small)' },
       // 注意：flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
       nameBox: { display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', margin: '10px 0', padding: '12px 0', borderBottom: '1px solid var(--fish-line)', fontSize: 'var(--fish-small)' },
-      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-border)' },
+      editBox: { margin: 0, padding: 0, minWidth: 0 },
       askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-warning)', fontSize: 'var(--fish-small)' },
       barOut: { height: 10, borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid var(--fish-border)' },
       barIn: { height: '100%', background: 'var(--fish-accent)' },
@@ -178,7 +229,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       ['gate', '门槛与条数', '控制「一次塞多少给她」。'],
     ]
 
-    function Section({ page, onPageChange, detailPage: selectedDetailPage, onDetailPageChange, detailOpen, onDetailChange, notify, historyImport } = {}) {
+    function Section({ page, onPageChange, notify, active = true, historyImport } = {}) {
       const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
       const [d, setD] = React.useState(null)
       const post = (p, body) => {
@@ -232,15 +283,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [看哪边, set看哪边] = React.useState('全部')
       // ⭐ 2026-09-22（她要的）：长期事实那个「收理的文件夹」展开没有（**默认收着**）
       const [看事实, set看事实] = React.useState(false)
-      // 参数和索引使用独立页签，保留各页草稿。
       const [localPage, setLocalPage] = React.useState('记忆库')
-      const memoryPage = page ?? localPage
+      const requestedPage = page ?? localPage
+      const memoryPage = ['语义召回', '召回与遗忘'].includes(requestedPage) ? '召回设置' : ['记忆库', '召回设置', '数据管理'].includes(requestedPage) ? requestedPage : '记忆库'
       const setMemoryPage = onPageChange ?? setLocalPage
-      const [localDetailPage, setLocalDetailPage] = React.useState('记忆与档案')
-      const detailPage = selectedDetailPage ?? localDetailPage
-      const setDetailPage = onDetailPageChange ?? setLocalDetailPage
-      React.useEffect(() => { onDetailChange?.(Boolean(open)) }, [open])
-      React.useEffect(() => { if (detailOpen === false) setOpen(null) }, [detailOpen])
+      const [dialogView, setDialogView] = React.useState('memories')
+      const [settingsOpen, setSettingsOpen] = React.useState(false)
+      const [migrationOpen, setMigrationOpen] = React.useState(false)
+      const [historyOpen, setHistoryOpen] = React.useState(false)
+      const [managementTarget, setManagementTarget] = React.useState('')
+      const openLibrary = (id, view = 'memories') => {
+        setOpen(id); setDialogView(view); setEdit(null); set查重开(false); set生成开(false)
+        set看记忆(true); set看事实(true); setShowDeleted(true); set加在谁(id); setNotes(null)
+      }
       // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没找到按钮」）：
       //   去重一直有，但都是**自动**的（召回时、导入时）—— **库里已有的重复没人管** ✗
       //   这里补一个手动查重：列出来、挑、才合
@@ -448,10 +503,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
       }, [load])
 
-      if (err) return React.createElement('div', { className: 'fish-module fish-memory qq-memory-page', style: S.wrap }, React.createElement('div', { style: S.drop }, '出错了：' + err))
+      if (err && !d) return h('div', { className: 'memory-feedback', role: 'alert' }, h('p', null, '无法读取长期记忆：' + err), h('button', { type: 'button', className: 'fish-button', onClick: load }, '重试'))
       if (!d || !params) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '加载中…')
 
       const now = Date.now()
+      const libraries = [...new Map((d.sessions || []).map(s => [s.storeId || s.id, s])).values()]
+      const libraryTitle = s => s.qq && s.storeId?.endsWith('_shared') ? '普通群共享记忆' : s.title || s.id
 
       // ---- 第二级：某个会话的详情 ----
       // ⭐ 1.4.8（issue #26）：合并预览抽成一个函数 —— 以前它只写在「会话详情」那个
@@ -499,7 +556,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             )
           : null
 
-      if (open) {
+      const 详情视图 = (() => {
+        if (!open) return null
         const s = (d.sessions || []).find((x) => x.id === open)
         if (!s) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '找不到这个会话')
         const tr = (s.traces || []).slice(-1)[0]
@@ -1455,34 +1513,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         const 没提炼的 = (s.memories || []).filter((m) => String(m.source || '').indexOf('档案导入') === 0 && !m.refined).length
         const 扩词区 = () => {
           const 小件 = []
-          小件.push(React.createElement('div', { key: 'h', style: S.h }, '提炼 / 扩词（用 DSH 自己的模型）'))
-          小件.push(
-            React.createElement(
-              'div',
-              { key: 'd', style: S.dim },
-              React.createElement('div', null, '两件事不一样，分开的：'),
-              React.createElement(
-                'div',
-                { style: { margin: '4px 0 0 8px' } },
-                React.createElement('b', null, '① 扩词'),
-                '：给每条记忆加一批「以后可能搜到它的词」，比如「她的衣服是蓝色的」加上「颜色 蓝色 衣着 穿搭」。' +
-                  '这样问「她喜欢什么颜色」也能捞到它。不改记忆本身，只是加索引。',
-              ),
-              React.createElement(
-                'div',
-                { style: { margin: '4px 0 0 8px' } },
-                React.createElement('b', null, '② 提炼'),
-                '：把导入进来的档案原文改写成「一条第一人称的记忆」。' +
-                  '比如「- 极致温柔：他会第一时间接住她的情绪」→「我会第一时间接住她的情绪」。' +
-                  '会改记忆本身（原文留在底里，能对照）。',
-              ),
-              React.createElement(
-                'div',
-                { style: { margin: '4px 0 0 8px' } },
-                '两个都在后台跑一次就行；跑完之后每轮对话不再调用模型，所以不卡、不额外花钱。',
-              ),
-            ),
-          )
+          小件.push(h('h3', { key: 'h' }, '提炼与扩词'))
+          小件.push(h('div', { className: 'memory-methods', key: 'd' },
+            h('div', null, h('strong', null, '扩词'), h('p', null, '补充关键词，帮助相关问题找到记忆。保留原始正文。')),
+            h('div', null, h('strong', null, '提炼'), h('p', null, '把导入的档案整理成独立记忆。修改前保存原文，可撤销。'))))
 
           // ---- 选模型 ----
           const 当前 = mdl && mdl.选中的 ? mdl.选中的 : (mdl && mdl.默认) || null
@@ -1519,7 +1553,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       ),
                     ),
                   )
-                : React.createElement('span', { style: S.dim }, '点右边「读一下有哪些模型」'),
+                : React.createElement('span', { style: S.dim }, '使用当前会话模型，也可读取列表后指定。'),
               React.createElement(
                 'button',
                 {type: 'button',
@@ -1539,7 +1573,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
                   },
                 },
-                '读一下有哪些模型',
+                '读取模型列表',
               ),
             ),
           )
@@ -1617,7 +1651,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
                   },
                 },
-                '先测一下模型',
+                '检查模型连接',
               ),
               React.createElement(
                 'button',
@@ -1955,31 +1989,16 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             React.createElement(
               'div',
               { key: 'd', style: S.dim },
-              '记忆插件只管「往后」—— 装上之后它才开始自己记。你以前那些日子，得你先归纳一下：' +
-                '把旧对话、日记、设定、备忘，整理成几个文本文件（.md / .txt）放进一个文件夹，这里再把它们拆成一条条记忆。',
+              '准备 .md 或 .txt 档案，扫描后先预览并选择条目，再写入当前记忆库。',
             ),
           )
-          小件.push(
-            React.createElement(
-              'div',
-              {
-                key: 'how',
-                style: Object.assign({}, S.dim, {
-                  margin: '6px 0 8px',
-                  padding: '6px 10px',
-                  borderRadius: 'var(--fish-radius-sm)',
-                  background: 'var(--fish-soft)',
-                  borderLeft: '2px solid var(--fish-border)',
-                }),
-              },
-              React.createElement('div', { style: { fontWeight: 600 } }, '怎么归纳（一句话：一个文件一个主题，一行一件事）'),
-              React.createElement('div', null, '· 分几份写：「我是谁」「重要的人和事」「约定」「时间线」……'),
-              React.createElement('div', null, '· 一行写清一件事，别写成一大段流水账 —— 拆起来才准'),
-              React.createElement('div', null, '· 有日期就写上；没日期不写也行，它不会瞎猜'),
-              React.createElement('div', null, '· 拆完先给你过目，挑中的才进库；导错了能整批撤销'),
-              React.createElement('div', null, '· 想更干净，拆完再点「② 提炼」，让模型改写成第一人称'),
-            ),
-          )
+          小件.push(h('details', { className: 'memory-import-guide', key: 'how' },
+            h('summary', null, '档案准备建议'),
+            h('ul', null,
+              h('li', null, '一个文件一个主题，每行记录一件事。'),
+              h('li', null, '有日期时保留日期，不确定时留空。'),
+              h('li', null, '只导入预览中勾选的内容，导入后可整批撤销。'),
+              h('li', null, '需要改写正文时，可到“整理与修复”执行提炼。'))))
           小件.push(
             React.createElement(
               'div',
@@ -1988,7 +2007,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               imp ? React.createElement('span', { style: S.dim }, '目录：' + imp.data.dir) : null,
               imp && imp.data.selfName
                 ? React.createElement('span', { style: S.dim }, '（人称：「' + imp.data.selfName + '」→「我」）')
-                : React.createElement('span', { style: S.warn, fontSize: 'var(--fish-small)' }, '（这个会话还没设「她自己叫什么」，导进去的人称不会自动换 —— 建议先在上面填好）'),
+                : React.createElement('span', { style: S.warn, fontSize: 'var(--fish-small)' }, '未设置库内称呼，导入时将保留原有人称。可先到“库内称呼”设置。'),
             ),
           )
           // 只导哪些文件 —— 同一个文件夹里常常还堆着别的文档，得能挑
@@ -2366,80 +2385,182 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           return 小件
         }
 
-        return React.createElement(
-          'div',
-          { className: 'fish-module fish-memory', style: S.wrap },
-          React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => setOpen(null) }, '← 所有会话'),
-          React.createElement('div', { style: S.h }, s.title || s.id),
-          onPageChange ? null : React.createElement('div', { className: 'fish-subnav' }, ...['记忆与档案', '语义索引'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (detailPage === name ? ' fish-primary' : ''), 'aria-pressed': detailPage === name, onClick: () => setDetailPage(name) }, name))),
-          React.createElement('div', { hidden: detailPage !== '语义索引' }, React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId, notify })),
-          React.createElement('div', { hidden: detailPage !== '记忆与档案' },
-          s.qq ? React.createElement('div', { style: S.dim }, '记忆库：' + s.storeId) : null,
-          React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
-          React.createElement(
+        return (() => {
+          const mode = edit ? 'edit' : 生成开 ? 'generate' : 查重 && 查重开 ? 'duplicates' : dialogView
+          const titles = { memories: '记忆条目', add: '新增记忆', names: '库内称呼', organize: '整理与修复', archive: '档案导入与生成', generate: '从会话生成档案', duplicates: '重复记忆检查', trash: '回收站', recall: '召回诊断', index: '语义索引', edit: '编辑记忆', tools: '记忆库管理' }
+          const go = view => { setDialogView(view); setEdit(null); set查重开(false); set生成开(false) }
+          const tasks = [
+            ['add', '新增记忆', '手动记录事实、时间和关键词'],
+            ['names', '库内称呼', '设置 AI 与对方在当前库中的称呼'],
+            ['organize', '整理与修复', '补日期、事实键、去重、提炼和扩词'],
+            ['archive', '档案导入与生成', '从文件导入，或将会话整理成档案'],
+            ['trash', '回收站', '恢复已删除、已合并或被取代的记忆'],
+            ['recall', '召回诊断', '查看本轮命中结果与未选中的原因'],
+            ['index', '语义索引', '补齐或重建当前库的向量索引'],
+          ]
+          let content
+          if (mode === 'memories') content = h('div', { className: 'memory-records' },
+            h('div', { className: 'memory-actions' }, h('button', { type: 'button', className: 'fish-button fish-primary', onClick: () => go('add') }, '新增记忆'), h('button', { type: 'button', className: 'fish-button', onClick: () => go('tools') }, '管理工具'), 已选几条 > 0
+              ? React.createElement(
+                  'button',
+                  {type: 'button',
+                    style: S.btnDanger,
+                    title: '把勾上的这几条收进「已删」（不是销毁，能找回来）。点它不会直接删，会先问一遍',
+                    onClick: () => set批删问(true),
+                  },
+                  '批量删（' + 已选几条 + '）',
+                )
+              : null,
+已选几条 > 0
+              ? React.createElement(
+                  'button',
+                  {type: 'button',  style: S.btn, onClick: () => { set选中({}); set批删问(false) } },
+                  '取消勾选',
+                )
+              : null),
+            h('div', { className: 'memory-filter' }, React.createElement('input', {'aria-label': '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
+                    style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
+                    placeholder: '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
+                    value: 搜词,
+                    onChange: (e) => set搜词(e.target.value),
+                  }),
+搜词
+                    ? React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set搜词('') }, '清掉')
+                    : null,
+React.createElement(
+                    'button',
+                    {type: 'button',
+                      style: S.btn,
+                      title:
+                        '点一下换个看法：全部 → 只记了时间的 → 只有没记时间的 → ' +
+                        '不会淡的 → 会淡的 → 全部。' +
+                        '「全部」那个视图里，不会淡的收在一个折叠的分组里（外面只剩会淡的）',
+                      onClick: () =>
+                        set看哪边(
+                          看哪边 === '全部'
+                            ? '有时间'
+                            : 看哪边 === '有时间'
+                              ? '没时间'
+                              : 看哪边 === '没时间'
+                                ? '长期事实'
+                                : 看哪边 === '长期事实'
+                                  ? '会淡的'
+                                  : '全部',
+                        ),
+                    },
+                    '看：' +
+                      (看哪边 === '全部'
+                        ? '全部'
+                        : 看哪边 === '有时间'
+                          ? '只记了时间的（' + 有时间数 + '）'
+                          : 看哪边 === '没时间'
+                            ? '只有没记时间的（' + 没时间数 + '）'
+                            : 看哪边 === '长期事实'
+                              ? '不会淡的（' + 事实总数 + '）'
+                              : '会淡的（' + 会淡总数 + '）'),
+                  ),
+React.createElement(
+                    'button',
+                    {type: 'button',
+                      style: S.btn,
+                      title: '按最左边的日期排。没写日期的排在最后 —— 它们不知道是什么时候的事',
+                      onClick: () => set顺序(顺序 === '新' ? '旧' : '新'),
+                    },
+                    '日期：' + (顺序 === '新' ? '新的在前' : '老的在前'),
+                  )),
+            React.createElement(
             'div',
-            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'var(--fish-soft)' } },
-            React.createElement(
-              'div',
-              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
-              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她自己叫什么'),
-              React.createElement('input', {'aria-label': '她在这儿的名字',
-                style: Object.assign({}, S.inp, { width: 160 }),
-                placeholder: '她在这儿的名字',
-                value: selfDraft[open] !== undefined ? selfDraft[open] : s.selfName || s.titleName || '',
-                onChange: (e) => setSelfDraft(Object.assign({}, selfDraft, { [open]: e.target.value })),
-              }),
-              s.selfName
-                ? null
-                : (s.titleName ? React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '（先填的是会话标题，确认没问题再点「存」）') : null),
-            ),
-            React.createElement(
-              'div',
-              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
-              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她怎么称呼你'),
-              React.createElement('input', {'aria-label': '她平时怎么叫你（小名、昵称都行）',
-                style: Object.assign({}, S.inp, { width: 160 }),
-                placeholder: '她平时怎么叫你（小名、昵称都行）',
-                value: ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName || '',
-                onChange: (e) => setOwnerDraft(Object.assign({}, ownerDraft, { [open]: e.target.value })),
-              }),
-            ),
-            React.createElement(
-              'div',
-              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 } },
-              React.createElement(
-                'button',
-                {type: 'button',
-                  style: S.btn,
-                  onClick: () =>
-                    post('/names', {
-                      session: open,
-                      selfName: (selfDraft[open] !== undefined ? selfDraft[open] : s.selfName) || '',
-                      ownerName: (ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName) || '',
-                    }).then(() => {
-                      setSelfDraft({})
-                      setOwnerDraft({})
-                      load()
-                    }),
-                },
-                '存',
-              ),
-              React.createElement(
-                'span',
-                { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1, lineHeight: 1.5 }) },
-                '她自己的名字写进记忆时会换成「我」；她怎么称呼你，会换成「你」。已有的记忆也会顺手洗一遍。',
-              ),
-            ),
-          ),
-          // ---- 2026-09-21 新加：她自己后台手动加一条 ----
-          // 跟模型自己记是两回事：它记受上面那个开关管，**手动加不受管**
-          // （开关管的是「他自己记不记、注不注入」，管不到她手动写）
-          React.createElement(
-            'div',
-            { style: S.h },
-            '新增记忆（开关关闭时也能添加）',
-          ),
-          React.createElement(
+            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
+            '记了时间的 ' + 有时间数 + ' 条 · 没记时间的 ' + 没时间数 + ' 条' +
+              (看哪边 === '全部' ? '' : '（现在只看' + (看哪边 === '有时间' ? '记了时间的' : '没记时间的') + '）'),
+          ), 批删问 && 已选几条 > 0
+                  ? React.createElement(
+                      'div',
+                      { style: S.confirm },
+                      React.createElement(
+                        'div',
+                        { style: { flex: 1 } },
+                        '要删掉这 ' + 已选几条 + ' 条吗？',
+                        React.createElement(
+                          'div',
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
+                          '不是销毁 —— 收进「已删」里，点开还能找回来。动之前也会自动备份。',
+                        ),
+                      ),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 批删(s) }, busy ? '删着…' : '确定删（' + 已选几条 + ' 条）'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批删问(false) }, '算了'),
+                    )
+                  : null, 搜词 || 看哪边 !== '全部'
+                  ? React.createElement(
+                      'div',
+                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '0 0 6px' }) },
+                      '这里 ' + 过滤后.length + ' 条 / 共 ' + s.memories.length + ' 条' +
+                        (看哪边 === '有时间' ? '（只看记了时间的）' : 看哪边 === '没时间' ? '（只看没记时间的）' : '') +
+                        (过滤后.length === 0 ? ' —— 换几个字试试，或者点上面的「看」换个范围' : ''),
+                    )
+                  : null, React.createElement(
+                  'div',
+                  { style: { marginTop: 10 } },
+                  过滤后.length === 0
+                    ? React.createElement(
+                        'div',
+                        { style: S.dim },
+                        搜词 ? '（没有含「' + 搜词 + '」的）' : '（这个范围里没有记忆）',
+                      )
+                    : (() => {
+                        // ⭐⭐ 2026-09-22（她要的）：**「全部」视图里，不会淡的收进一个折叠的分组**
+                        //   原话：「那一行，我们是单独做一个收理的文件夹一样的，
+                        //              不然的话那些就不需要露在外面」
+                        //   ⭐ 又说：「**外面都是会淡的，里面才是不会淡的**，就不用管里面了」
+                        //   → 外面只列**会淡的**；不会淡的（长期事实 + 没时间的）
+                        //     塞进「▸ 不会淡的（N 条）」里，点开才看
+                        const 上 = 画这个.slice(0, 画全部 ? 画这个.length : 一次最多画)
+                        // 注意：搜的时候**不许折叠** —— 不然搜到了却看不见 ✗
+                        //   （自检逮到的：搜「衣服」时匹配的那条是长期事实，被收进分组里了）
+                        if (看哪边 !== '全部' || 搜词) return 上.map(一条记忆)
+                        const 会淡的 = 上.filter((m) => !不会淡(m))
+                        const 不淡的 = 上.filter(不会淡)
+                        return [
+                          ...会淡的.map(一条记忆),
+                          不淡的.length
+                            ? React.createElement(
+                                'div',
+                                { key: '事实组' },
+                                React.createElement(
+                                  'div',
+                                  {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                                    style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 14 }),
+                                    onClick: () => set看事实(!看事实),
+                                  },
+                                  (看事实 ? '▾ ' : '▸ ') + '不会淡的（' + 不淡的.length + ' 条）',
+                                ),
+                                React.createElement(
+                                  'div',
+                                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
+                                  '里面这些是长期事实（要记一辈子的事，不会淡）。' +
+                                    '外面那些都会淡 —— 包括没记时间的（它们从「记下来的那天」开始淡）。',
+                                ),
+                                看事实 ? 不淡的.map(一条记忆) : null,
+                              )
+                            : null,
+                        ]
+                      })(),
+                ), 过滤后.length > 一次最多画
+                  ? React.createElement(
+                      'div',
+                      { style: { margin: '6px 0 0', fontSize: 'var(--fish-small)' } },
+                      画全部
+                        ? React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(false) }, '↑ 收起来（只画前 ' + 一次最多画 + ' 条）')
+                        : React.createElement(
+                            'span',
+                            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(true) },
+                            '还有 ' + (过滤后.length - 一次最多画) + ' 条' +
+                              (看哪边 === '没时间' ? '（更早记的）' : 顺序 === '新' ? '（更早的）' : '（更新的）') +
+                              '没画出来 —— 点这里全部显示（多了会卡）',
+                          ),
+                    )
+                  : null)
+          else if (mode === 'add') content = React.createElement(
                 'div',
                 { style: S.editBox },
                 React.createElement(
@@ -2515,150 +2636,73 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.askBox, { margin: '8px 0 0' }) },
-                  React.createElement('button', {type: 'button', className: 'fish-primary', style: { ...S.btn, background: 'var(--fish-action)', color: 'var(--fish-on-accent)' }, onClick: 提交一条 }, '加进这个会话'),
+                  React.createElement('button', {type: 'button', className: 'fish-primary', style: { ...S.btn, background: 'var(--fish-action)', color: 'var(--fish-on-accent)' }, onClick: 提交一条 }, '保存记忆'),
                 ),
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
-                  '加完记得点一下「开始扩词」—— 不然这条只有正文能搜到，检索词还是空的。',
+                  '保存后可在“整理与修复”中补充检索词。',
                 ),
-              ),
-          // 常用列表默认展开，管理工具保持在列表前面。
-          React.createElement(
+              )
+          else if (mode === 'edit') content = 改一条(edit)
+          else if (mode === 'names') content = React.createElement(
             'div',
-            { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: 16 } },
+            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'var(--fish-soft)' } },
             React.createElement(
               'div',
-              {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer', margin: 0, flex: 1 }), onClick: () => set看记忆(!看记忆) },
-              (看记忆 ? '▾ ' : '▸ ') + '记忆列表（' + s.memories.length + ' 条）',
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
+              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她自己叫什么'),
+              React.createElement('input', {'aria-label': '她在这儿的名字',
+                style: Object.assign({}, S.inp, { width: 160 }),
+                placeholder: '她在这儿的名字',
+                value: selfDraft[open] !== undefined ? selfDraft[open] : s.selfName || s.titleName || '',
+                onChange: (e) => setSelfDraft(Object.assign({}, selfDraft, { [open]: e.target.value })),
+              }),
+              s.selfName
+                ? null
+                : (s.titleName ? React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '（先填的是会话标题，确认没问题再点「存」）') : null),
             ),
-            // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没做啊？我怎么没有找到按钮」）：
-            //   ⚠注意：第一次我把它放进了**折叠起来的**记忆列表块里 ——
-            //     不点开列表就看不见，那就等于没有按钮 ✗
-            //     → 挪到**标题这一行**（这一行永远看得见）✓
             React.createElement(
-              'button',
-              {type: 'button',
-                style: S.btn,
-                title:
-                  '找出库里「几乎一样」的记忆。自动去重只管召回和导入，管不到已经存着的。' +
-                  '真重复能一键合；「汇总+明细」会列出来让你自己挑；合之前自动备份',
-                onClick: () => 去查重(s),
-              },
-              '查重',
+              'div',
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
+              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她怎么称呼你'),
+              React.createElement('input', {'aria-label': '她平时怎么叫你（小名、昵称都行）',
+                style: Object.assign({}, S.inp, { width: 160 }),
+                placeholder: '她平时怎么叫你（小名、昵称都行）',
+                value: ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName || '',
+                onChange: (e) => setOwnerDraft(Object.assign({}, ownerDraft, { [open]: e.target.value })),
+              }),
             ),
-            // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案**
-            //   「别的用户导入自己的会话 → 模型读一遍 → 出一份档案」
-            //   注意：这是**给别人用的功能**，跟「手工维护一份档案」是两码事
             React.createElement(
-              'button',
-              {type: 'button',
-                style: S.btn,
-                title:
-                  '把你自己的会话读一遍，提炼出一份长期档案（分九章）。' +
-                  '出好的档案再走「从旧档案导入」变成记忆条目。' +
-                  '会调用模型、会花钱，所以分四步：先看会话 → 算一下要多少 → 一批一批跑 → 存文件',
-                onClick: () => 开生成(),
-              },
-              '从会话生成档案',
+              'div',
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 } },
+              React.createElement(
+                'button',
+                {type: 'button',
+                  style: S.btn,
+                  onClick: () =>
+                    post('/names', {
+                      session: open,
+                      selfName: (selfDraft[open] !== undefined ? selfDraft[open] : s.selfName) || '',
+                      ownerName: (ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName) || '',
+                    }).then(() => {
+                      setSelfDraft({})
+                      setOwnerDraft({})
+                      load()
+                    }),
+                },
+                '存',
+              ),
+              React.createElement(
+                'span',
+                { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1, lineHeight: 1.5 }) },
+                '她自己的名字写进记忆时会换成「我」；她怎么称呼你，会换成「你」。已有的记忆也会顺手洗一遍。',
+              ),
             ),
-            // ⭐⭐ 2026-09-22（她要的）：**批量删除** —— 勾了几条就显示几条
-            //   注意：二次确认：点这里**不删**，只出确认条；确认条上再点「确定删」才真删
-            已选几条 > 0
-              ? React.createElement(
-                  'button',
-                  {type: 'button',
-                    style: S.btnDanger,
-                    title: '把勾上的这几条收进「已删」（不是销毁，能找回来）。点它不会直接删，会先问一遍',
-                    onClick: () => set批删问(true),
-                  },
-                  '批量删（' + 已选几条 + '）',
-                )
-              : null,
-            已选几条 > 0
-              ? React.createElement(
-                  'button',
-                  {type: 'button',  style: S.btn, onClick: () => { set选中({}); set批删问(false) } },
-                  '取消勾选',
-                )
-              : null,
-          ),
-          // ⭐ 2026-09-24：折叠着也能一眼看出「记了时间的」有多少 ——
-          //   反馈那个「中间一坨」的根源就是 850 条里只有 188 条有日期，
-          //   这个数字摆在标题下面，心里有底
-          React.createElement(
-            'div',
-            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
-            '记了时间的 ' + 有时间数 + ' 条 · 没记时间的 ' + 没时间数 + ' 条' +
-              (看哪边 === '全部' ? '' : '（现在只看' + (看哪边 === '有时间' ? '记了时间的' : '没记时间的') + '）'),
-          ),
-          看记忆
-            ? React.createElement(
-                'div',
-                null,
-                // ---- 检索框：几百条的时候，靠翻是翻不到的 ----
-                React.createElement(
-                  'div',
-                  { style: S.nameBox },
-                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '找'),
-                  React.createElement('input', {'aria-label': '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
-                    style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
-                    placeholder: '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
-                    value: 搜词,
-                    onChange: (e) => set搜词(e.target.value),
-                  }),
-                  搜词
-                    ? React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set搜词('') }, '清掉')
-                    : null,
-                  // ⭐ 2026-09-24（她要的）：**记了时间的 / 没记时间的分开看**
-                  // ⭐ 2026-09-22 又加两档：**长期事实 / 会淡的**
-                  //   点一下就轮到下一种：
-                  //   全部 → 只记了时间的 → 只有没记时间的 → 不会淡的 → 会淡的 → 全部…
-                  React.createElement(
-                    'button',
-                    {type: 'button',
-                      style: S.btn,
-                      title:
-                        '点一下换个看法：全部 → 只记了时间的 → 只有没记时间的 → ' +
-                        '不会淡的 → 会淡的 → 全部。' +
-                        '「全部」那个视图里，不会淡的收在一个折叠的分组里（外面只剩会淡的）',
-                      onClick: () =>
-                        set看哪边(
-                          看哪边 === '全部'
-                            ? '有时间'
-                            : 看哪边 === '有时间'
-                              ? '没时间'
-                              : 看哪边 === '没时间'
-                                ? '长期事实'
-                                : 看哪边 === '长期事实'
-                                  ? '会淡的'
-                                  : '全部',
-                        ),
-                    },
-                    '看：' +
-                      (看哪边 === '全部'
-                        ? '全部'
-                        : 看哪边 === '有时间'
-                          ? '只记了时间的（' + 有时间数 + '）'
-                          : 看哪边 === '没时间'
-                            ? '只有没记时间的（' + 没时间数 + '）'
-                            : 看哪边 === '长期事实'
-                              ? '不会淡的（' + 事实总数 + '）'
-                              : '会淡的（' + 会淡总数 + '）'),
-                  ),
-                  // ⭐ 顺序开关：按日期排，默认「日期新的在前」
-                  //   （851 条里只画前 200 条，不排的话看到的永远是最老的）
-                  React.createElement(
-                    'button',
-                    {type: 'button',
-                      style: S.btn,
-                      title: '按最左边的日期排。没写日期的排在最后 —— 它们不知道是什么时候的事',
-                      onClick: () => set顺序(顺序 === '新' ? '旧' : '新'),
-                    },
-                    '日期：' + (顺序 === '新' ? '新的在前' : '老的在前'),
-                  ),
-                  // ⭐ 补日期：从正文里认出日期，只补没日期的（补之前自动备份）
-                  没日期的 > 0
+          )
+          else if (mode === 'tools') content = h('div', { className: 'memory-task-grid' }, ...tasks.map(([view, title, hint]) => h('button', { key: view, type: 'button', className: 'memory-task', onClick: () => go(view) }, h('strong', null, title), h('span', null, hint))))
+          else if (mode === 'organize') content = h('div', { className: 'memory-stack' },
+            h('section', { className: 'memory-operation' }, h('h3', null, '检查与修复'), h('p', { className: 'fish-muted' }, '操作前保留原有确认与备份流程。'), h('div', { className: 'memory-actions' }, 没日期的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -2669,9 +2713,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '补日期（' + 没日期的 + '）',
                       )
                     : null,
-                  // ⭐⭐ 2026-09-22：补标「永远不淡」——
-                  //   提炼原来只改重要度、不碰分类，所以老记忆该不淡的没标上
-                  没判过的 > 0
+没判过的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -2684,9 +2726,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '补标不淡（' + 没判过的 + '）',
                       )
                     : null,
-                  // ⭐ 2026-09-22（反馈「判定太松了就得改」）：判据改严之后，
-                  //   **已经判过的那批得用新判据重来一遍** —— 否则老结果一直留着 ✗
-                  判过的 > 0
+判过的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -2699,12 +2739,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '重判一遍（' + 判过的 + '）',
                       )
                     : null,
-                  // ⭐⭐ 2026-09-23（第三步）：**老数据清洗补键**
-                  //   提炼只管以后；老条目本来就没键 → 这里单独过一遍
-                  //   注意：先「试几条」再真洗 —— 一条命令改几百条，得让她先看一眼
-                  //   ⚠注意：按钮上**不许写「清洗补键」** —— 那是我自己造的词，她看不懂 ✗
-                  //     改成说**它有什么用**：「讲同一件事的，只留最新那条」
-                  没键的 > 0
+没键的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -2720,8 +2755,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '同一件事只留最新（' + 没键的 + '）',
                       )
                     : null,
-                  // 补过了就想退回来（几百条自动改的，得能一键回到洗之前）✓
-                  可撤的 > 0
+可撤的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -2733,12 +2767,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         },
                         '撤掉这次标的（' + 可撤的 + '）',
                       )
-                    : null,
-                ),
-                // ⭐⭐ 2026-09-23：她说了「这个让人看不懂，写通俗一点的」——
-                //   光按钮上有个名字不够，旁边得有一句人话解释它到底干嘛
-                //   （只在按钮露着的时候出现，平时不占地方）
-                没键的 > 0
+                    : null, React.createElement(
+              'button',
+              {type: 'button',
+                style: S.btn,
+                title:
+                  '找出库里「几乎一样」的记忆。自动去重只管召回和导入，管不到已经存着的。' +
+                  '真重复能一键合；「汇总+明细」会列出来让你自己挑；合之前自动备份',
+                onClick: () => 去查重(s),
+              },
+              '查重',
+            )), 没键的 > 0
                   ? React.createElement(
                       'div',
                       { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '4px 0 0' }) },
@@ -2746,10 +2785,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '标好之后，讲同一件事的只留最新那条，旧的收起来（还能恢复）。',
                     )
                   : null,
-                // ⭐⭐ 2026-09-23：跑过之后跟她交代一句「剩下的去哪儿了」✓
-                //   模型会把一批判成「这条不用标」（一次性的、拿不准的）——
-                //   那种**不标但算问过了**。不说明的话她会以为漏了/白跑了 ✗
-                判留空的 > 0
+判留空的 > 0
                   ? React.createElement(
                       'div',
                       { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '4px 0 0' }) },
@@ -2757,7 +2793,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '那种一个字都没改，也不会再问一遍）',
                     )
                   : null,
-                confirm && confirm.kind === 'stable'
+confirm && confirm.kind === 'stable'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -2775,8 +2811,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐ 重判：判据改过之后，把老结果清掉重来
-                confirm && confirm.kind === 'restable'
+confirm && confirm.kind === 'restable'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -2795,8 +2830,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐⭐ 2026-09-23：清洗补键 —— 先「试几条」✓
-                confirm && confirm.kind === 'washkeys'
+confirm && confirm.kind === 'washkeys'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -2817,8 +2851,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // 撤退：把这次自动标的全撤掉
-                confirm && confirm.kind === 'unwashkeys'
+confirm && confirm.kind === 'unwashkeys'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -2837,8 +2870,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐⭐ 2026-09-23：**进度条**（跟补标那条分开，不互相盖）✓
-                洗键进度.在跑 && 洗键进度.总 > 0
+洗键进度.在跑 && 洗键进度.总 > 0
                   ? (() => {
                       const 百 = Math.round((洗键进度.已 / 洗键进度.总) * 100)
                       return React.createElement(
@@ -2858,9 +2890,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       )
                     })()
                   : null,
-                // ⭐⭐ 2026-09-22（她要的）：**补标/重判的进度条，就贴在按钮这一行下面**
-                //   点了才出现，没点就没有 —— 不跟提炼/扩词那条挤在一起
-                补标进度.在跑 && 补标进度.总 > 0
+补标进度.在跑 && 补标进度.总 > 0
                   ? (() => {
                       const 百 = Math.round((补标进度.已 / 补标进度.总) * 100)
                       return React.createElement(
@@ -2885,42 +2915,18 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         ),
                       )
                     })()
-                  : null,
-                // ⭐⭐ 2026-09-22（她要的）：**批量删的二次确认条**
-                //   第一次点是「批量删（N）」，出这条；第二次点「确定删」才真删
-                批删问 && 已选几条 > 0
+                  : null, confirm && confirm.kind === 'backfill'
                   ? React.createElement(
                       'div',
                       { style: S.confirm },
-                      React.createElement(
-                        'div',
-                        { style: { flex: 1 } },
-                        '要删掉这 ' + 已选几条 + ' 条吗？',
-                        React.createElement(
-                          'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
-                          '不是销毁 —— 收进「已删」里，点开还能找回来。动之前也会自动备份。',
-                        ),
-                      ),
-                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 批删(s) }, busy ? '删着…' : '确定删（' + 已选几条 + ' 条）'),
-                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批删问(false) }, '算了'),
+                      React.createElement('span', { style: { flex: 1 } }, '从正文里补日期？只补那 ' + 没日期的 + ' 条没日期的，已有的不动（补之前会自动备份）。'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: 补日期 }, '补'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
-                  : null,
-                // ⚠注意：2026-09-22（我发现的）：`notes` 原来**只在第一级**渲染 ——
-                //   而会话详情是 `if (open) return …` **提前返回**的，
-                //   所以在详情页里 setNotes 的东西**一个字都看不到** ✗
-                //   「补日期」「补标不淡」「查重」的结果提示全落在这儿 → 补一份
-                notes && notes.length
-                  ? React.createElement(
-                      'div',
-                      { style: Object.assign({}, S.warn, { margin: '8px 0', fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
-                      '　· ' + notes.join('\n　· '),
-                    )
-                  : null,
-                // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案** 的面板
-                //   四步分开 —— 因为第三步**调模型、花钱**，得让人看清再点
-                生成开
-                  ? React.createElement(
+                  : null),
+            h('section', { className: 'memory-operation' }, 扩词区()))
+          else if (mode === 'archive') content = h('div', { className: 'memory-stack' }, h('div', { className: 'memory-callout' }, h('div', null, h('strong', null, '从已有会话生成档案'), h('p', null, '先预览会话和用量，再分批生成，可继续导入当前记忆库。')), h('button', { type: 'button', className: 'fish-button', onClick: () => 开生成() }, '选择会话')), ...导入区().slice(1))
+          else if (mode === 'generate') content = React.createElement(
                       'div',
                       { style: Object.assign({}, S.editBox, { marginTop: 8 }) },
                       [
@@ -3256,7 +3262,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                   'span',
                                   { style: S.dim },
                                   生成条目.length
-                                    ? '存成一份 markdown；然后再用下面的「从旧档案导入」把它变成记忆条目'
+                                    ? '保存为 Markdown 后，返回“档案导入与生成”扫描并选择条目。'
                                     : '还没有条目可存 —— 这一轮模型一条都没收（也可能输出被截断，诊断日志里有回文长度）',
                                 ),
                               ),
@@ -3286,9 +3292,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           : null,
                       ],
                     )
-                  : null,
-                查重 && 查重开
-                  ? React.createElement(
+          else if (mode === 'duplicates') content = React.createElement(
                       'div',                      { style: Object.assign({}, S.editBox, { marginTop: 8 }) },
                       [
                         React.createElement(
@@ -3420,97 +3424,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             : [],
                         ),
                     )
-                  : null,
-                confirm && confirm.kind === 'backfill'
-                  ? React.createElement(
-                      'div',
-                      { style: S.confirm },
-                      React.createElement('span', { style: { flex: 1 } }, '从正文里补日期？只补那 ' + 没日期的 + ' 条没日期的，已有的不动（补之前会自动备份）。'),
-                      React.createElement('button', {type: 'button',  style: S.btn, onClick: 补日期 }, '补'),
-                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
-                    )
-                  : null,
-                搜词 || 看哪边 !== '全部'
-                  ? React.createElement(
-                      'div',
-                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '0 0 6px' }) },
-                      '这里 ' + 过滤后.length + ' 条 / 共 ' + s.memories.length + ' 条' +
-                        (看哪边 === '有时间' ? '（只看记了时间的）' : 看哪边 === '没时间' ? '（只看没记时间的）' : '') +
-                        (过滤后.length === 0 ? ' —— 换几个字试试，或者点上面的「看」换个范围' : ''),
-                    )
-                  : null,
-                React.createElement(
-                  'div',
-                  { style: { marginTop: 10 } },
-                  过滤后.length === 0
-                    ? React.createElement(
-                        'div',
-                        { style: S.dim },
-                        搜词 ? '（没有含「' + 搜词 + '」的）' : '（这个范围里没有记忆）',
-                      )
-                    : (() => {
-                        // ⭐⭐ 2026-09-22（她要的）：**「全部」视图里，不会淡的收进一个折叠的分组**
-                        //   原话：「那一行，我们是单独做一个收理的文件夹一样的，
-                        //              不然的话那些就不需要露在外面」
-                        //   ⭐ 又说：「**外面都是会淡的，里面才是不会淡的**，就不用管里面了」
-                        //   → 外面只列**会淡的**；不会淡的（长期事实 + 没时间的）
-                        //     塞进「▸ 不会淡的（N 条）」里，点开才看
-                        const 上 = 画这个.slice(0, 画全部 ? 画这个.length : 一次最多画)
-                        // 注意：搜的时候**不许折叠** —— 不然搜到了却看不见 ✗
-                        //   （自检逮到的：搜「衣服」时匹配的那条是长期事实，被收进分组里了）
-                        if (看哪边 !== '全部' || 搜词) return 上.map(一条记忆)
-                        const 会淡的 = 上.filter((m) => !不会淡(m))
-                        const 不淡的 = 上.filter(不会淡)
-                        return [
-                          ...会淡的.map(一条记忆),
-                          不淡的.length
-                            ? React.createElement(
-                                'div',
-                                { key: '事实组' },
-                                React.createElement(
-                                  'div',
-                                  {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
-                                    style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 14 }),
-                                    onClick: () => set看事实(!看事实),
-                                  },
-                                  (看事实 ? '▾ ' : '▸ ') + '不会淡的（' + 不淡的.length + ' 条）',
-                                ),
-                                React.createElement(
-                                  'div',
-                                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
-                                  '里面这些是长期事实（要记一辈子的事，不会淡）。' +
-                                    '外面那些都会淡 —— 包括没记时间的（它们从「记下来的那天」开始淡）。',
-                                ),
-                                看事实 ? 不淡的.map(一条记忆) : null,
-                              )
-                            : null,
-                        ]
-                      })(),
-                ),
-                过滤后.length > 一次最多画
-                  ? React.createElement(
-                      'div',
-                      { style: { margin: '6px 0 0', fontSize: 'var(--fish-small)' } },
-                      画全部
-                        ? React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(false) }, '↑ 收起来（只画前 ' + 一次最多画 + ' 条）')
-                        : React.createElement(
-                            'span',
-                            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(true) },
-                            '还有 ' + (过滤后.length - 一次最多画) + ' 条' +
-                              (看哪边 === '没时间' ? '（更早记的）' : 顺序 === '新' ? '（更早的）' : '（更新的）') +
-                              '没画出来 —— 点这里全部显示（多了会卡）',
-                          ),
-                    )
-                  : null,
-              )
-            : null,
-          React.createElement(
-            'div',
-            null,
-            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setShowDeleted(!showDeleted) }, (showDeleted ? '▾ ' : '▸ ') + '已删掉的（' + (已删.length + 被取代的.length) + '）'),
-            React.createElement('div', { style: S.dim }, '收起来的记忆不会被注入，但还留着，随时能找回来。'),
-            showDeleted
-              ? React.createElement(
+          else if (mode === 'trash') content = React.createElement(
                   'div',
                   { style: { marginTop: 6 } },
                   // ⭐⭐ 2026-09-22（反馈「你放在最下面的呀，你改到最上面去，
@@ -3737,22 +3651,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   //   原来「批量清掉」和「清空」的确认条渲染在这儿（列表最下面），
                   //   条数一多就看不见 失败：→ 挪走了，这里不再重复
                 )
-              : null,
-          ),
-          // 注意：2026-09-22：**「备份」原来插在这里**（在「扩词」「导入」前面），
-          //   可它后面跟的却是那两个区块 —— 看着像它俩的标题，其实只是句说明 ✗
-          //   （「设置页面会不会有点乱」）
-          //   → 挪到**末尾**，跟「这一页到底会怎么变」那些说明放一起
-          React.createElement('div', null, 扩词区()),
-          React.createElement(
-            'div',
-            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setImpOpen(!impOpen) },
-            (impOpen ? '▾ ' : '▸ ') + '从旧档案导入',
-          ),
-          React.createElement('div', { style: S.dim }, '把一个文件夹里的档案拆成一条条记忆，你挑完再导。文件夹在下面选。'),
-          impOpen ? React.createElement('div', null, 导入区()) : null,
-          tr
-            ? React.createElement(
+          else if (mode === 'index') content = h(EmbeddingSettings, { session: s.id, storeId: s.storeId, notify, indexOnly: true })
+          else if (mode === 'recall') content = tr ? React.createElement(
                 'div',
                 null,
                 React.createElement('div', { style: S.h }, '最近一次召回'),
@@ -3806,20 +3706,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 6 }) },
                   '「进去了」= 这一轮塞进提示词了；「像是用上了」= 她回复里的实词跟这条重合得多（这是猜的）；「已失效」= 这条后来被删了或改过。',
                 ),
-              )
-            : null,
-          // ⭐ 2026-09-22：说明都放末尾（原来「备份」插在中间，看着像别的区块的标题）
-          React.createElement('div', { style: S.h }, '备份'),
-          React.createElement(
-            'div',
-            { style: S.dim },
-            '记忆一变就会自动备份：上一版存在同目录的 .bak，另外每天存一份，留 14 天。' +
-              '「补日期」「补标不淡」「改」「删」之前也都会先备一份。',
-          ),
-          ),
-        )
-      }
-
+              ) : h('div', { className: 'memory-empty' }, '这个记忆库还没有召回记录。收到新的消息后，可在这里查看检索结果。')
+          return h(MemoryDialog, { title: titles[mode], subtitle: libraryTitle(s), active, onClose: () => setOpen(null), footer: h('div', { className: 'memory-dialog-footer' }, h('span', null, s.count + ' 条记忆 · ' + (s.qq ? 'QQ 来源库' : '会话记忆库')), mode !== 'memories' ? h('button', { type: 'button', className: 'fish-button', onClick: () => go('memories') }, '返回记忆列表') : null) },
+            notes?.length ? h('div', { className: 'memory-feedback', role: 'status' }, notes.join('\n')) : null,
+            content)
+        })()
+      })()
       // ---- 第一级：会话列表 + 参数 ----
       const spec = (d.spec || []).slice()
       const byKey = {}
@@ -3870,8 +3762,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         head.push(React.createElement('span', { key: 'rng', style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', opacity: 1 }) }, '（' + lo + ' ~ ' + hi + '）'))
         return React.createElement(
           'div',
-          { key: s.key, style: { margin: '7px 0' } },
-          React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' } }, head),
+          { key: s.key, className: 'memory-policy-field' },
+          React.createElement('div', { className: 'memory-policy-input' }, head),
           s.tip
             ? React.createElement('div', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2, lineHeight: 1.5 }) }, s.tip)
             : null,
@@ -3894,294 +3786,722 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           })
       }
 
-      const blocks = []
-      for (const [gid, gname, gtip] of GROUPS) {
-        const rows = spec.filter((s) => s.group === gid)
-        if (!rows.length) continue
-        blocks.push(React.createElement('div', { key: gid, style: S.h }, gname))
-        blocks.push(React.createElement('div', { key: gid + '-tip', style: S.dim }, gtip))
-        if (gid === 'weight') {
-          blocks.push(
-            React.createElement(
-              'div',
-              { key: 'wsum', style: { margin: '8px 0 2px' } },
-              React.createElement('span', { style: { display: 'inline-block', width: 110 } }, '合计'),
-              React.createElement('span', { style: wSum === 100 ? S.ok : S.warn, fontWeight: 600 }, wSum + '%'),
-              wSum === 100
-                ? React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 'var(--fish-small)' }) }, '正好')
-                : React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 'var(--fish-small)' }) }, '不是 100% —— 保存时会自动调平'),
-            ),
-          )
-        }
-        for (const s of rows) blocks.push(oneRow(s))
-      }
+      const blocks = GROUPS.map(([gid, name, hint]) => {
+        const rows = spec.filter(item => item.group === gid)
+        if (!rows.length) return null
+        return h('section', { className: 'memory-policy-group', key: gid }, h('div', { className: 'memory-policy-head' }, h('h4', null, name), h('p', null, hint), gid === 'weight' ? h('span', { className: 'memory-badge' }, '合计 ' + wSum + '%') : null), h('div', { className: 'memory-policy-fields' }, ...rows.map(oneRow)))
+      })
 
-      return React.createElement(
+      return h(
         'div',
-        { className: 'fish-module fish-memory', style: S.wrap },
-        onPageChange ? null : React.createElement('div', { className: 'fish-subnav' }, ...['记忆库', '语义召回', '召回与遗忘', ...(historyImport ? ['历史导入'] : [])].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''), 'aria-pressed': memoryPage === name, onClick: () => setMemoryPage(name) }, name))),
-        historyImport ? React.createElement('div', { hidden: memoryPage !== '历史导入' }, historyImport) : null,
-        React.createElement('div', { hidden: memoryPage !== '记忆库' },
-        React.createElement(
-          'div',
-          { className: 'fish-toolbar qq-memory-toolbar' },
-          React.createElement('div', { className: 'qq-memory-title' },
-            React.createElement('span', { className: 'fish-kicker' }, 'MEMORY'),
-            React.createElement('strong', null, '长期记忆'),
-            React.createElement('span', { className: 'qq-memory-version' }, 'v' + (d.version || '?')),
-          ),
-          React.createElement('span', { className: 'qq-memory-scope', title: d.工作区 && d.工作区.path || '' },
-            d.工作区 && d.工作区.path ? '仅显示：' + d.工作区.path : '未配置工作区'),
-        ),
-        React.createElement('div', { className: 'qq-memory-section-title', style: Object.assign({}, S.h, { marginTop: 0 }) }, '记忆范围'),
-        React.createElement(
-          'div',
-          { style: S.dim },
-          '装好就是开着的 —— 每个会话都能记、也能读。想给某个会话单独关掉，点它右边那个「关」。每个会话一份记忆，淡了只是不容易被想起来，不会删。',
-        ),
-        React.createElement(
-          'div',
-          { className: 'qq-memory-card qq-memory-name', style: S.nameBox },
-          React.createElement('div', { style: { flex: 'none', width: 132 } }, '用户的称呼'),
-          React.createElement('input', {'aria-label': 'ta / 她 / 他',
-            style: Object.assign({}, S.inp, { width: 90 }),
-            placeholder: 'ta / 她 / 他',
-            value: pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta',
-            onChange: (e) => setPronounDraft(e.target.value),
-          }),
-          React.createElement(
-            'button',
-            {type: 'button',
-              style: S.btn,
-              onClick: () => {
-                const p = pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta'
-                post('/names', { userPronoun: p }).then((r) => {
-                  setPronounDraft(null)
-                  // 影响到了旧记忆就先问一句，不偷偷改
-                  if (r && r.称呼影响几条 > 0 && !r.称呼已改) setPronounAsk({ n: r.称呼影响几条, to: p, 例子: r.称呼例子 || [] })
-                  else setPronounAsk(null)
-                  load()
-                })
-              },
-            },
-            '存',
-          ),
-          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1 }) }, '记忆里提到你时用哪个字。默认「ta」；设成「她」或「他」就按你设的记。'),
-        ),
-        pronounAsk
-          ? React.createElement(
-              'div',
-              { style: S.askBox },
-              React.createElement(
-                'div',
-                { style: { flex: 1 } },
-                React.createElement('div', null, '已有 ' + pronounAsk.n + ' 条旧记忆里还写着旧的字。要一起改成「' + pronounAsk.to + '」吗？'),
-                (pronounAsk.例子 || []).slice(0, 2).map((e, i) =>
-                  React.createElement('div', { key: i, style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) }, '　「' + e.旧 + '」→「' + e.新 + '」'),
+        { className: 'fish-module fish-memory memory-page' },
+        onPageChange
+          ? null
+          : h(
+              'nav',
+              { className: 'fish-subnav', 'aria-label': '长期记忆页面' },
+              ...['记忆库', '召回设置', '数据管理'].map((name) =>
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''),
+                    key: name,
+                    'aria-current': memoryPage === name ? 'page' : undefined,
+                    onClick: () => setMemoryPage(name),
+                  },
+                  name,
                 ),
               ),
-              React.createElement(
-                'button',
-                {type: 'button',
-                  style: S.btn,
-                  onClick: () =>
-                    post('/names', { userPronoun: pronounAsk.to, applyToExisting: true }).then(() => {
-                      setPronounAsk(null)
-                      load()
-                    }),
-                },
-                '一起改',
+            ),
+        h(
+          'div',
+          { className: 'memory-page-toolbar' },
+          h(
+            'div',
+            null,
+            h('span', { className: 'fish-kicker' }, 'MEMORY'),
+            h('h2', null, memoryPage),
+            h('p', null, d.工作区?.path || '当前工作区'),
+          ),
+          h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: load }, '刷新'),
+        ),
+        err ? h('div', { className: 'memory-feedback', role: 'alert' }, err) : null,
+        memoryPage === '记忆库'
+          ? h(
+              React.Fragment,
+              null,
+              h(
+                'section',
+                { className: 'fish-card memory-summary' },
+                h(
+                  'div',
+                  null,
+                  h('h3', null, '长期记忆'),
+                  h('p', null, '按 QQ 来源管理记忆，私聊独立，普通群共享，指定群单独隔离。'),
+                ),
+                h(
+                  'div',
+                  { className: 'memory-switch' },
+                  h('button', {
+                    type: 'button',
+                    role: 'switch',
+                    'aria-label': '启用长期记忆',
+                    'aria-checked': d.全局开关 !== false,
+                    disabled: busy,
+                    onClick: async () => {
+                      setBusy(true)
+                      try {
+                        const r = await post('/global', { on: d.全局开关 === false })
+                        if (!r.ok) throw Error(r.error || r.message || '保存失败')
+                        load()
+                      } catch (e) {
+                        告知(e.message)
+                      } finally {
+                        setBusy(false)
+                      }
+                    },
+                  }),
+                  h('span', null, d.全局开关 !== false ? '已开启' : '已关闭'),
+                ),
               ),
-              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setPronounAsk(null) }, '以后再说'),
+              h(
+                'div',
+                { className: 'memory-stats' },
+                ...[
+                  [libraries.length, '记忆库'],
+                  [libraries.reduce((sum, s) => sum + s.count, 0), '记忆条目'],
+                  [(d.sessions || []).length, '关联入口'],
+                ].map(([value, label]) =>
+                  h('div', { key: label }, h('strong', null, value), h('span', null, label)),
+                ),
+              ),
+              h(
+                'section',
+                { className: 'fish-card memory-libraries' },
+                h(
+                  'div',
+                  { className: 'memory-card-head' },
+                  h(
+                    'div',
+                    null,
+                    h('h3', null, '工作区记忆库'),
+                    h('p', null, '相同存储库合并展示。选择一个库查看记忆，管理各自的来源入口。'),
+                  ),
+                  h(
+                    'button',
+                    { type: 'button', className: 'fish-button', onClick: () => setSettingsOpen(true) },
+                    '范围与称呼',
+                  ),
+                ),
+                !libraries.length
+                  ? h(
+                      'div',
+                      { className: 'memory-empty' },
+                      '当前工作区还没有记忆库。绑定会话并收到消息后，记忆库会显示在这里。',
+                    )
+                  : h(
+                      'div',
+                      { className: 'memory-library-list' },
+                      ...libraries.map((s) =>
+                        h(
+                          'article',
+                          { key: s.storeId || s.id, className: 'memory-library-row' },
+                          h(
+                            'div',
+                            { className: 'memory-library-copy' },
+                            h(
+                              'div',
+                              { className: 'memory-library-title' },
+                              h('strong', null, libraryTitle(s)),
+                              h(
+                                'span',
+                                { className: 'memory-badge' },
+                                s.qq
+                                  ? s.storeId?.endsWith('_shared')
+                                    ? '群共享'
+                                    : s.storeId?.includes('_group_')
+                                      ? '群独立'
+                                      : '私聊独立'
+                                  : d.模式 === 'workspace'
+                                    ? '工作区共享'
+                                    : '会话独立',
+                              ),
+                            ),
+                            h(
+                              'p',
+                              null,
+                              s.count +
+                                ' 条记忆 · ' +
+                                (d.sessions || []).filter((x) => (x.storeId || x.id) === (s.storeId || s.id))
+                                  .length +
+                                ' 个入口 · ' +
+                                (s.lastTrace ? '最近召回 ' + rel(s.lastTrace, now) : '暂无召回记录'),
+                            ),
+                          ),
+                          h(
+                            'div',
+                            { className: 'memory-actions' },
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: 'fish-button fish-primary',
+                                onClick: () => openLibrary(s.id),
+                              },
+                              '查看记忆',
+                            ),
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: 'fish-button',
+                                onClick: () => openLibrary(s.id, 'tools'),
+                              },
+                              '管理',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+              ),
             )
           : null,
-        // ⭐ 1.3.4：**总开关**（管整个插件）+ 下面每个会话自己的开关
-        //   放同一块，是因为它们管的是同一件事（记不记），只是范围不同。
-        React.createElement(
+        h(
           'div',
-          { className: 'qq-memory-card qq-memory-global', style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
-          React.createElement(
-            'button',
-            {type: 'button', role: 'switch', 'aria-checked': d.全局开关 !== false, 'aria-label': '启用长期记忆',
-              style: Object.assign({}, S.btn, {
-                flex: 'none',
-                color: d.全局开关 !== false ? 'var(--fish-success)' : 'inherit',
-                borderColor: d.全局开关 !== false ? 'var(--fish-success)' : 'var(--fish-border)',
-              }),
-              disabled: busy,
-              onClick: () => {
-                setBusy(true)
-                post('/global', { on: d.全局开关 === false })
-                  .then(() => {
-                    setBusy(false)
-                    load()
-                  })
-                  .catch(() => setBusy(false))
-              },
-            },
-            (d.全局开关 !== false ? '● ' : '○ ') + 'remember 工具',
-          ),
-          React.createElement(
-            'div',
-            { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0 }) },
-            d.全局开关 !== false
-              ? '所有会话都能记、也能读。单独不想要哪个，用下面那一行关掉。'
-              : '全关着 —— 哪个会话都不记也不读，工具列表里也不会出现它。',
-          ),
-        ),
-
-        React.createElement('div', { className: 'fish-record qq-memory-card qq-memory-isolation', style: S.条 },
-          React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
-          React.createElement('label', null, '主人 QQ ', React.createElement('input', {
-            'aria-label': '主人 QQ', value: d.qqOwner || '', style: S.inp,
-            onChange: e => setD({ ...d, qqOwner: e.target.value }),
-          })),
-          React.createElement('label', null, ' 隔离群号 ', React.createElement('input', {
-            'aria-label': '隔离群号', value: Array.isArray(d.qqIsolatedGroups) ? d.qqIsolatedGroups.join(',') : d.qqIsolatedGroups || '', style: S.inp,
-            onChange: e => setD({ ...d, qqIsolatedGroups: e.target.value }),
-          })),
-          React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: async () => {
-            setBusy(true)
-            try {
-              const result = await post('/qq-settings', { qqOwner: d.qqOwner, qqIsolatedGroups: Array.isArray(d.qqIsolatedGroups) ? d.qqIsolatedGroups.join(',') : d.qqIsolatedGroups })
-              if (!result.ok) throw new Error(result.error || result.message || '保存失败')
-              load()
-            } catch (e) { setErr(e.message) } finally { setBusy(false) }
-          } }, '保存 QQ 设置'),
-          React.createElement('p', { style: S.dim }, '群号以逗号分隔。其余已绑定群默认共用普通群库。主人仅在可信私聊轮次跨库检索；其他私聊独立。每个聊天仍须独立会话，未绑定群不会接入。切换隔离后旧库保留，可在下方按库管理。'),
-          React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: async () => {
-            setBusy(true)
-            try {
-              const preview = await post('/qq-migrate', {})
-              if (!preview.ok) throw new Error(preview.error || '预览失败')
-              setD(old => ({ ...old, qqMigration: preview }))
-            } catch (e) { setErr(e.message) } finally { setBusy(false) }
-          } }, '预览旧数据迁移'),
-          d.qqMigration ? React.createElement('div', null,
-            React.createElement('pre', { style: { maxHeight: 240, overflow: 'auto', whiteSpace: 'pre-wrap' } }, JSON.stringify(d.qqMigration, null, 2)),
-            React.createElement('button', {type: 'button',  style: S.btn, disabled: busy || !d.qqMigration.preview, onClick: async () => {
-              setBusy(true)
-              try { const result = await post('/qq-migrate', { execute: true }); setD(old => ({ ...old, qqMigration: result })) }
-              catch (e) { setErr(e.message) } finally { setBusy(false) }
-            } }, '备份并迁移可信条目（保留原件）')) : null,
-        ),
-        // ⭐ 1.4.5：记忆按什么归类 —— 按会话 / 按工作区
-        React.createElement(
-          'div',
-          { className: 'qq-memory-card qq-memory-mode', style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
-          React.createElement(
-            'button',
-            {type: 'button',
-              style: Object.assign({}, S.btn, {
-                flex: 'none',
-                color: d.模式 === 'workspace' ? 'var(--fish-success)' : 'inherit',
-                borderColor: d.模式 === 'workspace' ? 'var(--fish-success)' : 'var(--fish-border)',
-              }),
-              disabled: busy,
-              onClick: () => {
-                const 要切 = d.模式 === 'workspace' ? 'session' : 'workspace'
-                if (要切 !== 'workspace') {
-                  // 切回按会话：不涉及合并，直接切
-                  setBusy(true)
-                  post('/mode', { 模式: 要切 }).then(() => { setBusy(false); load() }).catch(() => setBusy(false))
-                  return
-                }
-                // 切成按工作区：先**试算**（每间会话现有几条、并完剩几条），看清楚再决定
-                setBusy(true)
-                post('/merge-workspace', { 试算: true })
-                  .then((j) => {
-                    setBusy(false)
-                    const 报告 = (j && j.报告) || []
-                    if (!j || !j.ok || !报告.length) {
-                      // 没有可并的（都还是空的）→ 直接切
-                      setBusy(true)
-                      post('/mode', { 模式: 要切 }).then(() => { setBusy(false); load() }).catch(() => setBusy(false))
-                      return
-                    }
-                    set并入(报告)
-                  })
-                  .catch(() => setBusy(false))
-              },
-            },
-            (d.模式 === 'workspace' ? '按工作区' : '按会话'),
-          ),
-          React.createElement(
-            'div',
-            { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0 }) },
-            d.模式 === 'workspace'
-              ? '整个工作区共用一个记忆库 —— 新开的会话自动接上，归档旧会话记忆也不会跟着走。'
-              : '每个会话各记各的。会话开久了变卡、要归档换新会话时，切成「按工作区」就接得上了。',
-          ),
-        ),
-        合并预览(),
-        React.createElement('div', { className: 'qq-memory-card qq-memory-libraries' },
-          React.createElement('div', { className: 'qq-bind-group-head' },
-            React.createElement('h3', null, '会话记忆库'),
-            React.createElement('span', { className: 'fish-muted' }, '只显示当前工作区 · ' + (d.sessions || []).length + ' 个'),
-          ),
-        (d.sessions || []).map((s) =>
-          React.createElement(
-            'div',
-            { key: s.id, className: 'fish-library-row qq-memory-row', style: Object.assign({}, S.row, S.条) },
-            React.createElement(
-              'button',
-              {type: 'button', role: 'switch', 'aria-checked': !!s.enabled, 'aria-label': '启用记忆：' + (s.title || s.id),
-                style: Object.assign({}, S.btn, {
-                  flex: 'none',
-                  minWidth: 72,
-                  color: s.enabled ? 'var(--fish-success)' : 'inherit',
-                  borderColor: s.enabled ? 'var(--fish-success)' : 'var(--fish-border)',
-                }),
-                disabled: busy,
-                onClick: () => {
-                  setBusy(true)
-                  post('/toggle', { session: s.id, on: !s.enabled })
-                    .then(() => {
-                      setBusy(false)
-                      load()
-                    })
-                    .catch(() => setBusy(false))
-                },
-              },
-              s.enabled ? '● 开' : '○ 关',
-            ),
-            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 1, minWidth: 0, overflowWrap: 'anywhere' }), onClick: () => setOpen(s.id) }, s.title || s.id.slice(0, 24)),
-            s.live ? null : React.createElement('div', { style: Object.assign({}, S.dim, { width: 48, fontSize: 'var(--fish-small)' }) }, '不在线'),
-            React.createElement('div', { style: Object.assign({}, S.dim, { width: 60 }) }, s.count + ' 条'),
-            React.createElement('div', { style: Object.assign({}, S.dim, { width: 90 }) }, s.lastTrace ? rel(s.lastTrace, now) : '—'),
-          ),
-        ),
-        ),
-        React.createElement('p', { className: 'qq-memory-note', style: S.dim }, '点击记忆库名称，查看、编辑记忆和档案。')),
-        React.createElement('div', { hidden: memoryPage !== '语义召回' }, React.createElement(EmbeddingSettings, { notify })),
-        memoryPage === '召回与遗忘'
-          ? React.createElement(
+          { className: 'memory-stack', hidden: memoryPage !== '召回设置' },
+          h(EmbeddingSettings, { notify }),
+          h(
+            'section',
+            { className: 'fish-card' },
+            h(
               'div',
-              null,
-              React.createElement('div', { style: S.dim }, '这些是所有会话共用的。每项都有范围，超出会被收到范围内。'),
-              blocks,
+              { className: 'memory-card-head' },
+              h(
+                'div',
+                null,
+                h('h3', null, '召回与遗忘'),
+                h('p', null, '设置关键词召回、记忆预算与淡忘速度，和语义召回共同生效。'),
+              ),
+            ),
+            ...blocks,
+            h(
+              'div',
+              { className: 'memory-actions memory-save-row' },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'fish-button fish-primary',
+                  disabled: busy,
+                  onClick: () => save(Object.assign({}, params, { pin })),
+                },
+                busy ? '保存中…' : '保存召回设置',
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'fish-button',
+                  disabled: busy,
+                  onClick: () => save({ reset: true }),
+                },
+                '恢复默认',
+              ),
+            ),
+          ),
+        ),
+        memoryPage === '数据管理'
+          ? h(
+              'div',
+              { className: 'memory-stack' },
+              h(
+                'section',
+                { className: 'fish-card' },
+                h(
+                  'div',
+                  { className: 'memory-card-head' },
+                  h(
+                    'div',
+                    null,
+                    h('h3', null, '记忆库操作'),
+                    h('p', null, '先选择目标库，再打开对应工具。每项操作在独立弹窗中完成。'),
+                  ),
+                ),
+                h(
+                  'label',
+                  { className: 'memory-target' },
+                  '目标记忆库',
+                  h(
+                    'select',
+                    {
+                      'aria-label': '目标记忆库',
+                      value: managementTarget || libraries[0]?.id || '',
+                      onChange: (e) => setManagementTarget(e.target.value),
+                    },
+                    !libraries.length ? h('option', { value: '' }, '暂无记忆库') : null,
+                    ...libraries.map((s) => h('option', { key: s.id, value: s.id }, libraryTitle(s))),
+                  ),
+                ),
+                h(
+                  'div',
+                  { className: 'memory-task-grid' },
+                  ...[
+                    ['add', '新增记忆', '手动写入一条事实或约定'],
+                    ['archive', '档案导入与生成', '读取档案文件，或从已有会话生成'],
+                    ['organize', '整理与修复', '扩词、提炼、查重和事实维护'],
+                    ['trash', '回收站', '恢复或清理已收起的记忆'],
+                    ['recall', '召回诊断', '检查命中内容和预算限制'],
+                    ['index', '索引维护', '补齐或重建语义检索索引'],
+                  ].map(([view, title, hint]) =>
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'memory-task',
+                        key: view,
+                        disabled: !libraries.length,
+                        onClick: () => openLibrary(managementTarget || libraries[0].id, view),
+                      },
+                      h('strong', null, title),
+                      h('span', null, hint),
+                    ),
+                  ),
+                ),
+              ),
+              historyImport
+                ? h(
+                    'section',
+                    { className: 'fish-card memory-card-head' },
+                    h(
+                      'div',
+                      null,
+                      h('h3', null, 'QQ 聊天记录导入'),
+                      h('p', null, '从后端或聊天记录文件分段整理记忆，按 QQ 绑定选择目标，支持暂停和恢复任务。'),
+                    ),
+                    h(
+                      'button',
+                      { type: 'button', className: 'fish-button', onClick: () => setHistoryOpen(true) },
+                      '打开导入工具',
+                    ),
+                  )
+                : null,
+              h(
+                'section',
+                { className: 'fish-card memory-isolation' },
+                h(
+                  'div',
+                  { className: 'memory-card-head' },
+                  h(
+                    'div',
+                    null,
+                    h('h3', null, 'QQ 隔离与迁移'),
+                    h('p', null, '指定主人与独立群库。先预览归属，再备份迁移旧数据。'),
+                  ),
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'fish-record qq-memory-card qq-memory-isolation', style: S.条 },
+                  React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
+                  React.createElement(
+                    'label',
+                    null,
+                    '主人 QQ ',
+                    React.createElement('input', {
+                      'aria-label': '主人 QQ',
+                      value: d.qqOwner || '',
+                      style: S.inp,
+                      onChange: (e) => setD({ ...d, qqOwner: e.target.value }),
+                    }),
+                  ),
+                  React.createElement(
+                    'label',
+                    null,
+                    ' 隔离群号 ',
+                    React.createElement('input', {
+                      'aria-label': '隔离群号',
+                      value: Array.isArray(d.qqIsolatedGroups)
+                        ? d.qqIsolatedGroups.join(',')
+                        : d.qqIsolatedGroups || '',
+                      style: S.inp,
+                      onChange: (e) => setD({ ...d, qqIsolatedGroups: e.target.value }),
+                    }),
+                  ),
+                  React.createElement(
+                    'button',
+                    {
+                      type: 'button',
+                      style: S.btn,
+                      disabled: busy,
+                      onClick: async () => {
+                        setBusy(true)
+                        try {
+                          const result = await post('/qq-settings', {
+                            qqOwner: d.qqOwner,
+                            qqIsolatedGroups: Array.isArray(d.qqIsolatedGroups)
+                              ? d.qqIsolatedGroups.join(',')
+                              : d.qqIsolatedGroups,
+                          })
+                          if (!result.ok) throw new Error(result.error || result.message || '保存失败')
+                          load()
+                        } catch (e) {
+                          setErr(e.message)
+                        } finally {
+                          setBusy(false)
+                        }
+                      },
+                    },
+                    '保存 QQ 设置',
+                  ),
+                  React.createElement(
+                    'p',
+                    { style: S.dim },
+                    '群号以逗号分隔。其余已绑定群默认共用普通群库。主人仅在可信私聊轮次跨库检索；其他私聊独立。每个聊天仍须独立会话，未绑定群不会接入。切换隔离后旧库保留，可在下方按库管理。',
+                  ),
+                  React.createElement(
+                    'button',
+                    {
+                      type: 'button',
+                      style: S.btn,
+                      disabled: busy,
+                      onClick: async () => {
+                        setBusy(true)
+                        try {
+                          const preview = await post('/qq-migrate', {})
+                          if (!preview.ok) throw new Error(preview.error || '预览失败')
+                          setD((old) => ({ ...old, qqMigration: preview }))
+                          setMigrationOpen(true)
+                        } catch (e) {
+                          setErr(e.message)
+                        } finally {
+                          setBusy(false)
+                        }
+                      },
+                    },
+                    '预览旧数据迁移',
+                  ),
+                  d.qqMigration && migrationOpen
+                    ? h(
+                        MemoryDialog,
+                        {
+                          title: '旧数据迁移预览',
+                          subtitle: '核对归属后再备份迁移',
+                          active,
+                          onClose: () => setMigrationOpen(false),
+                        },
+                        h(
+                          'div',
+                          { className: 'memory-stats' },
+                          ...[
+                            [d.qqMigration.candidates?.length || 0, '可迁移条目'],
+                            [d.qqMigration.pending?.length || 0, '待人工核对'],
+                            [d.qqMigration.added || 0, '本次已迁移'],
+                          ].map(([value, label]) =>
+                            h('div', { key: label }, h('strong', null, value), h('span', null, label)),
+                          ),
+                        ),
+                        h(
+                          'p',
+                          { className: 'memory-callout' },
+                          '仅迁移来源凭据可核验的条目。原文件先备份，来源不明确的内容保留待核对。',
+                        ),
+                        h(
+                          'section',
+                          { className: 'memory-operation' },
+                          h('h3', null, '目标记忆库'),
+                          ...Object.entries(
+                            (d.qqMigration.candidates || []).reduce((groups, row) => {
+                              groups[row.storeId] = (groups[row.storeId] || 0) + 1
+                              return groups
+                            }, {}),
+                          ).map(([id, count]) =>
+                            h(
+                              'div',
+                              { className: 'memory-source-row', key: id },
+                              h('span', null, id),
+                              h('span', null, count + ' 条'),
+                            ),
+                          ),
+                          !(d.qqMigration.candidates || []).length
+                            ? h('p', { className: 'fish-muted' }, '没有待迁移的可信条目。')
+                            : null,
+                        ),
+                        (d.qqMigration.pending || []).length
+                          ? h(
+                              'section',
+                              { className: 'memory-operation' },
+                              h('h3', null, '需要人工核对'),
+                              ...d.qqMigration.pending.map((row, i) =>
+                                h(
+                                  'div',
+                                  { className: 'memory-feedback', key: i },
+                                  h('strong', null, row.text || row.file),
+                                  h('p', null, row.reason),
+                                ),
+                              ),
+                            )
+                          : null,
+                        h(
+                          'div',
+                          { className: 'memory-actions memory-save-row' },
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'fish-button fish-primary',
+                              disabled:
+                                busy || !d.qqMigration.preview || !(d.qqMigration.candidates || []).length,
+                              onClick: async () => {
+                                setBusy(true)
+                                try {
+                                  const result = await post('/qq-migrate', { execute: true })
+                                  if (!result.ok) throw Error(result.error || '迁移失败')
+                                  setD((old) => ({ ...old, qqMigration: result }))
+                                  告知('迁移完成，原文件已备份', { tone: 'success' })
+                                } catch (e) {
+                                  setErr(e.message)
+                                } finally {
+                                  setBusy(false)
+                                }
+                              },
+                            },
+                            busy ? '正在备份并迁移…' : '备份并迁移可信条目',
+                          ),
+                        ),
+                      )
+                    : null,
+                ),
+              ),
+              h(
+                'p',
+                { className: 'memory-backup-note' },
+                '自动备份会保留上一版及最近 14 天快照。导入、合并与清理沿用原有确认流程。',
+              ),
+            )
+          : null,
+        settingsOpen
+          ? h(
+              MemoryDialog,
+              {
+                title: '范围与称呼',
+                subtitle: '管理会话入口与记忆归属',
+                active,
+                onClose: () => setSettingsOpen(false),
+              },
               React.createElement(
                 'div',
-                { style: { marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' } },
+                { className: 'qq-memory-card qq-memory-name', style: S.nameBox },
+                React.createElement('div', { style: { flex: 'none', width: 132 } }, '用户的称呼'),
+                React.createElement('input', {
+                  'aria-label': 'ta / 她 / 他',
+                  style: Object.assign({}, S.inp, { width: 90 }),
+                  placeholder: 'ta / 她 / 他',
+                  value: pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta',
+                  onChange: (e) => setPronounDraft(e.target.value),
+                }),
                 React.createElement(
                   'button',
-                  {type: 'button',  style: S.btn, disabled: busy, onClick: () => save(Object.assign({}, params, { pin })) },
-                  busy ? '保存中…' : '保存参数',
+                  {
+                    type: 'button',
+                    style: S.btn,
+                    onClick: () => {
+                      const p = pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta'
+                      post('/names', { userPronoun: p }).then((r) => {
+                        setPronounDraft(null)
+                        // 影响到了旧记忆就先问一句，不偷偷改
+                        if (r && r.称呼影响几条 > 0 && !r.称呼已改)
+                          setPronounAsk({ n: r.称呼影响几条, to: p, 例子: r.称呼例子 || [] })
+                        else setPronounAsk(null)
+                        load()
+                      })
+                    },
+                  },
+                  '存',
                 ),
-                React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => save({ reset: true }) }, '恢复默认'),
-                React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => load() }, '刷新'),
+                React.createElement(
+                  'span',
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1 }) },
+                  '记忆里提到你时用哪个字。默认「ta」；设成「她」或「他」就按你设的记。',
+                ),
+              ),
+              pronounAsk
+                ? React.createElement(
+                    'div',
+                    { style: S.askBox },
+                    React.createElement(
+                      'div',
+                      { style: { flex: 1 } },
+                      React.createElement(
+                        'div',
+                        null,
+                        '已有 ' +
+                          pronounAsk.n +
+                          ' 条旧记忆里还写着旧的字。要一起改成「' +
+                          pronounAsk.to +
+                          '」吗？',
+                      ),
+                      (pronounAsk.例子 || []).slice(0, 2).map((e, i) =>
+                        React.createElement(
+                          'div',
+                          {
+                            key: i,
+                            style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }),
+                          },
+                          '　「' + e.旧 + '」→「' + e.新 + '」',
+                        ),
+                      ),
+                    ),
+                    React.createElement(
+                      'button',
+                      {
+                        type: 'button',
+                        style: S.btn,
+                        onClick: () =>
+                          post('/names', { userPronoun: pronounAsk.to, applyToExisting: true }).then(() => {
+                            setPronounAsk(null)
+                            load()
+                          }),
+                      },
+                      '一起改',
+                    ),
+                    React.createElement(
+                      'button',
+                      { type: 'button', style: S.btn, onClick: () => setPronounAsk(null) },
+                      '以后再说',
+                    ),
+                  )
+                : null,
+              React.createElement(
+                'div',
+                {
+                  className: 'qq-memory-card qq-memory-mode',
+                  style: Object.assign({}, S.row, S.条, { alignItems: 'center' }),
+                },
+                React.createElement(
+                  'button',
+                  {
+                    type: 'button',
+                    style: Object.assign({}, S.btn, {
+                      flex: 'none',
+                      color: d.模式 === 'workspace' ? 'var(--fish-success)' : 'inherit',
+                      borderColor: d.模式 === 'workspace' ? 'var(--fish-success)' : 'var(--fish-border)',
+                    }),
+                    disabled: busy,
+                    onClick: () => {
+                      const 要切 = d.模式 === 'workspace' ? 'session' : 'workspace'
+                      if (要切 !== 'workspace') {
+                        // 切回按会话：不涉及合并，直接切
+                        setBusy(true)
+                        post('/mode', { 模式: 要切 })
+                          .then(() => {
+                            setBusy(false)
+                            load()
+                          })
+                          .catch(() => setBusy(false))
+                        return
+                      }
+                      // 切成按工作区：先**试算**（每间会话现有几条、并完剩几条），看清楚再决定
+                      setBusy(true)
+                      post('/merge-workspace', { 试算: true })
+                        .then((j) => {
+                          setBusy(false)
+                          const 报告 = (j && j.报告) || []
+                          if (!j || !j.ok || !报告.length) {
+                            // 没有可并的（都还是空的）→ 直接切
+                            setBusy(true)
+                            post('/mode', { 模式: 要切 })
+                              .then(() => {
+                                setBusy(false)
+                                load()
+                              })
+                              .catch(() => setBusy(false))
+                            return
+                          }
+                          set并入(报告)
+                        })
+                        .catch(() => setBusy(false))
+                    },
+                  },
+                  d.模式 === 'workspace' ? '按工作区' : '按会话',
+                ),
+                React.createElement(
+                  'div',
+                  { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0 }) },
+                  d.模式 === 'workspace'
+                    ? '整个工作区共用一个记忆库 —— 新开的会话自动接上，归档旧会话记忆也不会跟着走。'
+                    : '每个会话各记各的。会话开久了变卡、要归档换新会话时，切成「按工作区」就接得上了。',
+                ),
+              ),
+              合并预览(),
+              h(
+                'section',
+                { className: 'memory-operation' },
+                h('h3', null, '入口记忆开关'),
+                h(
+                  'p',
+                  { className: 'fish-muted' },
+                  '单独关闭入口会停止该会话的记忆读写，不会删除库中的历史条目。',
+                ),
+                ...(d.sessions || []).map((s) =>
+                  h(
+                    'div',
+                    { className: 'memory-source-row', key: s.id },
+                    h('span', null, s.title || s.id),
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'fish-button',
+                        onClick: () => {
+                          setSettingsOpen(false)
+                          openLibrary(s.id, 'names')
+                        },
+                      },
+                      '称呼设置',
+                    ),
+                    h('input', {
+                      type: 'checkbox',
+                      role: 'switch',
+                      'aria-label': '启用记忆：' + (s.title || s.id),
+                      checked: !!s.enabled,
+                      disabled: busy,
+                      onChange: async (e) => {
+                        const on = e.target.checked
+                        setBusy(true)
+                        try {
+                          const r = await post('/toggle', { session: s.id, on })
+                          if (!r.ok) throw Error(r.error || r.message || '保存失败')
+                          load()
+                        } catch (e) {
+                          告知(e.message)
+                        } finally {
+                          setBusy(false)
+                        }
+                      },
+                    }),
+                  ),
+                ),
               ),
             )
           : null,
-        notes && notes.length
-          ? React.createElement(
-              'div',
-              { style: Object.assign({}, S.warn, { marginTop: 8, fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
-              '　· ' + notes.join('\n　· '),
+        notes?.length && !open
+          ? h('div', { className: 'memory-feedback', role: 'status' }, notes.join('\n'))
+          : null,
+        historyOpen && historyImport
+          ? h(
+              MemoryDialog,
+              {
+                title: 'QQ 聊天记录导入',
+                subtitle: '按 QQ 绑定导入与恢复任务',
+                active,
+                onClose: () => setHistoryOpen(false),
+              },
+              h('div', { className: 'memory-history-tools' }, historyImport),
             )
           : null,
-
+        详情视图,
       )
+
     }
 
     function apply(ctx) {

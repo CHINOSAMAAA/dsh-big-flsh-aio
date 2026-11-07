@@ -1,6 +1,6 @@
 // 自动生成：修改 src/panel.js 或 modules/*/lib/client.js 后运行 npm run build。
 window.__ModuleLoader__.load({ id: "dsh-big-flsh-aio", factory(require) {
-const FISH_THEME_CSS = "/* 大肥鱼 · 深海手帐。\n   浅色是奶油纸 + 深海军蓝装订；深色是夜海纸 + 金色墨水。\n   所有样式都收在 .big-fish / .big-fish-notice 内，不碰宿主。 */\n.big-fish,\n.big-fish-notice {\n  --fish-font: 'HarmonyOS Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;\n  --fish-title: var(--fish-font);\n  --fish-body: 15px;\n  --fish-small: 12.5px;\n  --fish-label: 14px;\n  --fish-radius: 24px;\n  --fish-radius-mid: 18px;\n  --fish-radius-sm: 11px;\n  --fish-gap: 24px;\n  --fish-motion: 180ms;\n\n  --fish-cream: #f3e9d5;\n  --fish-bg: var(--fish-cream);\n  --fish-paper-bg: #fcf6e9;\n  --fish-paper-2: #f5ebd8;\n  --fish-paper-glow: #ffffffd9;\n  --fish-fade-mid: rgba(252, 246, 233, .55);\n  --fish-paper-border: #e4d5bb;\n  --fish-dot: rgba(58, 73, 112, .1);\n  --fish-stitch: rgba(80, 94, 128, .28);\n  --fish-card-bg: #fffdf8;\n  --fish-surface: #fffdf8;\n  --fish-soft: #f5ecdb;\n  --fish-hover: #eddfc8;\n  --fish-line: #eadfcb;\n  --fish-border: #dfd0b6;\n  --fish-control-border: #c2b097;\n  --fish-control-shadow: inset 0 1px 0 #ffffffc7, 0 1px 2px rgba(43, 58, 96, .06);\n  --fish-focus-ring: rgba(91, 121, 196, .16);\n  --fish-select-arrow: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='m1 1 6 6 6-6' fill='none' stroke='%23806a43' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");\n  --fish-ink: #1b2a4e;\n  --fish-text: var(--fish-ink);\n  --fish-muted: #59627d;\n  --fish-accent: #5b79c4;\n  --fish-action: #22345c;\n  --fish-on-accent: #fff8ea;\n  --fish-accent-soft: #e6ecfb;\n  --fish-blue: #6f8bd4;\n  --fish-blue-soft: #e6ecfb;\n  --fish-blue-strong: #3f5798;\n  --fish-gold: #c69a4a;\n  --fish-gold-soft: #f6e7c3;\n  --fish-pink: #cf7e93;\n  --fish-pink-soft: #fbe7ec;\n  --fish-mint: #4d9b86;\n  --fish-mint-soft: #e2f2ec;\n  --fish-navy: #16223d;\n  --fish-navy-2: #22345c;\n  --fish-link: #38549a;\n  --fish-success: #2f7d63;\n  --fish-warning: #9a641c;\n  --fish-danger: #b0475c;\n  --fish-info: #3f5d9f;\n  --fish-rim: #ffffffd9;\n  --fish-edge: #d7c7aa;\n  --fish-bottom: #efe2cc;\n  --fish-panel: linear-gradient(180deg, #fffdf8, #fffaf1);\n  --fish-shell-fill: #16223d;\n  --fish-control-fill: linear-gradient(180deg, #fffdf9, #f7eedf);\n  --fish-inset: inset 0 1px 2px rgba(43, 58, 96, .07);\n  --fish-small-shadow: inset 0 1px 0 #ffffffcc, 0 1px 2px rgba(43, 58, 96, .08);\n  --fish-shadow: inset 0 1px 0 #ffffffbf, 0 2px 0 rgba(43, 58, 96, .05), 0 14px 28px rgba(43, 58, 96, .07);\n  --fish-control-border-strong: #8f7a5d;\n  --fish-pink-decor: #d794a5;\n  --fish-decor: #8ba0d6;\n  --fish-foam: #fffdf8;\n  --fish-workspace: #fcf6e9;\n  --fish-wave: #c9d7f5;\n  --fish-wave-back: #dfe8fb;\n  --fish-switch-off: #b9aa91;\n  --fish-switch-on: #3f5798;\n  --fish-tape-warm: #e9d8b3;\n  --fish-tape-blue: #c9d9f6;\n  --fish-tape-rose: #f2d7de;\n  --fish-app-glow-1: #fffaf0;\n  --fish-app-glow-2: #ead9bb;\n  --fish-tag-bg: #ffffff8c;\n  --fish-stamp-bg: radial-gradient(circle at 50% 25%, #fffdf7, #f6e8ca);\n  --fish-stamp-ink: #7d5a1e;\n  --fish-gold-ink: #7d5a1e;\n  --fish-rose-ink: #9a5267;\n  --fish-mint-ink: #397463;\n  --fish-symbol-3-bg: radial-gradient(circle at 40% 30%, #fff, #f6dbe3);\n  --fish-symbol-4-bg: radial-gradient(circle at 40% 30%, #fff, #dcefe8);\n  --fish-hero-bg: radial-gradient(120% 130% at 86% 0%, #34507f 0%, #203356 46%, #152442 100%);\n  --fish-hero-text: #f8f1e2;\n  --fish-hero-lead: #dfe5f3;\n  --fish-hero-gold: #f3d697;\n  --fish-chip-bg: rgba(255, 255, 255, .07);\n  --fish-feature-1: linear-gradient(145deg, #eef3ff 0%, #fffdf8 62%);\n  --fish-feature-2: linear-gradient(145deg, #fff6e5 0%, #fffdf8 62%);\n  --fish-feature-3: linear-gradient(145deg, #fbe9ee 0%, #fffdf8 62%);\n  --fish-feature-4: linear-gradient(145deg, #e6f3ee 0%, #fffdf8 62%);\n  --fish-update-bg: linear-gradient(145deg, #eef3ff 0%, #fffdf8 62%);\n  --fish-portrait-glow: rgba(255, 255, 255, .55);\n\n  --dsw-alias-bg-base: var(--fish-bg);\n  --dsw-alias-bg-layer-1: var(--fish-surface);\n  --dsw-alias-bg-layer-2: var(--fish-soft);\n  --dsw-alias-label-primary: var(--fish-text);\n  --dsw-alias-label-secondary: var(--fish-muted);\n  --dsw-alias-label-tertiary: var(--fish-muted);\n  --dsw-alias-border-l1: var(--fish-line);\n  --dsw-alias-border-l2: var(--fish-border);\n  --dsw-alias-state-business-primary: var(--fish-action);\n  --dsw-alias-interactive-bg-hover: var(--fish-hover);\n\n  color-scheme: light;\n  color: var(--fish-text);\n  font: var(--fish-body)/1.7 var(--fish-font);\n  font-weight: 400;\n}\n\nbody[data-ds-dark-theme] .big-fish,\nbody[data-ds-dark-theme] .big-fish-notice {\n  --fish-cream: #0c1424;\n  --fish-bg: #0c1424;\n  --fish-paper-bg: #111a2d;\n  --fish-paper-2: #17213a;\n  --fish-paper-glow: #5a78b414;\n  --fish-fade-mid: rgba(17, 26, 45, .55);\n  --fish-paper-border: #2d3850;\n  --fish-dot: rgba(220, 230, 255, .055);\n  --fish-stitch: rgba(210, 222, 255, .18);\n  --fish-card-bg: #19233a;\n  --fish-surface: #182238;\n  --fish-soft: #202a42;\n  --fish-hover: #2a3752;\n  --fish-line: #2b3550;\n  --fish-border: #37435e;\n  --fish-control-border: #4d5a75;\n  --fish-ink: #f1ead9;\n  --fish-text: var(--fish-ink);\n  --fish-muted: #b8b5aa;\n  --fish-accent: #a9bef0;\n  --fish-action: #e4c98d;\n  --fish-on-accent: #182238;\n  --fish-accent-soft: #2a3b5e;\n  --fish-blue: #9db4ee;\n  --fish-blue-soft: #25344f;\n  --fish-blue-strong: #b9cbf4;\n  --fish-gold: #e4c98d;\n  --fish-gold-soft: #3a3221;\n  --fish-pink: #f0a9bd;\n  --fish-pink-soft: #3a2833;\n  --fish-mint: #8bcdb8;\n  --fish-mint-soft: #223a35;\n  --fish-navy: #0c1526;\n  --fish-navy-2: #17233a;\n  --fish-link: #e7cf9d;\n  --fish-success: #8acbb6;\n  --fish-warning: #ecc38b;\n  --fish-danger: #ffabb9;\n  --fish-info: #a9bdf0;\n  --fish-rim: #ffffff1a;\n  --fish-edge: #070d19;\n  --fish-bottom: #0d1627;\n  --fish-panel: linear-gradient(180deg, #1c2740, #182136);\n  --fish-shell-fill: #0c1526;\n  --fish-control-fill: linear-gradient(180deg, #26324b, #1b263c);\n  --fish-inset: inset 0 1px 2px rgba(0, 0, 0, .4);\n  --fish-small-shadow: inset 0 1px 0 #ffffff0f, 0 1px 2px rgba(0, 0, 0, .3);\n  --fish-shadow: inset 0 1px 0 #ffffff0d, 0 2px 0 #00000033, 0 14px 28px #0000004d;\n  --fish-control-border-strong: #78849f;\n  --fish-control-shadow: inset 0 1px 0 #ffffff0d, 0 1px 2px rgba(0, 0, 0, .3);\n  --fish-focus-ring: rgba(185, 203, 244, .18);\n  --fish-select-arrow: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='m1 1 6 6 6-6' fill='none' stroke='%23d8c39a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");\n  --fish-pink-decor: #e7a1b4;\n  --fish-decor: #6d84bf;\n  --fish-foam: #dbe5ff;\n  --fish-workspace: #111a2d;\n  --fish-wave: #22365a;\n  --fish-wave-back: #1a2a48;\n  --fish-switch-off: #4b556c;\n  --fish-switch-on: #7f9cdd;\n  --fish-tape-warm: #574a36;\n  --fish-tape-blue: #3c4d6d;\n  --fish-tape-rose: #513b46;\n  --fish-app-glow-1: #17263f;\n  --fish-app-glow-2: #1a2c4a;\n  --fish-tag-bg: #ffffff0d;\n  --fish-stamp-bg: radial-gradient(circle at 50% 25%, #23324e, #1a2438);\n  --fish-stamp-ink: #e4c98d;\n  --fish-gold-ink: #f0d49a;\n  --fish-rose-ink: #f2b6c6;\n  --fish-mint-ink: #9ed9c8;\n  --fish-symbol-3-bg: radial-gradient(circle at 40% 30%, #2b2433, #3a2833);\n  --fish-symbol-4-bg: radial-gradient(circle at 40% 30%, #1e302d, #223a35);\n  --fish-hero-bg: radial-gradient(120% 130% at 86% 0%, #1b2c4b 0%, #101b31 50%, #0a1120 100%);\n  --fish-hero-text: #fbf4e6;\n  --fish-hero-lead: #c9d0e0;\n  --fish-hero-gold: #edcf92;\n  --fish-chip-bg: rgba(255, 255, 255, .06);\n  --fish-feature-1: linear-gradient(145deg, #1c2b49 0%, #141d30 62%);\n  --fish-feature-2: linear-gradient(145deg, #292418 0%, #141d30 62%);\n  --fish-feature-3: linear-gradient(145deg, #2b1f2a 0%, #141d30 62%);\n  --fish-feature-4: linear-gradient(145deg, #1a2c28 0%, #141d30 62%);\n  --fish-update-bg: linear-gradient(145deg, #1c2b49 0%, #141d30 62%);\n  --fish-portrait-glow: rgba(120, 150, 210, .18);\n  color-scheme: dark;\n}\n\n@font-face {\n  font-family: 'HarmonyOS Sans SC';\n  src: local('HarmonyOS Sans SC'), local('HarmonyOS Sans SC Regular'), local('HarmonyOS_Sans_SC_Regular');\n  font-weight: 400;\n  font-style: normal;\n  font-display: swap;\n}\n\n@font-face {\n  font-family: 'HarmonyOS Sans SC';\n  src: local('HarmonyOS Sans SC Medium'), local('HarmonyOS_Sans_SC_Medium');\n  font-weight: 500 600;\n  font-style: normal;\n  font-display: swap;\n}\n\n@font-face {\n  font-family: 'HarmonyOS Sans SC';\n  src: local('HarmonyOS Sans SC Bold'), local('HarmonyOS_Sans_SC_Bold');\n  font-weight: 700 900;\n  font-style: normal;\n  font-display: swap;\n}\n\n.big-fish {\n  box-sizing: border-box;\n  container-type: inline-size;\n  width: 100%;\n  height: 100%;\n  min-width: 0;\n  overflow: hidden;\n  padding: calc(12px + var(--dsh-frame-top-clearance, 0px)) 12px 12px;\n  background:\n    radial-gradient(80% 60% at 12% 0%, var(--fish-app-glow-1) 0%, transparent 64%),\n    radial-gradient(70% 50% at 100% 100%, var(--fish-app-glow-2) 0%, transparent 60%),\n    var(--fish-bg);\n}\n\n.big-fish *,\n.big-fish-notice * {\n  box-sizing: border-box;\n}\n\n.big-fish [hidden]:not([hidden=\"until-found\"]) {\n  display: none !important;\n}\n\n.big-fish .fish-logo-img {\n  display: block;\n  object-fit: contain;\n}\n\n.big-fish .fish-glyph {\n  display: block;\n  flex: none;\n}\n\n.big-fish .fish-frame {\n  position: relative;\n  display: grid;\n  grid-template-columns: 236px minmax(0, 1fr);\n  gap: 18px;\n  height: 100%;\n  max-width: 1600px;\n  margin: 0 auto;\n}\n\n/* ── 装订侧栏 ─────────────────────────────────────────────── */\n\n.big-fish .fish-binder {\n  position: relative;\n  isolation: isolate;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n  padding: 22px 14px 16px;\n  border-radius: 30px;\n  color: #f7eeda;\n  background:\n    radial-gradient(90% 60% at 100% 0%, rgba(121, 153, 219, .28), transparent 64%),\n    radial-gradient(70% 46% at 0% 100%, rgba(214, 174, 100, .16), transparent 66%),\n    linear-gradient(160deg, #1b2a4a 0%, #111c34 58%, #0c1628 100%);\n  box-shadow:\n    inset 0 1px 0 rgba(255, 255, 255, .16),\n    0 3px 0 rgba(8, 16, 32, .24),\n    0 22px 46px rgba(9, 19, 40, .28);\n}\n\n.big-fish .fish-binder::before {\n  content: '';\n  position: absolute;\n  inset: 9px;\n  z-index: 3;\n  border: 1px dashed rgba(246, 231, 197, .22);\n  border-radius: 23px;\n  pointer-events: none;\n}\n\n.big-fish .fish-rings {\n  position: absolute;\n  z-index: 4;\n  top: 92px;\n  bottom: 92px;\n  right: -10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  pointer-events: none;\n}\n\n.big-fish .fish-rings span {\n  width: 20px;\n  height: 12px;\n  border-radius: 99px;\n  background: linear-gradient(180deg, #f8e8bd, #c39743);\n  box-shadow: inset 0 1px 0 #fff9e7, 0 2px 4px rgba(8, 16, 34, .45);\n}\n\n.big-fish .fish-brand {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 2px 6px 16px;\n  border-bottom: 1px dashed rgba(246, 231, 197, .24);\n}\n\n.big-fish .fish-logo {\n  display: grid;\n  place-items: center;\n  flex: none;\n  width: 46px;\n  height: 46px;\n  border-radius: 50%;\n  background: transparent;\n  box-shadow: none;\n  transform: none;\n}\n\n.big-fish .fish-logo .fish-logo-img {\n  display: block;\n  width: 100%;\n  height: 100%;\n  object-fit: contain;\n  filter: drop-shadow(0 5px 10px rgba(5, 12, 26, .32));\n}\n\n.big-fish .fish-brand-text {\n  display: flex;\n  flex-direction: column;\n  flex: 1;\n  min-width: 0;\n}\n\n.big-fish .fish-brand-name {\n  font: 800 22px/1.2 var(--fish-title);\n  letter-spacing: .06em;\n  color: #fff9ec;\n  white-space: nowrap;\n}\n\n.big-fish .fish-brand-sub {\n  margin-top: 2px;\n  color: #c4cee5;\n  font-size: 10.5px;\n  letter-spacing: .16em;\n  white-space: nowrap;\n}\n\n.big-fish .fish-version-pin {\n  flex: none;\n  padding: 3px 7px;\n  border: 1px solid rgba(246, 231, 197, .24);\n  border-radius: 99px;\n  background: rgba(255, 255, 255, .06);\n  color: #ecdaac;\n  font-size: 10px;\n  line-height: 1.4;\n}\n\n.big-fish .fish-nav {\n  position: relative;\n  isolation: isolate;\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  gap: 5px;\n  min-height: 0;\n  overflow: auto;\n  overflow-x: hidden;\n  padding: 2px;\n  scrollbar-width: thin;\n}\n\n.big-fish .fish-nav-group {\n  min-width: 0;\n}\n\n.big-fish .fish-nav button {\n  box-shadow: none;\n  transform: none;\n}\n\n.big-fish .fish-tab {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  min-height: 44px;\n  padding: 9px 11px;\n  border: 0;\n  border-radius: 14px;\n  background: transparent;\n  color: #d5ddef;\n  font: 600 14px/1.4 var(--fish-font);\n  text-align: left;\n  letter-spacing: .01em;\n  transition: color var(--fish-motion), background-color var(--fish-motion);\n}\n\n.big-fish .fish-tab-icon {\n  display: grid;\n  place-items: center;\n  flex: none;\n  width: 28px;\n  height: 28px;\n  border-radius: 10px;\n  color: #aebfe6;\n  background: rgba(255, 255, 255, .055);\n  transition: color var(--fish-motion), background-color var(--fish-motion);\n}\n\n.big-fish .fish-tab-label {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .fish-tab-no {\n  flex: none;\n  color: rgba(233, 224, 199, .48);\n  font: 600 9.5px/1 var(--fish-font);\n  letter-spacing: .12em;\n}\n\n.big-fish .fish-tab[aria-selected=true] {\n  color: #1b2a4e;\n}\n\n.big-fish .fish-tab[aria-selected=true] .fish-tab-icon {\n  color: #3d579b;\n  background: rgba(61, 87, 155, .1);\n}\n\n.big-fish .fish-tab[aria-selected=true] .fish-tab-no {\n  color: #9a7a3d;\n}\n\n.big-fish .fish-nav-highlight {\n  position: absolute;\n  z-index: 0;\n  top: 0;\n  left: 2px;\n  right: 2px;\n  height: 44px;\n  border-radius: 14px;\n  background: linear-gradient(135deg, #fff8e9, #f3e4c4);\n  box-shadow: 0 2px 0 rgba(8, 16, 34, .25), 0 8px 18px rgba(6, 14, 30, .24);\n  pointer-events: none;\n  transition: transform .32s cubic-bezier(.22, 1, .36, 1), height .25s;\n}\n\n.big-fish .fish-tab:hover {\n  color: #fff9ec;\n  background: rgba(255, 255, 255, .06);\n}\n\n.big-fish .fish-tab[aria-selected=true]:hover {\n  color: #1b2a4e;\n  background: transparent;\n}\n\n.big-fish .fish-submenu {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: 4px 0 8px 34px;\n  padding: 4px 0 4px 12px;\n  border-left: 1px dashed rgba(246, 231, 197, .28);\n}\n\n.big-fish .fish-submenu button {\n  display: block;\n  width: 100%;\n  min-height: 34px;\n  padding: 6px 10px;\n  border: 0;\n  border-radius: 10px;\n  background: transparent;\n  color: #c2cce2;\n  font: 500 13px/1.4 var(--fish-font);\n  text-align: left;\n  white-space: nowrap;\n  box-shadow: none;\n}\n\n.big-fish .fish-submenu button[aria-current=page] {\n  color: #ffe6ac;\n  background: rgba(246, 231, 197, .12);\n  box-shadow: inset 2px 0 0 #e7c478;\n  font-weight: 700;\n}\n\n.big-fish .fish-submenu button:hover {\n  color: #fff9ec;\n  background: rgba(255, 255, 255, .07);\n}\n\n.big-fish .fish-submenu button[aria-current=page]:hover {\n  color: #ffe6ac;\n  background: rgba(246, 231, 197, .16);\n}\n\n.big-fish .fish-binder-foot {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  flex: none;\n  flex-direction: column;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px dashed rgba(246, 231, 197, .22);\n}\n\n.big-fish .fish-sidebar-scene {\n  position: relative;\n  display: grid;\n  place-items: center;\n  margin: 0;\n  padding: 2px 0;\n}\n\n.big-fish .fish-sidebar-scene::before {\n  content: '';\n  position: absolute;\n  width: 146px;\n  height: 146px;\n  border-radius: 50%;\n  background: radial-gradient(circle, var(--fish-portrait-glow), transparent 72%);\n  transform: none;\n}\n\n.big-fish .fish-sidebar-scene img {\n  position: relative;\n  display: block;\n  width: 132px;\n  height: 132px;\n  padding: 0;\n  border-radius: 0;\n  background: transparent;\n  object-fit: contain;\n  transform: rotate(-3deg);\n  filter: drop-shadow(0 9px 12px rgba(4, 10, 24, .42));\n  box-shadow: none;\n}\n\n.big-fish .fish-sidebar-note {\n  display: flex;\n  align-items: flex-start;\n  gap: 7px;\n  margin: 0;\n  padding: 8px 10px;\n  border: 1px solid rgba(255, 255, 255, .09);\n  border-radius: 12px;\n  background: rgba(255, 255, 255, .05);\n  color: #ced7e8;\n  font-size: 11.5px;\n  line-height: 1.6;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-connection-dot {\n  flex: none;\n  width: 7px;\n  height: 7px;\n  margin-top: 5px;\n  border-radius: 99px;\n  background: #e7b96d;\n  box-shadow: 0 0 0 3px rgba(231, 185, 109, .16);\n}\n\n.big-fish .fish-connection-dot[data-connected=true] {\n  background: #7fd2b5;\n  box-shadow: 0 0 0 3px rgba(127, 210, 181, .16);\n}\n\n/* ── 手帐纸面 ─────────────────────────────────────────────── */\n\n.big-fish .fish-workspace {\n  position: relative;\n  min-width: 0;\n  min-height: 0;\n  height: 100%;\n}\n\n.big-fish .fish-paper {\n  --fish-paper-radius: 30px;\n  --fish-scroll-inset: 12px;\n  --fish-scroll-radius: 18px;\n  --fish-fade-height: 28px;\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  width: 100%;\n  height: 100%;\n  min-height: 0;\n  overflow: visible;\n  border: 1px solid var(--fish-paper-border);\n  border-radius: var(--fish-paper-radius);\n  background-color: var(--fish-paper-bg);\n  background-image:\n    radial-gradient(90% 44% at 50% 0%, var(--fish-paper-glow), transparent 70%),\n    radial-gradient(var(--fish-dot) 1px, transparent 1px);\n  background-size: auto, 20px 20px;\n  box-shadow:\n    inset 0 1px 0 var(--fish-rim),\n    0 2px 0 rgba(43, 58, 96, .05),\n    0 20px 50px rgba(42, 54, 92, .1);\n}\n\n.big-fish .fish-scroll {\n  position: relative;\n  z-index: 1;\n  flex: 1 1 auto;\n  min-height: 0;\n  margin: var(--fish-scroll-inset);\n  padding: 24px 34px 34px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  overscroll-behavior: contain;\n  scrollbar-gutter: stable;\n  border-radius: var(--fish-scroll-radius);\n  clip-path: inset(0 round var(--fish-scroll-radius));\n  scrollbar-color: var(--fish-control-border) transparent;\n}\n\n.big-fish .fish-fade {\n  position: absolute;\n  z-index: 2;\n  right: calc(var(--fish-scroll-inset) + 11px);\n  left: var(--fish-scroll-inset);\n  height: var(--fish-fade-height);\n  opacity: .9;\n  pointer-events: none;\n}\n\n.big-fish .fish-fade-top {\n  top: 0;\n  background: linear-gradient(180deg, var(--fish-paper-bg) 0%, var(--fish-fade-mid) 42%, transparent 100%);\n}\n\n.big-fish .fish-fade-bottom {\n  bottom: 0;\n  background: linear-gradient(0deg, var(--fish-paper-bg) 0%, var(--fish-fade-mid) 42%, transparent 100%);\n}\n\n.big-fish .fish-paper::before {\n  content: '';\n  position: absolute;\n  z-index: 3;\n  inset: 11px;\n  border: 1px dashed var(--fish-stitch);\n  border-radius: 22px;\n  opacity: .55;\n  pointer-events: none;\n}\n\n.big-fish .fish-content {\n  position: relative;\n  z-index: 1;\n  max-width: 1180px;\n  margin: 0 auto;\n}\n\n.big-fish .fish-tape {\n  position: absolute;\n  z-index: 4;\n  width: 86px;\n  height: 24px;\n  background-color: var(--fish-tape-warm);\n  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, .4) 0 6px, transparent 6px 12px);\n  opacity: .92;\n  clip-path: polygon(2% 0, 100% 4%, 98% 100%, 0 94%);\n  box-shadow: 0 1px 2px rgba(40, 50, 80, .14);\n  pointer-events: none;\n}\n\n.big-fish .fish-tape-corner {\n  top: -11px;\n}\n\n.big-fish .fish-tape-left {\n  left: 72px;\n  transform: rotate(-6deg);\n}\n\n.big-fish .fish-tape-right {\n  right: 96px;\n  background-color: var(--fish-tape-blue);\n  transform: rotate(5deg);\n}\n\n.big-fish .fish-kicker {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  color: var(--fish-blue-strong);\n  font: 700 10.5px/1.6 var(--fish-font);\n  letter-spacing: .18em;\n  text-transform: uppercase;\n}\n\n.big-fish .fish-kicker-dot {\n  width: 6px;\n  height: 6px;\n  border-radius: 99px;\n  background: var(--fish-gold);\n  box-shadow: 0 0 0 4px rgba(198, 154, 74, .15);\n}\n\n.big-fish .fish-kicker-light {\n  color: #f3d697;\n}\n\n.big-fish .fish-muted {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish h1 {\n  margin: 0;\n  font: 800 clamp(28px, 3cqi, 38px)/1.25 var(--fish-title);\n  letter-spacing: -.01em;\n}\n\n.big-fish h2 {\n  margin: 0 0 8px;\n  font: 800 20px/1.35 var(--fish-title);\n  letter-spacing: -.005em;\n}\n\n.big-fish h3 {\n  margin: 0 0 8px;\n  font-size: 16px;\n  line-height: 1.7;\n}\n\n.big-fish p {\n  margin: 8px 0;\n  max-width: 70ch;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-page-head {\n  display: flex;\n  align-items: flex-end;\n  justify-content: space-between;\n  gap: 28px;\n  margin: 0 0 28px;\n  padding: 0 0 24px;\n  border-bottom: 1px dashed var(--fish-stitch);\n}\n\n.big-fish .fish-page-head-copy {\n  min-width: 0;\n}\n\n.big-fish .fish-page-head h1 {\n  margin: 6px 0 8px;\n}\n\n.big-fish .fish-page-desc {\n  margin: 0;\n  max-width: 62ch;\n  color: var(--fish-muted);\n  font-size: 14.5px;\n  line-height: 1.75;\n}\n\n.big-fish .fish-page-stamp {\n  position: relative;\n  display: flex;\n  flex: none;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 1px;\n  width: 96px;\n  height: 96px;\n  border: 2px solid rgba(198, 154, 74, .55);\n  border-radius: 50%;\n  background: var(--fish-stamp-bg);\n  color: var(--fish-stamp-ink);\n  box-shadow: 0 3px 0 rgba(198, 154, 74, .16);\n  transform: rotate(-7deg);\n}\n\n.big-fish .fish-page-stamp::after {\n  content: '';\n  position: absolute;\n  inset: 5px;\n  border: 1px dashed currentColor;\n  border-radius: 50%;\n  opacity: .42;\n}\n\n.big-fish .fish-page-stamp .fish-glyph {\n  color: var(--fish-blue-strong);\n}\n\n.big-fish .fish-page-stamp-no {\n  color: var(--fish-blue-strong);\n  font: 800 17px/1 var(--fish-title);\n  letter-spacing: .08em;\n}\n\n.big-fish .fish-page-stamp-label {\n  font: 600 10px/1.4 var(--fish-font);\n  letter-spacing: .12em;\n}\n\n/* ── 总览 · 深海封面 ──────────────────────────────────────── */\n\n.big-fish .fish-overview {\n  display: flex;\n  flex-direction: column;\n  gap: 30px;\n}\n\n.big-fish .fish-hero {\n  position: relative;\n  isolation: isolate;\n  display: grid;\n  grid-template-columns: minmax(0, 1.12fr) minmax(238px, .88fr);\n  align-items: center;\n  gap: clamp(18px, 3cqi, 40px);\n  min-height: 396px;\n  padding: clamp(28px, 4cqi, 50px) clamp(24px, 4cqi, 52px) 92px;\n  overflow: hidden;\n  border: 1px solid rgba(255, 255, 255, .12);\n  border-radius: 30px;\n  background: var(--fish-hero-bg);\n  box-shadow:\n    inset 0 1px 0 rgba(255, 255, 255, .16),\n    0 24px 48px rgba(18, 29, 57, .28);\n  color: var(--fish-hero-text);\n}\n\n.big-fish .fish-hero::before {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: radial-gradient(70% 80% at 4% 100%, rgba(94, 130, 206, .25), transparent 60%);\n  pointer-events: none;\n}\n\n.big-fish .fish-hero-copy {\n  position: relative;\n  z-index: 2;\n  min-width: 0;\n}\n\n.big-fish .fish-hero h1 {\n  margin: 14px 0 16px;\n  color: #fff8ea;\n  font: 800 clamp(30px, 4.2cqi, 52px)/1.28 var(--fish-title);\n  letter-spacing: -.02em;\n  text-wrap: balance;\n}\n\n.big-fish .fish-mark {\n  position: relative;\n  display: inline-block;\n  z-index: 1;\n  color: #ffdf9d;\n}\n\n.big-fish .fish-mark::after {\n  content: '';\n  position: absolute;\n  z-index: -1;\n  right: -4px;\n  bottom: 1px;\n  left: -4px;\n  height: .32em;\n  border-radius: 99px;\n  background: rgba(255, 208, 126, .2);\n}\n\n.big-fish .fish-hero-lead {\n  max-width: 46ch;\n  margin: 0;\n  color: var(--fish-hero-lead);\n  font-size: 15.5px;\n  line-height: 1.85;\n}\n\n.big-fish .fish-hero-quote {\n  max-width: 38ch;\n  margin: 20px 0 0;\n  padding-left: 14px;\n  border-left: 2px dashed rgba(243, 214, 151, .55);\n  color: var(--fish-hero-gold);\n  font: 500 15px/1.7 'Kaiti SC', STKaiti, KaiTi, serif;\n  letter-spacing: .04em;\n}\n\n.big-fish .fish-hero-chips {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin-top: 24px;\n}\n\n.big-fish .fish-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  padding: 6px 11px;\n  border: 1px solid rgba(255, 255, 255, .16);\n  border-radius: 99px;\n  background: var(--fish-chip-bg);\n  color: #e8edf8;\n  font-size: 11.5px;\n  line-height: 1.4;\n  letter-spacing: .02em;\n}\n\n.big-fish .fish-chip-status {\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--fish-hero-lead);\n  font-weight: 600;\n}\n\n.big-fish .fish-chip b {\n  color: var(--fish-hero-gold);\n  font-weight: 700;\n}\n\n.big-fish .fish-chip-dot {\n  width: 6px;\n  height: 6px;\n  border-radius: 99px;\n  background: #e7b96d;\n}\n\n.big-fish .fish-chip[data-ok] .fish-chip-dot {\n  background: #84d8bb;\n}\n\n.big-fish .fish-welcome {\n  position: relative;\n  z-index: 2;\n  justify-self: center;\n  width: clamp(220px, 24cqi, 320px);\n  margin: 0;\n  padding: 12px 12px 10px;\n  border-radius: 20px;\n  background: #fffdf8;\n  box-shadow: 0 18px 34px rgba(6, 14, 31, .35);\n  transform: rotate(2.5deg);\n  pointer-events: none;\n  animation: fish-float 7s ease-in-out infinite;\n}\n\n.big-fish .fish-welcome img {\n  display: block;\n  width: 100%;\n  height: auto;\n  border-radius: 12px;\n  background: #fff;\n}\n\n.big-fish .fish-welcome figcaption {\n  padding-top: 8px;\n  color: #4d5878;\n  font: 600 12.5px/1.5 'Kaiti SC', STKaiti, KaiTi, serif;\n  text-align: center;\n  letter-spacing: .02em;\n}\n\n.big-fish .fish-welcome-tape {\n  top: -12px;\n  left: 50%;\n  width: 94px;\n  transform: translateX(-50%) rotate(-3deg);\n}\n\n.big-fish .fish-hero-wave {\n  position: absolute;\n  z-index: 0;\n  right: 0;\n  bottom: -2px;\n  left: 0;\n  width: 100%;\n  height: 118px;\n  pointer-events: none;\n}\n\n.big-fish .fish-wave-back {\n  fill: rgba(106, 140, 205, .34);\n  transform-box: fill-box;\n  transform-origin: center bottom;\n  animation: fish-wave-breathe 12s ease-in-out infinite;\n}\n\n.big-fish .fish-wave-front {\n  fill: rgba(145, 177, 232, .22);\n  transform-box: fill-box;\n  transform-origin: center bottom;\n  animation: fish-wave-breathe 9s ease-in-out -2.2s infinite;\n}\n\n.big-fish .fish-wave-foam {\n  fill: none;\n  stroke: rgba(255, 246, 224, .45);\n  stroke-width: 2;\n  transform-box: fill-box;\n  transform-origin: center;\n  animation: fish-foam-drift 8s ease-in-out infinite;\n}\n\n@keyframes fish-wave-breathe {\n  0%, 100% { transform: translateX(-1px) scale(1, 1); }\n  50% { transform: translateX(1px) scale(1.01, 1.03); }\n}\n\n@keyframes fish-foam-drift {\n  0%, 100% { transform: translateX(-3px) scaleX(1.008); }\n  50% { transform: translateX(3px) scaleX(1.008); }\n}\n\n.big-fish .fish-bubbles {\n  position: absolute;\n  stroke: rgba(240, 230, 204, .28);\n  stroke-width: 2;\n  pointer-events: none;\n}\n\n.big-fish .fish-hero-bubbles {\n  z-index: 1;\n  right: 7%;\n  bottom: 8px;\n  width: 174px;\n  height: 174px;\n  opacity: .82;\n}\n\n.big-fish .fish-hero-bubbles circle,\n.big-fish .fish-hero-bubbles path {\n  transform-box: fill-box;\n  transform-origin: center;\n  animation: fish-bubble-float 6.5s ease-in-out infinite;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(2) {\n  animation-delay: -2.1s;\n  animation-duration: 7.5s;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(3) {\n  animation-delay: -4.2s;\n  animation-duration: 5.8s;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(4) {\n  animation-delay: -1.2s;\n  animation-duration: 8.2s;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(5) {\n  animation-delay: -3.6s;\n  animation-duration: 6.8s;\n}\n\n.big-fish .fish-hero-bubbles path {\n  animation-delay: -2.8s;\n  animation-duration: 9s;\n}\n\n@keyframes fish-bubble-float {\n  0%, 100% { transform: translateY(2px); opacity: .55; }\n  50% { transform: translateY(-5px); opacity: .95; }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish .fish-wave-back,\n  .big-fish .fish-wave-front,\n  .big-fish .fish-wave-foam,\n  .big-fish .fish-hero-bubbles circle,\n  .big-fish .fish-hero-bubbles path {\n    animation: none;\n  }\n}\n\n.big-fish .fish-sparkle {\n  fill: currentColor;\n  stroke: none;\n  color: var(--fish-hero-gold);\n  pointer-events: none;\n}\n\n.big-fish .fish-hero-spark {\n  position: absolute;\n  z-index: 1;\n  top: 26px;\n  right: 32%;\n  width: 38px;\n  height: 38px;\n  opacity: .76;\n}\n\n/* ── 总览 · 状态与分区 ────────────────────────────────────── */\n\n.big-fish .fish-board {\n  display: block;\n}\n\n.big-fish .fish-section-head {\n  display: flex;\n  align-items: flex-end;\n  justify-content: space-between;\n  gap: 20px;\n  margin-bottom: 16px;\n}\n\n.big-fish .fish-section-head h2 {\n  margin: 5px 0 0;\n  font: 800 clamp(22px, 2.2cqi, 27px)/1.3 var(--fish-title);\n}\n\n.big-fish .fish-section-note {\n  max-width: 34ch;\n  color: var(--fish-muted);\n  font-size: 12px;\n  line-height: 1.6;\n  text-align: right;\n}\n\n.big-fish .fish-stats {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 14px;\n}\n\n.big-fish .fish-stat {\n  display: grid;\n  grid-template-columns: 44px minmax(0, 1fr);\n  align-items: start;\n  gap: 12px;\n  padding: 18px;\n  border-radius: 20px;\n  background: var(--fish-card-bg);\n  border: 1px solid var(--fish-border);\n  box-shadow: var(--fish-small-shadow);\n}\n\n.big-fish .fish-stat-icon {\n  display: grid;\n  place-items: center;\n  width: 44px;\n  height: 44px;\n  border: 1px solid rgba(79, 109, 187, .18);\n  border-radius: 14px;\n  background: var(--fish-blue-soft);\n  color: var(--fish-blue-strong);\n}\n\n.big-fish .fish-stat[data-tone=gold] .fish-stat-icon {\n  border-color: rgba(198, 154, 74, .26);\n  background: var(--fish-gold-soft);\n  color: var(--fish-gold-ink);\n}\n\n.big-fish .fish-stat[data-tone=rose] .fish-stat-icon {\n  border-color: rgba(207, 126, 147, .28);\n  background: var(--fish-pink-soft);\n  color: var(--fish-rose-ink);\n}\n\n.big-fish .fish-stat[data-tone=mint] .fish-stat-icon {\n  border-color: rgba(77, 155, 134, .26);\n  background: var(--fish-mint-soft);\n  color: var(--fish-mint-ink);\n}\n\n.big-fish .fish-stat-copy {\n  min-width: 0;\n}\n\n.big-fish .fish-stat-label {\n  display: block;\n  color: var(--fish-muted);\n  font-size: 12px;\n  letter-spacing: .04em;\n}\n\n.big-fish .fish-value {\n  margin: 2px 0 4px;\n  color: var(--fish-text);\n  font: 800 clamp(20px, 2.2cqi, 26px)/1.3 var(--fish-title);\n  letter-spacing: -.01em;\n}\n\n.big-fish .fish-stat-hint {\n  display: block;\n  color: var(--fish-muted);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n.big-fish .fish-chapters {\n  margin-top: 2px;\n}\n\n.big-fish .fish-grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 18px;\n}\n\n@container (min-width: 1320px) {\n  .big-fish .fish-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 150px;\n    padding: 24px;\n  }\n\n\n  .big-fish .fish-feature h2 {\n    font-size: 22px;\n  }\n\n  .big-fish .fish-feature p {\n    font-size: 13px;\n  }\n}\n\n.big-fish .fish-feature {\n  position: relative;\n  isolation: isolate;\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 172px;\n  align-items: center;\n  gap: 18px;\n  min-width: 0;\n  padding: 26px 26px;\n  overflow: hidden;\n  border: 1px solid var(--fish-border);\n  border-radius: 26px;\n  background: var(--fish-feature-1);\n  box-shadow: 0 2px 0 rgba(49, 62, 98, .06), 0 14px 30px rgba(50, 64, 105, .07);\n  transform: rotate(-.35deg);\n  transition: transform .32s cubic-bezier(.22, 1, .36, 1), box-shadow .32s;\n}\n\n.big-fish .fish-feature:nth-child(2) {\n  background: var(--fish-feature-2);\n  transform: rotate(.4deg);\n}\n\n.big-fish .fish-feature:nth-child(3) {\n  background: var(--fish-feature-3);\n  transform: rotate(.3deg);\n}\n\n.big-fish .fish-feature:nth-child(4) {\n  background: var(--fish-feature-4);\n  transform: rotate(-.4deg);\n}\n\n.big-fish .fish-feature:hover {\n  box-shadow: 0 20px 40px rgba(50, 64, 105, .12);\n  transform: rotate(0) translateY(-3px);\n}\n\n.big-fish .fish-feature::before {\n  content: attr(data-index);\n  position: absolute;\n  z-index: -1;\n  right: 14px;\n  bottom: -22px;\n  color: rgba(54, 75, 122, .06);\n  font: 800 92px/1 var(--fish-title);\n  pointer-events: none;\n}\n\n.big-fish .fish-feature-copy {\n  position: relative;\n  z-index: 1;\n  min-width: 0;\n}\n\n.big-fish .fish-feature-tag {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  padding: 4px 10px;\n  border: 1px dashed rgba(138, 100, 36, .4);\n  border-radius: 99px;\n  background: var(--fish-tag-bg);\n  color: var(--fish-stamp-ink);\n  font-size: 11px;\n  letter-spacing: .08em;\n}\n\n.big-fish .fish-feature-tag b {\n  color: var(--fish-blue-strong);\n  font: 800 11px/1 var(--fish-title);\n}\n\n.big-fish .fish-feature h2 {\n  margin: 10px 0 8px;\n  font: 800 24px/1.3 var(--fish-title);\n}\n\n.big-fish .fish-feature p {\n  margin: 0;\n  max-width: 40ch;\n  color: var(--fish-muted);\n  font-size: 13.5px;\n  line-height: 1.75;\n}\n\n.big-fish .fish-feature .fish-actions {\n  margin-top: 16px;\n}\n\n.big-fish .fish-feature-sticker {\n  position: relative;\n  justify-self: center;\n  align-self: end;\n  width: clamp(120px, 14cqi, 168px);\n  margin: 0;\n  padding: 8px 8px 6px;\n  border-radius: 16px;\n  background: #fffdf8;\n  box-shadow: 0 12px 24px rgba(37, 51, 88, .15);\n  transform: rotate(-4deg);\n  pointer-events: none;\n}\n\n.big-fish .fish-feature:nth-child(2) .fish-feature-sticker {\n  transform: rotate(4deg);\n}\n\n.big-fish .fish-feature-sticker img {\n  display: block;\n  width: 100%;\n  height: auto;\n  border-radius: 10px;\n}\n\n.big-fish .fish-feature-tape {\n  top: -10px;\n  left: 50%;\n  width: 64px;\n  height: 19px;\n  background-color: var(--fish-tape-rose);\n  transform: translateX(-50%) rotate(2deg);\n}\n\n.big-fish .fish-feature-light {\n  grid-template-columns: minmax(0, 1fr) auto;\n}\n\n.big-fish .fish-feature-sticker-small {\n  align-self: center;\n  width: clamp(96px, 12cqi, 152px);\n  transform: rotate(-4deg);\n}\n\n.big-fish .fish-feature:nth-child(4) .fish-feature-sticker-small {\n  transform: rotate(4deg);\n}\n\n/* ── 通用控件 ─────────────────────────────────────────────── */\n\n.big-fish button,\n.big-fish input,\n.big-fish select,\n.big-fish textarea,\n.big-fish-notice button {\n  max-width: 100%;\n  font-family: var(--fish-font);\n  font-size: var(--fish-label);\n  line-height: 1.6;\n}\n\n.big-fish button,\n.big-fish-notice button {\n  min-height: 38px;\n  cursor: pointer;\n  letter-spacing: .02em;\n  transition: box-shadow var(--fish-motion), transform var(--fish-motion), background-color var(--fish-motion), color var(--fish-motion);\n}\n\n.big-fish .fish-button,\n.big-fish-notice button {\n  padding: 9px 16px;\n  border: 1px solid var(--fish-border);\n  border-radius: 12px;\n  background: var(--fish-control-fill);\n  color: var(--fish-text);\n  font-weight: 600;\n  box-shadow: 0 2px 0 var(--fish-edge);\n}\n\n.big-fish .fish-button:not(:disabled):hover,\n.big-fish-notice button:not(:disabled):hover {\n  transform: translateY(-1px);\n  box-shadow: 0 3px 0 var(--fish-edge), 0 8px 16px rgba(43, 58, 96, .12);\n}\n\n.big-fish .fish-button:not(:disabled):active,\n.big-fish-notice button:not(:disabled):active {\n  transform: translateY(1px);\n  box-shadow: var(--fish-inset);\n}\n\n.big-fish .fish-button.fish-danger {\n  border-color: var(--fish-danger);\n  background: var(--fish-danger);\n  color: #fffdf8;\n  box-shadow: 0 2px 0 rgba(90, 24, 40, .28);\n}\n\nbody[data-ds-dark-theme] .big-fish .fish-button.fish-danger {\n  color: #2a1420;\n}\n\n.big-fish .fish-primary {\n  border-color: var(--fish-action);\n  background: var(--fish-action);\n  color: var(--fish-on-accent);\n}\n\n.big-fish .fish-primary:not(:disabled):hover {\n  background: var(--fish-blue-strong);\n  border-color: var(--fish-blue-strong);\n  color: #fff8ea;\n}\n\n.big-fish .fish-badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 4px 11px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 99px;\n  background: var(--fish-soft);\n  color: var(--fish-blue-strong);\n  font-size: 11.5px;\n  line-height: 1.6;\n  white-space: nowrap;\n}\n\n.big-fish .fish-actions {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-top: 14px;\n}\n\n.big-fish .fish-card {\n  min-width: 0;\n  padding: 20px;\n  border: 1px solid var(--fish-border);\n  border-radius: 22px;\n  background: var(--fish-panel);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]),\n.big-fish select,\n.big-fish textarea {\n  appearance: none !important;\n  -webkit-appearance: none !important;\n  min-width: 0;\n  min-height: 42px;\n  padding: 10px 14px !important;\n  border: 1px solid var(--fish-control-border) !important;\n  border-radius: 12px !important;\n  background-color: var(--fish-surface) !important;\n  background-image: none !important;\n  color: var(--fish-text) !important;\n  box-shadow: var(--fish-control-shadow) !important;\n  font-family: var(--fish-font) !important;\n  font-size: var(--fish-label) !important;\n  line-height: 1.5 !important;\n  transition: border-color var(--fish-motion), box-shadow var(--fish-motion), background-color var(--fish-motion) !important;\n}\n\n.big-fish select {\n  padding-right: 38px !important;\n  background-image: var(--fish-select-arrow) !important;\n  background-repeat: no-repeat !important;\n  background-position: right 13px center !important;\n  background-size: 13px 9px !important;\n  cursor: pointer;\n}\n\n.big-fish textarea {\n  min-height: 112px;\n  padding: 12px 14px !important;\n}\n\n.big-fish select option {\n  background: var(--fish-surface);\n  color: var(--fish-text);\n}\n\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]):not(:disabled):hover,\n.big-fish select:not(:disabled):hover,\n.big-fish textarea:not(:disabled):hover {\n  border-color: var(--fish-control-border-strong) !important;\n}\n\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]):focus,\n.big-fish select:focus,\n.big-fish textarea:focus {\n  border-color: var(--fish-blue-strong) !important;\n  outline: none !important;\n  box-shadow: 0 0 0 3px var(--fish-focus-ring), var(--fish-control-shadow) !important;\n}\n\n.big-fish input[type=number]::-webkit-inner-spin-button,\n.big-fish input[type=number]::-webkit-outer-spin-button {\n  -webkit-appearance: none;\n  margin: 0;\n}\n\n.big-fish input[type=number] {\n  appearance: textfield !important;\n  -moz-appearance: textfield !important;\n}\n\n.big-fish input[type=file] {\n  min-height: 42px;\n  padding: 7px 10px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: 12px;\n  background-color: var(--fish-surface);\n  color: var(--fish-text);\n  box-shadow: var(--fish-control-shadow);\n  font-family: var(--fish-font);\n  font-size: var(--fish-label);\n}\n\n.big-fish input[type=file]::file-selector-button {\n  margin-right: 10px;\n  padding: 7px 12px;\n  border: 1px solid var(--fish-border);\n  border-radius: 9px;\n  background: var(--fish-control-fill);\n  color: var(--fish-text);\n  font-family: var(--fish-font);\n  font-size: var(--fish-small);\n  font-weight: 600;\n  cursor: pointer;\n}\n\n.big-fish input::placeholder,\n.big-fish textarea::placeholder {\n  color: var(--fish-muted);\n  opacity: .62;\n}\n\n.big-fish .fish-input-box,\n.big-fish .fish-select-box {\n  position: relative;\n  display: block;\n  width: 100%;\n  min-width: 0;\n}\n\n.big-fish .fish-input-box .fish-input,\n.big-fish .fish-select-box .fish-select-input {\n  width: 100%;\n}\n\n.big-fish .fish-input-icon {\n  position: absolute;\n  top: 50%;\n  left: 12px;\n  z-index: 1;\n  display: flex;\n  align-items: center;\n  color: var(--fish-muted);\n  pointer-events: none;\n  transform: translateY(-50%);\n}\n\n.big-fish .fish-input-with-icon {\n  padding-left: 40px !important;\n}\n\n.big-fish input[type=checkbox],\n.big-fish input[type=radio] {\n  flex: none;\n  width: 18px;\n  height: 18px;\n  accent-color: var(--fish-action);\n  vertical-align: middle;\n}\n\n.big-fish input[type=range],\n.big-fish progress {\n  max-width: 100%;\n  accent-color: var(--fish-action);\n}\n\n.big-fish textarea {\n  resize: vertical;\n  overflow-wrap: anywhere;\n}\n\n.big-fish :disabled,\n.big-fish-notice :disabled {\n  cursor: not-allowed;\n  opacity: .54;\n}\n\n.big-fish :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible,\n.big-fish-notice button:focus-visible {\n  outline: 2px solid var(--fish-gold);\n  outline-offset: 3px;\n}\n\n.big-fish a {\n  color: var(--fish-link);\n  text-decoration: none;\n  overflow-wrap: anywhere;\n}\n\n.big-fish a:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.big-fish summary {\n  min-height: 40px;\n  cursor: pointer;\n  font-weight: 600;\n}\n\n/* 原生 checkbox 开关保留键盘与回弹手感。 */\n.big-fish input[role=switch],\n.big-fish button[role=switch] {\n  position: relative;\n  display: inline-block;\n  flex: 0 0 46px;\n  width: 46px !important;\n  min-width: 46px !important;\n  max-width: 46px;\n  height: 26px !important;\n  min-height: 26px !important;\n  margin: 6px 0;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 999px !important;\n  appearance: none;\n  -webkit-appearance: none;\n  background: var(--fish-switch-off) !important;\n  box-shadow: inset 0 1px 2px rgba(20, 30, 55, .18) !important;\n  color: transparent !important;\n  font-size: 0 !important;\n  vertical-align: middle;\n  transform: none !important;\n}\n\n.big-fish [role=switch]::before {\n  content: '';\n  position: absolute;\n  top: 3px;\n  left: 3px;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  background: #fffdf6;\n  box-shadow: 0 1px 3px #0003;\n  transition: transform .42s cubic-bezier(.34, 1.56, .64, 1), width .18s, border-radius .18s;\n}\n\n.big-fish input[role=switch]:checked,\n.big-fish button[role=switch][aria-checked=true] {\n  background: var(--fish-switch-on) !important;\n}\n\n.big-fish input[role=switch]:checked::before,\n.big-fish button[role=switch][aria-checked=true]::before {\n  transform: translateX(20px);\n}\n\n.big-fish [role=switch]:not(:disabled):active::before {\n  width: 24px;\n  border-radius: 12px;\n}\n\n.big-fish input[role=switch]:checked:active::before,\n.big-fish button[role=switch][aria-checked=true]:active::before {\n  transform: translateX(16px);\n}\n\n/* ── 更新与来源 ───────────────────────────────────────────── */\n\n.big-fish .fish-updates {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n\n.big-fish .fish-updates {\n  gap: 18px;\n}\n\n.big-fish .fish-update-card {\n  position: relative;\n  isolation: isolate;\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);\n  align-items: center;\n  gap: 30px;\n  min-height: 300px;\n  padding: 32px 34px;\n  overflow: hidden;\n  background: var(--fish-update-bg);\n}\n\n.big-fish .fish-update-card::after {\n  content: 'EVOLVE';\n  position: absolute;\n  right: 12px;\n  bottom: -28px;\n  z-index: 0;\n  color: var(--fish-ink);\n  font: 800 clamp(72px, 9cqi, 118px)/1 var(--fish-title);\n  letter-spacing: .04em;\n  opacity: .045;\n  pointer-events: none;\n}\n\n.big-fish .fish-update-body {\n  position: relative;\n  z-index: 1;\n  min-width: 0;\n}\n\n.big-fish .fish-update-heading {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  flex-wrap: wrap;\n  gap: 14px 20px;\n}\n\n.big-fish .fish-update-body h2 {\n  margin: 6px 0 10px;\n  font: 800 clamp(30px, 3.4cqi, 40px)/1.15 var(--fish-title);\n  letter-spacing: -.01em;\n}\n\n.big-fish .fish-update-desc {\n  max-width: 560px;\n  margin: 0;\n}\n\n.big-fish .fish-update-controls {\n  display: flex;\n  align-items: flex-end;\n  flex-wrap: wrap;\n  gap: 16px 20px;\n  margin-top: 26px;\n  padding-top: 20px;\n  border-top: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-channel-field {\n  display: flex;\n  flex: 0 1 310px;\n  flex-direction: column;\n  gap: 7px;\n  min-width: 250px;\n  max-width: 100%;\n}\n\n.big-fish .fish-channel-field > span {\n  color: var(--fish-text);\n  font-size: 12.5px;\n  font-weight: 600;\n}\n\n.big-fish .fish-channel-field .fish-select-box {\n  width: 100%;\n}\n\n.big-fish .fish-channel-field .fish-select-input {\n  width: 100%;\n  min-width: 250px;\n}\n\n.big-fish .fish-update-operations {\n  display: flex;\n  flex: 1 1 440px;\n  align-items: center;\n  justify-content: flex-end;\n  flex-wrap: wrap;\n  gap: 10px 12px;\n}\n\n.big-fish .fish-update-status {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n  margin: 6px 0 0;\n  padding: 8px 13px;\n  border: 1px solid var(--fish-line);\n  border-radius: 999px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n  font-size: 12.5px;\n  white-space: nowrap;\n}\n\n.big-fish .fish-update-dot {\n  width: 7px;\n  height: 7px;\n  flex: none;\n  border-radius: 99px;\n  background: var(--fish-gold);\n  box-shadow: 0 0 0 3px rgba(198, 154, 74, .16);\n}\n\n.big-fish .fish-update-operations .fish-actions {\n  margin: 0;\n  gap: 10px;\n}\n\n.big-fish .fish-update-operations .fish-button {\n  min-height: 44px;\n  padding: 11px 20px;\n  border-radius: 13px;\n}\n\n.big-fish .fish-update-note {\n  max-width: 620px;\n  margin: 12px 0 0;\n  font-size: var(--fish-small);\n}\n\n.big-fish .fish-update-art {\n  position: relative;\n  z-index: 1;\n  justify-self: center;\n  width: min(100%, 280px);\n  margin: 0;\n  padding: 10px 10px 8px;\n  border-radius: 20px;\n  background: var(--fish-card-bg);\n  box-shadow: 0 20px 42px rgba(37, 51, 88, .16), 0 2px 0 rgba(49, 62, 98, .06);\n  transform: rotate(3deg);\n  transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s;\n}\n\n.big-fish .fish-update-art::before {\n  content: '';\n  position: absolute;\n  inset: -32px;\n  z-index: -1;\n  border-radius: 50%;\n  background: radial-gradient(circle at 50% 45%, rgba(198, 154, 74, .18), transparent 68%);\n  pointer-events: none;\n}\n\n.big-fish .fish-update-art img {\n  display: block;\n  width: 100%;\n  height: auto;\n  border-radius: 13px;\n}\n\n.big-fish .fish-update-art:hover {\n  transform: rotate(1deg) translateY(-3px);\n  box-shadow: 0 26px 50px rgba(37, 51, 88, .2), 0 2px 0 rgba(49, 62, 98, .06);\n}\n\n.big-fish .fish-update-tape {\n  top: -12px;\n  left: 50%;\n  width: 82px;\n  height: 21px;\n  background-color: var(--fish-tape-warm);\n  transform: translateX(-50%) rotate(-2deg);\n}\n\n.big-fish .fish-sources {\n  padding: 24px 28px 26px;\n}\n\n.big-fish .fish-sources-head {\n  align-items: flex-start;\n  gap: 20px;\n}\n\n.big-fish .fish-sources h2 {\n  margin: 4px 0 0;\n  font-size: 23px;\n}\n\n.big-fish .fish-source-link {\n  margin: 7px 0 0;\n  font-size: 12.5px;\n}\n\n.big-fish .fish-sources .fish-table-wrap {\n  margin-top: 16px;\n}\n\n.big-fish .fish-source-name {\n  font-weight: 700;\n  color: var(--fish-text);\n}\n\n.big-fish .fish-table-wrap {\n  overflow-x: auto;\n  border: 1px solid var(--fish-border);\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n}\n\n.big-fish .fish-table {\n  width: 100%;\n  min-width: 760px;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n\n.big-fish .fish-table th {\n  padding: 13px 16px;\n  background: var(--fish-navy);\n  color: #f6ecd6;\n  font-weight: 600;\n  text-align: left;\n  white-space: nowrap;\n}\n\n.big-fish .fish-table td {\n  padding: 14px 16px;\n  border-bottom: 1px dashed var(--fish-line);\n  vertical-align: top;\n}\n\n.big-fish .fish-table tbody tr:last-child td {\n  border-bottom: 0;\n}\n\n.big-fish .fish-table tbody tr:nth-child(even) {\n  background: rgba(198, 154, 74, .05);\n}\n\n\n/* ── QQ 绑定表格 ─────────────────────────────────────────── */\n\n.big-fish .qq-binding-groups {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.big-fish .qq-bind-group-head {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-bottom: 10px;\n}\n\n.big-fish .qq-bind-group-head h3 {\n  margin: 0;\n  font: 800 18px/1.4 var(--fish-title);\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-group-head .fish-muted {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-group-head .fish-button {\n  flex: none;\n}\n\n.big-fish .qq-bind-scroll {\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n\n.big-fish .qq-bind-table {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-row {\n  display: grid;\n  align-items: center;\n  gap: 10px;\n  padding: 9px 0;\n  border-bottom: 1px dashed var(--fish-line);\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-row:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .qq-bind-row-private {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 120px 52px;\n}\n\n.big-fish .qq-bind-row-group {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 76px 76px 120px 52px;\n}\n\n.big-fish .qq-bind-row.qq-bind-head {\n  padding: 4px 0 8px;\n  color: var(--fish-muted);\n  font-size: 12px;\n  border-bottom: 1px solid var(--fish-border);\n}\n\n.big-fish .qq-bind-row.qq-bind-head > :nth-last-child(2),\n.big-fish .qq-bind-row.qq-bind-head > :last-child {\n  display: flex;\n  justify-content: flex-start;\n  text-align: left;\n}\n\n.big-fish .qq-bind-row.qq-bind-head > *,\n.big-fish .qq-bind-row:not(.qq-bind-head) > * {\n  text-align: left;\n}\n\n.big-fish .qq-bind-table.qq-bind-hide-enable .qq-bind-row-private {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 120px;\n}\n\n.big-fish .qq-bind-table.qq-bind-hide-enable .qq-bind-row-group {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 76px 76px 120px;\n}\n\n.big-fish .qq-bind-table.qq-bind-hide-enable .qq-bind-row > :last-child {\n  display: none;\n}\n\n.big-fish .qq-bind-row input {\n  width: 100%;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.big-fish .qq-bind-session {\n  min-width: 0;\n}\n\n.big-fish .qq-bind-session select {\n  width: 100%;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-cell {\n  display: flex;\n  align-items: center;\n  justify-content: flex-start;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-read {\n  display: block;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  color: var(--fish-text);\n  font-size: 13.5px;\n  line-height: 1.6;\n}\n\n.big-fish .qq-bind-session-read {\n  color: var(--fish-muted);\n}\n\n.big-fish .qq-bind-actions {\n  justify-content: flex-start;\n  gap: 6px;\n  flex-wrap: nowrap;\n}\n\n.big-fish .qq-bind-actions .fish-button {\n  min-width: 0;\n}\n\n.big-fish .qq-bind-editing {\n  padding-inline: 8px;\n  border-radius: 12px;\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-bind-save {\n  min-width: 64px;\n}\n\n.big-fish .qq-bind-row .fish-button {\n  min-height: 32px;\n  padding: 5px 10px;\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-detail {\n  display: grid;\n  gap: 6px;\n  margin: 0 0 10px;\n  padding: 12px 14px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-bind-detail-head {\n  font: 700 14px/1.4 var(--fish-title);\n  color: var(--fish-text);\n}\n\n.big-fish .qq-bind-extra {\n  display: block;\n  margin-top: 4px;\n}\n\n.big-fish .qq-bind-extra-label {\n  display: block;\n  margin-bottom: 4px;\n  color: var(--fish-muted);\n  font-size: 12.5px;\n}\n\n\n.big-fish .qq-role-head {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 14px;\n}\n\n.big-fish .qq-role-head h2 {\n  margin: 0;\n}\n\n.big-fish .qq-role-toggle {\n  display: flex;\n  align-items: center;\n  margin-top: 2px;\n}\n\n.big-fish .qq-role-desc {\n  margin: 0;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.8;\n}\n\n.big-fish .qq-role-hint {\n  margin: 8px 0 0;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.8;\n}\n\n.big-fish .qq-role-writer-open {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  min-height: 44px;\n}\n\n.big-fish .qq-role-card h3 {\n  margin: 0 0 4px;\n}\n\n.big-fish .qq-role-table-wrap {\n  margin-top: 10px;\n  overflow-x: auto;\n}\n\n.big-fish .qq-role-table {\n  width: 100%;\n  min-width: 680px;\n  border-collapse: collapse;\n  table-layout: fixed;\n}\n\n.big-fish .qq-role-table th {\n  padding: 4px 8px 8px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  font-weight: 500;\n  text-align: left;\n  white-space: nowrap;\n  border-bottom: 1px solid var(--fish-border);\n}\n\n.big-fish .qq-role-table td {\n  padding: 10px 8px;\n  border-bottom: 1px dashed var(--fish-line);\n  color: var(--fish-text);\n  font-size: 13.5px;\n  vertical-align: middle;\n  text-align: left;\n}\n\n.big-fish .qq-role-table tbody tr:last-child td {\n  border-bottom: 0;\n}\n\n.big-fish .qq-role-number {\n  width: 110px;\n  white-space: nowrap;\n}\n\n.big-fish .qq-role-session {\n  width: 170px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  color: var(--fish-muted);\n}\n\n.big-fish .qq-role-text-cell {\n  min-width: 0;\n}\n\n.big-fish .qq-role-text {\n  display: block;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .qq-role-inherit {\n  color: var(--fish-muted);\n  font-size: 13px;\n}\n\n.big-fish .qq-role-col-icon {\n  width: 58px;\n  text-align: center !important;\n}\n\n.big-fish .qq-role-icon {\n  display: inline-grid;\n  place-items: center;\n  width: 30px;\n  height: 30px;\n  min-height: 30px;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: 9px;\n  background: transparent;\n  color: var(--fish-blue-strong);\n  box-shadow: none;\n  cursor: pointer;\n}\n\n.big-fish .qq-role-icon:hover:not(:disabled) {\n  border-color: var(--fish-border);\n  background: var(--fish-blue-soft);\n}\n\n.big-fish .qq-role-icon-danger {\n  color: var(--fish-danger);\n}\n\n.big-fish .qq-role-icon:disabled {\n  opacity: .35;\n  cursor: not-allowed;\n}\n\n.big-fish .qq-text-modal {\n  width: min(760px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n.big-fish .qq-text-modal-input {\n  display: block;\n  width: 100%;\n  min-height: 220px;\n  margin-top: 14px;\n  padding: 12px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: var(--fish-radius-sm);\n  background: var(--fish-surface);\n  color: var(--fish-text);\n  font: inherit;\n  line-height: 1.75;\n  box-sizing: border-box;\n  resize: vertical;\n}\n\n.big-fish .qq-role-writer-card {\n  width: min(680px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n.big-fish .qq-role-writer-input {\n  display: block;\n  width: 100%;\n  min-height: 96px;\n  margin-top: 14px;\n  padding: 12px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: var(--fish-radius-sm);\n  background: var(--fish-surface);\n  color: var(--fish-text);\n  font: inherit;\n  line-height: 1.75;\n  box-sizing: border-box;\n  resize: vertical;\n}\n\n.big-fish .qq-role-writer-result {\n  margin-top: 14px;\n  padding-top: 12px;\n  border-top: 1px dashed var(--fish-border);\n}\n\n.big-fish .qq-role-writer-result-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 10px;\n}\n\n.big-fish .qq-role-writer-result-text {\n  max-height: 260px;\n  margin: 8px 0 0;\n  padding: 10px 12px;\n  overflow: auto;\n  border: 1px solid var(--fish-border);\n  border-radius: 12px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n  font: inherit;\n  font-size: 13.5px;\n  line-height: 1.8;\n  white-space: pre-wrap;\n}\n\n.big-fish .qq-bind-reminder {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 16px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n  font-size: 13px;\n  line-height: 1.7;\n}\n\n.big-fish .qq-bind-reminder-icon {\n  display: grid;\n  flex: none;\n  place-items: center;\n  width: 20px;\n  height: 20px;\n  margin-top: 1px;\n  border-radius: 50%;\n  background: var(--fish-gold-soft);\n  color: var(--fish-blue-strong);\n  font: 800 12px/1 var(--fish-font);\n}\n\n.big-fish .qq-bind-add-disabled {\n  opacity: .5;\n  cursor: not-allowed;\n}\n\n.big-fish .qq-bind-add-disabled:hover {\n  transform: none;\n  box-shadow: 0 2px 0 var(--fish-edge);\n}\n\n.big-fish .qq-bind-mark {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  color: var(--fish-danger);\n  font: 800 17px/1 var(--fish-font);\n}\n\n.big-fish .qq-bind-mark[data-on=\"true\"] {\n  color: var(--fish-success);\n}\n\n.big-fish .qq-bind-note {\n  margin-top: 8px;\n  color: var(--fish-muted);\n  font-size: 12.5px;\n  line-height: 1.7;\n}\n\n.big-fish .qq-bind-tools {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-bind-empty {\n  padding: 14px 0;\n  color: var(--fish-muted);\n  font-size: 13px;\n}\n\n/* ── 未保存确认 ───────────────────────────────────────────── */\n\n.big-fish .fish-modal {\n  position: absolute;\n  inset: 0;\n  z-index: 50;\n  display: grid;\n  place-items: center;\n  padding: 20px;\n  background: rgba(8, 16, 32, .55);\n  backdrop-filter: blur(3px);\n}\n\n.big-fish .fish-modal-card {\n  width: min(460px, 100%);\n  padding: 28px;\n  border: 1px solid var(--fish-border);\n  border-radius: 24px;\n  background: var(--fish-panel);\n  box-shadow: inset 0 1px 0 var(--fish-rim), 0 24px 54px rgba(7, 15, 32, .35);\n}\n\n.big-fish .fish-modal-card h2 {\n  margin: 8px 0 6px;\n  font: 800 24px/1.35 var(--fish-title);\n}\n\n.big-fish .fish-modal-desc {\n  margin: 0;\n  color: var(--fish-muted);\n  font-size: 13.5px;\n  line-height: 1.8;\n}\n\n.big-fish .fish-modal-error {\n  margin: 12px 0 0;\n  padding: 8px 10px;\n  border-radius: 10px;\n  background: var(--fish-pink-soft);\n  color: var(--fish-danger);\n  font-size: 12.5px;\n}\n\n.big-fish .fish-modal-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-top: 20px;\n}\n\n.big-fish .fish-modal-actions .fish-button {\n  flex: 1 1 auto;\n}\n\n.big-fish .fish-modal-cancel {\n  border-color: transparent;\n  background: transparent;\n  color: var(--fish-muted);\n  box-shadow: none;\n}\n\n/* ── 模块内页 ─────────────────────────────────────────────── */\n\n.big-fish .fish-module {\n  min-width: 0;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-speak > .fish-section-title:first-child {\n  display: none;\n}\n\n.big-fish .fish-section-title {\n  font: 800 21px/1.5 var(--fish-title);\n}\n\n.big-fish .fish-settings-stack {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr);\n  gap: 16px;\n}\n\n.big-fish .fish-form-row {\n  align-items: flex-start;\n  gap: 12px 24px;\n  padding: 14px 0;\n  margin-bottom: 0 !important;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-form-row:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .fish-form-label {\n  flex: 0 1 190px;\n  padding-top: 8px;\n  color: var(--fish-text);\n  font-weight: 600;\n}\n\n.big-fish .fish-control {\n  flex: 1 1 300px;\n  min-width: 0;\n}\n\n.big-fish .fish-toolbar {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n  margin: 0 0 20px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 16px;\n  background: var(--fish-paper-2);\n}\n\n.big-fish .fish-subnav,\n.big-fish .fish-qq .fish-subnav {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  overflow: visible;\n  margin: 0 0 20px;\n  padding: 0 0 14px;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-subnav button {\n  flex: none;\n  padding: 6px 12px;\n  border-radius: 99px;\n  white-space: normal;\n}\n\n.big-fish .fish-message {\n  margin: 12px 0;\n  overflow-wrap: anywhere;\n  white-space: pre-wrap;\n}\n\n.big-fish .fish-message:not(:empty) {\n  padding: 10px 14px;\n  border: 1px dashed rgba(154, 100, 28, .35);\n  border-radius: 12px;\n  background: var(--fish-gold-soft);\n  color: var(--fish-warning);\n  font-size: 12.5px;\n}\n\n.big-fish .fish-test-action {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n  margin-bottom: 20px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-soft);\n}\n\n.big-fish .fish-rule-section {\n  margin-top: 24px;\n  padding-top: 22px;\n  border-top: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-log {\n  overflow-wrap: anywhere;\n  white-space: pre-wrap;\n}\n\n.big-fish .fish-diagnostics {\n  margin-top: 24px;\n  padding-top: 16px;\n  border-top: 1px dashed var(--fish-line);\n  color: var(--fish-muted);\n  font-size: 12.5px;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-diagnostics summary {\n  color: var(--fish-text);\n}\n\n.big-fish .fish-binding-row {\n  display: grid;\n  grid-template-columns: 80px minmax(100px, 1fr) minmax(120px, 1.5fr) 44px 76px 60px;\n  gap: 8px;\n  align-items: center;\n  padding: 12px 0;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-schedule-row {\n  display: grid;\n  grid-template-columns: 120px 140px minmax(60px, 1fr) 60px;\n  gap: 8px;\n  align-items: center;\n  padding: 12px 0;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-feed-result {\n  max-height: 480px;\n  margin-top: 20px;\n  padding: 18px;\n  overflow: auto;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-paper-2);\n  color: var(--fish-text);\n  font: 13px/1.8 ui-monospace, Consolas, monospace;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-embedding {\n  padding: 22px 0;\n  border-block: 1px dashed var(--fish-border);\n}\n\n.big-fish .fish-embedding label {\n  display: grid !important;\n  grid-template-columns: minmax(180px, 1fr) minmax(100px, 2fr);\n  gap: 12px;\n  align-items: center;\n  margin: 12px 0;\n}\n\n.big-fish .fish-embedding label:has([role=switch]) {\n  display: flex !important;\n}\n\n.big-fish .fish-embedding input:not([role=switch]) {\n  width: 100% !important;\n}\n\n.big-fish .fish-embedding button {\n  margin: 4px 8px 4px 0;\n  padding: 8px 12px;\n  border: 1px solid var(--fish-border);\n  border-radius: 10px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n}\n\n.big-fish .fish-dimensions {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 16px 32px;\n}\n\n.big-fish .fish-dimension-label {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 4px;\n  font-size: 13px;\n}\n\n.big-fish .fish-dimension-track {\n  height: 9px;\n  overflow: hidden;\n  border-radius: 99px;\n  background: var(--fish-line);\n}\n\n.big-fish .fish-dimension-track span {\n  display: block;\n  height: 100%;\n  border-radius: inherit;\n  background: linear-gradient(90deg, var(--fish-blue), var(--fish-gold));\n}\n\n.big-fish .fish-library-row {\n  margin: 12px 0;\n  padding: 20px;\n  border: 1px solid var(--fish-border);\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish .fish-memory .fish-record {\n  padding: 16px 0;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-memory .fish-record:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .fish-memory .fish-record-row {\n  align-items: center;\n  gap: 12px;\n  padding: 8px 0;\n}\n\n.big-fish .fish-memory .fish-record-note {\n  padding: 4px 0;\n  color: var(--fish-muted);\n  font-size: 13px;\n}\n\n.big-fish .fish-memory .fish-link {\n  padding: 4px 0;\n  border: 0;\n  background: transparent;\n  text-align: left;\n  text-decoration: underline;\n  text-underline-offset: 4px;\n}\n\n.big-fish .fish-memory details {\n  padding: 16px 20px;\n  border: 1px solid var(--fish-border);\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish .fish-memory [role=button] {\n  cursor: pointer;\n}\n\n.big-fish .fish-memory [role=button]:hover {\n  text-decoration: underline;\n  text-underline-offset: 4px;\n}\n\n.big-fish .fish-memory [role=button][style] {\n  box-shadow: none;\n}\n\n/* 心情页自带的样式也用同一套纸面材质，只补圆角和底色。 */\n.big-fish .fish-panel [data-fm-wrap] {\n  gap: 18px;\n}\n\n.big-fish .fish-panel [data-fm-hero] {\n  border-radius: 22px;\n  background: var(--fish-card-bg);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish .fish-panel [data-fm-slot] {\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n}\n\n.big-fish .fish-panel [data-fm-big] {\n  color: var(--fish-text);\n}\n\n.big-fish .fish-panel [data-fm-quote] {\n  border-radius: 14px;\n  background: var(--fish-paper-2);\n}\n\n.big-fish .fish-panel [data-fm-btn],\n.big-fish .fish-panel [data-fm-pick] {\n  border-radius: 10px;\n  background: var(--fish-control-fill);\n  box-shadow: 0 2px 0 var(--fish-edge);\n}\n\n.big-fish .fish-panel [data-fm-on] {\n  background: var(--fish-accent-soft);\n  box-shadow: none;\n}\n\n/* ── 兼容提示条 ───────────────────────────────────────────── */\n\n.big-fish-notice {\n  position: fixed;\n  z-index: 1000;\n  right: 20px;\n  bottom: 24px;\n  max-width: min(400px, calc(100vw - 40px));\n  padding: 18px 20px;\n  border: 1px solid rgba(198, 154, 74, .5);\n  border-radius: 20px;\n  background:\n    radial-gradient(120% 120% at 100% 0%, #2c4570, #16223d);\n  color: #f8f1e2;\n  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 20px 44px rgba(6, 13, 28, .4);\n  pointer-events: auto;\n}\n\n.big-fish-notice > div:first-child {\n  font-size: 13.5px;\n  line-height: 1.7;\n}\n\n.big-fish-notice button {\n  border-color: rgba(255, 255, 255, .2);\n  background: rgba(255, 255, 255, .08);\n  color: #f8f1e2;\n  box-shadow: none;\n}\n\n/* ── 适配 ─────────────────────────────────────────────────── */\n\n@container (max-width: 1240px) {\n  .big-fish .fish-frame {\n    grid-template-columns: 220px minmax(0, 1fr);\n  }\n\n  .big-fish .fish-hero h1 {\n    font-size: clamp(28px, 3.8cqi, 44px);\n  }\n\n  .big-fish .fish-welcome {\n    width: clamp(210px, 22cqi, 280px);\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 150px;\n  }\n}\n\n@container (max-width: 1180px) {\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 138px;\n  }\n\n}\n\n@container (max-width: 1040px) {\n  .big-fish .fish-frame {\n    grid-template-columns: minmax(0, 1fr);\n    grid-template-rows: auto minmax(0, 1fr);\n    height: 100%;\n    min-height: 0;\n    gap: 12px;\n  }\n\n  .big-fish .fish-binder {\n    min-height: 0;\n    padding: 14px 16px;\n    border-radius: 24px;\n    gap: 12px;\n  }\n\n  .big-fish .fish-binder::before {\n    inset: 7px;\n    border-radius: 18px;\n  }\n\n  .big-fish .fish-rings {\n    display: none;\n  }\n\n  .big-fish .fish-brand {\n    padding: 0 2px 10px;\n  }\n\n  .big-fish .fish-logo {\n    width: 38px;\n    height: 38px;\n    border-radius: 13px;\n  }\n\n  .big-fish .fish-brand-name {\n    font-size: 20px;\n  }\n\n  .big-fish .fish-nav {\n    flex: none;\n    flex-direction: row;\n    flex-wrap: wrap;\n    gap: 6px;\n    overflow: visible;\n    padding: 0;\n  }\n\n  .big-fish .fish-nav-group {\n    display: contents;\n  }\n\n  .big-fish .fish-tab {\n    order: 0;\n    width: auto;\n    min-height: 40px;\n    padding: 8px 12px;\n  }\n\n  .big-fish .fish-nav-highlight {\n    display: none;\n  }\n\n  .big-fish .fish-tab[aria-selected=true] {\n    background: linear-gradient(135deg, #fff8e9, #f3e4c4);\n    box-shadow: 0 2px 0 rgba(8, 16, 34, .22);\n  }\n\n  .big-fish .fish-tab[aria-selected=true]:hover {\n    background: linear-gradient(135deg, #fff8e9, #f3e4c4);\n  }\n\n  .big-fish .fish-submenu {\n    order: 1;\n    flex: 1 0 100%;\n    flex-direction: row;\n    flex-wrap: wrap;\n    gap: 4px;\n    margin: 2px 0 0;\n    padding: 0;\n    border-left: 0;\n    overflow-x: auto;\n  }\n\n  .big-fish .fish-submenu button {\n    width: auto;\n    min-height: 30px;\n    padding: 4px 10px;\n    border-radius: 99px;\n    background: rgba(255, 255, 255, .04);\n  }\n\n  .big-fish .fish-binder-foot {\n    display: none;\n  }\n\n  .big-fish .fish-workspace {\n    height: 100%;\n    min-height: 0;\n  }\n\n  .big-fish .fish-stats {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n  }\n}\n\n@container (max-width: 900px) {\n  .big-fish .fish-hero {\n    grid-template-columns: minmax(0, 1fr);\n    padding-bottom: 88px;\n  }\n\n  .big-fish .fish-welcome {\n    grid-row: 1;\n    width: min(260px, 56cqi);\n    margin-bottom: 4px;\n  }\n\n  .big-fish .fish-hero-copy {\n    grid-row: 2;\n  }\n\n  .big-fish .fish-hero h1 {\n    font-size: clamp(30px, 5.6cqi, 42px);\n  }\n\n  .big-fish .fish-hero-bubbles {\n    right: 6%;\n    bottom: 12px;\n    width: 140px;\n    height: 140px;\n  }\n\n  .big-fish .fish-hero-spark {\n    top: 14px;\n    right: 10%;\n  }\n\n  .big-fish .fish-stats {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n\n  .big-fish .fish-update-card {\n    grid-template-columns: minmax(0, 1fr);\n    gap: 24px;\n    padding: 28px 24px;\n  }\n\n  .big-fish .fish-update-art {\n    order: 2;\n    width: min(210px, 52cqi);\n  }\n\n  .big-fish .fish-update-heading {\n    align-items: flex-start;\n  }\n\n  .big-fish .fish-update-status {\n    white-space: normal;\n  }\n\n  .big-fish .fish-update-controls {\n    align-items: stretch;\n  }\n\n  .big-fish .fish-channel-field {\n    flex-basis: 100%;\n  }\n\n  .big-fish .fish-update-operations {\n    flex-basis: 100%;\n    justify-content: flex-start;\n  }\n}\n\n@container (max-width: 760px) {\n  .big-fish .fish-paper {\n    --fish-paper-radius: 24px;\n    --fish-scroll-inset: 10px;\n    --fish-scroll-radius: 16px;\n    --fish-fade-height: 20px;\n  }\n\n  .big-fish .fish-scroll {\n    padding: 14px 10px 22px;\n  }\n\n  .big-fish .fish-paper::before {\n    inset: 8px;\n    border-radius: 18px;\n  }\n\n  .big-fish .fish-tape {\n    display: none;\n  }\n\n  .big-fish .fish-page-head {\n    align-items: flex-start;\n    gap: 16px;\n    margin-bottom: 22px;\n    padding-bottom: 18px;\n  }\n\n  .big-fish .fish-page-stamp {\n    width: 76px;\n    height: 76px;\n  }\n\n  .big-fish .fish-page-stamp .fish-glyph {\n    width: 24px;\n    height: 24px;\n  }\n\n  .big-fish .fish-page-stamp-no {\n    font-size: 14px;\n  }\n\n  .big-fish .fish-page-stamp-label {\n    font-size: 9px;\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 128px;\n    padding: 22px 20px;\n  }\n\n  .big-fish .fish-dimensions {\n    grid-template-columns: 1fr;\n  }\n\n  .big-fish .fish-binding-row,\n  .big-fish .fish-schedule-row {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n\n  .big-fish .fish-binding-head {\n    display: none;\n  }\n}\n\n@container (max-width: 620px) {\n  .big-fish .fish-brand-sub,\n  .big-fish .fish-version-pin {\n    display: none;\n  }\n\n  .big-fish .fish-tab {\n    padding: 7px 9px;\n    font-size: 13px;\n  }\n\n  .big-fish .fish-tab-icon {\n    width: 24px;\n    height: 24px;\n    border-radius: 8px;\n  }\n\n  .big-fish .fish-tab-no {\n    display: none;\n  }\n\n  .big-fish .fish-stats {\n    grid-template-columns: 1fr;\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: 1fr;\n    gap: 12px;\n  }\n\n  .big-fish .fish-feature-sticker {\n    justify-self: start;\n    width: 118px;\n    margin-left: 2px;\n  }\n\n\n  .big-fish .fish-section-head {\n    align-items: flex-start;\n    flex-direction: column;\n    gap: 4px;\n  }\n\n  .big-fish .fish-section-note {\n    text-align: left;\n  }\n\n  .big-fish .fish-form-label {\n    flex-basis: 100%;\n    padding-top: 0;\n  }\n\n  .big-fish .fish-embedding label {\n    grid-template-columns: 1fr;\n  }\n\n  .big-fish .fish-subnav button {\n    flex: 1 1 auto;\n  }\n\n  .big-fish .fish-sources {\n    padding: 20px 16px;\n  }\n\n  .big-fish .fish-update-card {\n    padding: 22px 18px;\n  }\n}\n\n@container (max-width: 520px) {\n  .big-fish {\n    padding: calc(8px + var(--dsh-frame-top-clearance, 0px)) 8px 8px;\n  }\n\n  .big-fish .fish-binder {\n    padding: 12px;\n  }\n\n  .big-fish .fish-brand {\n    gap: 8px;\n  }\n\n  .big-fish .fish-brand-name {\n    font-size: 18px;\n  }\n\n  .big-fish .fish-logo {\n    width: 34px;\n    height: 34px;\n  }\n\n  .big-fish .fish-paper {\n    --fish-paper-radius: 20px;\n    --fish-scroll-inset: 9px;\n    --fish-scroll-radius: 14px;\n    --fish-fade-height: 16px;\n  }\n\n  .big-fish .fish-scroll {\n    padding: 10px 8px 18px;\n  }\n\n  .big-fish .fish-page-head {\n    flex-direction: column;\n    gap: 12px;\n  }\n\n  .big-fish .fish-page-stamp {\n    display: none;\n  }\n\n  .big-fish .fish-hero {\n    min-height: 0;\n    padding: 24px 20px 78px;\n    border-radius: 24px;\n  }\n\n  .big-fish .fish-hero h1 {\n    margin-top: 10px;\n    font-size: clamp(27px, 8.2cqi, 34px);\n  }\n\n  .big-fish .fish-hero-lead {\n    font-size: 14px;\n    line-height: 1.8;\n  }\n\n  .big-fish .fish-hero-quote {\n    margin-top: 16px;\n    font-size: 13.5px;\n  }\n\n  .big-fish .fish-hero-chips {\n    margin-top: 18px;\n    gap: 6px;\n  }\n\n  .big-fish .fish-chip {\n    padding: 5px 9px;\n    font-size: 10.5px;\n  }\n\n  .big-fish .fish-welcome {\n    width: min(214px, 64cqi);\n    padding: 9px 9px 8px;\n  }\n\n  .big-fish .fish-welcome figcaption {\n    font-size: 11px;\n  }\n\n  .big-fish .fish-stat {\n    padding: 15px;\n  }\n\n  .big-fish .fish-feature {\n    padding: 20px 16px;\n    border-radius: 22px;\n  }\n\n  .big-fish .fish-feature h2 {\n    font-size: 22px;\n  }\n\n  .big-fish .fish-feature-sticker {\n    width: 108px;\n  }\n\n\n  .big-fish .fish-table {\n    min-width: 660px;\n  }\n\n  .big-fish .fish-update-body h2 {\n    font-size: 23px;\n  }\n\n  .big-fish .fish-actions {\n    gap: 8px;\n  }\n\n  .big-fish .fish-actions .fish-button {\n    flex: 1 1 auto;\n  }\n}\n\n@media (max-width: 720px) {\n  .big-fish .fish-hero-bubbles {\n    display: none;\n  }\n}\n\n@media (max-height: 760px) {\n  .big-fish .fish-sidebar-scene {\n    display: none;\n  }\n}\n\n@media (max-height: 620px) {\n  .big-fish .fish-binder-foot {\n    display: none;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish *,\n  .big-fish-notice * {\n    animation: none !important;\n    transition: none !important;\n    scroll-behavior: auto !important;\n  }\n\n  .big-fish button:not(:disabled):hover,\n  .big-fish button:not(:disabled):active,\n  .big-fish-notice button,\n  .big-fish .fish-feature,\n  .big-fish .fish-welcome {\n    transform: none !important;\n  }\n\n  .big-fish .fish-nav-highlight {\n    transition: none !important;\n  }\n\n  .big-fish [role=switch]::before {\n    transition: none !important;\n  }\n}\n\n@keyframes fish-float {\n  0%,\n  100% {\n    transform: translateY(0) rotate(2.5deg);\n  }\n\n  50% {\n    transform: translateY(-7px) rotate(1.5deg);\n  }\n}\n\n/* 主题滚动条：纸面用暖色，侧栏用金色。 */\n.big-fish,\n.big-fish * {\n  scrollbar-width: thin;\n  scrollbar-color: var(--fish-control-border) var(--fish-soft);\n}\n\n.big-fish::-webkit-scrollbar,\n.big-fish *::-webkit-scrollbar {\n  width: 8px;\n  height: 8px;\n}\n\n.big-fish::-webkit-scrollbar-track,\n.big-fish *::-webkit-scrollbar-track {\n  background: var(--fish-soft);\n  border-radius: 99px;\n}\n\n.big-fish::-webkit-scrollbar-thumb,\n.big-fish *::-webkit-scrollbar-thumb {\n  border: 2px solid var(--fish-soft);\n  border-radius: 99px;\n  background: var(--fish-control-border);\n}\n\n.big-fish::-webkit-scrollbar-thumb:hover,\n.big-fish *::-webkit-scrollbar-thumb:hover {\n  background: var(--fish-accent);\n}\n\n.big-fish::-webkit-scrollbar-corner,\n.big-fish *::-webkit-scrollbar-corner {\n  background: var(--fish-soft);\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar {\n  width: 9px;\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar-thumb {\n  border: 2px solid transparent;\n  background: var(--fish-control-border);\n  background-clip: padding-box;\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar-thumb:hover {\n  background: var(--fish-accent);\n  background-clip: padding-box;\n}\n\n.big-fish .fish-nav::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n.big-fish .fish-nav::-webkit-scrollbar-thumb {\n  border: 2px solid transparent;\n  background: rgba(246, 231, 197, .24);\n  background-clip: padding-box;\n}\n\n\n/* 绑定字段说明使用原生悬浮提示，不受横向表格滚动容器裁切。 */\n.big-fish .qq-bind-field-label {display:inline-flex;align-items:center;gap:3px}\n.big-fish .qq-bind-field-label .qq-field-help {\n  display: inline-grid;\n  place-items: center;\n  flex: none;\n  width: 16px;\n  height: 16px;\n  min-width: 16px;\n  min-height: 16px;\n  margin-left: 3px;\n  padding: 0;\n  border: 1px solid var(--fish-border);\n  border-radius: 50%;\n  background: var(--fish-blue-soft);\n  color: var(--fish-blue-strong);\n  font: 700 10px/1 var(--fish-font);\n  box-shadow: none;\n  cursor: help;\n  transform: none;\n}\n\n.big-fish .qq-bind-field-label .qq-field-help:hover,\n.big-fish .qq-bind-field-label .qq-field-help:focus-visible {\n  color: var(--fish-on-accent);\n  border-color: var(--fish-action);\n  background: var(--fish-action);\n}\n\n.big-fish .fish-help-popover {\n  position: fixed;\n  z-index: 45;\n  padding: 12px 14px;\n  border: 1px solid var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-card-bg);\n  color: var(--fish-text);\n  box-shadow: var(--fish-shadow), 0 12px 26px rgba(30, 42, 74, .16);\n  pointer-events: auto;\n}\n\n.big-fish .fish-help-popover[data-placement=above] {\n  transform: translateY(-100%);\n}\n\n.big-fish .fish-help-popover::after {\n  content: '';\n  position: absolute;\n  left: 50%;\n  margin-left: -6px;\n  border: 6px solid transparent;\n}\n\n.big-fish .fish-help-popover[data-placement=below]::after {\n  top: -12px;\n  border-bottom-color: var(--fish-card-bg);\n}\n\n.big-fish .fish-help-popover[data-placement=above]::after {\n  bottom: -12px;\n  border-top-color: var(--fish-card-bg);\n}\n\n.big-fish .fish-help-label {\n  display: block;\n  color: var(--fish-blue-strong);\n  font: 700 10.5px/1.5 var(--fish-font);\n  letter-spacing: .12em;\n}\n\n.big-fish .fish-help-popover p {\n  margin: 4px 0 0;\n  color: var(--fish-text);\n  font-size: 13px;\n  line-height: 1.75;\n  white-space: normal;\n}\n\n.big-fish .fish-help-link {\n  display: inline;\n  min-height: 0;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: none;\n  color: var(--fish-blue-strong);\n  font: inherit;\n  font-weight: 600;\n  line-height: inherit;\n  letter-spacing: 0;\n  text-align: left;\n  text-decoration: underline;\n  text-decoration-thickness: 1px;\n  text-underline-offset: 3px;\n  box-shadow: none;\n  cursor: pointer;\n}\n\n.big-fish .fish-help-link:hover {\n  text-decoration-thickness: 2px;\n}\n\n/* 角色设定模态框要覆盖默认 460px 卡片宽度（后定义的 .fish-modal-card 优先）。 */\n.big-fish .fish-modal-card.qq-text-modal {\n  width: min(760px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n.big-fish .fish-modal-card.qq-role-writer-card {\n  width: min(680px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n/* ── 文件管理 ─────────────────────────────────────────────── */\n\n.big-fish .fish-file-manager {\n  display: flex;\n  flex-direction: column;\n  gap: 18px;\n}\n\n.big-fish .fish-file-manager-stickers > h2 {\n  margin: 0 0 8px;\n}\n\n.big-fish .fish-file-manager .fish-media-storage {\n  margin-top: 10px;\n}\n\n/* 跳转目标：滚动到位后闪一下，提醒用户看这里。 */\n.big-fish .fish-jump-flash {\n  position: relative;\n}\n\n.big-fish .fish-jump-flash::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  z-index: 2;\n  border-radius: inherit;\n  box-shadow: 0 0 0 2px var(--fish-gold), 0 0 26px rgba(198, 154, 74, .38);\n  opacity: 0;\n  pointer-events: none;\n  animation: fish-jump-glow 1.35s ease-in-out both;\n}\n\n@keyframes fish-jump-glow {\n  0% { opacity: 0; }\n  25% { opacity: 1; }\n  65% { opacity: 1; }\n  100% { opacity: 0; }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish .fish-jump-flash::after {\n    opacity: 1;\n    box-shadow: inset 0 0 0 2px var(--fish-gold);\n  }\n}\n\n.big-fish #fish-sticker-files-card,\n.big-fish #qq-reply-threshold {\n  scroll-margin-top: 24px;\n}\n\n/* ── QQ 空间浏览 ─────────────────────────────────────────── */\n\n.big-fish .qq-space-browse-head h2 {\n  margin: 0 0 4px;\n}\n\n.big-fish .qq-space-browse-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px 18px;\n  margin: 16px 0 4px;\n}\n\n.big-fish .qq-space-field {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-space-field input {\n  width: 100%;\n}\n\n.big-fish .qq-space-browse-actions {\n  gap: 8px;\n  margin-top: 12px;\n}\n\n@container (max-width: 760px) {\n  .big-fish .qq-space-browse-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n/* ── QQ 语音转写 ─────────────────────────────────────────── */\n\n.big-fish .qq-voice-card .fish-form-row {\n  padding: 17px 0;\n}\n\n.big-fish .qq-voice-env {\n  margin-bottom: 6px;\n}\n\n.big-fish .qq-voice-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-bottom: 4px;\n}\n\n.big-fish .qq-voice-env .fish-hint {\n  margin-top: 10px;\n}\n\n.big-fish .qq-voice-note {\n  margin-top: 14px;\n  line-height: 1.8;\n}\n\n@container (max-width: 620px) {\n  .big-fish .qq-voice-card .fish-form-row {\n    padding: 14px 0;\n  }\n}\n\n.big-fish .qq-voice-cost {\n  width: 50%;\n  max-width: 50%;\n  margin-top: 20px;\n  padding-top: 16px;\n  border-top: 1px dashed var(--fish-line);\n  overflow-x: auto;\n}\n\n.big-fish .qq-voice-cost-intro {\n  margin: 0 0 10px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.7;\n}\n\n.big-fish .qq-voice-cost-table {\n  width: 100%;\n  border-collapse: collapse;\n  table-layout: auto;\n}\n\n.big-fish .qq-voice-cost-table th,\n.big-fish .qq-voice-cost-table td {\n  padding: 9px 6px;\n  border-bottom: 1px solid var(--fish-line);\n  font-size: 12px;\n  line-height: 1.6;\n  text-align: left;\n  vertical-align: top;\n  white-space: nowrap;\n}\n\n.big-fish .qq-voice-cost-table thead th {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  font-weight: 500;\n}\n\n.big-fish .qq-voice-cost-table tbody th {\n  width: 92px;\n  color: var(--fish-text);\n  font-weight: 400;\n  white-space: nowrap;\n}\n\n.big-fish .qq-voice-cost-table tbody td {\n  color: var(--fish-muted);\n}\n\n.big-fish .qq-voice-cost-table tbody tr:last-child th,\n.big-fish .qq-voice-cost-table tbody tr:last-child td {\n  border-bottom: 0;\n}\n\n.big-fish .qq-voice-cost-note {\n  margin: 16px 0 0;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.85;\n}\n\n@container (max-width: 620px) {\n  .big-fish .qq-voice-cost {\n    width: 100%;\n    max-width: 100%;\n  }\n\n  .big-fish .qq-voice-cost-table tbody th {\n    width: 82px;\n  }\n}\n\n/* ── 运行日志：命令行式实时终端 ─────────────────────────── */\n\n.big-fish .fish-run-log {\n  display: grid;\n  gap: 16px;\n}\n\n.big-fish .fish-terminal-card {\n  position: relative;\n  overflow: hidden;\n  border: 1px solid rgba(194, 158, 92, .32);\n  border-radius: 22px;\n  background: #0b1725;\n  box-shadow: 0 18px 40px rgba(4, 12, 22, .28);\n}\n\n.big-fish .fish-terminal-head {\n  position: absolute;\n  inset: 0 0 auto;\n  z-index: 2;\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 14px 18px;\n  border-bottom: 1px solid rgba(194, 158, 92, .18);\n  background: linear-gradient(180deg, #102132 0%, rgba(16, 33, 50, .97) 100%);\n  color: #d9e7e9;\n}\n\n.big-fish .fish-terminal-live {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  color: #8fe0b1;\n  font: 700 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;\n  letter-spacing: .12em;\n}\n\n.big-fish .fish-terminal-live i {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background: #65d69a;\n  box-shadow: 0 0 0 3px rgba(101, 214, 154, .14);\n}\n\n.big-fish .fish-terminal-title {\n  color: rgba(217, 231, 233, .72);\n  font-size: 12.5px;\n}\n\n.big-fish .fish-terminal-count {\n  margin-left: auto;\n  color: rgba(217, 231, 233, .45);\n  font: 11.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;\n}\n\n.big-fish .fish-terminal {\n  height: min(68vh, 760px);\n  min-height: 320px;\n  overflow: auto;\n  padding: 68px 18px 20px;\n  background: #08131f;\n  color: #cfe3e8;\n  font: 12.5px/1.75 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n}\n\n.big-fish .fish-terminal-line {\n  display: flex;\n  gap: 10px;\n  align-items: flex-start;\n  padding: 1px 0;\n}\n\n.big-fish .fish-terminal-time {\n  flex: none;\n  color: rgba(194, 158, 92, .82);\n  white-space: nowrap;\n}\n\n.big-fish .fish-terminal-prompt {\n  flex: none;\n  color: #c2a05f;\n}\n\n.big-fish .fish-terminal-text {\n  min-width: 0;\n  overflow-wrap: anywhere;\n  white-space: pre-wrap;\n}\n\n.big-fish .fish-terminal-empty {\n  color: rgba(207, 227, 232, .48);\n}\n\n.big-fish .fish-terminal-error {\n  margin: 0;\n  padding: 10px 18px;\n  border-top: 1px solid rgba(194, 158, 92, .18);\n  color: #f0b5a7;\n  font-size: var(--fish-small);\n}\n\n@container (max-width: 640px) {\n  .big-fish .fish-terminal-head {\n    padding: 12px 14px;\n  }\n\n  .big-fish .fish-terminal {\n    height: 58vh;\n    padding: 60px 14px 14px;\n    font-size: 12px;\n  }\n}\n\n/* 表单控件使用自己的焦点环，不再叠加浏览器默认 outline。 */\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]):focus-visible,\n.big-fish select:focus-visible,\n.big-fish textarea:focus-visible {\n  outline: none !important;\n}\n\n/* 自定义下拉浮层：替代原生 option 弹层。 */\n.big-fish .fish-select-popup {\n  position: fixed;\n  z-index: 12000;\n  overflow-y: auto;\n  padding: 6px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: 14px;\n  background: var(--fish-surface);\n  box-shadow: 0 18px 40px rgba(15, 25, 45, .22), var(--fish-control-shadow);\n  animation: fish-select-pop 140ms ease-out;\n}\n\n.big-fish .fish-select-option {\n  position: relative;\n  display: flex;\n  align-items: center;\n  width: 100%;\n  min-height: 38px;\n  margin: 2px 0;\n  padding: 8px 12px 8px 32px;\n  border: 1px solid transparent;\n  border-radius: 9px;\n  background: transparent;\n  color: var(--fish-text);\n  font-family: var(--fish-font);\n  font-size: var(--fish-label);\n  line-height: 1.45;\n  text-align: left;\n  cursor: pointer;\n}\n\n.big-fish .fish-select-option::before {\n  content: '✓';\n  position: absolute;\n  left: 10px;\n  color: var(--fish-gold);\n  font-weight: 700;\n  opacity: 0;\n}\n\n.big-fish .fish-select-option[aria-selected=true] {\n  background: var(--fish-gold-soft);\n}\n\n.big-fish .fish-select-option[aria-selected=true]::before {\n  opacity: 1;\n}\n\n.big-fish .fish-select-option.is-active:not([aria-selected=true]) {\n  background: var(--fish-soft);\n}\n\n.big-fish .fish-select-option:hover {\n  background: var(--fish-hover);\n}\n\n.big-fish .fish-select-option:disabled {\n  cursor: not-allowed;\n  opacity: .45;\n}\n\n@keyframes fish-select-pop {\n  from { opacity: 0; transform: translateY(-3px) scale(.99); }\n  to { opacity: 1; transform: translateY(0) scale(1); }\n}\n\n.big-fish .fish-update-check {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 142px;\n  min-height: 44px;\n  padding: 11px 22px;\n  border-radius: 13px;\n}\n\n.big-fish .fish-button.fish-gold {\n  border-color: var(--fish-gold);\n  background: var(--fish-gold);\n  color: var(--fish-navy);\n  box-shadow: 0 2px 0 var(--fish-gold-ink);\n}\n\n.big-fish .fish-button.fish-gold:not(:disabled):hover {\n  border-color: var(--fish-gold);\n  background: var(--fish-gold);\n  color: var(--fish-navy);\n  filter: brightness(1.06);\n}\n\n.big-fish .fish-spin {\n  animation: fish-spin 900ms linear infinite;\n}\n\n@keyframes fish-spin {\n  to { transform: rotate(360deg); }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish .fish-spin {\n    animation-duration: 2.4s;\n  }\n}\n\n/* 新建 QQ 映射：字段竖向排列，不显示目标会话。 */\n.big-fish .fish-modal-card.qq-bind-add-modal {\n  width: min(520px, 100%);\n}\n\n.big-fish .qq-bind-modal-fields {\n  display: grid;\n  gap: 14px;\n  margin: 18px 0 4px;\n}\n\n.big-fish .qq-bind-modal-field {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-bind-modal-field input {\n  width: 100%;\n}\n\n.big-fish .qq-bind-modal-toggles {\n  display: grid;\n  gap: 10px;\n}\n\n.big-fish .qq-bind-modal-toggle {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 14px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-bind-modal-name-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.big-fish .qq-bind-modal-name-row input {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-modal-name-row .fish-button {\n  flex: none;\n  min-height: 38px;\n  padding: 8px 12px;\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-modal-lookup {\n  margin-top: -6px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n/* 长期记忆：与 QQ 互通一致的工具栏、卡片和记忆库表格 */\n.big-fish .qq-memory-page .qq-memory-toolbar {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 10px 16px;\n  margin-bottom: 6px;\n}\n\n.big-fish .qq-memory-page .qq-memory-title {\n  display: flex;\n  align-items: baseline;\n  gap: 8px;\n  min-width: 0;\n}\n\n.big-fish .qq-memory-page .qq-memory-title strong {\n  font-family: var(--fish-title);\n  font-size: 20px;\n  line-height: 1.3;\n}\n\n.big-fish .qq-memory-page .qq-memory-version {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-memory-page .qq-memory-scope {\n  margin-left: auto;\n  max-width: min(48%, 460px);\n  overflow: hidden;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .qq-memory-page .qq-memory-card {\n  margin: 0 0 12px;\n  padding: 16px;\n  border: 1px solid var(--fish-border);\n  border-radius: var(--fish-radius-mid);\n  background: var(--fish-panel);\n  box-shadow: var(--fish-small-shadow);\n}\n\n.big-fish .qq-memory-page .qq-memory-name,\n.big-fish .qq-memory-page .qq-memory-global,\n.big-fish .qq-memory-page .qq-memory-isolation,\n.big-fish .qq-memory-page .qq-memory-mode {\n  align-items: center;\n}\n\n.big-fish .qq-memory-page .qq-memory-section-title {\n  margin: 18px 0 6px;\n  font-size: 16px;\n}\n\n.big-fish .qq-memory-page .qq-memory-libraries {\n  padding: 0;\n  overflow: hidden;\n}\n\n.big-fish .qq-memory-page .qq-memory-libraries .qq-bind-group-head {\n  margin: 0;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--fish-line);\n}\n\n.big-fish .qq-memory-page .qq-memory-libraries .qq-bind-group-head h3 {\n  margin: 0;\n  font-size: 15px;\n}\n\n.big-fish .qq-memory-page .qq-memory-row {\n  display: grid;\n  grid-template-columns: minmax(74px, max-content) minmax(0, 1fr) max-content max-content max-content;\n  align-items: center;\n  gap: 10px;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--fish-line);\n}\n\n.big-fish .qq-memory-page .qq-memory-row:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .qq-memory-page .qq-memory-row:hover {\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-memory-page .qq-memory-note {\n  margin: 4px 2px 0;\n  font-size: var(--fish-small);\n}\n\n@media (max-width: 760px) {\n  .big-fish .qq-memory-page .qq-memory-scope {\n    margin-left: 0;\n    max-width: 100%;\n    width: 100%;\n  }\n\n  .big-fish .qq-memory-page .qq-memory-row {\n    grid-template-columns: minmax(70px, max-content) minmax(0, 1fr);\n  }\n}\n\n/* 吃大米饭：当前绑定工作区的 Token 用量 */\n.big-fish .rice-page {\n  display: grid;\n  gap: 14px;\n}\n\n.big-fish .rice-toolbar {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: 10px;\n}\n\n.big-fish .rice-toolbar h2 {\n  margin: 2px 0 0;\n  font-family: var(--fish-title);\n  font-size: 21px;\n}\n\n.big-fish .rice-stats {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 12px;\n}\n\n.big-fish .rice-stat {\n  display: grid;\n  gap: 5px;\n  padding: 16px;\n}\n\n.big-fish .rice-stat-label {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .rice-stat-value {\n  font-family: var(--fish-title);\n  font-size: 26px;\n  line-height: 1.15;\n}\n\n.big-fish .rice-stat-sub {\n  color: var(--fish-muted);\n  font-size: 12px;\n}\n\n.big-fish .rice-grid {\n  display: grid;\n  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);\n  gap: 12px;\n}\n\n.big-fish .rice-chart-card,\n.big-fish .rice-heat-card,\n.big-fish .rice-table-card {\n  padding: 16px;\n  min-width: 0;\n}\n\n.big-fish .rice-range {\n  margin: 0;\n  gap: 4px;\n}\n\n.big-fish .rice-range .fish-button {\n  padding: 5px 9px;\n  font-size: 12px;\n}\n\n.big-fish .rice-line {\n  display: block;\n  width: 100%;\n  height: auto;\n  margin-top: 12px;\n  overflow: visible;\n}\n\n.big-fish .rice-gridline {\n  stroke: var(--fish-line);\n  stroke-width: 1;\n}\n\n.big-fish .rice-area {\n  fill: color-mix(in srgb, var(--fish-accent) 18%, transparent);\n}\n\n.big-fish .rice-polyline {\n  fill: none;\n  stroke: var(--fish-accent);\n  stroke-width: 2.5;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n}\n\n.big-fish .rice-axis {\n  fill: var(--fish-muted);\n  font-size: 11px;\n}\n\n.big-fish .rice-heat-legend {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n}\n\n.big-fish .rice-heat-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 2px;\n  background: var(--fish-line);\n}\n\n.big-fish .rice-heat {\n  display: grid;\n  grid-auto-flow: column;\n  grid-template-rows: repeat(7, 11px);\n  grid-auto-columns: 11px;\n  gap: 3px;\n  margin-top: 14px;\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n\n.big-fish .rice-heat-cell,\n.big-fish .rice-heat-dot[data-level=\"0\"] { background: var(--fish-line); }\n.big-fish .rice-heat-cell[data-level=\"1\"], .big-fish .rice-heat-dot[data-level=\"1\"] { background: color-mix(in srgb, var(--fish-accent) 28%, var(--fish-line)); }\n.big-fish .rice-heat-cell[data-level=\"2\"], .big-fish .rice-heat-dot[data-level=\"2\"] { background: color-mix(in srgb, var(--fish-accent) 48%, var(--fish-line)); }\n.big-fish .rice-heat-cell[data-level=\"3\"], .big-fish .rice-heat-dot[data-level=\"3\"] { background: color-mix(in srgb, var(--fish-accent) 72%, var(--fish-line)); }\n.big-fish .rice-heat-cell[data-level=\"4\"], .big-fish .rice-heat-dot[data-level=\"4\"] { background: var(--fish-accent); }\n\n.big-fish .rice-heat-cell {\n  border-radius: 2px;\n}\n\n.big-fish .rice-table-wrap {\n  overflow-x: auto;\n  margin-top: 10px;\n}\n\n.big-fish .rice-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: var(--fish-small);\n}\n\n.big-fish .rice-table th,\n.big-fish .rice-table td {\n  padding: 10px 12px;\n  border-bottom: 1px solid var(--fish-line);\n  text-align: right;\n  white-space: nowrap;\n}\n\n.big-fish .rice-table th:first-child,\n.big-fish .rice-table td:first-child {\n  text-align: left;\n}\n\n.big-fish .rice-table th {\n  color: var(--fish-muted);\n  font-weight: 500;\n}\n\n.big-fish .rice-session-title {\n  display: block;\n  max-width: 280px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.big-fish .rice-session-id {\n  display: block;\n  color: var(--fish-muted);\n  font-size: 11px;\n  margin-top: 2px;\n}\n\n@media (max-width: 980px) {\n  .big-fish .rice-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  .big-fish .rice-grid { grid-template-columns: minmax(0, 1fr); }\n}\n\n.big-fish .rice-stat-cost {\n  color: var(--fish-success);\n  font-family: var(--fish-title);\n  font-size: 15px;\n  font-weight: 600;\n}\n\n.big-fish .rice-rate-note {\n  margin-top: -6px;\n  font-size: 11px;\n}\n\n.big-fish .fish-version-pin {\n  cursor: pointer;\n  font-family: inherit;\n}\n\n.big-fish .fish-version-pin:hover,\n.big-fish .fish-version-pin:focus-visible {\n  color: #fff1c9;\n  outline: none;\n}\n\n.big-fish .rice-hit {\n  fill: transparent;\n  pointer-events: all;\n  cursor: crosshair;\n}\n\n.big-fish .rice-heat-blank {\n  background: transparent !important;\n}\n\n.big-fish .rice-tooltip {\n  position: fixed;\n  z-index: 80;\n  width: 280px;\n  max-width: calc(100vw - 28px);\n  padding: 14px 16px;\n  border: 1px solid rgba(246, 231, 197, .16);\n  border-radius: 12px;\n  background: #1b222d;\n  box-shadow: 0 18px 44px rgba(0, 0, 0, .36);\n  color: #f6edda;\n  pointer-events: none;\n  font-size: 12px;\n}\n\n.big-fish .rice-tip-date {\n  color: #b9c3d2;\n  font-size: 12px;\n  letter-spacing: .04em;\n}\n\n.big-fish .rice-tip-total {\n  margin-top: 6px;\n  font-family: var(--fish-title);\n  font-size: 25px;\n  font-weight: 700;\n}\n\n.big-fish .rice-tip-total span {\n  font-family: inherit;\n  font-size: 12px;\n  font-weight: 500;\n  letter-spacing: .08em;\n  color: #b9c3d2;\n}\n\n.big-fish .rice-tip-cost {\n  margin-top: 2px;\n  color: #6ee7b7;\n  font-size: 12px;\n}\n\n.big-fish .rice-tip-label {\n  margin: 12px 0 8px;\n  padding-top: 9px;\n  border-top: 1px solid rgba(246, 231, 197, .13);\n  color: #b9c3d2;\n  font-size: 11px;\n}\n\n.big-fish .rice-tip-row {\n  margin: 7px 0;\n}\n\n.big-fish .rice-tip-row-head {\n  display: flex;\n  align-items: baseline;\n  gap: 7px;\n  min-width: 0;\n}\n\n.big-fish .rice-tip-row-head span {\n  flex: 1 1 auto;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .rice-tip-row-head strong {\n  flex: none;\n  font-size: 12px;\n}\n\n.big-fish .rice-tip-row-head em {\n  flex: none;\n  width: 34px;\n  color: #9aa6b7;\n  font-style: normal;\n  text-align: right;\n}\n\n.big-fish .rice-tip-bar {\n  height: 5px;\n  margin-top: 4px;\n  overflow: hidden;\n  border-radius: 99px;\n  background: rgba(255, 255, 255, .08);\n}\n\n.big-fish .rice-tip-bar i {\n  display: block;\n  height: 100%;\n  border-radius: inherit;\n  background: #49e3a2;\n}\n\n.big-fish .rice-tip-empty {\n  color: #9aa6b7;\n  font-size: 11px;\n}\n";
+const FISH_THEME_CSS = "/* 大肥鱼 · 深海手帐。\n   浅色是奶油纸 + 深海军蓝装订；深色是夜海纸 + 金色墨水。\n   所有样式都收在 .big-fish / .big-fish-notice 内，不碰宿主。 */\n.big-fish,\n.big-fish-notice {\n  --fish-font: 'HarmonyOS Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;\n  --fish-title: var(--fish-font);\n  --fish-body: 15px;\n  --fish-small: 12.5px;\n  --fish-label: 14px;\n  --fish-radius: 24px;\n  --fish-radius-mid: 18px;\n  --fish-radius-sm: 11px;\n  --fish-gap: 24px;\n  --fish-motion: 180ms;\n\n  --fish-cream: #f3e9d5;\n  --fish-bg: var(--fish-cream);\n  --fish-paper-bg: #fcf6e9;\n  --fish-paper-2: #f5ebd8;\n  --fish-paper-glow: #ffffffd9;\n  --fish-fade-mid: rgba(252, 246, 233, .55);\n  --fish-paper-border: #e4d5bb;\n  --fish-dot: rgba(58, 73, 112, .1);\n  --fish-stitch: rgba(80, 94, 128, .28);\n  --fish-card-bg: #fffdf8;\n  --fish-surface: #fffdf8;\n  --fish-soft: #f5ecdb;\n  --fish-hover: #eddfc8;\n  --fish-line: #eadfcb;\n  --fish-border: #dfd0b6;\n  --fish-control-border: #c2b097;\n  --fish-control-shadow: inset 0 1px 0 #ffffffc7, 0 1px 2px rgba(43, 58, 96, .06);\n  --fish-focus-ring: rgba(91, 121, 196, .16);\n  --fish-select-arrow: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='m1 1 6 6 6-6' fill='none' stroke='%23806a43' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");\n  --fish-ink: #1b2a4e;\n  --fish-text: var(--fish-ink);\n  --fish-muted: #59627d;\n  --fish-accent: #5b79c4;\n  --fish-action: #22345c;\n  --fish-on-accent: #fff8ea;\n  --fish-accent-soft: #e6ecfb;\n  --fish-blue: #6f8bd4;\n  --fish-blue-soft: #e6ecfb;\n  --fish-blue-strong: #3f5798;\n  --fish-gold: #c69a4a;\n  --fish-gold-soft: #f6e7c3;\n  --fish-pink: #cf7e93;\n  --fish-pink-soft: #fbe7ec;\n  --fish-mint: #4d9b86;\n  --fish-mint-soft: #e2f2ec;\n  --fish-navy: #16223d;\n  --fish-navy-2: #22345c;\n  --fish-link: #38549a;\n  --fish-success: #2f7d63;\n  --fish-warning: #9a641c;\n  --fish-danger: #b0475c;\n  --fish-info: #3f5d9f;\n  --fish-rim: #ffffffd9;\n  --fish-edge: #d7c7aa;\n  --fish-bottom: #efe2cc;\n  --fish-panel: linear-gradient(180deg, #fffdf8, #fffaf1);\n  --fish-shell-fill: #16223d;\n  --fish-control-fill: linear-gradient(180deg, #fffdf9, #f7eedf);\n  --fish-inset: inset 0 1px 2px rgba(43, 58, 96, .07);\n  --fish-small-shadow: inset 0 1px 0 #ffffffcc, 0 1px 2px rgba(43, 58, 96, .08);\n  --fish-shadow: inset 0 1px 0 #ffffffbf, 0 2px 0 rgba(43, 58, 96, .05), 0 14px 28px rgba(43, 58, 96, .07);\n  --fish-control-border-strong: #8f7a5d;\n  --fish-pink-decor: #d794a5;\n  --fish-decor: #8ba0d6;\n  --fish-foam: #fffdf8;\n  --fish-workspace: #fcf6e9;\n  --fish-wave: #c9d7f5;\n  --fish-wave-back: #dfe8fb;\n  --fish-switch-off: #b9aa91;\n  --fish-switch-on: #3f5798;\n  --fish-tape-warm: #e9d8b3;\n  --fish-tape-blue: #c9d9f6;\n  --fish-tape-rose: #f2d7de;\n  --fish-app-glow-1: #fffaf0;\n  --fish-app-glow-2: #ead9bb;\n  --fish-tag-bg: #ffffff8c;\n  --fish-stamp-bg: radial-gradient(circle at 50% 25%, #fffdf7, #f6e8ca);\n  --fish-stamp-ink: #7d5a1e;\n  --fish-gold-ink: #7d5a1e;\n  --fish-rose-ink: #9a5267;\n  --fish-mint-ink: #397463;\n  --fish-symbol-3-bg: radial-gradient(circle at 40% 30%, #fff, #f6dbe3);\n  --fish-symbol-4-bg: radial-gradient(circle at 40% 30%, #fff, #dcefe8);\n  --fish-hero-bg: radial-gradient(120% 130% at 86% 0%, #34507f 0%, #203356 46%, #152442 100%);\n  --fish-hero-text: #f8f1e2;\n  --fish-hero-lead: #dfe5f3;\n  --fish-hero-gold: #f3d697;\n  --fish-chip-bg: rgba(255, 255, 255, .07);\n  --fish-feature-1: linear-gradient(145deg, #eef3ff 0%, #fffdf8 62%);\n  --fish-feature-2: linear-gradient(145deg, #fff6e5 0%, #fffdf8 62%);\n  --fish-feature-3: linear-gradient(145deg, #fbe9ee 0%, #fffdf8 62%);\n  --fish-feature-4: linear-gradient(145deg, #e6f3ee 0%, #fffdf8 62%);\n  --fish-update-bg: linear-gradient(145deg, #eef3ff 0%, #fffdf8 62%);\n  --fish-portrait-glow: rgba(255, 255, 255, .55);\n\n  --dsw-alias-bg-base: var(--fish-bg);\n  --dsw-alias-bg-layer-1: var(--fish-surface);\n  --dsw-alias-bg-layer-2: var(--fish-soft);\n  --dsw-alias-label-primary: var(--fish-text);\n  --dsw-alias-label-secondary: var(--fish-muted);\n  --dsw-alias-label-tertiary: var(--fish-muted);\n  --dsw-alias-border-l1: var(--fish-line);\n  --dsw-alias-border-l2: var(--fish-border);\n  --dsw-alias-state-business-primary: var(--fish-action);\n  --dsw-alias-interactive-bg-hover: var(--fish-hover);\n\n  color-scheme: light;\n  color: var(--fish-text);\n  font: var(--fish-body)/1.7 var(--fish-font);\n  font-weight: 400;\n}\n\nbody[data-ds-dark-theme] .big-fish,\nbody[data-ds-dark-theme] .big-fish-notice {\n  --fish-cream: #0c1424;\n  --fish-bg: #0c1424;\n  --fish-paper-bg: #111a2d;\n  --fish-paper-2: #17213a;\n  --fish-paper-glow: #5a78b414;\n  --fish-fade-mid: rgba(17, 26, 45, .55);\n  --fish-paper-border: #2d3850;\n  --fish-dot: rgba(220, 230, 255, .055);\n  --fish-stitch: rgba(210, 222, 255, .18);\n  --fish-card-bg: #19233a;\n  --fish-surface: #182238;\n  --fish-soft: #202a42;\n  --fish-hover: #2a3752;\n  --fish-line: #2b3550;\n  --fish-border: #37435e;\n  --fish-control-border: #4d5a75;\n  --fish-ink: #f1ead9;\n  --fish-text: var(--fish-ink);\n  --fish-muted: #b8b5aa;\n  --fish-accent: #a9bef0;\n  --fish-action: #e4c98d;\n  --fish-on-accent: #182238;\n  --fish-accent-soft: #2a3b5e;\n  --fish-blue: #9db4ee;\n  --fish-blue-soft: #25344f;\n  --fish-blue-strong: #b9cbf4;\n  --fish-gold: #e4c98d;\n  --fish-gold-soft: #3a3221;\n  --fish-pink: #f0a9bd;\n  --fish-pink-soft: #3a2833;\n  --fish-mint: #8bcdb8;\n  --fish-mint-soft: #223a35;\n  --fish-navy: #0c1526;\n  --fish-navy-2: #17233a;\n  --fish-link: #e7cf9d;\n  --fish-success: #8acbb6;\n  --fish-warning: #ecc38b;\n  --fish-danger: #ffabb9;\n  --fish-info: #a9bdf0;\n  --fish-rim: #ffffff1a;\n  --fish-edge: #070d19;\n  --fish-bottom: #0d1627;\n  --fish-panel: linear-gradient(180deg, #1c2740, #182136);\n  --fish-shell-fill: #0c1526;\n  --fish-control-fill: linear-gradient(180deg, #26324b, #1b263c);\n  --fish-inset: inset 0 1px 2px rgba(0, 0, 0, .4);\n  --fish-small-shadow: inset 0 1px 0 #ffffff0f, 0 1px 2px rgba(0, 0, 0, .3);\n  --fish-shadow: inset 0 1px 0 #ffffff0d, 0 2px 0 #00000033, 0 14px 28px #0000004d;\n  --fish-control-border-strong: #78849f;\n  --fish-control-shadow: inset 0 1px 0 #ffffff0d, 0 1px 2px rgba(0, 0, 0, .3);\n  --fish-focus-ring: rgba(185, 203, 244, .18);\n  --fish-select-arrow: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='m1 1 6 6 6-6' fill='none' stroke='%23d8c39a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");\n  --fish-pink-decor: #e7a1b4;\n  --fish-decor: #6d84bf;\n  --fish-foam: #dbe5ff;\n  --fish-workspace: #111a2d;\n  --fish-wave: #22365a;\n  --fish-wave-back: #1a2a48;\n  --fish-switch-off: #4b556c;\n  --fish-switch-on: #7f9cdd;\n  --fish-tape-warm: #574a36;\n  --fish-tape-blue: #3c4d6d;\n  --fish-tape-rose: #513b46;\n  --fish-app-glow-1: #17263f;\n  --fish-app-glow-2: #1a2c4a;\n  --fish-tag-bg: #ffffff0d;\n  --fish-stamp-bg: radial-gradient(circle at 50% 25%, #23324e, #1a2438);\n  --fish-stamp-ink: #e4c98d;\n  --fish-gold-ink: #f0d49a;\n  --fish-rose-ink: #f2b6c6;\n  --fish-mint-ink: #9ed9c8;\n  --fish-symbol-3-bg: radial-gradient(circle at 40% 30%, #2b2433, #3a2833);\n  --fish-symbol-4-bg: radial-gradient(circle at 40% 30%, #1e302d, #223a35);\n  --fish-hero-bg: radial-gradient(120% 130% at 86% 0%, #1b2c4b 0%, #101b31 50%, #0a1120 100%);\n  --fish-hero-text: #fbf4e6;\n  --fish-hero-lead: #c9d0e0;\n  --fish-hero-gold: #edcf92;\n  --fish-chip-bg: rgba(255, 255, 255, .06);\n  --fish-feature-1: linear-gradient(145deg, #1c2b49 0%, #141d30 62%);\n  --fish-feature-2: linear-gradient(145deg, #292418 0%, #141d30 62%);\n  --fish-feature-3: linear-gradient(145deg, #2b1f2a 0%, #141d30 62%);\n  --fish-feature-4: linear-gradient(145deg, #1a2c28 0%, #141d30 62%);\n  --fish-update-bg: linear-gradient(145deg, #1c2b49 0%, #141d30 62%);\n  --fish-portrait-glow: rgba(120, 150, 210, .18);\n  color-scheme: dark;\n}\n\n@font-face {\n  font-family: 'HarmonyOS Sans SC';\n  src: local('HarmonyOS Sans SC'), local('HarmonyOS Sans SC Regular'), local('HarmonyOS_Sans_SC_Regular');\n  font-weight: 400;\n  font-style: normal;\n  font-display: swap;\n}\n\n@font-face {\n  font-family: 'HarmonyOS Sans SC';\n  src: local('HarmonyOS Sans SC Medium'), local('HarmonyOS_Sans_SC_Medium');\n  font-weight: 500 600;\n  font-style: normal;\n  font-display: swap;\n}\n\n@font-face {\n  font-family: 'HarmonyOS Sans SC';\n  src: local('HarmonyOS Sans SC Bold'), local('HarmonyOS_Sans_SC_Bold');\n  font-weight: 700 900;\n  font-style: normal;\n  font-display: swap;\n}\n\n.big-fish {\n  box-sizing: border-box;\n  container-type: inline-size;\n  width: 100%;\n  height: 100%;\n  min-width: 0;\n  overflow: hidden;\n  padding: calc(12px + var(--dsh-frame-top-clearance, 0px)) 12px 12px;\n  background:\n    radial-gradient(80% 60% at 12% 0%, var(--fish-app-glow-1) 0%, transparent 64%),\n    radial-gradient(70% 50% at 100% 100%, var(--fish-app-glow-2) 0%, transparent 60%),\n    var(--fish-bg);\n}\n\n.big-fish *,\n.big-fish-notice * {\n  box-sizing: border-box;\n}\n\n.big-fish [hidden]:not([hidden=\"until-found\"]) {\n  display: none !important;\n}\n\n.big-fish .fish-logo-img {\n  display: block;\n  object-fit: contain;\n}\n\n.big-fish .fish-glyph {\n  display: block;\n  flex: none;\n}\n\n.big-fish .fish-frame {\n  position: relative;\n  display: grid;\n  grid-template-columns: 236px minmax(0, 1fr);\n  gap: 18px;\n  height: 100%;\n  max-width: 1600px;\n  margin: 0 auto;\n}\n\n/* ── 装订侧栏 ─────────────────────────────────────────────── */\n\n.big-fish .fish-binder {\n  position: relative;\n  isolation: isolate;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n  padding: 22px 14px 16px;\n  border-radius: 30px;\n  color: #f7eeda;\n  background:\n    radial-gradient(90% 60% at 100% 0%, rgba(121, 153, 219, .28), transparent 64%),\n    radial-gradient(70% 46% at 0% 100%, rgba(214, 174, 100, .16), transparent 66%),\n    linear-gradient(160deg, #1b2a4a 0%, #111c34 58%, #0c1628 100%);\n  box-shadow:\n    inset 0 1px 0 rgba(255, 255, 255, .16),\n    0 3px 0 rgba(8, 16, 32, .24),\n    0 22px 46px rgba(9, 19, 40, .28);\n}\n\n.big-fish .fish-binder::before {\n  content: '';\n  position: absolute;\n  inset: 9px;\n  z-index: 3;\n  border: 1px dashed rgba(246, 231, 197, .22);\n  border-radius: 23px;\n  pointer-events: none;\n}\n\n.big-fish .fish-rings {\n  position: absolute;\n  z-index: 4;\n  top: 92px;\n  bottom: 92px;\n  right: -10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  pointer-events: none;\n}\n\n.big-fish .fish-rings span {\n  width: 20px;\n  height: 12px;\n  border-radius: 99px;\n  background: linear-gradient(180deg, #f8e8bd, #c39743);\n  box-shadow: inset 0 1px 0 #fff9e7, 0 2px 4px rgba(8, 16, 34, .45);\n}\n\n.big-fish .fish-brand {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 2px 6px 16px;\n  border-bottom: 1px dashed rgba(246, 231, 197, .24);\n}\n\n.big-fish .fish-logo {\n  display: grid;\n  place-items: center;\n  flex: none;\n  width: 46px;\n  height: 46px;\n  border-radius: 50%;\n  background: transparent;\n  box-shadow: none;\n  transform: none;\n}\n\n.big-fish .fish-logo .fish-logo-img {\n  display: block;\n  width: 100%;\n  height: 100%;\n  object-fit: contain;\n  filter: drop-shadow(0 5px 10px rgba(5, 12, 26, .32));\n}\n\n.big-fish .fish-brand-text {\n  display: flex;\n  flex-direction: column;\n  flex: 1;\n  min-width: 0;\n}\n\n.big-fish .fish-brand-name {\n  font: 800 22px/1.2 var(--fish-title);\n  letter-spacing: .06em;\n  color: #fff9ec;\n  white-space: nowrap;\n}\n\n.big-fish .fish-brand-sub {\n  margin-top: 2px;\n  color: #c4cee5;\n  font-size: 10.5px;\n  letter-spacing: .16em;\n  white-space: nowrap;\n}\n\n.big-fish .fish-version-pin {\n  flex: none;\n  padding: 3px 7px;\n  border: 1px solid rgba(246, 231, 197, .24);\n  border-radius: 99px;\n  background: rgba(255, 255, 255, .06);\n  color: #ecdaac;\n  font-size: 10px;\n  line-height: 1.4;\n}\n\n.big-fish .fish-nav {\n  position: relative;\n  isolation: isolate;\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  gap: 5px;\n  min-height: 0;\n  overflow: auto;\n  overflow-x: hidden;\n  padding: 2px;\n  scrollbar-width: thin;\n}\n\n.big-fish .fish-nav-group {\n  min-width: 0;\n}\n\n.big-fish .fish-nav button {\n  box-shadow: none;\n  transform: none;\n}\n\n.big-fish .fish-tab {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  min-height: 44px;\n  padding: 9px 11px;\n  border: 0;\n  border-radius: 14px;\n  background: transparent;\n  color: #d5ddef;\n  font: 600 14px/1.4 var(--fish-font);\n  text-align: left;\n  letter-spacing: .01em;\n  transition: color var(--fish-motion), background-color var(--fish-motion);\n}\n\n.big-fish .fish-tab-icon {\n  display: grid;\n  place-items: center;\n  flex: none;\n  width: 28px;\n  height: 28px;\n  border-radius: 10px;\n  color: #aebfe6;\n  background: rgba(255, 255, 255, .055);\n  transition: color var(--fish-motion), background-color var(--fish-motion);\n}\n\n.big-fish .fish-tab-label {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .fish-tab-no {\n  flex: none;\n  color: rgba(233, 224, 199, .48);\n  font: 600 9.5px/1 var(--fish-font);\n  letter-spacing: .12em;\n}\n\n.big-fish .fish-tab[aria-selected=true] {\n  color: #1b2a4e;\n}\n\n.big-fish .fish-tab[aria-selected=true] .fish-tab-icon {\n  color: #3d579b;\n  background: rgba(61, 87, 155, .1);\n}\n\n.big-fish .fish-tab[aria-selected=true] .fish-tab-no {\n  color: #9a7a3d;\n}\n\n.big-fish .fish-nav-highlight {\n  position: absolute;\n  z-index: 0;\n  top: 0;\n  left: 2px;\n  right: 2px;\n  height: 44px;\n  border-radius: 14px;\n  background: linear-gradient(135deg, #fff8e9, #f3e4c4);\n  box-shadow: 0 2px 0 rgba(8, 16, 34, .25), 0 8px 18px rgba(6, 14, 30, .24);\n  pointer-events: none;\n  transition: transform .32s cubic-bezier(.22, 1, .36, 1), height .25s;\n}\n\n.big-fish .fish-tab:hover {\n  color: #fff9ec;\n  background: rgba(255, 255, 255, .06);\n}\n\n.big-fish .fish-tab[aria-selected=true]:hover {\n  color: #1b2a4e;\n  background: transparent;\n}\n\n.big-fish .fish-submenu {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: 4px 0 8px 34px;\n  padding: 4px 0 4px 12px;\n  border-left: 1px dashed rgba(246, 231, 197, .28);\n}\n\n.big-fish .fish-submenu button {\n  display: block;\n  width: 100%;\n  min-height: 34px;\n  padding: 6px 10px;\n  border: 0;\n  border-radius: 10px;\n  background: transparent;\n  color: #c2cce2;\n  font: 500 13px/1.4 var(--fish-font);\n  text-align: left;\n  white-space: nowrap;\n  box-shadow: none;\n}\n\n.big-fish .fish-submenu button[aria-current=page] {\n  color: #ffe6ac;\n  background: rgba(246, 231, 197, .12);\n  box-shadow: inset 2px 0 0 #e7c478;\n  font-weight: 700;\n}\n\n.big-fish .fish-submenu button:hover {\n  color: #fff9ec;\n  background: rgba(255, 255, 255, .07);\n}\n\n.big-fish .fish-submenu button[aria-current=page]:hover {\n  color: #ffe6ac;\n  background: rgba(246, 231, 197, .16);\n}\n\n.big-fish .fish-binder-foot {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  flex: none;\n  flex-direction: column;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px dashed rgba(246, 231, 197, .22);\n}\n\n.big-fish .fish-sidebar-scene {\n  position: relative;\n  display: grid;\n  place-items: center;\n  margin: 0;\n  padding: 2px 0;\n}\n\n.big-fish .fish-sidebar-scene::before {\n  content: '';\n  position: absolute;\n  width: 146px;\n  height: 146px;\n  border-radius: 50%;\n  background: radial-gradient(circle, var(--fish-portrait-glow), transparent 72%);\n  transform: none;\n}\n\n.big-fish .fish-sidebar-scene img {\n  position: relative;\n  display: block;\n  width: 132px;\n  height: 132px;\n  padding: 0;\n  border-radius: 0;\n  background: transparent;\n  object-fit: contain;\n  transform: rotate(-3deg);\n  filter: drop-shadow(0 9px 12px rgba(4, 10, 24, .42));\n  box-shadow: none;\n}\n\n.big-fish .fish-sidebar-note {\n  display: flex;\n  align-items: flex-start;\n  gap: 7px;\n  margin: 0;\n  padding: 8px 10px;\n  border: 1px solid rgba(255, 255, 255, .09);\n  border-radius: 12px;\n  background: rgba(255, 255, 255, .05);\n  color: #ced7e8;\n  font-size: 11.5px;\n  line-height: 1.6;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-connection-dot {\n  flex: none;\n  width: 7px;\n  height: 7px;\n  margin-top: 5px;\n  border-radius: 99px;\n  background: #e7b96d;\n  box-shadow: 0 0 0 3px rgba(231, 185, 109, .16);\n}\n\n.big-fish .fish-connection-dot[data-connected=true] {\n  background: #7fd2b5;\n  box-shadow: 0 0 0 3px rgba(127, 210, 181, .16);\n}\n\n/* ── 手帐纸面 ─────────────────────────────────────────────── */\n\n.big-fish .fish-workspace {\n  position: relative;\n  min-width: 0;\n  min-height: 0;\n  height: 100%;\n}\n\n.big-fish .fish-paper {\n  --fish-paper-radius: 30px;\n  --fish-scroll-inset: 12px;\n  --fish-scroll-radius: 18px;\n  --fish-fade-height: 28px;\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  width: 100%;\n  height: 100%;\n  min-height: 0;\n  overflow: visible;\n  border: 1px solid var(--fish-paper-border);\n  border-radius: var(--fish-paper-radius);\n  background-color: var(--fish-paper-bg);\n  background-image:\n    radial-gradient(90% 44% at 50% 0%, var(--fish-paper-glow), transparent 70%),\n    radial-gradient(var(--fish-dot) 1px, transparent 1px);\n  background-size: auto, 20px 20px;\n  box-shadow:\n    inset 0 1px 0 var(--fish-rim),\n    0 2px 0 rgba(43, 58, 96, .05),\n    0 20px 50px rgba(42, 54, 92, .1);\n}\n\n.big-fish .fish-scroll {\n  position: relative;\n  z-index: 1;\n  flex: 1 1 auto;\n  min-height: 0;\n  margin: var(--fish-scroll-inset);\n  padding: 24px 34px 34px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  overscroll-behavior: contain;\n  scrollbar-gutter: stable;\n  border-radius: var(--fish-scroll-radius);\n  clip-path: inset(0 round var(--fish-scroll-radius));\n  scrollbar-color: var(--fish-control-border) transparent;\n}\n\n.big-fish .fish-fade {\n  position: absolute;\n  z-index: 2;\n  right: calc(var(--fish-scroll-inset) + 11px);\n  left: var(--fish-scroll-inset);\n  height: var(--fish-fade-height);\n  opacity: .9;\n  pointer-events: none;\n}\n\n.big-fish .fish-fade-top {\n  top: 0;\n  background: linear-gradient(180deg, var(--fish-paper-bg) 0%, var(--fish-fade-mid) 42%, transparent 100%);\n}\n\n.big-fish .fish-fade-bottom {\n  bottom: 0;\n  background: linear-gradient(0deg, var(--fish-paper-bg) 0%, var(--fish-fade-mid) 42%, transparent 100%);\n}\n\n.big-fish .fish-paper::before {\n  content: '';\n  position: absolute;\n  z-index: 3;\n  inset: 11px;\n  border: 1px dashed var(--fish-stitch);\n  border-radius: 22px;\n  opacity: .55;\n  pointer-events: none;\n}\n\n.big-fish .fish-content {\n  position: relative;\n  z-index: 1;\n  max-width: 1180px;\n  margin: 0 auto;\n}\n\n.big-fish .fish-tape {\n  position: absolute;\n  z-index: 4;\n  width: 86px;\n  height: 24px;\n  background-color: var(--fish-tape-warm);\n  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, .4) 0 6px, transparent 6px 12px);\n  opacity: .92;\n  clip-path: polygon(2% 0, 100% 4%, 98% 100%, 0 94%);\n  box-shadow: 0 1px 2px rgba(40, 50, 80, .14);\n  pointer-events: none;\n}\n\n.big-fish .fish-tape-corner {\n  top: -11px;\n}\n\n.big-fish .fish-tape-left {\n  left: 72px;\n  transform: rotate(-6deg);\n}\n\n.big-fish .fish-tape-right {\n  right: 96px;\n  background-color: var(--fish-tape-blue);\n  transform: rotate(5deg);\n}\n\n.big-fish .fish-kicker {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  color: var(--fish-blue-strong);\n  font: 700 10.5px/1.6 var(--fish-font);\n  letter-spacing: .18em;\n  text-transform: uppercase;\n}\n\n.big-fish .fish-kicker-dot {\n  width: 6px;\n  height: 6px;\n  border-radius: 99px;\n  background: var(--fish-gold);\n  box-shadow: 0 0 0 4px rgba(198, 154, 74, .15);\n}\n\n.big-fish .fish-kicker-light {\n  color: #f3d697;\n}\n\n.big-fish .fish-muted {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish h1 {\n  margin: 0;\n  font: 800 clamp(28px, 3cqi, 38px)/1.25 var(--fish-title);\n  letter-spacing: -.01em;\n}\n\n.big-fish h2 {\n  margin: 0 0 8px;\n  font: 800 20px/1.35 var(--fish-title);\n  letter-spacing: -.005em;\n}\n\n.big-fish h3 {\n  margin: 0 0 8px;\n  font-size: 16px;\n  line-height: 1.7;\n}\n\n.big-fish p {\n  margin: 8px 0;\n  max-width: 70ch;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-page-head {\n  display: flex;\n  align-items: flex-end;\n  justify-content: space-between;\n  gap: 28px;\n  margin: 0 0 28px;\n  padding: 0 0 24px;\n  border-bottom: 1px dashed var(--fish-stitch);\n}\n\n.big-fish .fish-page-head-copy {\n  min-width: 0;\n}\n\n.big-fish .fish-page-head h1 {\n  margin: 6px 0 8px;\n}\n\n.big-fish .fish-page-desc {\n  margin: 0;\n  max-width: 62ch;\n  color: var(--fish-muted);\n  font-size: 14.5px;\n  line-height: 1.75;\n}\n\n.big-fish .fish-page-stamp {\n  position: relative;\n  display: flex;\n  flex: none;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 1px;\n  width: 96px;\n  height: 96px;\n  border: 2px solid rgba(198, 154, 74, .55);\n  border-radius: 50%;\n  background: var(--fish-stamp-bg);\n  color: var(--fish-stamp-ink);\n  box-shadow: 0 3px 0 rgba(198, 154, 74, .16);\n  transform: rotate(-7deg);\n}\n\n.big-fish .fish-page-stamp::after {\n  content: '';\n  position: absolute;\n  inset: 5px;\n  border: 1px dashed currentColor;\n  border-radius: 50%;\n  opacity: .42;\n}\n\n.big-fish .fish-page-stamp .fish-glyph {\n  color: var(--fish-blue-strong);\n}\n\n.big-fish .fish-page-stamp-no {\n  color: var(--fish-blue-strong);\n  font: 800 17px/1 var(--fish-title);\n  letter-spacing: .08em;\n}\n\n.big-fish .fish-page-stamp-label {\n  font: 600 10px/1.4 var(--fish-font);\n  letter-spacing: .12em;\n}\n\n/* ── 总览 · 深海封面 ──────────────────────────────────────── */\n\n.big-fish .fish-overview {\n  display: flex;\n  flex-direction: column;\n  gap: 30px;\n}\n\n.big-fish .fish-hero {\n  position: relative;\n  isolation: isolate;\n  display: grid;\n  grid-template-columns: minmax(0, 1.12fr) minmax(238px, .88fr);\n  align-items: center;\n  gap: clamp(18px, 3cqi, 40px);\n  min-height: 396px;\n  padding: clamp(28px, 4cqi, 50px) clamp(24px, 4cqi, 52px) 92px;\n  overflow: hidden;\n  border: 1px solid rgba(255, 255, 255, .12);\n  border-radius: 30px;\n  background: var(--fish-hero-bg);\n  box-shadow:\n    inset 0 1px 0 rgba(255, 255, 255, .16),\n    0 24px 48px rgba(18, 29, 57, .28);\n  color: var(--fish-hero-text);\n}\n\n.big-fish .fish-hero::before {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: radial-gradient(70% 80% at 4% 100%, rgba(94, 130, 206, .25), transparent 60%);\n  pointer-events: none;\n}\n\n.big-fish .fish-hero-copy {\n  position: relative;\n  z-index: 2;\n  min-width: 0;\n}\n\n.big-fish .fish-hero h1 {\n  margin: 14px 0 16px;\n  color: #fff8ea;\n  font: 800 clamp(30px, 4.2cqi, 52px)/1.28 var(--fish-title);\n  letter-spacing: -.02em;\n  text-wrap: balance;\n}\n\n.big-fish .fish-mark {\n  position: relative;\n  display: inline-block;\n  z-index: 1;\n  color: #ffdf9d;\n}\n\n.big-fish .fish-mark::after {\n  content: '';\n  position: absolute;\n  z-index: -1;\n  right: -4px;\n  bottom: 1px;\n  left: -4px;\n  height: .32em;\n  border-radius: 99px;\n  background: rgba(255, 208, 126, .2);\n}\n\n.big-fish .fish-hero-lead {\n  max-width: 46ch;\n  margin: 0;\n  color: var(--fish-hero-lead);\n  font-size: 15.5px;\n  line-height: 1.85;\n}\n\n.big-fish .fish-hero-quote {\n  max-width: 38ch;\n  margin: 20px 0 0;\n  padding-left: 14px;\n  border-left: 2px dashed rgba(243, 214, 151, .55);\n  color: var(--fish-hero-gold);\n  font: 500 15px/1.7 'Kaiti SC', STKaiti, KaiTi, serif;\n  letter-spacing: .04em;\n}\n\n.big-fish .fish-hero-chips {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin-top: 24px;\n}\n\n.big-fish .fish-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  padding: 6px 11px;\n  border: 1px solid rgba(255, 255, 255, .16);\n  border-radius: 99px;\n  background: var(--fish-chip-bg);\n  color: #e8edf8;\n  font-size: 11.5px;\n  line-height: 1.4;\n  letter-spacing: .02em;\n}\n\n.big-fish .fish-chip-status {\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--fish-hero-lead);\n  font-weight: 600;\n}\n\n.big-fish .fish-chip b {\n  color: var(--fish-hero-gold);\n  font-weight: 700;\n}\n\n.big-fish .fish-chip-dot {\n  width: 6px;\n  height: 6px;\n  border-radius: 99px;\n  background: #e7b96d;\n}\n\n.big-fish .fish-chip[data-ok] .fish-chip-dot {\n  background: #84d8bb;\n}\n\n.big-fish .fish-welcome {\n  position: relative;\n  z-index: 2;\n  justify-self: center;\n  width: clamp(220px, 24cqi, 320px);\n  margin: 0;\n  padding: 12px 12px 10px;\n  border-radius: 20px;\n  background: #fffdf8;\n  box-shadow: 0 18px 34px rgba(6, 14, 31, .35);\n  transform: rotate(2.5deg);\n  pointer-events: none;\n  animation: fish-float 7s ease-in-out infinite;\n}\n\n.big-fish .fish-welcome img {\n  display: block;\n  width: 100%;\n  height: auto;\n  border-radius: 12px;\n  background: #fff;\n}\n\n.big-fish .fish-welcome figcaption {\n  padding-top: 8px;\n  color: #4d5878;\n  font: 600 12.5px/1.5 'Kaiti SC', STKaiti, KaiTi, serif;\n  text-align: center;\n  letter-spacing: .02em;\n}\n\n.big-fish .fish-welcome-tape {\n  top: -12px;\n  left: 50%;\n  width: 94px;\n  transform: translateX(-50%) rotate(-3deg);\n}\n\n.big-fish .fish-hero-wave {\n  position: absolute;\n  z-index: 0;\n  right: 0;\n  bottom: -2px;\n  left: 0;\n  width: 100%;\n  height: 118px;\n  pointer-events: none;\n}\n\n.big-fish .fish-wave-back {\n  fill: rgba(106, 140, 205, .34);\n  transform-box: fill-box;\n  transform-origin: center bottom;\n  animation: fish-wave-breathe 12s ease-in-out infinite;\n}\n\n.big-fish .fish-wave-front {\n  fill: rgba(145, 177, 232, .22);\n  transform-box: fill-box;\n  transform-origin: center bottom;\n  animation: fish-wave-breathe 9s ease-in-out -2.2s infinite;\n}\n\n.big-fish .fish-wave-foam {\n  fill: none;\n  stroke: rgba(255, 246, 224, .45);\n  stroke-width: 2;\n  transform-box: fill-box;\n  transform-origin: center;\n  animation: fish-foam-drift 8s ease-in-out infinite;\n}\n\n@keyframes fish-wave-breathe {\n  0%, 100% { transform: translateX(-1px) scale(1, 1); }\n  50% { transform: translateX(1px) scale(1.01, 1.03); }\n}\n\n@keyframes fish-foam-drift {\n  0%, 100% { transform: translateX(-3px) scaleX(1.008); }\n  50% { transform: translateX(3px) scaleX(1.008); }\n}\n\n.big-fish .fish-bubbles {\n  position: absolute;\n  stroke: rgba(240, 230, 204, .28);\n  stroke-width: 2;\n  pointer-events: none;\n}\n\n.big-fish .fish-hero-bubbles {\n  z-index: 1;\n  right: 7%;\n  bottom: 8px;\n  width: 174px;\n  height: 174px;\n  opacity: .82;\n}\n\n.big-fish .fish-hero-bubbles circle,\n.big-fish .fish-hero-bubbles path {\n  transform-box: fill-box;\n  transform-origin: center;\n  animation: fish-bubble-float 6.5s ease-in-out infinite;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(2) {\n  animation-delay: -2.1s;\n  animation-duration: 7.5s;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(3) {\n  animation-delay: -4.2s;\n  animation-duration: 5.8s;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(4) {\n  animation-delay: -1.2s;\n  animation-duration: 8.2s;\n}\n\n.big-fish .fish-hero-bubbles circle:nth-of-type(5) {\n  animation-delay: -3.6s;\n  animation-duration: 6.8s;\n}\n\n.big-fish .fish-hero-bubbles path {\n  animation-delay: -2.8s;\n  animation-duration: 9s;\n}\n\n@keyframes fish-bubble-float {\n  0%, 100% { transform: translateY(2px); opacity: .55; }\n  50% { transform: translateY(-5px); opacity: .95; }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish .fish-wave-back,\n  .big-fish .fish-wave-front,\n  .big-fish .fish-wave-foam,\n  .big-fish .fish-hero-bubbles circle,\n  .big-fish .fish-hero-bubbles path {\n    animation: none;\n  }\n}\n\n.big-fish .fish-sparkle {\n  fill: currentColor;\n  stroke: none;\n  color: var(--fish-hero-gold);\n  pointer-events: none;\n}\n\n.big-fish .fish-hero-spark {\n  position: absolute;\n  z-index: 1;\n  top: 26px;\n  right: 32%;\n  width: 38px;\n  height: 38px;\n  opacity: .76;\n}\n\n/* ── 总览 · 状态与分区 ────────────────────────────────────── */\n\n.big-fish .fish-board {\n  display: block;\n}\n\n.big-fish .fish-section-head {\n  display: flex;\n  align-items: flex-end;\n  justify-content: space-between;\n  gap: 20px;\n  margin-bottom: 16px;\n}\n\n.big-fish .fish-section-head h2 {\n  margin: 5px 0 0;\n  font: 800 clamp(22px, 2.2cqi, 27px)/1.3 var(--fish-title);\n}\n\n.big-fish .fish-section-note {\n  max-width: 34ch;\n  color: var(--fish-muted);\n  font-size: 12px;\n  line-height: 1.6;\n  text-align: right;\n}\n\n.big-fish .fish-stats {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 14px;\n}\n\n.big-fish .fish-stat {\n  display: grid;\n  grid-template-columns: 44px minmax(0, 1fr);\n  align-items: start;\n  gap: 12px;\n  padding: 18px;\n  border-radius: 20px;\n  background: var(--fish-card-bg);\n  border: 1px solid var(--fish-border);\n  box-shadow: var(--fish-small-shadow);\n}\n\n.big-fish .fish-stat-icon {\n  display: grid;\n  place-items: center;\n  width: 44px;\n  height: 44px;\n  border: 1px solid rgba(79, 109, 187, .18);\n  border-radius: 14px;\n  background: var(--fish-blue-soft);\n  color: var(--fish-blue-strong);\n}\n\n.big-fish .fish-stat[data-tone=gold] .fish-stat-icon {\n  border-color: rgba(198, 154, 74, .26);\n  background: var(--fish-gold-soft);\n  color: var(--fish-gold-ink);\n}\n\n.big-fish .fish-stat[data-tone=rose] .fish-stat-icon {\n  border-color: rgba(207, 126, 147, .28);\n  background: var(--fish-pink-soft);\n  color: var(--fish-rose-ink);\n}\n\n.big-fish .fish-stat[data-tone=mint] .fish-stat-icon {\n  border-color: rgba(77, 155, 134, .26);\n  background: var(--fish-mint-soft);\n  color: var(--fish-mint-ink);\n}\n\n.big-fish .fish-stat-copy {\n  min-width: 0;\n}\n\n.big-fish .fish-stat-label {\n  display: block;\n  color: var(--fish-muted);\n  font-size: 12px;\n  letter-spacing: .04em;\n}\n\n.big-fish .fish-value {\n  margin: 2px 0 4px;\n  color: var(--fish-text);\n  font: 800 clamp(20px, 2.2cqi, 26px)/1.3 var(--fish-title);\n  letter-spacing: -.01em;\n}\n\n.big-fish .fish-stat-hint {\n  display: block;\n  color: var(--fish-muted);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n.big-fish .fish-chapters {\n  margin-top: 2px;\n}\n\n.big-fish .fish-grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 18px;\n}\n\n@container (min-width: 1320px) {\n  .big-fish .fish-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 150px;\n    padding: 24px;\n  }\n\n\n  .big-fish .fish-feature h2 {\n    font-size: 22px;\n  }\n\n  .big-fish .fish-feature p {\n    font-size: 13px;\n  }\n}\n\n.big-fish .fish-feature {\n  position: relative;\n  isolation: isolate;\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 172px;\n  align-items: center;\n  gap: 18px;\n  min-width: 0;\n  padding: 26px 26px;\n  overflow: hidden;\n  border: 1px solid var(--fish-border);\n  border-radius: 26px;\n  background: var(--fish-feature-1);\n  box-shadow: 0 2px 0 rgba(49, 62, 98, .06), 0 14px 30px rgba(50, 64, 105, .07);\n  transform: rotate(-.35deg);\n  transition: transform .32s cubic-bezier(.22, 1, .36, 1), box-shadow .32s;\n}\n\n.big-fish .fish-feature:nth-child(2) {\n  background: var(--fish-feature-2);\n  transform: rotate(.4deg);\n}\n\n.big-fish .fish-feature:nth-child(3) {\n  background: var(--fish-feature-3);\n  transform: rotate(.3deg);\n}\n\n.big-fish .fish-feature:nth-child(4) {\n  background: var(--fish-feature-4);\n  transform: rotate(-.4deg);\n}\n\n.big-fish .fish-feature:hover {\n  box-shadow: 0 20px 40px rgba(50, 64, 105, .12);\n  transform: rotate(0) translateY(-3px);\n}\n\n.big-fish .fish-feature::before {\n  content: attr(data-index);\n  position: absolute;\n  z-index: -1;\n  right: 14px;\n  bottom: -22px;\n  color: rgba(54, 75, 122, .06);\n  font: 800 92px/1 var(--fish-title);\n  pointer-events: none;\n}\n\n.big-fish .fish-feature-copy {\n  position: relative;\n  z-index: 1;\n  min-width: 0;\n}\n\n.big-fish .fish-feature-tag {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  padding: 4px 10px;\n  border: 1px dashed rgba(138, 100, 36, .4);\n  border-radius: 99px;\n  background: var(--fish-tag-bg);\n  color: var(--fish-stamp-ink);\n  font-size: 11px;\n  letter-spacing: .08em;\n}\n\n.big-fish .fish-feature-tag b {\n  color: var(--fish-blue-strong);\n  font: 800 11px/1 var(--fish-title);\n}\n\n.big-fish .fish-feature h2 {\n  margin: 10px 0 8px;\n  font: 800 24px/1.3 var(--fish-title);\n}\n\n.big-fish .fish-feature p {\n  margin: 0;\n  max-width: 40ch;\n  color: var(--fish-muted);\n  font-size: 13.5px;\n  line-height: 1.75;\n}\n\n.big-fish .fish-feature .fish-actions {\n  margin-top: 16px;\n}\n\n.big-fish .fish-feature-sticker {\n  position: relative;\n  justify-self: center;\n  align-self: end;\n  width: clamp(120px, 14cqi, 168px);\n  margin: 0;\n  padding: 8px 8px 6px;\n  border-radius: 16px;\n  background: #fffdf8;\n  box-shadow: 0 12px 24px rgba(37, 51, 88, .15);\n  transform: rotate(-4deg);\n  pointer-events: none;\n}\n\n.big-fish .fish-feature:nth-child(2) .fish-feature-sticker {\n  transform: rotate(4deg);\n}\n\n.big-fish .fish-feature-sticker img {\n  display: block;\n  width: 100%;\n  height: auto;\n  border-radius: 10px;\n}\n\n.big-fish .fish-feature-tape {\n  top: -10px;\n  left: 50%;\n  width: 64px;\n  height: 19px;\n  background-color: var(--fish-tape-rose);\n  transform: translateX(-50%) rotate(2deg);\n}\n\n.big-fish .fish-feature-light {\n  grid-template-columns: minmax(0, 1fr) auto;\n}\n\n.big-fish .fish-feature-sticker-small {\n  align-self: center;\n  width: clamp(96px, 12cqi, 152px);\n  transform: rotate(-4deg);\n}\n\n.big-fish .fish-feature:nth-child(4) .fish-feature-sticker-small {\n  transform: rotate(4deg);\n}\n\n/* ── 通用控件 ─────────────────────────────────────────────── */\n\n.big-fish button,\n.big-fish input,\n.big-fish select,\n.big-fish textarea,\n.big-fish-notice button {\n  max-width: 100%;\n  font-family: var(--fish-font);\n  font-size: var(--fish-label);\n  line-height: 1.6;\n}\n\n.big-fish button,\n.big-fish-notice button {\n  min-height: 38px;\n  cursor: pointer;\n  letter-spacing: .02em;\n  transition: box-shadow var(--fish-motion), transform var(--fish-motion), background-color var(--fish-motion), color var(--fish-motion);\n}\n\n.big-fish .fish-button,\n.big-fish-notice button {\n  padding: 9px 16px;\n  border: 1px solid var(--fish-border);\n  border-radius: 12px;\n  background: var(--fish-control-fill);\n  color: var(--fish-text);\n  font-weight: 600;\n  box-shadow: 0 2px 0 var(--fish-edge);\n}\n\n.big-fish .fish-button:not(:disabled):hover,\n.big-fish-notice button:not(:disabled):hover {\n  transform: translateY(-1px);\n  box-shadow: 0 3px 0 var(--fish-edge), 0 8px 16px rgba(43, 58, 96, .12);\n}\n\n.big-fish .fish-button:not(:disabled):active,\n.big-fish-notice button:not(:disabled):active {\n  transform: translateY(1px);\n  box-shadow: var(--fish-inset);\n}\n\n.big-fish .fish-button.fish-danger {\n  border-color: var(--fish-danger);\n  background: var(--fish-danger);\n  color: #fffdf8;\n  box-shadow: 0 2px 0 rgba(90, 24, 40, .28);\n}\n\nbody[data-ds-dark-theme] .big-fish .fish-button.fish-danger {\n  color: #2a1420;\n}\n\n.big-fish .fish-primary {\n  border-color: var(--fish-action);\n  background: var(--fish-action);\n  color: var(--fish-on-accent);\n}\n\n.big-fish .fish-primary:not(:disabled):hover {\n  background: var(--fish-blue-strong);\n  border-color: var(--fish-blue-strong);\n  color: #fff8ea;\n}\n\n.big-fish .fish-badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 4px 11px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 99px;\n  background: var(--fish-soft);\n  color: var(--fish-blue-strong);\n  font-size: 11.5px;\n  line-height: 1.6;\n  white-space: nowrap;\n}\n\n.big-fish .fish-actions {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-top: 14px;\n}\n\n.big-fish .fish-card {\n  min-width: 0;\n  padding: 20px;\n  border: 1px solid var(--fish-border);\n  border-radius: 22px;\n  background: var(--fish-panel);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]),\n.big-fish select,\n.big-fish textarea {\n  appearance: none !important;\n  -webkit-appearance: none !important;\n  min-width: 0;\n  min-height: 42px;\n  padding: 10px 14px !important;\n  border: 1px solid var(--fish-control-border) !important;\n  border-radius: 12px !important;\n  background-color: var(--fish-surface) !important;\n  background-image: none !important;\n  color: var(--fish-text) !important;\n  box-shadow: var(--fish-control-shadow) !important;\n  font-family: var(--fish-font) !important;\n  font-size: var(--fish-label) !important;\n  line-height: 1.5 !important;\n  transition: border-color var(--fish-motion), box-shadow var(--fish-motion), background-color var(--fish-motion) !important;\n}\n\n.big-fish select {\n  padding-right: 38px !important;\n  background-image: var(--fish-select-arrow) !important;\n  background-repeat: no-repeat !important;\n  background-position: right 13px center !important;\n  background-size: 13px 9px !important;\n  cursor: pointer;\n}\n\n.big-fish textarea {\n  min-height: 112px;\n  padding: 12px 14px !important;\n}\n\n.big-fish select option {\n  background: var(--fish-surface);\n  color: var(--fish-text);\n}\n\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]):not(:disabled):hover,\n.big-fish select:not(:disabled):hover,\n.big-fish textarea:not(:disabled):hover {\n  border-color: var(--fish-control-border-strong) !important;\n}\n\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]):focus,\n.big-fish select:focus,\n.big-fish textarea:focus {\n  border-color: var(--fish-blue-strong) !important;\n  outline: none !important;\n  box-shadow: 0 0 0 3px var(--fish-focus-ring), var(--fish-control-shadow) !important;\n}\n\n.big-fish input[type=number]::-webkit-inner-spin-button,\n.big-fish input[type=number]::-webkit-outer-spin-button {\n  -webkit-appearance: none;\n  margin: 0;\n}\n\n.big-fish input[type=number] {\n  appearance: textfield !important;\n  -moz-appearance: textfield !important;\n}\n\n.big-fish input[type=file] {\n  min-height: 42px;\n  padding: 7px 10px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: 12px;\n  background-color: var(--fish-surface);\n  color: var(--fish-text);\n  box-shadow: var(--fish-control-shadow);\n  font-family: var(--fish-font);\n  font-size: var(--fish-label);\n}\n\n.big-fish input[type=file]::file-selector-button {\n  margin-right: 10px;\n  padding: 7px 12px;\n  border: 1px solid var(--fish-border);\n  border-radius: 9px;\n  background: var(--fish-control-fill);\n  color: var(--fish-text);\n  font-family: var(--fish-font);\n  font-size: var(--fish-small);\n  font-weight: 600;\n  cursor: pointer;\n}\n\n.big-fish input::placeholder,\n.big-fish textarea::placeholder {\n  color: var(--fish-muted);\n  opacity: .62;\n}\n\n.big-fish .fish-input-box,\n.big-fish .fish-select-box {\n  position: relative;\n  display: block;\n  width: 100%;\n  min-width: 0;\n}\n\n.big-fish .fish-input-box .fish-input,\n.big-fish .fish-select-box .fish-select-input {\n  width: 100%;\n}\n\n.big-fish .fish-input-icon {\n  position: absolute;\n  top: 50%;\n  left: 12px;\n  z-index: 1;\n  display: flex;\n  align-items: center;\n  color: var(--fish-muted);\n  pointer-events: none;\n  transform: translateY(-50%);\n}\n\n.big-fish .fish-input-with-icon {\n  padding-left: 40px !important;\n}\n\n.big-fish input[type=checkbox],\n.big-fish input[type=radio] {\n  flex: none;\n  width: 18px;\n  height: 18px;\n  accent-color: var(--fish-action);\n  vertical-align: middle;\n}\n\n.big-fish input[type=range],\n.big-fish progress {\n  max-width: 100%;\n  accent-color: var(--fish-action);\n}\n\n.big-fish textarea {\n  resize: vertical;\n  overflow-wrap: anywhere;\n}\n\n.big-fish :disabled,\n.big-fish-notice :disabled {\n  cursor: not-allowed;\n  opacity: .54;\n}\n\n.big-fish :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible,\n.big-fish-notice button:focus-visible {\n  outline: 2px solid var(--fish-gold);\n  outline-offset: 3px;\n}\n\n.big-fish a {\n  color: var(--fish-link);\n  text-decoration: none;\n  overflow-wrap: anywhere;\n}\n\n.big-fish a:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.big-fish summary {\n  min-height: 40px;\n  cursor: pointer;\n  font-weight: 600;\n}\n\n/* 原生 checkbox 开关保留键盘与回弹手感。 */\n.big-fish input[role=switch],\n.big-fish button[role=switch] {\n  position: relative;\n  display: inline-block;\n  flex: 0 0 46px;\n  width: 46px !important;\n  min-width: 46px !important;\n  max-width: 46px;\n  height: 26px !important;\n  min-height: 26px !important;\n  margin: 6px 0;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 999px !important;\n  appearance: none;\n  -webkit-appearance: none;\n  background: var(--fish-switch-off) !important;\n  box-shadow: inset 0 1px 2px rgba(20, 30, 55, .18) !important;\n  color: transparent !important;\n  font-size: 0 !important;\n  vertical-align: middle;\n  transform: none !important;\n}\n\n.big-fish [role=switch]::before {\n  content: '';\n  position: absolute;\n  top: 3px;\n  left: 3px;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  background: #fffdf6;\n  box-shadow: 0 1px 3px #0003;\n  transition: transform .42s cubic-bezier(.34, 1.56, .64, 1), width .18s, border-radius .18s;\n}\n\n.big-fish input[role=switch]:checked,\n.big-fish button[role=switch][aria-checked=true] {\n  background: var(--fish-switch-on) !important;\n}\n\n.big-fish input[role=switch]:checked::before,\n.big-fish button[role=switch][aria-checked=true]::before {\n  transform: translateX(20px);\n}\n\n.big-fish [role=switch]:not(:disabled):active::before {\n  width: 24px;\n  border-radius: 12px;\n}\n\n.big-fish input[role=switch]:checked:active::before,\n.big-fish button[role=switch][aria-checked=true]:active::before {\n  transform: translateX(16px);\n}\n\n/* ── 更新与来源 ───────────────────────────────────────────── */\n\n.big-fish .fish-updates {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n\n.big-fish .fish-updates {\n  gap: 18px;\n}\n\n.big-fish .fish-update-card {\n  position: relative;\n  isolation: isolate;\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);\n  align-items: center;\n  gap: 30px;\n  min-height: 300px;\n  padding: 32px 34px;\n  overflow: hidden;\n  background: var(--fish-update-bg);\n}\n\n.big-fish .fish-update-card::after {\n  content: 'EVOLVE';\n  position: absolute;\n  right: 12px;\n  bottom: -28px;\n  z-index: 0;\n  color: var(--fish-ink);\n  font: 800 clamp(72px, 9cqi, 118px)/1 var(--fish-title);\n  letter-spacing: .04em;\n  opacity: .045;\n  pointer-events: none;\n}\n\n.big-fish .fish-update-body {\n  position: relative;\n  z-index: 1;\n  min-width: 0;\n}\n\n.big-fish .fish-update-heading {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  flex-wrap: wrap;\n  gap: 14px 20px;\n}\n\n.big-fish .fish-update-body h2 {\n  margin: 6px 0 10px;\n  font: 800 clamp(30px, 3.4cqi, 40px)/1.15 var(--fish-title);\n  letter-spacing: -.01em;\n}\n\n.big-fish .fish-update-desc {\n  max-width: 560px;\n  margin: 0;\n}\n\n.big-fish .fish-update-controls {\n  display: flex;\n  align-items: flex-end;\n  flex-wrap: wrap;\n  gap: 16px 20px;\n  margin-top: 26px;\n  padding-top: 20px;\n  border-top: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-channel-field {\n  display: flex;\n  flex: 0 1 310px;\n  flex-direction: column;\n  gap: 7px;\n  min-width: 250px;\n  max-width: 100%;\n}\n\n.big-fish .fish-channel-field > span {\n  color: var(--fish-text);\n  font-size: 12.5px;\n  font-weight: 600;\n}\n\n.big-fish .fish-channel-field .fish-select-box {\n  width: 100%;\n}\n\n.big-fish .fish-channel-field .fish-select-input {\n  width: 100%;\n  min-width: 250px;\n}\n\n.big-fish .fish-update-operations {\n  display: flex;\n  flex: 1 1 440px;\n  align-items: center;\n  justify-content: flex-end;\n  flex-wrap: wrap;\n  gap: 10px 12px;\n}\n\n.big-fish .fish-update-status {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n  margin: 6px 0 0;\n  padding: 8px 13px;\n  border: 1px solid var(--fish-line);\n  border-radius: 999px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n  font-size: 12.5px;\n  white-space: nowrap;\n}\n\n.big-fish .fish-update-dot {\n  width: 7px;\n  height: 7px;\n  flex: none;\n  border-radius: 99px;\n  background: var(--fish-gold);\n  box-shadow: 0 0 0 3px rgba(198, 154, 74, .16);\n}\n\n.big-fish .fish-update-operations .fish-actions {\n  margin: 0;\n  gap: 10px;\n}\n\n.big-fish .fish-update-operations .fish-button {\n  min-height: 44px;\n  padding: 11px 20px;\n  border-radius: 13px;\n}\n\n.big-fish .fish-update-note {\n  max-width: 620px;\n  margin: 12px 0 0;\n  font-size: var(--fish-small);\n}\n\n.big-fish .fish-update-art {\n  position: relative;\n  z-index: 1;\n  justify-self: center;\n  width: min(100%, 280px);\n  margin: 0;\n  padding: 10px 10px 8px;\n  border-radius: 20px;\n  background: var(--fish-card-bg);\n  box-shadow: 0 20px 42px rgba(37, 51, 88, .16), 0 2px 0 rgba(49, 62, 98, .06);\n  transform: rotate(3deg);\n  transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s;\n}\n\n.big-fish .fish-update-art::before {\n  content: '';\n  position: absolute;\n  inset: -32px;\n  z-index: -1;\n  border-radius: 50%;\n  background: radial-gradient(circle at 50% 45%, rgba(198, 154, 74, .18), transparent 68%);\n  pointer-events: none;\n}\n\n.big-fish .fish-update-art img {\n  display: block;\n  width: 100%;\n  height: auto;\n  border-radius: 13px;\n}\n\n.big-fish .fish-update-art:hover {\n  transform: rotate(1deg) translateY(-3px);\n  box-shadow: 0 26px 50px rgba(37, 51, 88, .2), 0 2px 0 rgba(49, 62, 98, .06);\n}\n\n.big-fish .fish-update-tape {\n  top: -12px;\n  left: 50%;\n  width: 82px;\n  height: 21px;\n  background-color: var(--fish-tape-warm);\n  transform: translateX(-50%) rotate(-2deg);\n}\n\n.big-fish .fish-sources {\n  padding: 24px 28px 26px;\n}\n\n.big-fish .fish-sources-head {\n  align-items: flex-start;\n  gap: 20px;\n}\n\n.big-fish .fish-sources h2 {\n  margin: 4px 0 0;\n  font-size: 23px;\n}\n\n.big-fish .fish-source-link {\n  margin: 7px 0 0;\n  font-size: 12.5px;\n}\n\n.big-fish .fish-sources .fish-table-wrap {\n  margin-top: 16px;\n}\n\n.big-fish .fish-source-name {\n  font-weight: 700;\n  color: var(--fish-text);\n}\n\n.big-fish .fish-table-wrap {\n  overflow-x: auto;\n  border: 1px solid var(--fish-border);\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n}\n\n.big-fish .fish-table {\n  width: 100%;\n  min-width: 760px;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n\n.big-fish .fish-table th {\n  padding: 13px 16px;\n  background: var(--fish-navy);\n  color: #f6ecd6;\n  font-weight: 600;\n  text-align: left;\n  white-space: nowrap;\n}\n\n.big-fish .fish-table td {\n  padding: 14px 16px;\n  border-bottom: 1px dashed var(--fish-line);\n  vertical-align: top;\n}\n\n.big-fish .fish-table tbody tr:last-child td {\n  border-bottom: 0;\n}\n\n.big-fish .fish-table tbody tr:nth-child(even) {\n  background: rgba(198, 154, 74, .05);\n}\n\n\n/* ── QQ 绑定表格 ─────────────────────────────────────────── */\n\n.big-fish .qq-binding-groups {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.big-fish .qq-bind-group-head {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-bottom: 10px;\n}\n\n.big-fish .qq-bind-group-head h3 {\n  margin: 0;\n  font: 800 18px/1.4 var(--fish-title);\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-group-head .fish-muted {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-group-head .fish-button {\n  flex: none;\n}\n\n.big-fish .qq-bind-scroll {\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n\n.big-fish .qq-bind-table {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-row {\n  display: grid;\n  align-items: center;\n  gap: 10px;\n  padding: 9px 0;\n  border-bottom: 1px dashed var(--fish-line);\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-row:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .qq-bind-row-private {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 120px 52px;\n}\n\n.big-fish .qq-bind-row-group {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 76px 76px 120px 52px;\n}\n\n.big-fish .qq-bind-row.qq-bind-head {\n  padding: 4px 0 8px;\n  color: var(--fish-muted);\n  font-size: 12px;\n  border-bottom: 1px solid var(--fish-border);\n}\n\n.big-fish .qq-bind-row.qq-bind-head > :nth-last-child(2),\n.big-fish .qq-bind-row.qq-bind-head > :last-child {\n  display: flex;\n  justify-content: flex-start;\n  text-align: left;\n}\n\n.big-fish .qq-bind-row.qq-bind-head > *,\n.big-fish .qq-bind-row:not(.qq-bind-head) > * {\n  text-align: left;\n}\n\n.big-fish .qq-bind-table.qq-bind-hide-enable .qq-bind-row-private {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 120px;\n}\n\n.big-fish .qq-bind-table.qq-bind-hide-enable .qq-bind-row-group {\n  grid-template-columns: 90px 100px minmax(160px, 1fr) 76px 76px 120px;\n}\n\n.big-fish .qq-bind-table.qq-bind-hide-enable .qq-bind-row > :last-child {\n  display: none;\n}\n\n.big-fish .qq-bind-row input {\n  width: 100%;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.big-fish .qq-bind-session {\n  min-width: 0;\n}\n\n.big-fish .qq-bind-session select {\n  width: 100%;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-cell {\n  display: flex;\n  align-items: center;\n  justify-content: flex-start;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-read {\n  display: block;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  color: var(--fish-text);\n  font-size: 13.5px;\n  line-height: 1.6;\n}\n\n.big-fish .qq-bind-session-read {\n  color: var(--fish-muted);\n}\n\n.big-fish .qq-bind-actions {\n  justify-content: flex-start;\n  gap: 6px;\n  flex-wrap: nowrap;\n}\n\n.big-fish .qq-bind-actions .fish-button {\n  min-width: 0;\n}\n\n.big-fish .qq-bind-editing {\n  padding-inline: 8px;\n  border-radius: 12px;\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-bind-save {\n  min-width: 64px;\n}\n\n.big-fish .qq-bind-row .fish-button {\n  min-height: 32px;\n  padding: 5px 10px;\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-detail {\n  display: grid;\n  gap: 6px;\n  margin: 0 0 10px;\n  padding: 12px 14px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-bind-detail-head {\n  font: 700 14px/1.4 var(--fish-title);\n  color: var(--fish-text);\n}\n\n.big-fish .qq-bind-extra {\n  display: block;\n  margin-top: 4px;\n}\n\n.big-fish .qq-bind-extra-label {\n  display: block;\n  margin-bottom: 4px;\n  color: var(--fish-muted);\n  font-size: 12.5px;\n}\n\n\n.big-fish .qq-role-head {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 14px;\n}\n\n.big-fish .qq-role-head h2 {\n  margin: 0;\n}\n\n.big-fish .qq-role-toggle {\n  display: flex;\n  align-items: center;\n  margin-top: 2px;\n}\n\n.big-fish .qq-role-desc {\n  margin: 0;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.8;\n}\n\n.big-fish .qq-role-hint {\n  margin: 8px 0 0;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.8;\n}\n\n.big-fish .qq-role-writer-open {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  min-height: 44px;\n}\n\n.big-fish .qq-role-card h3 {\n  margin: 0 0 4px;\n}\n\n.big-fish .qq-role-table-wrap {\n  margin-top: 10px;\n  overflow-x: auto;\n}\n\n.big-fish .qq-role-table {\n  width: 100%;\n  min-width: 680px;\n  border-collapse: collapse;\n  table-layout: fixed;\n}\n\n.big-fish .qq-role-table th {\n  padding: 4px 8px 8px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  font-weight: 500;\n  text-align: left;\n  white-space: nowrap;\n  border-bottom: 1px solid var(--fish-border);\n}\n\n.big-fish .qq-role-table td {\n  padding: 10px 8px;\n  border-bottom: 1px dashed var(--fish-line);\n  color: var(--fish-text);\n  font-size: 13.5px;\n  vertical-align: middle;\n  text-align: left;\n}\n\n.big-fish .qq-role-table tbody tr:last-child td {\n  border-bottom: 0;\n}\n\n.big-fish .qq-role-number {\n  width: 110px;\n  white-space: nowrap;\n}\n\n.big-fish .qq-role-session {\n  width: 170px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  color: var(--fish-muted);\n}\n\n.big-fish .qq-role-text-cell {\n  min-width: 0;\n}\n\n.big-fish .qq-role-text {\n  display: block;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .qq-role-inherit {\n  color: var(--fish-muted);\n  font-size: 13px;\n}\n\n.big-fish .qq-role-col-icon {\n  width: 58px;\n  text-align: center !important;\n}\n\n.big-fish .qq-role-icon {\n  display: inline-grid;\n  place-items: center;\n  width: 30px;\n  height: 30px;\n  min-height: 30px;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: 9px;\n  background: transparent;\n  color: var(--fish-blue-strong);\n  box-shadow: none;\n  cursor: pointer;\n}\n\n.big-fish .qq-role-icon:hover:not(:disabled) {\n  border-color: var(--fish-border);\n  background: var(--fish-blue-soft);\n}\n\n.big-fish .qq-role-icon-danger {\n  color: var(--fish-danger);\n}\n\n.big-fish .qq-role-icon:disabled {\n  opacity: .35;\n  cursor: not-allowed;\n}\n\n.big-fish .qq-text-modal {\n  width: min(760px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n.big-fish .qq-text-modal-input {\n  display: block;\n  width: 100%;\n  min-height: 220px;\n  margin-top: 14px;\n  padding: 12px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: var(--fish-radius-sm);\n  background: var(--fish-surface);\n  color: var(--fish-text);\n  font: inherit;\n  line-height: 1.75;\n  box-sizing: border-box;\n  resize: vertical;\n}\n\n.big-fish .qq-role-writer-card {\n  width: min(680px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n.big-fish .qq-role-writer-input {\n  display: block;\n  width: 100%;\n  min-height: 96px;\n  margin-top: 14px;\n  padding: 12px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: var(--fish-radius-sm);\n  background: var(--fish-surface);\n  color: var(--fish-text);\n  font: inherit;\n  line-height: 1.75;\n  box-sizing: border-box;\n  resize: vertical;\n}\n\n.big-fish .qq-role-writer-result {\n  margin-top: 14px;\n  padding-top: 12px;\n  border-top: 1px dashed var(--fish-border);\n}\n\n.big-fish .qq-role-writer-result-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 10px;\n}\n\n.big-fish .qq-role-writer-result-text {\n  max-height: 260px;\n  margin: 8px 0 0;\n  padding: 10px 12px;\n  overflow: auto;\n  border: 1px solid var(--fish-border);\n  border-radius: 12px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n  font: inherit;\n  font-size: 13.5px;\n  line-height: 1.8;\n  white-space: pre-wrap;\n}\n\n.big-fish .qq-bind-reminder {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 16px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n  font-size: 13px;\n  line-height: 1.7;\n}\n\n.big-fish .qq-bind-reminder-icon {\n  display: grid;\n  flex: none;\n  place-items: center;\n  width: 20px;\n  height: 20px;\n  margin-top: 1px;\n  border-radius: 50%;\n  background: var(--fish-gold-soft);\n  color: var(--fish-blue-strong);\n  font: 800 12px/1 var(--fish-font);\n}\n\n.big-fish .qq-bind-add-disabled {\n  opacity: .5;\n  cursor: not-allowed;\n}\n\n.big-fish .qq-bind-add-disabled:hover {\n  transform: none;\n  box-shadow: 0 2px 0 var(--fish-edge);\n}\n\n.big-fish .qq-bind-mark {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  color: var(--fish-danger);\n  font: 800 17px/1 var(--fish-font);\n}\n\n.big-fish .qq-bind-mark[data-on=\"true\"] {\n  color: var(--fish-success);\n}\n\n.big-fish .qq-bind-note {\n  margin-top: 8px;\n  color: var(--fish-muted);\n  font-size: 12.5px;\n  line-height: 1.7;\n}\n\n.big-fish .qq-bind-tools {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-soft);\n}\n\n.big-fish .qq-bind-empty {\n  padding: 14px 0;\n  color: var(--fish-muted);\n  font-size: 13px;\n}\n\n/* ── 未保存确认 ───────────────────────────────────────────── */\n\n.big-fish .fish-modal {\n  position: absolute;\n  inset: 0;\n  z-index: 50;\n  display: grid;\n  place-items: center;\n  padding: 20px;\n  background: rgba(8, 16, 32, .55);\n  backdrop-filter: blur(3px);\n}\n\n.big-fish .fish-modal-card {\n  width: min(460px, 100%);\n  padding: 28px;\n  border: 1px solid var(--fish-border);\n  border-radius: 24px;\n  background: var(--fish-panel);\n  box-shadow: inset 0 1px 0 var(--fish-rim), 0 24px 54px rgba(7, 15, 32, .35);\n}\n\n.big-fish .fish-modal-card h2 {\n  margin: 8px 0 6px;\n  font: 800 24px/1.35 var(--fish-title);\n}\n\n.big-fish .fish-modal-desc {\n  margin: 0;\n  color: var(--fish-muted);\n  font-size: 13.5px;\n  line-height: 1.8;\n}\n\n.big-fish .fish-modal-error {\n  margin: 12px 0 0;\n  padding: 8px 10px;\n  border-radius: 10px;\n  background: var(--fish-pink-soft);\n  color: var(--fish-danger);\n  font-size: 12.5px;\n}\n\n.big-fish .fish-modal-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-top: 20px;\n}\n\n.big-fish .fish-modal-actions .fish-button {\n  flex: 1 1 auto;\n}\n\n.big-fish .fish-modal-cancel {\n  border-color: transparent;\n  background: transparent;\n  color: var(--fish-muted);\n  box-shadow: none;\n}\n\n/* ── 模块内页 ─────────────────────────────────────────────── */\n\n.big-fish .fish-module {\n  min-width: 0;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-speak > .fish-section-title:first-child {\n  display: none;\n}\n\n.big-fish .fish-section-title {\n  font: 800 21px/1.5 var(--fish-title);\n}\n\n.big-fish .fish-settings-stack {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr);\n  gap: 16px;\n}\n\n.big-fish .fish-form-row {\n  align-items: flex-start;\n  gap: 12px 24px;\n  padding: 14px 0;\n  margin-bottom: 0 !important;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-form-row:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .fish-form-label {\n  flex: 0 1 190px;\n  padding-top: 8px;\n  color: var(--fish-text);\n  font-weight: 600;\n}\n\n.big-fish .fish-control {\n  flex: 1 1 300px;\n  min-width: 0;\n}\n\n.big-fish .fish-toolbar {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n  margin: 0 0 20px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 16px;\n  background: var(--fish-paper-2);\n}\n\n.big-fish .fish-subnav,\n.big-fish .fish-qq .fish-subnav {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  overflow: visible;\n  margin: 0 0 20px;\n  padding: 0 0 14px;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-subnav button {\n  flex: none;\n  padding: 6px 12px;\n  border-radius: 99px;\n  white-space: normal;\n}\n\n.big-fish .fish-message {\n  margin: 12px 0;\n  overflow-wrap: anywhere;\n  white-space: pre-wrap;\n}\n\n.big-fish .fish-message:not(:empty) {\n  padding: 10px 14px;\n  border: 1px dashed rgba(154, 100, 28, .35);\n  border-radius: 12px;\n  background: var(--fish-gold-soft);\n  color: var(--fish-warning);\n  font-size: 12.5px;\n}\n\n.big-fish .fish-test-action {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n  margin-bottom: 20px;\n  padding: 12px 16px;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-soft);\n}\n\n.big-fish .fish-rule-section {\n  margin-top: 24px;\n  padding-top: 22px;\n  border-top: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-log {\n  overflow-wrap: anywhere;\n  white-space: pre-wrap;\n}\n\n.big-fish .fish-diagnostics {\n  margin-top: 24px;\n  padding-top: 16px;\n  border-top: 1px dashed var(--fish-line);\n  color: var(--fish-muted);\n  font-size: 12.5px;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-diagnostics summary {\n  color: var(--fish-text);\n}\n\n.big-fish .fish-binding-row {\n  display: grid;\n  grid-template-columns: 80px minmax(100px, 1fr) minmax(120px, 1.5fr) 44px 76px 60px;\n  gap: 8px;\n  align-items: center;\n  padding: 12px 0;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-schedule-row {\n  display: grid;\n  grid-template-columns: 120px 140px minmax(60px, 1fr) 60px;\n  gap: 8px;\n  align-items: center;\n  padding: 12px 0;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-feed-result {\n  max-height: 480px;\n  margin-top: 20px;\n  padding: 18px;\n  overflow: auto;\n  border: 1px dashed var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-paper-2);\n  color: var(--fish-text);\n  font: 13px/1.8 ui-monospace, Consolas, monospace;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n}\n\n.big-fish .fish-embedding {\n  padding: 22px 0;\n  border-block: 1px dashed var(--fish-border);\n}\n\n.big-fish .fish-embedding label {\n  display: grid !important;\n  grid-template-columns: minmax(180px, 1fr) minmax(100px, 2fr);\n  gap: 12px;\n  align-items: center;\n  margin: 12px 0;\n}\n\n.big-fish .fish-embedding label:has([role=switch]) {\n  display: flex !important;\n}\n\n.big-fish .fish-embedding input:not([role=switch]) {\n  width: 100% !important;\n}\n\n.big-fish .fish-embedding button {\n  margin: 4px 8px 4px 0;\n  padding: 8px 12px;\n  border: 1px solid var(--fish-border);\n  border-radius: 10px;\n  background: var(--fish-soft);\n  color: var(--fish-text);\n}\n\n.big-fish .fish-dimensions {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 16px 32px;\n}\n\n.big-fish .fish-dimension-label {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 4px;\n  font-size: 13px;\n}\n\n.big-fish .fish-dimension-track {\n  height: 9px;\n  overflow: hidden;\n  border-radius: 99px;\n  background: var(--fish-line);\n}\n\n.big-fish .fish-dimension-track span {\n  display: block;\n  height: 100%;\n  border-radius: inherit;\n  background: linear-gradient(90deg, var(--fish-blue), var(--fish-gold));\n}\n\n.big-fish .fish-library-row {\n  margin: 12px 0;\n  padding: 20px;\n  border: 1px solid var(--fish-border);\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish .fish-memory .fish-record {\n  padding: 16px 0;\n  border-bottom: 1px dashed var(--fish-line);\n}\n\n.big-fish .fish-memory .fish-record:last-child {\n  border-bottom: 0;\n}\n\n.big-fish .fish-memory .fish-record-row {\n  align-items: center;\n  gap: 12px;\n  padding: 8px 0;\n}\n\n.big-fish .fish-memory .fish-record-note {\n  padding: 4px 0;\n  color: var(--fish-muted);\n  font-size: 13px;\n}\n\n.big-fish .fish-memory .fish-link {\n  padding: 4px 0;\n  border: 0;\n  background: transparent;\n  text-align: left;\n  text-decoration: underline;\n  text-underline-offset: 4px;\n}\n\n.big-fish .fish-memory details {\n  padding: 16px 20px;\n  border: 1px solid var(--fish-border);\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish .fish-memory [role=button] {\n  cursor: pointer;\n}\n\n.big-fish .fish-memory [role=button]:hover {\n  text-decoration: underline;\n  text-underline-offset: 4px;\n}\n\n.big-fish .fish-memory [role=button][style] {\n  box-shadow: none;\n}\n\n/* 心情页自带的样式也用同一套纸面材质，只补圆角和底色。 */\n.big-fish .fish-panel [data-fm-wrap] {\n  gap: 18px;\n}\n\n.big-fish .fish-panel [data-fm-hero] {\n  border-radius: 22px;\n  background: var(--fish-card-bg);\n  box-shadow: var(--fish-shadow);\n}\n\n.big-fish .fish-panel [data-fm-slot] {\n  border-radius: 18px;\n  background: var(--fish-card-bg);\n}\n\n.big-fish .fish-panel [data-fm-big] {\n  color: var(--fish-text);\n}\n\n.big-fish .fish-panel [data-fm-quote] {\n  border-radius: 14px;\n  background: var(--fish-paper-2);\n}\n\n.big-fish .fish-panel [data-fm-btn],\n.big-fish .fish-panel [data-fm-pick] {\n  border-radius: 10px;\n  background: var(--fish-control-fill);\n  box-shadow: 0 2px 0 var(--fish-edge);\n}\n\n.big-fish .fish-panel [data-fm-on] {\n  background: var(--fish-accent-soft);\n  box-shadow: none;\n}\n\n/* ── 兼容提示条 ───────────────────────────────────────────── */\n\n.big-fish-notice {\n  position: fixed;\n  z-index: 1000;\n  right: 20px;\n  bottom: 24px;\n  max-width: min(400px, calc(100vw - 40px));\n  padding: 18px 20px;\n  border: 1px solid rgba(198, 154, 74, .5);\n  border-radius: 20px;\n  background:\n    radial-gradient(120% 120% at 100% 0%, #2c4570, #16223d);\n  color: #f8f1e2;\n  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 20px 44px rgba(6, 13, 28, .4);\n  pointer-events: auto;\n}\n\n.big-fish-notice > div:first-child {\n  font-size: 13.5px;\n  line-height: 1.7;\n}\n\n.big-fish-notice button {\n  border-color: rgba(255, 255, 255, .2);\n  background: rgba(255, 255, 255, .08);\n  color: #f8f1e2;\n  box-shadow: none;\n}\n\n/* ── 适配 ─────────────────────────────────────────────────── */\n\n@container (max-width: 1240px) {\n  .big-fish .fish-frame {\n    grid-template-columns: 220px minmax(0, 1fr);\n  }\n\n  .big-fish .fish-hero h1 {\n    font-size: clamp(28px, 3.8cqi, 44px);\n  }\n\n  .big-fish .fish-welcome {\n    width: clamp(210px, 22cqi, 280px);\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 150px;\n  }\n}\n\n@container (max-width: 1180px) {\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 138px;\n  }\n\n}\n\n@container (max-width: 1040px) {\n  .big-fish .fish-frame {\n    grid-template-columns: minmax(0, 1fr);\n    grid-template-rows: auto minmax(0, 1fr);\n    height: 100%;\n    min-height: 0;\n    gap: 12px;\n  }\n\n  .big-fish .fish-binder {\n    min-height: 0;\n    padding: 14px 16px;\n    border-radius: 24px;\n    gap: 12px;\n  }\n\n  .big-fish .fish-binder::before {\n    inset: 7px;\n    border-radius: 18px;\n  }\n\n  .big-fish .fish-rings {\n    display: none;\n  }\n\n  .big-fish .fish-brand {\n    padding: 0 2px 10px;\n  }\n\n  .big-fish .fish-logo {\n    width: 38px;\n    height: 38px;\n    border-radius: 13px;\n  }\n\n  .big-fish .fish-brand-name {\n    font-size: 20px;\n  }\n\n  .big-fish .fish-nav {\n    flex: none;\n    flex-direction: row;\n    flex-wrap: wrap;\n    gap: 6px;\n    overflow: visible;\n    padding: 0;\n  }\n\n  .big-fish .fish-nav-group {\n    display: contents;\n  }\n\n  .big-fish .fish-tab {\n    order: 0;\n    width: auto;\n    min-height: 40px;\n    padding: 8px 12px;\n  }\n\n  .big-fish .fish-nav-highlight {\n    display: none;\n  }\n\n  .big-fish .fish-tab[aria-selected=true] {\n    background: linear-gradient(135deg, #fff8e9, #f3e4c4);\n    box-shadow: 0 2px 0 rgba(8, 16, 34, .22);\n  }\n\n  .big-fish .fish-tab[aria-selected=true]:hover {\n    background: linear-gradient(135deg, #fff8e9, #f3e4c4);\n  }\n\n  .big-fish .fish-submenu {\n    order: 1;\n    flex: 1 0 100%;\n    flex-direction: row;\n    flex-wrap: wrap;\n    gap: 4px;\n    margin: 2px 0 0;\n    padding: 0;\n    border-left: 0;\n    overflow-x: auto;\n  }\n\n  .big-fish .fish-submenu button {\n    width: auto;\n    min-height: 30px;\n    padding: 4px 10px;\n    border-radius: 99px;\n    background: rgba(255, 255, 255, .04);\n  }\n\n  .big-fish .fish-binder-foot {\n    display: none;\n  }\n\n  .big-fish .fish-workspace {\n    height: 100%;\n    min-height: 0;\n  }\n\n  .big-fish .fish-stats {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n  }\n}\n\n@container (max-width: 900px) {\n  .big-fish .fish-hero {\n    grid-template-columns: minmax(0, 1fr);\n    padding-bottom: 88px;\n  }\n\n  .big-fish .fish-welcome {\n    grid-row: 1;\n    width: min(260px, 56cqi);\n    margin-bottom: 4px;\n  }\n\n  .big-fish .fish-hero-copy {\n    grid-row: 2;\n  }\n\n  .big-fish .fish-hero h1 {\n    font-size: clamp(30px, 5.6cqi, 42px);\n  }\n\n  .big-fish .fish-hero-bubbles {\n    right: 6%;\n    bottom: 12px;\n    width: 140px;\n    height: 140px;\n  }\n\n  .big-fish .fish-hero-spark {\n    top: 14px;\n    right: 10%;\n  }\n\n  .big-fish .fish-stats {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n\n  .big-fish .fish-update-card {\n    grid-template-columns: minmax(0, 1fr);\n    gap: 24px;\n    padding: 28px 24px;\n  }\n\n  .big-fish .fish-update-art {\n    order: 2;\n    width: min(210px, 52cqi);\n  }\n\n  .big-fish .fish-update-heading {\n    align-items: flex-start;\n  }\n\n  .big-fish .fish-update-status {\n    white-space: normal;\n  }\n\n  .big-fish .fish-update-controls {\n    align-items: stretch;\n  }\n\n  .big-fish .fish-channel-field {\n    flex-basis: 100%;\n  }\n\n  .big-fish .fish-update-operations {\n    flex-basis: 100%;\n    justify-content: flex-start;\n  }\n}\n\n@container (max-width: 760px) {\n  .big-fish .fish-paper {\n    --fish-paper-radius: 24px;\n    --fish-scroll-inset: 10px;\n    --fish-scroll-radius: 16px;\n    --fish-fade-height: 20px;\n  }\n\n  .big-fish .fish-scroll {\n    padding: 14px 10px 22px;\n  }\n\n  .big-fish .fish-paper::before {\n    inset: 8px;\n    border-radius: 18px;\n  }\n\n  .big-fish .fish-tape {\n    display: none;\n  }\n\n  .big-fish .fish-page-head {\n    align-items: flex-start;\n    gap: 16px;\n    margin-bottom: 22px;\n    padding-bottom: 18px;\n  }\n\n  .big-fish .fish-page-stamp {\n    width: 76px;\n    height: 76px;\n  }\n\n  .big-fish .fish-page-stamp .fish-glyph {\n    width: 24px;\n    height: 24px;\n  }\n\n  .big-fish .fish-page-stamp-no {\n    font-size: 14px;\n  }\n\n  .big-fish .fish-page-stamp-label {\n    font-size: 9px;\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: minmax(0, 1fr) 128px;\n    padding: 22px 20px;\n  }\n\n  .big-fish .fish-dimensions {\n    grid-template-columns: 1fr;\n  }\n\n  .big-fish .fish-binding-row,\n  .big-fish .fish-schedule-row {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n\n  .big-fish .fish-binding-head {\n    display: none;\n  }\n}\n\n@container (max-width: 620px) {\n  .big-fish .fish-brand-sub,\n  .big-fish .fish-version-pin {\n    display: none;\n  }\n\n  .big-fish .fish-tab {\n    padding: 7px 9px;\n    font-size: 13px;\n  }\n\n  .big-fish .fish-tab-icon {\n    width: 24px;\n    height: 24px;\n    border-radius: 8px;\n  }\n\n  .big-fish .fish-tab-no {\n    display: none;\n  }\n\n  .big-fish .fish-stats {\n    grid-template-columns: 1fr;\n  }\n\n  .big-fish .fish-feature {\n    grid-template-columns: 1fr;\n    gap: 12px;\n  }\n\n  .big-fish .fish-feature-sticker {\n    justify-self: start;\n    width: 118px;\n    margin-left: 2px;\n  }\n\n\n  .big-fish .fish-section-head {\n    align-items: flex-start;\n    flex-direction: column;\n    gap: 4px;\n  }\n\n  .big-fish .fish-section-note {\n    text-align: left;\n  }\n\n  .big-fish .fish-form-label {\n    flex-basis: 100%;\n    padding-top: 0;\n  }\n\n  .big-fish .fish-embedding label {\n    grid-template-columns: 1fr;\n  }\n\n  .big-fish .fish-subnav button {\n    flex: 1 1 auto;\n  }\n\n  .big-fish .fish-sources {\n    padding: 20px 16px;\n  }\n\n  .big-fish .fish-update-card {\n    padding: 22px 18px;\n  }\n}\n\n@container (max-width: 520px) {\n  .big-fish {\n    padding: calc(8px + var(--dsh-frame-top-clearance, 0px)) 8px 8px;\n  }\n\n  .big-fish .fish-binder {\n    padding: 12px;\n  }\n\n  .big-fish .fish-brand {\n    gap: 8px;\n  }\n\n  .big-fish .fish-brand-name {\n    font-size: 18px;\n  }\n\n  .big-fish .fish-logo {\n    width: 34px;\n    height: 34px;\n  }\n\n  .big-fish .fish-paper {\n    --fish-paper-radius: 20px;\n    --fish-scroll-inset: 9px;\n    --fish-scroll-radius: 14px;\n    --fish-fade-height: 16px;\n  }\n\n  .big-fish .fish-scroll {\n    padding: 10px 8px 18px;\n  }\n\n  .big-fish .fish-page-head {\n    flex-direction: column;\n    gap: 12px;\n  }\n\n  .big-fish .fish-page-stamp {\n    display: none;\n  }\n\n  .big-fish .fish-hero {\n    min-height: 0;\n    padding: 24px 20px 78px;\n    border-radius: 24px;\n  }\n\n  .big-fish .fish-hero h1 {\n    margin-top: 10px;\n    font-size: clamp(27px, 8.2cqi, 34px);\n  }\n\n  .big-fish .fish-hero-lead {\n    font-size: 14px;\n    line-height: 1.8;\n  }\n\n  .big-fish .fish-hero-quote {\n    margin-top: 16px;\n    font-size: 13.5px;\n  }\n\n  .big-fish .fish-hero-chips {\n    margin-top: 18px;\n    gap: 6px;\n  }\n\n  .big-fish .fish-chip {\n    padding: 5px 9px;\n    font-size: 10.5px;\n  }\n\n  .big-fish .fish-welcome {\n    width: min(214px, 64cqi);\n    padding: 9px 9px 8px;\n  }\n\n  .big-fish .fish-welcome figcaption {\n    font-size: 11px;\n  }\n\n  .big-fish .fish-stat {\n    padding: 15px;\n  }\n\n  .big-fish .fish-feature {\n    padding: 20px 16px;\n    border-radius: 22px;\n  }\n\n  .big-fish .fish-feature h2 {\n    font-size: 22px;\n  }\n\n  .big-fish .fish-feature-sticker {\n    width: 108px;\n  }\n\n\n  .big-fish .fish-table {\n    min-width: 660px;\n  }\n\n  .big-fish .fish-update-body h2 {\n    font-size: 23px;\n  }\n\n  .big-fish .fish-actions {\n    gap: 8px;\n  }\n\n  .big-fish .fish-actions .fish-button {\n    flex: 1 1 auto;\n  }\n}\n\n@media (max-width: 720px) {\n  .big-fish .fish-hero-bubbles {\n    display: none;\n  }\n}\n\n@media (max-height: 760px) {\n  .big-fish .fish-sidebar-scene {\n    display: none;\n  }\n}\n\n@media (max-height: 620px) {\n  .big-fish .fish-binder-foot {\n    display: none;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish *,\n  .big-fish-notice * {\n    animation: none !important;\n    transition: none !important;\n    scroll-behavior: auto !important;\n  }\n\n  .big-fish button:not(:disabled):hover,\n  .big-fish button:not(:disabled):active,\n  .big-fish-notice button,\n  .big-fish .fish-feature,\n  .big-fish .fish-welcome {\n    transform: none !important;\n  }\n\n  .big-fish .fish-nav-highlight {\n    transition: none !important;\n  }\n\n  .big-fish [role=switch]::before {\n    transition: none !important;\n  }\n}\n\n@keyframes fish-float {\n  0%,\n  100% {\n    transform: translateY(0) rotate(2.5deg);\n  }\n\n  50% {\n    transform: translateY(-7px) rotate(1.5deg);\n  }\n}\n\n/* 主题滚动条：纸面用暖色，侧栏用金色。 */\n.big-fish,\n.big-fish * {\n  scrollbar-width: thin;\n  scrollbar-color: var(--fish-control-border) var(--fish-soft);\n}\n\n.big-fish::-webkit-scrollbar,\n.big-fish *::-webkit-scrollbar {\n  width: 8px;\n  height: 8px;\n}\n\n.big-fish::-webkit-scrollbar-track,\n.big-fish *::-webkit-scrollbar-track {\n  background: var(--fish-soft);\n  border-radius: 99px;\n}\n\n.big-fish::-webkit-scrollbar-thumb,\n.big-fish *::-webkit-scrollbar-thumb {\n  border: 2px solid var(--fish-soft);\n  border-radius: 99px;\n  background: var(--fish-control-border);\n}\n\n.big-fish::-webkit-scrollbar-thumb:hover,\n.big-fish *::-webkit-scrollbar-thumb:hover {\n  background: var(--fish-accent);\n}\n\n.big-fish::-webkit-scrollbar-corner,\n.big-fish *::-webkit-scrollbar-corner {\n  background: var(--fish-soft);\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar {\n  width: 9px;\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar-thumb {\n  border: 2px solid transparent;\n  background: var(--fish-control-border);\n  background-clip: padding-box;\n}\n\n.big-fish .fish-scroll::-webkit-scrollbar-thumb:hover {\n  background: var(--fish-accent);\n  background-clip: padding-box;\n}\n\n.big-fish .fish-nav::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n.big-fish .fish-nav::-webkit-scrollbar-thumb {\n  border: 2px solid transparent;\n  background: rgba(246, 231, 197, .24);\n  background-clip: padding-box;\n}\n\n\n/* 绑定字段说明使用原生悬浮提示，不受横向表格滚动容器裁切。 */\n.big-fish .qq-bind-field-label {display:inline-flex;align-items:center;gap:3px}\n.big-fish .qq-bind-field-label .qq-field-help {\n  display: inline-grid;\n  place-items: center;\n  flex: none;\n  width: 16px;\n  height: 16px;\n  min-width: 16px;\n  min-height: 16px;\n  margin-left: 3px;\n  padding: 0;\n  border: 1px solid var(--fish-border);\n  border-radius: 50%;\n  background: var(--fish-blue-soft);\n  color: var(--fish-blue-strong);\n  font: 700 10px/1 var(--fish-font);\n  box-shadow: none;\n  cursor: help;\n  transform: none;\n}\n\n.big-fish .qq-bind-field-label .qq-field-help:hover,\n.big-fish .qq-bind-field-label .qq-field-help:focus-visible {\n  color: var(--fish-on-accent);\n  border-color: var(--fish-action);\n  background: var(--fish-action);\n}\n\n.big-fish .fish-help-popover {\n  position: fixed;\n  z-index: 45;\n  padding: 12px 14px;\n  border: 1px solid var(--fish-border);\n  border-radius: 14px;\n  background: var(--fish-card-bg);\n  color: var(--fish-text);\n  box-shadow: var(--fish-shadow), 0 12px 26px rgba(30, 42, 74, .16);\n  pointer-events: auto;\n}\n\n.big-fish .fish-help-popover[data-placement=above] {\n  transform: translateY(-100%);\n}\n\n.big-fish .fish-help-popover::after {\n  content: '';\n  position: absolute;\n  left: 50%;\n  margin-left: -6px;\n  border: 6px solid transparent;\n}\n\n.big-fish .fish-help-popover[data-placement=below]::after {\n  top: -12px;\n  border-bottom-color: var(--fish-card-bg);\n}\n\n.big-fish .fish-help-popover[data-placement=above]::after {\n  bottom: -12px;\n  border-top-color: var(--fish-card-bg);\n}\n\n.big-fish .fish-help-label {\n  display: block;\n  color: var(--fish-blue-strong);\n  font: 700 10.5px/1.5 var(--fish-font);\n  letter-spacing: .12em;\n}\n\n.big-fish .fish-help-popover p {\n  margin: 4px 0 0;\n  color: var(--fish-text);\n  font-size: 13px;\n  line-height: 1.75;\n  white-space: normal;\n}\n\n.big-fish .fish-help-link {\n  display: inline;\n  min-height: 0;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: none;\n  color: var(--fish-blue-strong);\n  font: inherit;\n  font-weight: 600;\n  line-height: inherit;\n  letter-spacing: 0;\n  text-align: left;\n  text-decoration: underline;\n  text-decoration-thickness: 1px;\n  text-underline-offset: 3px;\n  box-shadow: none;\n  cursor: pointer;\n}\n\n.big-fish .fish-help-link:hover {\n  text-decoration-thickness: 2px;\n}\n\n/* 角色设定模态框要覆盖默认 460px 卡片宽度（后定义的 .fish-modal-card 优先）。 */\n.big-fish .fish-modal-card.qq-text-modal {\n  width: min(760px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n.big-fish .fish-modal-card.qq-role-writer-card {\n  width: min(680px, 100%);\n  max-height: calc(100vh - 40px);\n  overflow: auto;\n}\n\n/* ── 文件管理 ─────────────────────────────────────────────── */\n\n.big-fish .fish-file-manager {\n  display: flex;\n  flex-direction: column;\n  gap: 18px;\n}\n\n.big-fish .fish-file-manager-stickers > h2 {\n  margin: 0 0 8px;\n}\n\n.big-fish .fish-file-manager .fish-media-storage {\n  margin-top: 10px;\n}\n\n/* 跳转目标：滚动到位后闪一下，提醒用户看这里。 */\n.big-fish .fish-jump-flash {\n  position: relative;\n}\n\n.big-fish .fish-jump-flash::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  z-index: 2;\n  border-radius: inherit;\n  box-shadow: 0 0 0 2px var(--fish-gold), 0 0 26px rgba(198, 154, 74, .38);\n  opacity: 0;\n  pointer-events: none;\n  animation: fish-jump-glow 1.35s ease-in-out both;\n}\n\n@keyframes fish-jump-glow {\n  0% { opacity: 0; }\n  25% { opacity: 1; }\n  65% { opacity: 1; }\n  100% { opacity: 0; }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish .fish-jump-flash::after {\n    opacity: 1;\n    box-shadow: inset 0 0 0 2px var(--fish-gold);\n  }\n}\n\n.big-fish #fish-sticker-files-card,\n.big-fish #qq-reply-threshold {\n  scroll-margin-top: 24px;\n}\n\n/* ── QQ 空间浏览 ─────────────────────────────────────────── */\n\n.big-fish .qq-space-browse-head h2 {\n  margin: 0 0 4px;\n}\n\n.big-fish .qq-space-browse-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px 18px;\n  margin: 16px 0 4px;\n}\n\n.big-fish .qq-space-field {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-space-field input {\n  width: 100%;\n}\n\n.big-fish .qq-space-browse-actions {\n  gap: 8px;\n  margin-top: 12px;\n}\n\n@container (max-width: 760px) {\n  .big-fish .qq-space-browse-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n/* ── QQ 语音转写 ─────────────────────────────────────────── */\n\n.big-fish .qq-voice-card .fish-form-row {\n  padding: 17px 0;\n}\n\n.big-fish .qq-voice-env {\n  margin-bottom: 6px;\n}\n\n.big-fish .qq-voice-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 10px;\n  margin-bottom: 4px;\n}\n\n.big-fish .qq-voice-env .fish-hint {\n  margin-top: 10px;\n}\n\n.big-fish .qq-voice-note {\n  margin-top: 14px;\n  line-height: 1.8;\n}\n\n@container (max-width: 620px) {\n  .big-fish .qq-voice-card .fish-form-row {\n    padding: 14px 0;\n  }\n}\n\n.big-fish .qq-voice-cost {\n  width: 50%;\n  max-width: 50%;\n  margin-top: 20px;\n  padding-top: 16px;\n  border-top: 1px dashed var(--fish-line);\n  overflow-x: auto;\n}\n\n.big-fish .qq-voice-cost-intro {\n  margin: 0 0 10px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.7;\n}\n\n.big-fish .qq-voice-cost-table {\n  width: 100%;\n  border-collapse: collapse;\n  table-layout: auto;\n}\n\n.big-fish .qq-voice-cost-table th,\n.big-fish .qq-voice-cost-table td {\n  padding: 9px 6px;\n  border-bottom: 1px solid var(--fish-line);\n  font-size: 12px;\n  line-height: 1.6;\n  text-align: left;\n  vertical-align: top;\n  white-space: nowrap;\n}\n\n.big-fish .qq-voice-cost-table thead th {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  font-weight: 500;\n}\n\n.big-fish .qq-voice-cost-table tbody th {\n  width: 92px;\n  color: var(--fish-text);\n  font-weight: 400;\n  white-space: nowrap;\n}\n\n.big-fish .qq-voice-cost-table tbody td {\n  color: var(--fish-muted);\n}\n\n.big-fish .qq-voice-cost-table tbody tr:last-child th,\n.big-fish .qq-voice-cost-table tbody tr:last-child td {\n  border-bottom: 0;\n}\n\n.big-fish .qq-voice-cost-note {\n  margin: 16px 0 0;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n  line-height: 1.85;\n}\n\n@container (max-width: 620px) {\n  .big-fish .qq-voice-cost {\n    width: 100%;\n    max-width: 100%;\n  }\n\n  .big-fish .qq-voice-cost-table tbody th {\n    width: 82px;\n  }\n}\n\n/* ── 运行日志：命令行式实时终端 ─────────────────────────── */\n\n.big-fish .fish-run-log {\n  display: grid;\n  gap: 16px;\n}\n\n.big-fish .fish-terminal-card {\n  position: relative;\n  overflow: hidden;\n  border: 1px solid rgba(194, 158, 92, .32);\n  border-radius: 22px;\n  background: #0b1725;\n  box-shadow: 0 18px 40px rgba(4, 12, 22, .28);\n}\n\n.big-fish .fish-terminal-head {\n  position: absolute;\n  inset: 0 0 auto;\n  z-index: 2;\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 14px 18px;\n  border-bottom: 1px solid rgba(194, 158, 92, .18);\n  background: linear-gradient(180deg, #102132 0%, rgba(16, 33, 50, .97) 100%);\n  color: #d9e7e9;\n}\n\n.big-fish .fish-terminal-live {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  color: #8fe0b1;\n  font: 700 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;\n  letter-spacing: .12em;\n}\n\n.big-fish .fish-terminal-live i {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background: #65d69a;\n  box-shadow: 0 0 0 3px rgba(101, 214, 154, .14);\n}\n\n.big-fish .fish-terminal-title {\n  color: rgba(217, 231, 233, .72);\n  font-size: 12.5px;\n}\n\n.big-fish .fish-terminal-count {\n  margin-left: auto;\n  color: rgba(217, 231, 233, .45);\n  font: 11.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;\n}\n\n.big-fish .fish-terminal {\n  height: min(68vh, 760px);\n  min-height: 320px;\n  overflow: auto;\n  padding: 68px 18px 20px;\n  background: #08131f;\n  color: #cfe3e8;\n  font: 12.5px/1.75 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n}\n\n.big-fish .fish-terminal-line {\n  display: flex;\n  gap: 10px;\n  align-items: flex-start;\n  padding: 1px 0;\n}\n\n.big-fish .fish-terminal-time {\n  flex: none;\n  color: rgba(194, 158, 92, .82);\n  white-space: nowrap;\n}\n\n.big-fish .fish-terminal-prompt {\n  flex: none;\n  color: #c2a05f;\n}\n\n.big-fish .fish-terminal-text {\n  min-width: 0;\n  overflow-wrap: anywhere;\n  white-space: pre-wrap;\n}\n\n.big-fish .fish-terminal-empty {\n  color: rgba(207, 227, 232, .48);\n}\n\n.big-fish .fish-terminal-error {\n  margin: 0;\n  padding: 10px 18px;\n  border-top: 1px solid rgba(194, 158, 92, .18);\n  color: #f0b5a7;\n  font-size: var(--fish-small);\n}\n\n@container (max-width: 640px) {\n  .big-fish .fish-terminal-head {\n    padding: 12px 14px;\n  }\n\n  .big-fish .fish-terminal {\n    height: 58vh;\n    padding: 60px 14px 14px;\n    font-size: 12px;\n  }\n}\n\n/* 表单控件使用自己的焦点环，不再叠加浏览器默认 outline。 */\n.big-fish input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]):not([type=button]):not([type=submit]):not([type=reset]):focus-visible,\n.big-fish select:focus-visible,\n.big-fish textarea:focus-visible {\n  outline: none !important;\n}\n\n/* 自定义下拉浮层：替代原生 option 弹层。 */\n.big-fish .fish-select-popup {\n  position: fixed;\n  z-index: 12000;\n  overflow-y: auto;\n  padding: 6px;\n  border: 1px solid var(--fish-control-border);\n  border-radius: 14px;\n  background: var(--fish-surface);\n  box-shadow: 0 18px 40px rgba(15, 25, 45, .22), var(--fish-control-shadow);\n  animation: fish-select-pop 140ms ease-out;\n}\n\n.big-fish .fish-select-option {\n  position: relative;\n  display: flex;\n  align-items: center;\n  width: 100%;\n  min-height: 38px;\n  margin: 2px 0;\n  padding: 8px 12px 8px 32px;\n  border: 1px solid transparent;\n  border-radius: 9px;\n  background: transparent;\n  color: var(--fish-text);\n  font-family: var(--fish-font);\n  font-size: var(--fish-label);\n  line-height: 1.45;\n  text-align: left;\n  cursor: pointer;\n}\n\n.big-fish .fish-select-option::before {\n  content: '✓';\n  position: absolute;\n  left: 10px;\n  color: var(--fish-gold);\n  font-weight: 700;\n  opacity: 0;\n}\n\n.big-fish .fish-select-option[aria-selected=true] {\n  background: var(--fish-gold-soft);\n}\n\n.big-fish .fish-select-option[aria-selected=true]::before {\n  opacity: 1;\n}\n\n.big-fish .fish-select-option.is-active:not([aria-selected=true]) {\n  background: var(--fish-soft);\n}\n\n.big-fish .fish-select-option:hover {\n  background: var(--fish-hover);\n}\n\n.big-fish .fish-select-option:disabled {\n  cursor: not-allowed;\n  opacity: .45;\n}\n\n@keyframes fish-select-pop {\n  from { opacity: 0; transform: translateY(-3px) scale(.99); }\n  to { opacity: 1; transform: translateY(0) scale(1); }\n}\n\n.big-fish .fish-update-check {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 142px;\n  min-height: 44px;\n  padding: 11px 22px;\n  border-radius: 13px;\n}\n\n.big-fish .fish-button.fish-gold {\n  border-color: var(--fish-gold);\n  background: var(--fish-gold);\n  color: var(--fish-navy);\n  box-shadow: 0 2px 0 var(--fish-gold-ink);\n}\n\n.big-fish .fish-button.fish-gold:not(:disabled):hover {\n  border-color: var(--fish-gold);\n  background: var(--fish-gold);\n  color: var(--fish-navy);\n  filter: brightness(1.06);\n}\n\n.big-fish .fish-spin {\n  animation: fish-spin 900ms linear infinite;\n}\n\n@keyframes fish-spin {\n  to { transform: rotate(360deg); }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .big-fish .fish-spin {\n    animation-duration: 2.4s;\n  }\n}\n\n/* 新建 QQ 映射：字段竖向排列，不显示目标会话。 */\n.big-fish .fish-modal-card.qq-bind-add-modal {\n  width: min(520px, 100%);\n}\n\n.big-fish .qq-bind-modal-fields {\n  display: grid;\n  gap: 14px;\n  margin: 18px 0 4px;\n}\n\n.big-fish .qq-bind-modal-field {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-bind-modal-field input {\n  width: 100%;\n}\n\n.big-fish .qq-bind-modal-toggles {\n  display: grid;\n  gap: 10px;\n}\n\n.big-fish .qq-bind-modal-toggle {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 14px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .qq-bind-modal-name-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.big-fish .qq-bind-modal-name-row input {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n\n.big-fish .qq-bind-modal-name-row .fish-button {\n  flex: none;\n  min-height: 38px;\n  padding: 8px 12px;\n  white-space: nowrap;\n}\n\n.big-fish .qq-bind-modal-lookup {\n  margin-top: -6px;\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n/* 吃大米饭：当前绑定工作区的 Token 用量 */\n.big-fish .rice-page {\n  display: grid;\n  gap: 14px;\n}\n\n.big-fish .rice-toolbar {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: 10px;\n}\n\n.big-fish .rice-toolbar h2 {\n  margin: 2px 0 0;\n  font-family: var(--fish-title);\n  font-size: 21px;\n}\n\n.big-fish .rice-stats {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 12px;\n}\n\n.big-fish .rice-stat {\n  display: grid;\n  gap: 5px;\n  padding: 16px;\n}\n\n.big-fish .rice-stat-label {\n  color: var(--fish-muted);\n  font-size: var(--fish-small);\n}\n\n.big-fish .rice-stat-value {\n  font-family: var(--fish-title);\n  font-size: 26px;\n  line-height: 1.15;\n}\n\n.big-fish .rice-stat-sub {\n  color: var(--fish-muted);\n  font-size: 12px;\n}\n\n.big-fish .rice-grid {\n  display: grid;\n  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);\n  gap: 12px;\n}\n\n.big-fish .rice-chart-card,\n.big-fish .rice-heat-card,\n.big-fish .rice-table-card {\n  padding: 16px;\n  min-width: 0;\n}\n\n.big-fish .rice-range {\n  margin: 0;\n  gap: 4px;\n}\n\n.big-fish .rice-range .fish-button {\n  padding: 5px 9px;\n  font-size: 12px;\n}\n\n.big-fish .rice-line {\n  display: block;\n  width: 100%;\n  height: auto;\n  margin-top: 12px;\n  overflow: visible;\n}\n\n.big-fish .rice-gridline {\n  stroke: var(--fish-line);\n  stroke-width: 1;\n}\n\n.big-fish .rice-area {\n  fill: color-mix(in srgb, var(--fish-accent) 18%, transparent);\n}\n\n.big-fish .rice-polyline {\n  fill: none;\n  stroke: var(--fish-accent);\n  stroke-width: 2.5;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n}\n\n.big-fish .rice-axis {\n  fill: var(--fish-muted);\n  font-size: 11px;\n}\n\n.big-fish .rice-heat-legend {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n}\n\n.big-fish .rice-heat-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 2px;\n  background: var(--fish-line);\n}\n\n.big-fish .rice-heat {\n  display: grid;\n  grid-auto-flow: column;\n  grid-template-rows: repeat(7, 11px);\n  grid-auto-columns: 11px;\n  gap: 3px;\n  margin-top: 14px;\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n\n.big-fish .rice-heat-cell,\n.big-fish .rice-heat-dot[data-level=\"0\"] { background: var(--fish-line); }\n.big-fish .rice-heat-cell[data-level=\"1\"], .big-fish .rice-heat-dot[data-level=\"1\"] { background: color-mix(in srgb, var(--fish-accent) 28%, var(--fish-line)); }\n.big-fish .rice-heat-cell[data-level=\"2\"], .big-fish .rice-heat-dot[data-level=\"2\"] { background: color-mix(in srgb, var(--fish-accent) 48%, var(--fish-line)); }\n.big-fish .rice-heat-cell[data-level=\"3\"], .big-fish .rice-heat-dot[data-level=\"3\"] { background: color-mix(in srgb, var(--fish-accent) 72%, var(--fish-line)); }\n.big-fish .rice-heat-cell[data-level=\"4\"], .big-fish .rice-heat-dot[data-level=\"4\"] { background: var(--fish-accent); }\n\n.big-fish .rice-heat-cell {\n  border-radius: 2px;\n}\n\n.big-fish .rice-table-wrap {\n  overflow-x: auto;\n  margin-top: 10px;\n}\n\n.big-fish .rice-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: var(--fish-small);\n}\n\n.big-fish .rice-table th,\n.big-fish .rice-table td {\n  padding: 10px 12px;\n  border-bottom: 1px solid var(--fish-line);\n  text-align: right;\n  white-space: nowrap;\n}\n\n.big-fish .rice-table th:first-child,\n.big-fish .rice-table td:first-child {\n  text-align: left;\n}\n\n.big-fish .rice-table th {\n  color: var(--fish-muted);\n  font-weight: 500;\n}\n\n.big-fish .rice-session-title {\n  display: block;\n  max-width: 280px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.big-fish .rice-session-id {\n  display: block;\n  color: var(--fish-muted);\n  font-size: 11px;\n  margin-top: 2px;\n}\n\n@media (max-width: 980px) {\n  .big-fish .rice-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  .big-fish .rice-grid { grid-template-columns: minmax(0, 1fr); }\n}\n\n.big-fish .rice-stat-cost {\n  color: var(--fish-success);\n  font-family: var(--fish-title);\n  font-size: 15px;\n  font-weight: 600;\n}\n\n.big-fish .rice-rate-note {\n  margin-top: -6px;\n  font-size: 11px;\n}\n\n.big-fish .fish-version-pin {\n  cursor: pointer;\n  font-family: inherit;\n}\n\n.big-fish .fish-version-pin:hover,\n.big-fish .fish-version-pin:focus-visible {\n  color: #fff1c9;\n  outline: none;\n}\n\n.big-fish .rice-hit {\n  fill: transparent;\n  pointer-events: all;\n  cursor: crosshair;\n}\n\n.big-fish .rice-heat-blank {\n  background: transparent !important;\n}\n\n.big-fish .rice-tooltip {\n  position: fixed;\n  z-index: 80;\n  width: 280px;\n  max-width: calc(100vw - 28px);\n  padding: 14px 16px;\n  border: 1px solid rgba(246, 231, 197, .16);\n  border-radius: 12px;\n  background: #1b222d;\n  box-shadow: 0 18px 44px rgba(0, 0, 0, .36);\n  color: #f6edda;\n  pointer-events: none;\n  font-size: 12px;\n}\n\n.big-fish .rice-tip-date {\n  color: #b9c3d2;\n  font-size: 12px;\n  letter-spacing: .04em;\n}\n\n.big-fish .rice-tip-total {\n  margin-top: 6px;\n  font-family: var(--fish-title);\n  font-size: 25px;\n  font-weight: 700;\n}\n\n.big-fish .rice-tip-total span {\n  font-family: inherit;\n  font-size: 12px;\n  font-weight: 500;\n  letter-spacing: .08em;\n  color: #b9c3d2;\n}\n\n.big-fish .rice-tip-cost {\n  margin-top: 2px;\n  color: #6ee7b7;\n  font-size: 12px;\n}\n\n.big-fish .rice-tip-label {\n  margin: 12px 0 8px;\n  padding-top: 9px;\n  border-top: 1px solid rgba(246, 231, 197, .13);\n  color: #b9c3d2;\n  font-size: 11px;\n}\n\n.big-fish .rice-tip-row {\n  margin: 7px 0;\n}\n\n.big-fish .rice-tip-row-head {\n  display: flex;\n  align-items: baseline;\n  gap: 7px;\n  min-width: 0;\n}\n\n.big-fish .rice-tip-row-head span {\n  flex: 1 1 auto;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.big-fish .rice-tip-row-head strong {\n  flex: none;\n  font-size: 12px;\n}\n\n.big-fish .rice-tip-row-head em {\n  flex: none;\n  width: 34px;\n  color: #9aa6b7;\n  font-style: normal;\n  text-align: right;\n}\n\n.big-fish .rice-tip-bar {\n  height: 5px;\n  margin-top: 4px;\n  overflow: hidden;\n  border-radius: 99px;\n  background: rgba(255, 255, 255, .08);\n}\n\n.big-fish .rice-tip-bar i {\n  display: block;\n  height: 100%;\n  border-radius: inherit;\n  background: #49e3a2;\n}\n\n.big-fish .rice-tip-empty {\n  color: #9aa6b7;\n  font-size: 11px;\n}\n\n/* 长期记忆：平铺列表、统一表单和单层操作弹窗。 */\n.big-fish .memory-page { display: grid; gap: 24px; }\n.big-fish .memory-page-toolbar,\n.big-fish .memory-card-head,\n.big-fish .memory-summary,\n.big-fish .memory-library-row,\n.big-fish .memory-dialog-head,\n.big-fish .memory-dialog-footer { display: flex; justify-content: space-between; align-items: center; gap: 20px; }\n.big-fish .memory-page-toolbar h2 { margin: 6px 0; font-family: var(--fish-title); font-size: 23px; }\n.big-fish .memory-page-toolbar p { margin: 0; color: var(--fish-muted); font-size: var(--fish-small); overflow-wrap: anywhere; }\n.big-fish .memory-page h3 { margin: 0; font-family: var(--fish-title); font-size: 18px; }\n.big-fish .memory-card-head { margin-bottom: 24px; align-items: flex-start; }\n.big-fish .memory-card-head p,\n.big-fish .memory-summary p { margin: 6px 0 0; color: var(--fish-muted); font-size: var(--fish-small); line-height: 1.7; }\n.big-fish .memory-stack { display: grid; gap: 24px; min-width: 0; }\n.big-fish .memory-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }\n.big-fish .memory-stats > div { display: flex; align-items: baseline; gap: 12px; padding: 18px 20px; border: 1px solid var(--fish-border); border-radius: 14px; background: var(--fish-soft); }\n.big-fish .memory-stats strong { font-family: var(--fish-title); font-size: 28px; font-weight: 650; line-height: 1.3; }\n.big-fish .memory-stats span { color: var(--fish-muted); font-size: var(--fish-small); }\n.big-fish .memory-switch { display: inline-flex; gap: 12px; align-items: center; flex-shrink: 0; border: 0; background: transparent; color: var(--fish-text); font: inherit; cursor: pointer; }\n.big-fish .memory-libraries { padding-bottom: 0; }\n.big-fish .memory-library-row { padding: 20px 0; border-top: 1px solid var(--fish-border); }\n.big-fish .memory-library-copy { min-width: 0; flex: 1; }\n.big-fish .memory-library-title { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }\n.big-fish .memory-library-title strong { font-size: 16px; overflow-wrap: anywhere; }\n.big-fish .memory-library-copy p { margin: 8px 0 0; font-size: var(--fish-small); color: var(--fish-muted); }\n.big-fish .memory-badge { display: inline-block; padding: 3px 9px; border: 1px solid var(--fish-border); border-radius: 6px; color: var(--fish-muted); font-size: 11px; font-weight: 500; white-space: nowrap; }\n.big-fish .memory-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }\n.big-fish .memory-save-row { padding-top: 24px; margin-top: 24px; border-top: 1px solid var(--fish-border); }\n.big-fish .memory-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }\n.big-fish .memory-field { display: grid; align-content: start; gap: 8px; font-size: var(--fish-label); min-width: 0; }\n.big-fish .memory-field-wide { grid-column: 1/-1; }\n.big-fish .memory-field input,\n.big-fish .memory-field select { width: 100%; }\n.big-fish .memory-field small { color: var(--fish-muted); font-size: var(--fish-small); line-height: 1.6; }\n.big-fish .memory-callout { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin: 0 0 24px; padding: 16px 18px; border-radius: 12px; background: var(--fish-soft); color: var(--fish-muted); font-size: var(--fish-small); line-height: 1.75; }\n.big-fish .memory-callout p { margin: 4px 0 0; }\n.big-fish .memory-index-hint,\n.big-fish .memory-backup-note { margin: 16px 0 0; color: var(--fish-muted); font-size: var(--fish-small); }\n.big-fish .memory-policy-group { display: grid; grid-template-columns: minmax(180px, .7fr) minmax(0, 1.3fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--fish-border); }\n.big-fish .memory-policy-head h4 { margin: 0 0 8px; font-size: 15px; font-weight: 600; }\n.big-fish .memory-policy-head p { margin: 0 0 12px; color: var(--fish-muted); font-size: var(--fish-small); line-height: 1.7; }\n.big-fish .memory-policy-fields { display: grid; gap: 24px; }\n.big-fish .memory-policy-field { min-width: 0; }\n.big-fish .memory-policy-input { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }\n.big-fish .memory-policy-input > span:first-child { flex: 1 1 160px !important; font-size: var(--fish-label); }\n.big-fish .memory-policy-input input { width: 108px !important; }\n.big-fish .memory-target { display: grid; grid-template-columns: 120px minmax(0,1fr); gap: 16px; align-items: center; margin-bottom: 24px; font-size: var(--fish-label); }\n.big-fish .memory-task-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }\n.big-fish .memory-task { text-align: left; display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 20px; border: 1px solid var(--fish-border); border-radius: 12px; background: var(--fish-surface); color: var(--fish-text); font: inherit; cursor: pointer; }\n.big-fish .memory-task:hover { border-color: var(--fish-action); background: var(--fish-soft); }\n.big-fish .memory-task strong { font-size: 15px; font-weight: 600; }\n.big-fish .memory-task span { color: var(--fish-muted); font-size: var(--fish-small); line-height: 1.65; }\n.big-fish .memory-task:disabled { opacity: .5; cursor: default; }\n.big-fish .memory-empty { padding: 40px 24px; text-align: center; color: var(--fish-muted); font-size: var(--fish-label); line-height: 1.8; }\n.big-fish .memory-feedback { padding: 14px 16px; border: 1px solid var(--fish-border); border-radius: 10px; background: var(--fish-soft); font-size: var(--fish-small); white-space: pre-line; line-height: 1.8; margin-bottom: 16px; }\n.big-fish .memory-isolation > .qq-memory-isolation { margin: 0; border: 0; padding: 0; background: none; box-shadow: none; }\n.big-fish .memory-isolation > .qq-memory-isolation > div:first-child { display: none; }\n.big-fish .memory-isolation label { display: grid; grid-template-columns: 120px minmax(0,1fr); align-items: center; gap: 16px; margin-bottom: 16px; }\n.big-fish .memory-isolation label input { width: 100% !important; }\n.big-fish .memory-isolation p { color: var(--fish-muted); font-size: var(--fish-small); line-height: 1.8; }\n.big-fish .memory-dialog { width: min(960px, calc(100vw - 48px)); max-width: none; max-height: min(88dvh, 960px); padding: 0; border: 1px solid var(--fish-border); border-radius: 20px; background: var(--fish-surface); color: var(--fish-text); font-family: var(--fish-font); font-size: var(--fish-body); line-height: 1.75; box-shadow: 0 24px 100px #0005; overflow: hidden; }\n.big-fish .memory-dialog[open] { display: flex; flex-direction: column; }\n.big-fish .memory-dialog::backdrop { background: rgba(8,16,28,.55); backdrop-filter: blur(4px); }\n.big-fish .memory-dialog-head { flex: none; padding: 24px 28px; border-bottom: 1px solid var(--fish-border); }\n.big-fish .memory-dialog-head p { margin: 0 0 4px; font-size: var(--fish-small); color: var(--fish-muted); overflow-wrap: anywhere; }\n.big-fish .memory-dialog-head h2 { font-family: var(--fish-title); font-size: 22px; margin: 0; line-height: 1.4; }\n.big-fish .memory-dialog-body { flex: 1; min-height: 0; padding: 24px 28px 28px; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }\n.big-fish .memory-dialog-body > div { min-width: 0; }\n.big-fish .memory-dialog-foot { flex: none; border-top: 1px solid var(--fish-border); padding: 16px 28px; }\n.big-fish .memory-dialog-footer { font-size: var(--fish-small); color: var(--fish-muted); }\n.big-fish .memory-dialog .memory-stats { margin: 20px 0; }\n.big-fish .memory-dialog .memory-records > .memory-actions { margin-bottom: 20px; }\n.big-fish .memory-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 16px 0; border-top: 1px solid var(--fish-border); }\n.big-fish .memory-filter input { flex: 1 1 250px !important; width: auto !important; }\n.big-fish .memory-filter input::placeholder { font-size: 12px; }\n.big-fish .memory-source-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--fish-border); }\n.big-fish .memory-operation { min-width: 0; }\n.big-fish .memory-operation h3 { margin: 0 0 8px; font-size: 17px; }\n.big-fish .memory-operation > .memory-actions { margin: 20px 0; }\n.big-fish .memory-operation + .memory-operation { border-top: 1px solid var(--fish-border); padding-top: 24px; }\n@media(max-width: 760px) {\n  .big-fish .memory-card-head,\n  .big-fish .memory-summary,\n  .big-fish .memory-library-row { align-items: flex-start; flex-direction: column; gap: 16px; }\n  .big-fish .memory-stats { gap: 8px; }\n  .big-fish .memory-stats > div { flex-direction: column; gap: 4px; padding: 12px; }\n  .big-fish .memory-stats strong { font-size: 23px; }\n  .big-fish .memory-policy-group,\n  .big-fish .memory-form-grid,\n  .big-fish .memory-task-grid { grid-template-columns: minmax(0,1fr); gap: 20px; }\n  .big-fish .memory-target,\n  .big-fish .memory-isolation label { grid-template-columns: minmax(0,1fr); gap: 8px; }\n  .big-fish .memory-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 24px); border-radius: 16px; }\n  .big-fish .memory-dialog-head,\n  .big-fish .memory-dialog-body { padding: 20px; }\n  .big-fish .memory-dialog-foot { padding: 14px 20px; }\n}\n.big-fish .memory-methods { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 16px 0 24px; }\n.big-fish .memory-methods > div { padding: 16px; background: var(--fish-soft); border-radius: 10px; }\n.big-fish .memory-methods p { margin: 6px 0 0; color: var(--fish-muted); font-size: var(--fish-small); }\n.big-fish .memory-import-guide { margin: 16px 0; color: var(--fish-muted); font-size: var(--fish-small); }\n.big-fish .memory-import-guide summary { cursor: pointer; font-weight: 600; }\n.big-fish .memory-import-guide li { margin: 8px 0; }\n.big-fish .memory-source-row > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }\n@media(max-width:760px) { .big-fish .memory-methods { grid-template-columns: minmax(0,1fr); } }\n\n.big-fish .memory-history-tools .fish-qq { padding: 0 !important; }\n.big-fish .memory-history-tools .fish-qq > div:not([hidden]) > div { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }\n.big-fish .memory-history-tools .fish-qq > div:not([hidden]) > div + div { border-top: 1px solid var(--fish-border) !important; padding-top: 24px !important; }\n.big-fish .memory-history-tools .fish-section-title { display: none; }\n";
 const components = {};
 const moduleLoader = { load({id, factory}) { components[id] = factory(require) } };
 function FishStickers({ notify, mode = 'full', onOpenFiles }) {
@@ -1127,7 +1127,10 @@ moduleLoader.load({
           h('p', null, '按时间分段读取记录，通过摘要衔接上下文并写入「鱼的记忆 Plus」。目标会话需使用 DeepSeek。'),
           行('目标会话绑定', h('select', { style: S.wide, value: 历史绑定, disabled: 历史忙, 'aria-label': '历史导入绑定', onChange: e => 设历史绑定(e.target.value) },
             h('option', { value: '' }, '请选择已保存的绑定'),
-            ...绑定.map((b, i) => h('option', { key: i, value: String(i) }, `${b.类型} ${b.号码} → ${b.会话}`)))),
+            ...绑定.map((b, i) => {
+              const 称呼 = String(b.称呼 || '').trim() || (b.类型 === '群' ? '未命名群' : '未命名')
+              return h('option', { key: i, value: String(i) }, `${b.类型} ${称呼} - ${b.号码}`)
+            }))),
           行('AI 对应的 QQ 号（选填）', h('input', { style: S.input, value: 历史AI, disabled: 历史忙, 'aria-label': 'AI 对应的 QQ 号', onChange: e => 设历史AI(e.target.value) }),
             '指定 AI 身份对应的 QQ 号；留空则保留原发言人姓名。'),
           行('历史读取上限（页）', h('input', { style: S.small, type: 'number', min: 1, max: 1000, value: 历史页数, disabled: 历史忙, 'aria-label': '最多读取页数', onChange: e => 设历史页数(Number(e.target.value)) }),
@@ -1618,53 +1621,104 @@ moduleLoader.load({
     var exports = module.exports
 
     const React = require('react')
+    const h = React.createElement
     const inject = ['slots']
-  function EmbeddingSettings({ session, storeId, notify }) {
-    const [status, setStatus] = React.useState(null)
-    const [config, setConfig] = React.useState(null)
-    const [key, setKey] = React.useState('')
-    const [busy, setBusy] = React.useState(false)
-    const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
-    const base = '/dsh-fish-memory/embedding'
-    const refresh = () => fetch(base + '/status' + (session ? '?session=' + encodeURIComponent(session) : ''), { cache: 'no-store' }).then(r => r.json()).then(r => { setStatus(r); setConfig(old => old || r.config) })
-    React.useEffect(() => { refresh().catch(() => 告知('Embedding 状态不可用', { holdMs: 6000 })) }, [session])
-    React.useEffect(() => {
-      if (!status?.running) return
-      const timer = setInterval(() => refresh().catch(() => {}), 1000)
-      return () => clearInterval(timer)
-    }, [status?.running, session])
-    const post = async (path, body) => {
-      setBusy(true)
-      try {
-        const result = await fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json())
-        if (!result.ok) throw new Error(result.error || '操作失败')
-        setKey(''); 告知('Embedding 操作完成', { tone: 'success' }); await refresh()
-      } catch (e) { 告知('Embedding 操作失败：' + e.message, { holdMs: 6000 }) } finally { setBusy(false) }
+    function MemoryDialog({ title, subtitle, active = true, onClose, footer, children }) {
+      const ref = React.useRef(null)
+      React.useEffect(() => {
+        const dialog = ref.current
+        if (!dialog) return
+        if (active && !dialog.open) dialog.showModal()
+        if (!active && dialog.open) dialog.close()
+        return () => { if (dialog.open) dialog.close() }
+      }, [active])
+      React.useEffect(() => { ref.current?.querySelector('button')?.focus() }, [title])
+      return h('dialog', {
+        ref, className: 'memory-dialog', 'aria-labelledby': 'memory-dialog-title',
+        onCancel: e => { e.preventDefault(); onClose() },
+        onMouseDown: e => {
+          if (e.target !== e.currentTarget) return
+          const box = e.currentTarget.getBoundingClientRect()
+          if (e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom) onClose()
+        },
+      },
+      h('header', { className: 'memory-dialog-head' },
+        h('div', null, subtitle ? h('p', null, subtitle) : null, h('h2', { id: 'memory-dialog-title' }, title)),
+        h('button', { type: 'button', className: 'fish-button', 'aria-label': '关闭' + title, onClick: onClose, autoFocus: true }, '关闭')),
+      h('div', { className: 'memory-dialog-body' }, children),
+      footer ? h('footer', { className: 'memory-dialog-foot' }, footer) : null)
     }
-    if (!config) return React.createElement('div', null, 'Qwen Embedding：加载中…')
-    const field = (name, label, type = 'text') => React.createElement('label', { key: name, style: { display: 'block', margin: '6px 0' } }, label + ' ', React.createElement('input', {
-      'aria-label': label, type, value: config[name], min: type === 'number' ? 0 : undefined, style: { maxWidth: '100%', width: type === 'number' ? 100 : 500 },
-      onChange: e => setConfig({ ...config, [name]: type === 'number' ? Number(e.target.value) : e.target.value }),
-    }))
-    return React.createElement('section', { className: 'fish-embedding', style: { margin: '24px 0' } },
-      React.createElement('h2', null, 'Qwen 语义召回（默认关闭）'),
-      React.createElement('p', null, '启用后，记忆正文与查询会发送给配置的云服务商并可能产生费用。正文仍以鱼的记忆为准，断网回退关键词；QQ 权限保持不变。'),
-      React.createElement('label', null, React.createElement('input', {'aria-label': '启用语义召回',  type: 'checkbox', role: 'switch', checked: config.enabled, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), '启用语义召回'),
-      field('endpoint', 'DashScope 完整服务地址'), field('model', 'Qwen 模型'), field('dimensions', '维度', 'number'),
-      field('minSimilarity', '语义门槛（需用自己的数据校准）', 'number'), field('topK', '语义候选上限', 'number'), field('timeoutMs', '本轮超时毫秒', 'number'),
-      React.createElement('label', null, '密钥（只写） ', React.createElement('input', { 'aria-label': 'Embedding 密钥', type: 'password', autoComplete: 'new-password', value: key, disabled: !status?.writable, onChange: e => setKey(e.target.value) })),
-      React.createElement('p', null, status?.configured ? '密钥已配置（不会返回前端）' : '未配置密钥。可用宿主凭据 FISH_MEMORY_QWEN_API_KEY；旧宿主使用同名或 DASHSCOPE_API_KEY 环境变量。'),
-      React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/settings', { config, ...(key ? { key } : {}) }) }, '保存 Embedding 设置'),
-      React.createElement('button', {type: 'button',  disabled: busy || !status?.writable, onClick: () => post('/settings', { config, clearKey: true }) }, '清除保存的密钥'),
-      session ? React.createElement('div', null,
-        React.createElement('p', null, '当前库索引：' + (status?.indexed ?? '—') + ' / ' + (status?.total ?? '—') + '；缺失 ' + (status?.missing ?? '—') + '；本次完成 ' + (status?.completed || 0) + (status?.running ? '（运行中）' : '') + (status?.error ? '；回退原因 ' + status.error : '')),
-        React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId }) }, '补齐当前库索引'),
-        React.createElement('button', {type: 'button',  disabled: busy || status?.running, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引（保留正文）'),
-        React.createElement('button', {type: 'button',  disabled: busy, onClick: () => post('/index', { stop: true }) }, '中断补齐'),
-      ) : React.createElement('p', null, '打开下方一个记忆库后，可分批补齐或重建其索引。'),
-      React.createElement('button', {type: 'button',  onClick: () => refresh().catch(() => 告知('Embedding 状态不可用', { holdMs: 6000 })) }, '刷新索引状态'),
-    )
-  }
+
+    function EmbeddingSettings({ session, storeId, notify, indexOnly = false }) {
+      const [status, setStatus] = React.useState(null)
+      const [config, setConfig] = React.useState(null)
+      const [key, setKey] = React.useState('')
+      const [busy, setBusy] = React.useState(false)
+      const [error, setError] = React.useState('')
+      const base = '/dsh-fish-memory/embedding'
+      const refresh = async (saved = false) => {
+        const response = await fetch(base + '/status' + (session ? '?session=' + encodeURIComponent(session) : ''), { cache: 'no-store' })
+        const result = await response.json()
+        if (!response.ok || !result.ok) throw Error(result.error || '无法读取语义召回状态')
+        setStatus(result)
+        setConfig(old => saved ? result.config : old || result.config)
+        setError('')
+      }
+      React.useEffect(() => { refresh().catch(e => setError(e.message)) }, [session])
+      React.useEffect(() => {
+        if (!status?.running) return
+        const timer = setInterval(() => refresh().catch(e => setError(e.message)), 1000)
+        return () => clearInterval(timer)
+      }, [status?.running, session])
+      const post = async (path, body) => {
+        setBusy(true); setError('')
+        try {
+          const response = await fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+          const result = await response.json()
+          if (!response.ok || !result.ok) throw Error(result.error || '操作失败')
+          setKey('')
+          await refresh(path === '/settings')
+          notify?.('语义召回设置已更新', { tone: 'success' })
+        } catch (e) { setError(e.message) } finally { setBusy(false) }
+      }
+      if (!config) return h('section', { className: indexOnly ? '' : 'fish-card' },
+        h('p', { role: error ? 'alert' : 'status' }, error || '正在读取语义召回设置…'),
+        error ? h('button', { type: 'button', className: 'fish-button', onClick: () => refresh().catch(e => setError(e.message)) }, '重试') : null)
+      const field = (name, label, hint, options) => h('label', { className: 'memory-field', key: name },
+        h('span', null, label),
+        options ? h('select', { 'aria-label': label, value: config[name], disabled: busy, onChange: e => setConfig({ ...config, [name]: typeof config[name] === 'number' ? Number(e.target.value) : e.target.value }) }, ...options.map(value => h('option', { key: value, value }, value)))
+        : h('input', { 'aria-label': label, type: typeof config[name] === 'number' ? 'number' : 'text', step: name === 'minSimilarity' ? 0.01 : 1, value: config[name], disabled: busy, onChange: e => setConfig({ ...config, [name]: typeof config[name] === 'number' ? Number(e.target.value) : e.target.value }) }),
+        hint ? h('small', null, hint) : null)
+      return h('section', { className: indexOnly ? 'memory-index' : 'fish-card memory-embedding' },
+        !indexOnly ? h(React.Fragment, null,
+          h('div', { className: 'memory-card-head' },
+            h('div', null, h('h3', null, '语义召回 · RAG'), h('p', null, '按含义查找已保存的记忆，服务不可用时回退到关键词检索。')),
+            h('label', { className: 'memory-switch' }, h('input', { type: 'checkbox', role: 'switch', 'aria-label': '启用语义召回', checked: config.enabled, disabled: busy, onChange: e => setConfig({ ...config, enabled: e.target.checked }) }), config.enabled ? '已开启' : '已关闭')),
+          h('p', { className: 'memory-callout' }, '启用后，记忆正文与查询会发送至配置的云服务商，并可能产生费用。QQ 记忆隔离规则继续生效。'),
+          h('div', { className: 'memory-form-grid' },
+            field('model', 'Embedding 模型', null, ['text-embedding-v4', 'text-embedding-v3']),
+            field('dimensions', '向量维度', '维度需与服务和现有索引一致。'),
+            h('label', { className: 'memory-field memory-field-wide' }, h('span', null, '服务地址'), h('input', { 'aria-label': 'DashScope 完整服务地址', type: 'url', value: config.endpoint, disabled: busy, onChange: e => setConfig({ ...config, endpoint: e.target.value }) })),
+            field('minSimilarity', '语义相似度门槛', '越高越严格，范围 0.5–0.99。'),
+            field('topK', '候选条数上限', '最多 50 条，再受整体记忆预算限制。'),
+            field('timeoutMs', '检索超时 / 毫秒', '超时回退关键词，不阻塞聊天。'),
+            h('label', { className: 'memory-field memory-field-wide' }, h('span', null, '服务密钥'), h('input', { 'aria-label': 'Embedding 密钥', type: 'password', autoComplete: 'new-password', placeholder: status?.configured ? '已配置，留空保留现有密钥' : '输入服务密钥', value: key, disabled: busy || !status?.writable, onChange: e => setKey(e.target.value) }), h('small', null, status?.writable ? '密钥只写入宿主凭据，不会返回前端。' : '当前宿主不支持写入密钥，请使用宿主凭据或环境变量。'))),
+          h('div', { className: 'memory-actions memory-save-row' },
+            h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy, onClick: () => post('/settings', { config, ...(key ? { key } : {}) }) }, busy ? '保存中…' : '保存语义设置'),
+            h('button', { type: 'button', className: 'fish-button', disabled: busy || !status?.writable || !status?.configured, onClick: () => { if (window.confirm('清除已保存的 Embedding 密钥？语义召回将无法使用该密钥。')) post('/settings', { config, clearKey: true }) } }, '清除密钥')),
+          h('p', { className: 'memory-index-hint' }, '各记忆库的索引补齐与重建，统一从“数据管理 → 索引维护”进入。')) : h(React.Fragment, null,
+          h('p', { className: 'fish-muted' }, '索引仅影响语义检索。补齐和重建都会保留原始记忆正文。'),
+          h('div', { className: 'memory-stats' }, ...[[status?.indexed ?? '—', '已索引'], [status?.missing ?? '—', '待补齐'], [status?.completed ?? 0, '本次完成']].map(([value, label]) => h('div', { key: label }, h('strong', null, value), h('span', null, label)))),
+          status?.error ? h('p', { className: 'memory-feedback', role: 'status' }, '检索回退原因 · ' + status.error) : null,
+          h('div', { className: 'memory-actions' },
+            h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || status?.running || !config.enabled, onClick: () => post('/index', { session, storeId }) }, status?.running ? '正在补齐…' : '补齐缺失索引'),
+            h('button', { type: 'button', className: 'fish-button', disabled: busy || status?.running || !config.enabled, onClick: () => post('/index', { session, storeId, rebuild: true }) }, '重建索引'),
+            h('button', { type: 'button', className: 'fish-button', disabled: busy || !status?.running, onClick: () => post('/index', { stop: true }) }, '中断任务'),
+            h('button', { type: 'button', className: 'fish-button', onClick: () => refresh().catch(e => setError(e.message)) }, '刷新状态')),
+          !config.enabled ? h('p', { className: 'memory-feedback' }, '语义召回尚未开启，请先到“召回设置”保存配置。') : null),
+        error ? h('p', { role: 'alert', className: 'memory-feedback' }, error) : null)
+    }
+
     const B = '/dsh-fish-memory'
 
     const get = (p) => fetch(B + p, { cache: 'no-store' }).then((r) => r.json())
@@ -1749,7 +1803,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
 
     const S = {
       wrap: { padding: '0 0 24px', fontSize: 'var(--fish-body)', lineHeight: 1.75, minWidth: 0 },
-      dim: { color: 'var(--dsw-alias-label-tertiary, #8a8a8a)' },
+      dim: { color: 'var(--fish-muted)' },
       h: { fontFamily: 'var(--fish-title)', fontSize: 20, margin: '28px 0 16px', fontWeight: 700, lineHeight: 1.5 },
       // ⚠注意：2026-09-23（她的反馈：「右边堆的东西太多，左边的文字成了竖着的一条」）：
       //   这一行**必须能换行** ✗
@@ -1772,7 +1826,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       confirm: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '4px 0 8px 8px', padding: '6px 10px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-danger)', fontSize: 'var(--fish-small)' },
       // 注意：flexWrap：放大或窗口窄的时候要能换行，不然会横向撑出容器（右边就看不见了）✗
       nameBox: { display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', margin: '10px 0', padding: '12px 0', borderBottom: '1px solid var(--fish-line)', fontSize: 'var(--fish-small)' },
-      editBox: { margin: '12px 0 20px', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-border)' },
+      editBox: { margin: 0, padding: 0, minWidth: 0 },
       askBox: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', margin: '8px 0', padding: '16px', borderRadius: 'var(--fish-radius-mid)', background: 'var(--fish-panel)', boxShadow: 'var(--fish-small-shadow)', border: '1px solid var(--fish-warning)', fontSize: 'var(--fish-small)' },
       barOut: { height: 10, borderRadius: 'var(--fish-radius-sm)', background: 'var(--fish-line)', overflow: 'hidden', border: '1px solid var(--fish-border)' },
       barIn: { height: '100%', background: 'var(--fish-accent)' },
@@ -1789,7 +1843,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       ['gate', '门槛与条数', '控制「一次塞多少给她」。'],
     ]
 
-    function Section({ page, onPageChange, detailPage: selectedDetailPage, onDetailPageChange, detailOpen, onDetailChange, notify, historyImport } = {}) {
+    function Section({ page, onPageChange, notify, active = true, historyImport } = {}) {
       const 告知 = (text, options) => { if (typeof notify === 'function') notify(text, options) }
       const [d, setD] = React.useState(null)
       const post = (p, body) => {
@@ -1843,15 +1897,19 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
       const [看哪边, set看哪边] = React.useState('全部')
       // ⭐ 2026-09-22（她要的）：长期事实那个「收理的文件夹」展开没有（**默认收着**）
       const [看事实, set看事实] = React.useState(false)
-      // 参数和索引使用独立页签，保留各页草稿。
       const [localPage, setLocalPage] = React.useState('记忆库')
-      const memoryPage = page ?? localPage
+      const requestedPage = page ?? localPage
+      const memoryPage = ['语义召回', '召回与遗忘'].includes(requestedPage) ? '召回设置' : ['记忆库', '召回设置', '数据管理'].includes(requestedPage) ? requestedPage : '记忆库'
       const setMemoryPage = onPageChange ?? setLocalPage
-      const [localDetailPage, setLocalDetailPage] = React.useState('记忆与档案')
-      const detailPage = selectedDetailPage ?? localDetailPage
-      const setDetailPage = onDetailPageChange ?? setLocalDetailPage
-      React.useEffect(() => { onDetailChange?.(Boolean(open)) }, [open])
-      React.useEffect(() => { if (detailOpen === false) setOpen(null) }, [detailOpen])
+      const [dialogView, setDialogView] = React.useState('memories')
+      const [settingsOpen, setSettingsOpen] = React.useState(false)
+      const [migrationOpen, setMigrationOpen] = React.useState(false)
+      const [historyOpen, setHistoryOpen] = React.useState(false)
+      const [managementTarget, setManagementTarget] = React.useState('')
+      const openLibrary = (id, view = 'memories') => {
+        setOpen(id); setDialogView(view); setEdit(null); set查重开(false); set生成开(false)
+        set看记忆(true); set看事实(true); setShowDeleted(true); set加在谁(id); setNotes(null)
+      }
       // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没找到按钮」）：
       //   去重一直有，但都是**自动**的（召回时、导入时）—— **库里已有的重复没人管** ✗
       //   这里补一个手动查重：列出来、挑、才合
@@ -2059,10 +2117,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
       }, [load])
 
-      if (err) return React.createElement('div', { className: 'fish-module fish-memory qq-memory-page', style: S.wrap }, React.createElement('div', { style: S.drop }, '出错了：' + err))
+      if (err && !d) return h('div', { className: 'memory-feedback', role: 'alert' }, h('p', null, '无法读取长期记忆：' + err), h('button', { type: 'button', className: 'fish-button', onClick: load }, '重试'))
       if (!d || !params) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '加载中…')
 
       const now = Date.now()
+      const libraries = [...new Map((d.sessions || []).map(s => [s.storeId || s.id, s])).values()]
+      const libraryTitle = s => s.qq && s.storeId?.endsWith('_shared') ? '普通群共享记忆' : s.title || s.id
 
       // ---- 第二级：某个会话的详情 ----
       // ⭐ 1.4.8（issue #26）：合并预览抽成一个函数 —— 以前它只写在「会话详情」那个
@@ -2110,7 +2170,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             )
           : null
 
-      if (open) {
+      const 详情视图 = (() => {
+        if (!open) return null
         const s = (d.sessions || []).find((x) => x.id === open)
         if (!s) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '找不到这个会话')
         const tr = (s.traces || []).slice(-1)[0]
@@ -3066,34 +3127,10 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         const 没提炼的 = (s.memories || []).filter((m) => String(m.source || '').indexOf('档案导入') === 0 && !m.refined).length
         const 扩词区 = () => {
           const 小件 = []
-          小件.push(React.createElement('div', { key: 'h', style: S.h }, '提炼 / 扩词（用 DSH 自己的模型）'))
-          小件.push(
-            React.createElement(
-              'div',
-              { key: 'd', style: S.dim },
-              React.createElement('div', null, '两件事不一样，分开的：'),
-              React.createElement(
-                'div',
-                { style: { margin: '4px 0 0 8px' } },
-                React.createElement('b', null, '① 扩词'),
-                '：给每条记忆加一批「以后可能搜到它的词」，比如「她的衣服是蓝色的」加上「颜色 蓝色 衣着 穿搭」。' +
-                  '这样问「她喜欢什么颜色」也能捞到它。不改记忆本身，只是加索引。',
-              ),
-              React.createElement(
-                'div',
-                { style: { margin: '4px 0 0 8px' } },
-                React.createElement('b', null, '② 提炼'),
-                '：把导入进来的档案原文改写成「一条第一人称的记忆」。' +
-                  '比如「- 极致温柔：他会第一时间接住她的情绪」→「我会第一时间接住她的情绪」。' +
-                  '会改记忆本身（原文留在底里，能对照）。',
-              ),
-              React.createElement(
-                'div',
-                { style: { margin: '4px 0 0 8px' } },
-                '两个都在后台跑一次就行；跑完之后每轮对话不再调用模型，所以不卡、不额外花钱。',
-              ),
-            ),
-          )
+          小件.push(h('h3', { key: 'h' }, '提炼与扩词'))
+          小件.push(h('div', { className: 'memory-methods', key: 'd' },
+            h('div', null, h('strong', null, '扩词'), h('p', null, '补充关键词，帮助相关问题找到记忆。保留原始正文。')),
+            h('div', null, h('strong', null, '提炼'), h('p', null, '把导入的档案整理成独立记忆。修改前保存原文，可撤销。'))))
 
           // ---- 选模型 ----
           const 当前 = mdl && mdl.选中的 ? mdl.选中的 : (mdl && mdl.默认) || null
@@ -3130,7 +3167,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       ),
                     ),
                   )
-                : React.createElement('span', { style: S.dim }, '点右边「读一下有哪些模型」'),
+                : React.createElement('span', { style: S.dim }, '使用当前会话模型，也可读取列表后指定。'),
               React.createElement(
                 'button',
                 {type: 'button',
@@ -3150,7 +3187,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
                   },
                 },
-                '读一下有哪些模型',
+                '读取模型列表',
               ),
             ),
           )
@@ -3228,7 +3265,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       .catch((e) => setExpNote('失败：' + String((e && e.message) || e)))
                   },
                 },
-                '先测一下模型',
+                '检查模型连接',
               ),
               React.createElement(
                 'button',
@@ -3566,31 +3603,16 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             React.createElement(
               'div',
               { key: 'd', style: S.dim },
-              '记忆插件只管「往后」—— 装上之后它才开始自己记。你以前那些日子，得你先归纳一下：' +
-                '把旧对话、日记、设定、备忘，整理成几个文本文件（.md / .txt）放进一个文件夹，这里再把它们拆成一条条记忆。',
+              '准备 .md 或 .txt 档案，扫描后先预览并选择条目，再写入当前记忆库。',
             ),
           )
-          小件.push(
-            React.createElement(
-              'div',
-              {
-                key: 'how',
-                style: Object.assign({}, S.dim, {
-                  margin: '6px 0 8px',
-                  padding: '6px 10px',
-                  borderRadius: 'var(--fish-radius-sm)',
-                  background: 'var(--fish-soft)',
-                  borderLeft: '2px solid var(--fish-border)',
-                }),
-              },
-              React.createElement('div', { style: { fontWeight: 600 } }, '怎么归纳（一句话：一个文件一个主题，一行一件事）'),
-              React.createElement('div', null, '· 分几份写：「我是谁」「重要的人和事」「约定」「时间线」……'),
-              React.createElement('div', null, '· 一行写清一件事，别写成一大段流水账 —— 拆起来才准'),
-              React.createElement('div', null, '· 有日期就写上；没日期不写也行，它不会瞎猜'),
-              React.createElement('div', null, '· 拆完先给你过目，挑中的才进库；导错了能整批撤销'),
-              React.createElement('div', null, '· 想更干净，拆完再点「② 提炼」，让模型改写成第一人称'),
-            ),
-          )
+          小件.push(h('details', { className: 'memory-import-guide', key: 'how' },
+            h('summary', null, '档案准备建议'),
+            h('ul', null,
+              h('li', null, '一个文件一个主题，每行记录一件事。'),
+              h('li', null, '有日期时保留日期，不确定时留空。'),
+              h('li', null, '只导入预览中勾选的内容，导入后可整批撤销。'),
+              h('li', null, '需要改写正文时，可到“整理与修复”执行提炼。'))))
           小件.push(
             React.createElement(
               'div',
@@ -3599,7 +3621,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
               imp ? React.createElement('span', { style: S.dim }, '目录：' + imp.data.dir) : null,
               imp && imp.data.selfName
                 ? React.createElement('span', { style: S.dim }, '（人称：「' + imp.data.selfName + '」→「我」）')
-                : React.createElement('span', { style: S.warn, fontSize: 'var(--fish-small)' }, '（这个会话还没设「她自己叫什么」，导进去的人称不会自动换 —— 建议先在上面填好）'),
+                : React.createElement('span', { style: S.warn, fontSize: 'var(--fish-small)' }, '未设置库内称呼，导入时将保留原有人称。可先到“库内称呼”设置。'),
             ),
           )
           // 只导哪些文件 —— 同一个文件夹里常常还堆着别的文档，得能挑
@@ -3977,80 +3999,182 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           return 小件
         }
 
-        return React.createElement(
-          'div',
-          { className: 'fish-module fish-memory', style: S.wrap },
-          React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => setOpen(null) }, '← 所有会话'),
-          React.createElement('div', { style: S.h }, s.title || s.id),
-          onPageChange ? null : React.createElement('div', { className: 'fish-subnav' }, ...['记忆与档案', '语义索引'].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (detailPage === name ? ' fish-primary' : ''), 'aria-pressed': detailPage === name, onClick: () => setDetailPage(name) }, name))),
-          React.createElement('div', { hidden: detailPage !== '语义索引' }, React.createElement(EmbeddingSettings, { session: s.id, storeId: s.storeId, notify })),
-          React.createElement('div', { hidden: detailPage !== '记忆与档案' },
-          s.qq ? React.createElement('div', { style: S.dim }, '记忆库：' + s.storeId) : null,
-          React.createElement('div', { style: S.dim }, s.id + '　' + s.memories.length + ' 条记忆' + (已删.length ? '　（另外还收着 ' + 已删.length + ' 条）' : '')),
-          React.createElement(
+        return (() => {
+          const mode = edit ? 'edit' : 生成开 ? 'generate' : 查重 && 查重开 ? 'duplicates' : dialogView
+          const titles = { memories: '记忆条目', add: '新增记忆', names: '库内称呼', organize: '整理与修复', archive: '档案导入与生成', generate: '从会话生成档案', duplicates: '重复记忆检查', trash: '回收站', recall: '召回诊断', index: '语义索引', edit: '编辑记忆', tools: '记忆库管理' }
+          const go = view => { setDialogView(view); setEdit(null); set查重开(false); set生成开(false) }
+          const tasks = [
+            ['add', '新增记忆', '手动记录事实、时间和关键词'],
+            ['names', '库内称呼', '设置 AI 与对方在当前库中的称呼'],
+            ['organize', '整理与修复', '补日期、事实键、去重、提炼和扩词'],
+            ['archive', '档案导入与生成', '从文件导入，或将会话整理成档案'],
+            ['trash', '回收站', '恢复已删除、已合并或被取代的记忆'],
+            ['recall', '召回诊断', '查看本轮命中结果与未选中的原因'],
+            ['index', '语义索引', '补齐或重建当前库的向量索引'],
+          ]
+          let content
+          if (mode === 'memories') content = h('div', { className: 'memory-records' },
+            h('div', { className: 'memory-actions' }, h('button', { type: 'button', className: 'fish-button fish-primary', onClick: () => go('add') }, '新增记忆'), h('button', { type: 'button', className: 'fish-button', onClick: () => go('tools') }, '管理工具'), 已选几条 > 0
+              ? React.createElement(
+                  'button',
+                  {type: 'button',
+                    style: S.btnDanger,
+                    title: '把勾上的这几条收进「已删」（不是销毁，能找回来）。点它不会直接删，会先问一遍',
+                    onClick: () => set批删问(true),
+                  },
+                  '批量删（' + 已选几条 + '）',
+                )
+              : null,
+已选几条 > 0
+              ? React.createElement(
+                  'button',
+                  {type: 'button',  style: S.btn, onClick: () => { set选中({}); set批删问(false) } },
+                  '取消勾选',
+                )
+              : null),
+            h('div', { className: 'memory-filter' }, React.createElement('input', {'aria-label': '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
+                    style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
+                    placeholder: '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
+                    value: 搜词,
+                    onChange: (e) => set搜词(e.target.value),
+                  }),
+搜词
+                    ? React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set搜词('') }, '清掉')
+                    : null,
+React.createElement(
+                    'button',
+                    {type: 'button',
+                      style: S.btn,
+                      title:
+                        '点一下换个看法：全部 → 只记了时间的 → 只有没记时间的 → ' +
+                        '不会淡的 → 会淡的 → 全部。' +
+                        '「全部」那个视图里，不会淡的收在一个折叠的分组里（外面只剩会淡的）',
+                      onClick: () =>
+                        set看哪边(
+                          看哪边 === '全部'
+                            ? '有时间'
+                            : 看哪边 === '有时间'
+                              ? '没时间'
+                              : 看哪边 === '没时间'
+                                ? '长期事实'
+                                : 看哪边 === '长期事实'
+                                  ? '会淡的'
+                                  : '全部',
+                        ),
+                    },
+                    '看：' +
+                      (看哪边 === '全部'
+                        ? '全部'
+                        : 看哪边 === '有时间'
+                          ? '只记了时间的（' + 有时间数 + '）'
+                          : 看哪边 === '没时间'
+                            ? '只有没记时间的（' + 没时间数 + '）'
+                            : 看哪边 === '长期事实'
+                              ? '不会淡的（' + 事实总数 + '）'
+                              : '会淡的（' + 会淡总数 + '）'),
+                  ),
+React.createElement(
+                    'button',
+                    {type: 'button',
+                      style: S.btn,
+                      title: '按最左边的日期排。没写日期的排在最后 —— 它们不知道是什么时候的事',
+                      onClick: () => set顺序(顺序 === '新' ? '旧' : '新'),
+                    },
+                    '日期：' + (顺序 === '新' ? '新的在前' : '老的在前'),
+                  )),
+            React.createElement(
             'div',
-            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'var(--fish-soft)' } },
-            React.createElement(
-              'div',
-              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
-              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她自己叫什么'),
-              React.createElement('input', {'aria-label': '她在这儿的名字',
-                style: Object.assign({}, S.inp, { width: 160 }),
-                placeholder: '她在这儿的名字',
-                value: selfDraft[open] !== undefined ? selfDraft[open] : s.selfName || s.titleName || '',
-                onChange: (e) => setSelfDraft(Object.assign({}, selfDraft, { [open]: e.target.value })),
-              }),
-              s.selfName
-                ? null
-                : (s.titleName ? React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '（先填的是会话标题，确认没问题再点「存」）') : null),
-            ),
-            React.createElement(
-              'div',
-              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
-              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她怎么称呼你'),
-              React.createElement('input', {'aria-label': '她平时怎么叫你（小名、昵称都行）',
-                style: Object.assign({}, S.inp, { width: 160 }),
-                placeholder: '她平时怎么叫你（小名、昵称都行）',
-                value: ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName || '',
-                onChange: (e) => setOwnerDraft(Object.assign({}, ownerDraft, { [open]: e.target.value })),
-              }),
-            ),
-            React.createElement(
-              'div',
-              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 } },
-              React.createElement(
-                'button',
-                {type: 'button',
-                  style: S.btn,
-                  onClick: () =>
-                    post('/names', {
-                      session: open,
-                      selfName: (selfDraft[open] !== undefined ? selfDraft[open] : s.selfName) || '',
-                      ownerName: (ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName) || '',
-                    }).then(() => {
-                      setSelfDraft({})
-                      setOwnerDraft({})
-                      load()
-                    }),
-                },
-                '存',
-              ),
-              React.createElement(
-                'span',
-                { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1, lineHeight: 1.5 }) },
-                '她自己的名字写进记忆时会换成「我」；她怎么称呼你，会换成「你」。已有的记忆也会顺手洗一遍。',
-              ),
-            ),
-          ),
-          // ---- 2026-09-21 新加：她自己后台手动加一条 ----
-          // 跟模型自己记是两回事：它记受上面那个开关管，**手动加不受管**
-          // （开关管的是「他自己记不记、注不注入」，管不到她手动写）
-          React.createElement(
-            'div',
-            { style: S.h },
-            '新增记忆（开关关闭时也能添加）',
-          ),
-          React.createElement(
+            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
+            '记了时间的 ' + 有时间数 + ' 条 · 没记时间的 ' + 没时间数 + ' 条' +
+              (看哪边 === '全部' ? '' : '（现在只看' + (看哪边 === '有时间' ? '记了时间的' : '没记时间的') + '）'),
+          ), 批删问 && 已选几条 > 0
+                  ? React.createElement(
+                      'div',
+                      { style: S.confirm },
+                      React.createElement(
+                        'div',
+                        { style: { flex: 1 } },
+                        '要删掉这 ' + 已选几条 + ' 条吗？',
+                        React.createElement(
+                          'div',
+                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
+                          '不是销毁 —— 收进「已删」里，点开还能找回来。动之前也会自动备份。',
+                        ),
+                      ),
+                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 批删(s) }, busy ? '删着…' : '确定删（' + 已选几条 + ' 条）'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批删问(false) }, '算了'),
+                    )
+                  : null, 搜词 || 看哪边 !== '全部'
+                  ? React.createElement(
+                      'div',
+                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '0 0 6px' }) },
+                      '这里 ' + 过滤后.length + ' 条 / 共 ' + s.memories.length + ' 条' +
+                        (看哪边 === '有时间' ? '（只看记了时间的）' : 看哪边 === '没时间' ? '（只看没记时间的）' : '') +
+                        (过滤后.length === 0 ? ' —— 换几个字试试，或者点上面的「看」换个范围' : ''),
+                    )
+                  : null, React.createElement(
+                  'div',
+                  { style: { marginTop: 10 } },
+                  过滤后.length === 0
+                    ? React.createElement(
+                        'div',
+                        { style: S.dim },
+                        搜词 ? '（没有含「' + 搜词 + '」的）' : '（这个范围里没有记忆）',
+                      )
+                    : (() => {
+                        // ⭐⭐ 2026-09-22（她要的）：**「全部」视图里，不会淡的收进一个折叠的分组**
+                        //   原话：「那一行，我们是单独做一个收理的文件夹一样的，
+                        //              不然的话那些就不需要露在外面」
+                        //   ⭐ 又说：「**外面都是会淡的，里面才是不会淡的**，就不用管里面了」
+                        //   → 外面只列**会淡的**；不会淡的（长期事实 + 没时间的）
+                        //     塞进「▸ 不会淡的（N 条）」里，点开才看
+                        const 上 = 画这个.slice(0, 画全部 ? 画这个.length : 一次最多画)
+                        // 注意：搜的时候**不许折叠** —— 不然搜到了却看不见 ✗
+                        //   （自检逮到的：搜「衣服」时匹配的那条是长期事实，被收进分组里了）
+                        if (看哪边 !== '全部' || 搜词) return 上.map(一条记忆)
+                        const 会淡的 = 上.filter((m) => !不会淡(m))
+                        const 不淡的 = 上.filter(不会淡)
+                        return [
+                          ...会淡的.map(一条记忆),
+                          不淡的.length
+                            ? React.createElement(
+                                'div',
+                                { key: '事实组' },
+                                React.createElement(
+                                  'div',
+                                  {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
+                                    style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 14 }),
+                                    onClick: () => set看事实(!看事实),
+                                  },
+                                  (看事实 ? '▾ ' : '▸ ') + '不会淡的（' + 不淡的.length + ' 条）',
+                                ),
+                                React.createElement(
+                                  'div',
+                                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
+                                  '里面这些是长期事实（要记一辈子的事，不会淡）。' +
+                                    '外面那些都会淡 —— 包括没记时间的（它们从「记下来的那天」开始淡）。',
+                                ),
+                                看事实 ? 不淡的.map(一条记忆) : null,
+                              )
+                            : null,
+                        ]
+                      })(),
+                ), 过滤后.length > 一次最多画
+                  ? React.createElement(
+                      'div',
+                      { style: { margin: '6px 0 0', fontSize: 'var(--fish-small)' } },
+                      画全部
+                        ? React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(false) }, '↑ 收起来（只画前 ' + 一次最多画 + ' 条）')
+                        : React.createElement(
+                            'span',
+                            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(true) },
+                            '还有 ' + (过滤后.length - 一次最多画) + ' 条' +
+                              (看哪边 === '没时间' ? '（更早记的）' : 顺序 === '新' ? '（更早的）' : '（更新的）') +
+                              '没画出来 —— 点这里全部显示（多了会卡）',
+                          ),
+                    )
+                  : null)
+          else if (mode === 'add') content = React.createElement(
                 'div',
                 { style: S.editBox },
                 React.createElement(
@@ -4126,150 +4250,73 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.askBox, { margin: '8px 0 0' }) },
-                  React.createElement('button', {type: 'button', className: 'fish-primary', style: { ...S.btn, background: 'var(--fish-action)', color: 'var(--fish-on-accent)' }, onClick: 提交一条 }, '加进这个会话'),
+                  React.createElement('button', {type: 'button', className: 'fish-primary', style: { ...S.btn, background: 'var(--fish-action)', color: 'var(--fish-on-accent)' }, onClick: 提交一条 }, '保存记忆'),
                 ),
                 React.createElement(
                   'div',
                   { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 4 }) },
-                  '加完记得点一下「开始扩词」—— 不然这条只有正文能搜到，检索词还是空的。',
+                  '保存后可在“整理与修复”中补充检索词。',
                 ),
-              ),
-          // 常用列表默认展开，管理工具保持在列表前面。
-          React.createElement(
+              )
+          else if (mode === 'edit') content = 改一条(edit)
+          else if (mode === 'names') content = React.createElement(
             'div',
-            { style: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: 16 } },
+            { style: { padding: '10px 12px', borderRadius: 8, border: '1px solid var(--fish-border)', background: 'var(--fish-soft)' } },
             React.createElement(
               'div',
-              {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer', margin: 0, flex: 1 }), onClick: () => set看记忆(!看记忆) },
-              (看记忆 ? '▾ ' : '▸ ') + '记忆列表（' + s.memories.length + ' 条）',
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
+              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她自己叫什么'),
+              React.createElement('input', {'aria-label': '她在这儿的名字',
+                style: Object.assign({}, S.inp, { width: 160 }),
+                placeholder: '她在这儿的名字',
+                value: selfDraft[open] !== undefined ? selfDraft[open] : s.selfName || s.titleName || '',
+                onChange: (e) => setSelfDraft(Object.assign({}, selfDraft, { [open]: e.target.value })),
+              }),
+              s.selfName
+                ? null
+                : (s.titleName ? React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, '（先填的是会话标题，确认没问题再点「存」）') : null),
             ),
-            // ⭐⭐ 2026-09-22（反馈：「查重我们是不是还没做啊？我怎么没有找到按钮」）：
-            //   ⚠注意：第一次我把它放进了**折叠起来的**记忆列表块里 ——
-            //     不点开列表就看不见，那就等于没有按钮 ✗
-            //     → 挪到**标题这一行**（这一行永远看得见）✓
             React.createElement(
-              'button',
-              {type: 'button',
-                style: S.btn,
-                title:
-                  '找出库里「几乎一样」的记忆。自动去重只管召回和导入，管不到已经存着的。' +
-                  '真重复能一键合；「汇总+明细」会列出来让你自己挑；合之前自动备份',
-                onClick: () => 去查重(s),
-              },
-              '查重',
+              'div',
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 8 } },
+              React.createElement('span', { style: { flex: 'none', width: 96, fontSize: 'var(--fish-small)' } }, '她怎么称呼你'),
+              React.createElement('input', {'aria-label': '她平时怎么叫你（小名、昵称都行）',
+                style: Object.assign({}, S.inp, { width: 160 }),
+                placeholder: '她平时怎么叫你（小名、昵称都行）',
+                value: ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName || '',
+                onChange: (e) => setOwnerDraft(Object.assign({}, ownerDraft, { [open]: e.target.value })),
+              }),
             ),
-            // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案**
-            //   「别的用户导入自己的会话 → 模型读一遍 → 出一份档案」
-            //   注意：这是**给别人用的功能**，跟「手工维护一份档案」是两码事
             React.createElement(
-              'button',
-              {type: 'button',
-                style: S.btn,
-                title:
-                  '把你自己的会话读一遍，提炼出一份长期档案（分九章）。' +
-                  '出好的档案再走「从旧档案导入」变成记忆条目。' +
-                  '会调用模型、会花钱，所以分四步：先看会话 → 算一下要多少 → 一批一批跑 → 存文件',
-                onClick: () => 开生成(),
-              },
-              '从会话生成档案',
+              'div',
+              { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 } },
+              React.createElement(
+                'button',
+                {type: 'button',
+                  style: S.btn,
+                  onClick: () =>
+                    post('/names', {
+                      session: open,
+                      selfName: (selfDraft[open] !== undefined ? selfDraft[open] : s.selfName) || '',
+                      ownerName: (ownerDraft[open] !== undefined ? ownerDraft[open] : s.ownerName) || '',
+                    }).then(() => {
+                      setSelfDraft({})
+                      setOwnerDraft({})
+                      load()
+                    }),
+                },
+                '存',
+              ),
+              React.createElement(
+                'span',
+                { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1, lineHeight: 1.5 }) },
+                '她自己的名字写进记忆时会换成「我」；她怎么称呼你，会换成「你」。已有的记忆也会顺手洗一遍。',
+              ),
             ),
-            // ⭐⭐ 2026-09-22（她要的）：**批量删除** —— 勾了几条就显示几条
-            //   注意：二次确认：点这里**不删**，只出确认条；确认条上再点「确定删」才真删
-            已选几条 > 0
-              ? React.createElement(
-                  'button',
-                  {type: 'button',
-                    style: S.btnDanger,
-                    title: '把勾上的这几条收进「已删」（不是销毁，能找回来）。点它不会直接删，会先问一遍',
-                    onClick: () => set批删问(true),
-                  },
-                  '批量删（' + 已选几条 + '）',
-                )
-              : null,
-            已选几条 > 0
-              ? React.createElement(
-                  'button',
-                  {type: 'button',  style: S.btn, onClick: () => { set选中({}); set批删问(false) } },
-                  '取消勾选',
-                )
-              : null,
-          ),
-          // ⭐ 2026-09-24：折叠着也能一眼看出「记了时间的」有多少 ——
-          //   反馈那个「中间一坨」的根源就是 850 条里只有 188 条有日期，
-          //   这个数字摆在标题下面，心里有底
-          React.createElement(
-            'div',
-            { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
-            '记了时间的 ' + 有时间数 + ' 条 · 没记时间的 ' + 没时间数 + ' 条' +
-              (看哪边 === '全部' ? '' : '（现在只看' + (看哪边 === '有时间' ? '记了时间的' : '没记时间的') + '）'),
-          ),
-          看记忆
-            ? React.createElement(
-                'div',
-                null,
-                // ---- 检索框：几百条的时候，靠翻是翻不到的 ----
-                React.createElement(
-                  'div',
-                  { style: S.nameBox },
-                  React.createElement('div', { style: { flex: 'none', width: 80 } }, '找'),
-                  React.createElement('input', {'aria-label': '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
-                    style: Object.assign({}, S.inp, { flex: 1, width: 'auto', minWidth: 140 }),
-                    placeholder: '打几个字，只留含它的（正文、原文、检索词、来源都能搜）',
-                    value: 搜词,
-                    onChange: (e) => set搜词(e.target.value),
-                  }),
-                  搜词
-                    ? React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set搜词('') }, '清掉')
-                    : null,
-                  // ⭐ 2026-09-24（她要的）：**记了时间的 / 没记时间的分开看**
-                  // ⭐ 2026-09-22 又加两档：**长期事实 / 会淡的**
-                  //   点一下就轮到下一种：
-                  //   全部 → 只记了时间的 → 只有没记时间的 → 不会淡的 → 会淡的 → 全部…
-                  React.createElement(
-                    'button',
-                    {type: 'button',
-                      style: S.btn,
-                      title:
-                        '点一下换个看法：全部 → 只记了时间的 → 只有没记时间的 → ' +
-                        '不会淡的 → 会淡的 → 全部。' +
-                        '「全部」那个视图里，不会淡的收在一个折叠的分组里（外面只剩会淡的）',
-                      onClick: () =>
-                        set看哪边(
-                          看哪边 === '全部'
-                            ? '有时间'
-                            : 看哪边 === '有时间'
-                              ? '没时间'
-                              : 看哪边 === '没时间'
-                                ? '长期事实'
-                                : 看哪边 === '长期事实'
-                                  ? '会淡的'
-                                  : '全部',
-                        ),
-                    },
-                    '看：' +
-                      (看哪边 === '全部'
-                        ? '全部'
-                        : 看哪边 === '有时间'
-                          ? '只记了时间的（' + 有时间数 + '）'
-                          : 看哪边 === '没时间'
-                            ? '只有没记时间的（' + 没时间数 + '）'
-                            : 看哪边 === '长期事实'
-                              ? '不会淡的（' + 事实总数 + '）'
-                              : '会淡的（' + 会淡总数 + '）'),
-                  ),
-                  // ⭐ 顺序开关：按日期排，默认「日期新的在前」
-                  //   （851 条里只画前 200 条，不排的话看到的永远是最老的）
-                  React.createElement(
-                    'button',
-                    {type: 'button',
-                      style: S.btn,
-                      title: '按最左边的日期排。没写日期的排在最后 —— 它们不知道是什么时候的事',
-                      onClick: () => set顺序(顺序 === '新' ? '旧' : '新'),
-                    },
-                    '日期：' + (顺序 === '新' ? '新的在前' : '老的在前'),
-                  ),
-                  // ⭐ 补日期：从正文里认出日期，只补没日期的（补之前自动备份）
-                  没日期的 > 0
+          )
+          else if (mode === 'tools') content = h('div', { className: 'memory-task-grid' }, ...tasks.map(([view, title, hint]) => h('button', { key: view, type: 'button', className: 'memory-task', onClick: () => go(view) }, h('strong', null, title), h('span', null, hint))))
+          else if (mode === 'organize') content = h('div', { className: 'memory-stack' },
+            h('section', { className: 'memory-operation' }, h('h3', null, '检查与修复'), h('p', { className: 'fish-muted' }, '操作前保留原有确认与备份流程。'), h('div', { className: 'memory-actions' }, 没日期的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -4280,9 +4327,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '补日期（' + 没日期的 + '）',
                       )
                     : null,
-                  // ⭐⭐ 2026-09-22：补标「永远不淡」——
-                  //   提炼原来只改重要度、不碰分类，所以老记忆该不淡的没标上
-                  没判过的 > 0
+没判过的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -4295,9 +4340,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '补标不淡（' + 没判过的 + '）',
                       )
                     : null,
-                  // ⭐ 2026-09-22（反馈「判定太松了就得改」）：判据改严之后，
-                  //   **已经判过的那批得用新判据重来一遍** —— 否则老结果一直留着 ✗
-                  判过的 > 0
+判过的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -4310,12 +4353,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '重判一遍（' + 判过的 + '）',
                       )
                     : null,
-                  // ⭐⭐ 2026-09-23（第三步）：**老数据清洗补键**
-                  //   提炼只管以后；老条目本来就没键 → 这里单独过一遍
-                  //   注意：先「试几条」再真洗 —— 一条命令改几百条，得让她先看一眼
-                  //   ⚠注意：按钮上**不许写「清洗补键」** —— 那是我自己造的词，她看不懂 ✗
-                  //     改成说**它有什么用**：「讲同一件事的，只留最新那条」
-                  没键的 > 0
+没键的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -4331,8 +4369,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '同一件事只留最新（' + 没键的 + '）',
                       )
                     : null,
-                  // 补过了就想退回来（几百条自动改的，得能一键回到洗之前）✓
-                  可撤的 > 0
+可撤的 > 0
                     ? React.createElement(
                         'button',
                         {type: 'button',
@@ -4344,12 +4381,17 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         },
                         '撤掉这次标的（' + 可撤的 + '）',
                       )
-                    : null,
-                ),
-                // ⭐⭐ 2026-09-23：她说了「这个让人看不懂，写通俗一点的」——
-                //   光按钮上有个名字不够，旁边得有一句人话解释它到底干嘛
-                //   （只在按钮露着的时候出现，平时不占地方）
-                没键的 > 0
+                    : null, React.createElement(
+              'button',
+              {type: 'button',
+                style: S.btn,
+                title:
+                  '找出库里「几乎一样」的记忆。自动去重只管召回和导入，管不到已经存着的。' +
+                  '真重复能一键合；「汇总+明细」会列出来让你自己挑；合之前自动备份',
+                onClick: () => 去查重(s),
+              },
+              '查重',
+            )), 没键的 > 0
                   ? React.createElement(
                       'div',
                       { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '4px 0 0' }) },
@@ -4357,10 +4399,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '标好之后，讲同一件事的只留最新那条，旧的收起来（还能恢复）。',
                     )
                   : null,
-                // ⭐⭐ 2026-09-23：跑过之后跟她交代一句「剩下的去哪儿了」✓
-                //   模型会把一批判成「这条不用标」（一次性的、拿不准的）——
-                //   那种**不标但算问过了**。不说明的话她会以为漏了/白跑了 ✗
-                判留空的 > 0
+判留空的 > 0
                   ? React.createElement(
                       'div',
                       { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '4px 0 0' }) },
@@ -4368,7 +4407,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         '那种一个字都没改，也不会再问一遍）',
                     )
                   : null,
-                confirm && confirm.kind === 'stable'
+confirm && confirm.kind === 'stable'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -4386,8 +4425,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐ 重判：判据改过之后，把老结果清掉重来
-                confirm && confirm.kind === 'restable'
+confirm && confirm.kind === 'restable'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -4406,8 +4444,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐⭐ 2026-09-23：清洗补键 —— 先「试几条」✓
-                confirm && confirm.kind === 'washkeys'
+confirm && confirm.kind === 'washkeys'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -4428,8 +4465,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // 撤退：把这次自动标的全撤掉
-                confirm && confirm.kind === 'unwashkeys'
+confirm && confirm.kind === 'unwashkeys'
                   ? React.createElement(
                       'div',
                       { style: S.askBox },
@@ -4448,8 +4484,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
                   : null,
-                // ⭐⭐ 2026-09-23：**进度条**（跟补标那条分开，不互相盖）✓
-                洗键进度.在跑 && 洗键进度.总 > 0
+洗键进度.在跑 && 洗键进度.总 > 0
                   ? (() => {
                       const 百 = Math.round((洗键进度.已 / 洗键进度.总) * 100)
                       return React.createElement(
@@ -4469,9 +4504,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                       )
                     })()
                   : null,
-                // ⭐⭐ 2026-09-22（她要的）：**补标/重判的进度条，就贴在按钮这一行下面**
-                //   点了才出现，没点就没有 —— 不跟提炼/扩词那条挤在一起
-                补标进度.在跑 && 补标进度.总 > 0
+补标进度.在跑 && 补标进度.总 > 0
                   ? (() => {
                       const 百 = Math.round((补标进度.已 / 补标进度.总) * 100)
                       return React.createElement(
@@ -4496,42 +4529,18 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                         ),
                       )
                     })()
-                  : null,
-                // ⭐⭐ 2026-09-22（她要的）：**批量删的二次确认条**
-                //   第一次点是「批量删（N）」，出这条；第二次点「确定删」才真删
-                批删问 && 已选几条 > 0
+                  : null, confirm && confirm.kind === 'backfill'
                   ? React.createElement(
                       'div',
                       { style: S.confirm },
-                      React.createElement(
-                        'div',
-                        { style: { flex: 1 } },
-                        '要删掉这 ' + 已选几条 + ' 条吗？',
-                        React.createElement(
-                          'div',
-                          { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) },
-                          '不是销毁 —— 收进「已删」里，点开还能找回来。动之前也会自动备份。',
-                        ),
-                      ),
-                      React.createElement('button', {type: 'button',  style: S.btnDanger, disabled: busy, onClick: () => 批删(s) }, busy ? '删着…' : '确定删（' + 已选几条 + ' 条）'),
-                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => set批删问(false) }, '算了'),
+                      React.createElement('span', { style: { flex: 1 } }, '从正文里补日期？只补那 ' + 没日期的 + ' 条没日期的，已有的不动（补之前会自动备份）。'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: 补日期 }, '补'),
+                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
                     )
-                  : null,
-                // ⚠注意：2026-09-22（我发现的）：`notes` 原来**只在第一级**渲染 ——
-                //   而会话详情是 `if (open) return …` **提前返回**的，
-                //   所以在详情页里 setNotes 的东西**一个字都看不到** ✗
-                //   「补日期」「补标不淡」「查重」的结果提示全落在这儿 → 补一份
-                notes && notes.length
-                  ? React.createElement(
-                      'div',
-                      { style: Object.assign({}, S.warn, { margin: '8px 0', fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
-                      '　· ' + notes.join('\n　· '),
-                    )
-                  : null,
-                // ⭐⭐ 2026-09-22（她的第十件）：**从会话生成档案** 的面板
-                //   四步分开 —— 因为第三步**调模型、花钱**，得让人看清再点
-                生成开
-                  ? React.createElement(
+                  : null),
+            h('section', { className: 'memory-operation' }, 扩词区()))
+          else if (mode === 'archive') content = h('div', { className: 'memory-stack' }, h('div', { className: 'memory-callout' }, h('div', null, h('strong', null, '从已有会话生成档案'), h('p', null, '先预览会话和用量，再分批生成，可继续导入当前记忆库。')), h('button', { type: 'button', className: 'fish-button', onClick: () => 开生成() }, '选择会话')), ...导入区().slice(1))
+          else if (mode === 'generate') content = React.createElement(
                       'div',
                       { style: Object.assign({}, S.editBox, { marginTop: 8 }) },
                       [
@@ -4867,7 +4876,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                                   'span',
                                   { style: S.dim },
                                   生成条目.length
-                                    ? '存成一份 markdown；然后再用下面的「从旧档案导入」把它变成记忆条目'
+                                    ? '保存为 Markdown 后，返回“档案导入与生成”扫描并选择条目。'
                                     : '还没有条目可存 —— 这一轮模型一条都没收（也可能输出被截断，诊断日志里有回文长度）',
                                 ),
                               ),
@@ -4897,9 +4906,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                           : null,
                       ],
                     )
-                  : null,
-                查重 && 查重开
-                  ? React.createElement(
+          else if (mode === 'duplicates') content = React.createElement(
                       'div',                      { style: Object.assign({}, S.editBox, { marginTop: 8 }) },
                       [
                         React.createElement(
@@ -5031,97 +5038,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                             : [],
                         ),
                     )
-                  : null,
-                confirm && confirm.kind === 'backfill'
-                  ? React.createElement(
-                      'div',
-                      { style: S.confirm },
-                      React.createElement('span', { style: { flex: 1 } }, '从正文里补日期？只补那 ' + 没日期的 + ' 条没日期的，已有的不动（补之前会自动备份）。'),
-                      React.createElement('button', {type: 'button',  style: S.btn, onClick: 补日期 }, '补'),
-                      React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setConfirm(null) }, '算了'),
-                    )
-                  : null,
-                搜词 || 看哪边 !== '全部'
-                  ? React.createElement(
-                      'div',
-                      { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', margin: '0 0 6px' }) },
-                      '这里 ' + 过滤后.length + ' 条 / 共 ' + s.memories.length + ' 条' +
-                        (看哪边 === '有时间' ? '（只看记了时间的）' : 看哪边 === '没时间' ? '（只看没记时间的）' : '') +
-                        (过滤后.length === 0 ? ' —— 换几个字试试，或者点上面的「看」换个范围' : ''),
-                    )
-                  : null,
-                React.createElement(
-                  'div',
-                  { style: { marginTop: 10 } },
-                  过滤后.length === 0
-                    ? React.createElement(
-                        'div',
-                        { style: S.dim },
-                        搜词 ? '（没有含「' + 搜词 + '」的）' : '（这个范围里没有记忆）',
-                      )
-                    : (() => {
-                        // ⭐⭐ 2026-09-22（她要的）：**「全部」视图里，不会淡的收进一个折叠的分组**
-                        //   原话：「那一行，我们是单独做一个收理的文件夹一样的，
-                        //              不然的话那些就不需要露在外面」
-                        //   ⭐ 又说：「**外面都是会淡的，里面才是不会淡的**，就不用管里面了」
-                        //   → 外面只列**会淡的**；不会淡的（长期事实 + 没时间的）
-                        //     塞进「▸ 不会淡的（N 条）」里，点开才看
-                        const 上 = 画这个.slice(0, 画全部 ? 画这个.length : 一次最多画)
-                        // 注意：搜的时候**不许折叠** —— 不然搜到了却看不见 ✗
-                        //   （自检逮到的：搜「衣服」时匹配的那条是长期事实，被收进分组里了）
-                        if (看哪边 !== '全部' || 搜词) return 上.map(一条记忆)
-                        const 会淡的 = 上.filter((m) => !不会淡(m))
-                        const 不淡的 = 上.filter(不会淡)
-                        return [
-                          ...会淡的.map(一条记忆),
-                          不淡的.length
-                            ? React.createElement(
-                                'div',
-                                { key: '事实组' },
-                                React.createElement(
-                                  'div',
-                                  {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },
-                                    style: Object.assign({}, S.h, { cursor: 'pointer', marginTop: 14 }),
-                                    onClick: () => set看事实(!看事实),
-                                  },
-                                  (看事实 ? '▾ ' : '▸ ') + '不会淡的（' + 不淡的.length + ' 条）',
-                                ),
-                                React.createElement(
-                                  'div',
-                                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginBottom: 4 }) },
-                                  '里面这些是长期事实（要记一辈子的事，不会淡）。' +
-                                    '外面那些都会淡 —— 包括没记时间的（它们从「记下来的那天」开始淡）。',
-                                ),
-                                看事实 ? 不淡的.map(一条记忆) : null,
-                              )
-                            : null,
-                        ]
-                      })(),
-                ),
-                过滤后.length > 一次最多画
-                  ? React.createElement(
-                      'div',
-                      { style: { margin: '6px 0 0', fontSize: 'var(--fish-small)' } },
-                      画全部
-                        ? React.createElement('span', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(false) }, '↑ 收起来（只画前 ' + 一次最多画 + ' 条）')
-                        : React.createElement(
-                            'span',
-                            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: S.link, onClick: () => set画全部(true) },
-                            '还有 ' + (过滤后.length - 一次最多画) + ' 条' +
-                              (看哪边 === '没时间' ? '（更早记的）' : 顺序 === '新' ? '（更早的）' : '（更新的）') +
-                              '没画出来 —— 点这里全部显示（多了会卡）',
-                          ),
-                    )
-                  : null,
-              )
-            : null,
-          React.createElement(
-            'div',
-            null,
-            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setShowDeleted(!showDeleted) }, (showDeleted ? '▾ ' : '▸ ') + '已删掉的（' + (已删.length + 被取代的.length) + '）'),
-            React.createElement('div', { style: S.dim }, '收起来的记忆不会被注入，但还留着，随时能找回来。'),
-            showDeleted
-              ? React.createElement(
+          else if (mode === 'trash') content = React.createElement(
                   'div',
                   { style: { marginTop: 6 } },
                   // ⭐⭐ 2026-09-22（反馈「你放在最下面的呀，你改到最上面去，
@@ -5348,22 +5265,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   //   原来「批量清掉」和「清空」的确认条渲染在这儿（列表最下面），
                   //   条数一多就看不见 失败：→ 挪走了，这里不再重复
                 )
-              : null,
-          ),
-          // 注意：2026-09-22：**「备份」原来插在这里**（在「扩词」「导入」前面），
-          //   可它后面跟的却是那两个区块 —— 看着像它俩的标题，其实只是句说明 ✗
-          //   （「设置页面会不会有点乱」）
-          //   → 挪到**末尾**，跟「这一页到底会怎么变」那些说明放一起
-          React.createElement('div', null, 扩词区()),
-          React.createElement(
-            'div',
-            {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.h, { cursor: 'pointer' }), onClick: () => setImpOpen(!impOpen) },
-            (impOpen ? '▾ ' : '▸ ') + '从旧档案导入',
-          ),
-          React.createElement('div', { style: S.dim }, '把一个文件夹里的档案拆成一条条记忆，你挑完再导。文件夹在下面选。'),
-          impOpen ? React.createElement('div', null, 导入区()) : null,
-          tr
-            ? React.createElement(
+          else if (mode === 'index') content = h(EmbeddingSettings, { session: s.id, storeId: s.storeId, notify, indexOnly: true })
+          else if (mode === 'recall') content = tr ? React.createElement(
                 'div',
                 null,
                 React.createElement('div', { style: S.h }, '最近一次召回'),
@@ -5417,20 +5320,12 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
                   { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 6 }) },
                   '「进去了」= 这一轮塞进提示词了；「像是用上了」= 她回复里的实词跟这条重合得多（这是猜的）；「已失效」= 这条后来被删了或改过。',
                 ),
-              )
-            : null,
-          // ⭐ 2026-09-22：说明都放末尾（原来「备份」插在中间，看着像别的区块的标题）
-          React.createElement('div', { style: S.h }, '备份'),
-          React.createElement(
-            'div',
-            { style: S.dim },
-            '记忆一变就会自动备份：上一版存在同目录的 .bak，另外每天存一份，留 14 天。' +
-              '「补日期」「补标不淡」「改」「删」之前也都会先备一份。',
-          ),
-          ),
-        )
-      }
-
+              ) : h('div', { className: 'memory-empty' }, '这个记忆库还没有召回记录。收到新的消息后，可在这里查看检索结果。')
+          return h(MemoryDialog, { title: titles[mode], subtitle: libraryTitle(s), active, onClose: () => setOpen(null), footer: h('div', { className: 'memory-dialog-footer' }, h('span', null, s.count + ' 条记忆 · ' + (s.qq ? 'QQ 来源库' : '会话记忆库')), mode !== 'memories' ? h('button', { type: 'button', className: 'fish-button', onClick: () => go('memories') }, '返回记忆列表') : null) },
+            notes?.length ? h('div', { className: 'memory-feedback', role: 'status' }, notes.join('\n')) : null,
+            content)
+        })()
+      })()
       // ---- 第一级：会话列表 + 参数 ----
       const spec = (d.spec || []).slice()
       const byKey = {}
@@ -5481,8 +5376,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         head.push(React.createElement('span', { key: 'rng', style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', opacity: 1 }) }, '（' + lo + ' ~ ' + hi + '）'))
         return React.createElement(
           'div',
-          { key: s.key, style: { margin: '7px 0' } },
-          React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' } }, head),
+          { key: s.key, className: 'memory-policy-field' },
+          React.createElement('div', { className: 'memory-policy-input' }, head),
           s.tip
             ? React.createElement('div', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2, lineHeight: 1.5 }) }, s.tip)
             : null,
@@ -5505,294 +5400,722 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           })
       }
 
-      const blocks = []
-      for (const [gid, gname, gtip] of GROUPS) {
-        const rows = spec.filter((s) => s.group === gid)
-        if (!rows.length) continue
-        blocks.push(React.createElement('div', { key: gid, style: S.h }, gname))
-        blocks.push(React.createElement('div', { key: gid + '-tip', style: S.dim }, gtip))
-        if (gid === 'weight') {
-          blocks.push(
-            React.createElement(
-              'div',
-              { key: 'wsum', style: { margin: '8px 0 2px' } },
-              React.createElement('span', { style: { display: 'inline-block', width: 110 } }, '合计'),
-              React.createElement('span', { style: wSum === 100 ? S.ok : S.warn, fontWeight: 600 }, wSum + '%'),
-              wSum === 100
-                ? React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 'var(--fish-small)' }) }, '正好')
-                : React.createElement('span', { style: Object.assign({}, S.dim, { marginLeft: 10, fontSize: 'var(--fish-small)' }) }, '不是 100% —— 保存时会自动调平'),
-            ),
-          )
-        }
-        for (const s of rows) blocks.push(oneRow(s))
-      }
+      const blocks = GROUPS.map(([gid, name, hint]) => {
+        const rows = spec.filter(item => item.group === gid)
+        if (!rows.length) return null
+        return h('section', { className: 'memory-policy-group', key: gid }, h('div', { className: 'memory-policy-head' }, h('h4', null, name), h('p', null, hint), gid === 'weight' ? h('span', { className: 'memory-badge' }, '合计 ' + wSum + '%') : null), h('div', { className: 'memory-policy-fields' }, ...rows.map(oneRow)))
+      })
 
-      return React.createElement(
+      return h(
         'div',
-        { className: 'fish-module fish-memory', style: S.wrap },
-        onPageChange ? null : React.createElement('div', { className: 'fish-subnav' }, ...['记忆库', '语义召回', '召回与遗忘', ...(historyImport ? ['历史导入'] : [])].map(name => React.createElement('button', { type: 'button', key: name, className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''), 'aria-pressed': memoryPage === name, onClick: () => setMemoryPage(name) }, name))),
-        historyImport ? React.createElement('div', { hidden: memoryPage !== '历史导入' }, historyImport) : null,
-        React.createElement('div', { hidden: memoryPage !== '记忆库' },
-        React.createElement(
-          'div',
-          { className: 'fish-toolbar qq-memory-toolbar' },
-          React.createElement('div', { className: 'qq-memory-title' },
-            React.createElement('span', { className: 'fish-kicker' }, 'MEMORY'),
-            React.createElement('strong', null, '长期记忆'),
-            React.createElement('span', { className: 'qq-memory-version' }, 'v' + (d.version || '?')),
-          ),
-          React.createElement('span', { className: 'qq-memory-scope', title: d.工作区 && d.工作区.path || '' },
-            d.工作区 && d.工作区.path ? '仅显示：' + d.工作区.path : '未配置工作区'),
-        ),
-        React.createElement('div', { className: 'qq-memory-section-title', style: Object.assign({}, S.h, { marginTop: 0 }) }, '记忆范围'),
-        React.createElement(
-          'div',
-          { style: S.dim },
-          '装好就是开着的 —— 每个会话都能记、也能读。想给某个会话单独关掉，点它右边那个「关」。每个会话一份记忆，淡了只是不容易被想起来，不会删。',
-        ),
-        React.createElement(
-          'div',
-          { className: 'qq-memory-card qq-memory-name', style: S.nameBox },
-          React.createElement('div', { style: { flex: 'none', width: 132 } }, '用户的称呼'),
-          React.createElement('input', {'aria-label': 'ta / 她 / 他',
-            style: Object.assign({}, S.inp, { width: 90 }),
-            placeholder: 'ta / 她 / 他',
-            value: pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta',
-            onChange: (e) => setPronounDraft(e.target.value),
-          }),
-          React.createElement(
-            'button',
-            {type: 'button',
-              style: S.btn,
-              onClick: () => {
-                const p = pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta'
-                post('/names', { userPronoun: p }).then((r) => {
-                  setPronounDraft(null)
-                  // 影响到了旧记忆就先问一句，不偷偷改
-                  if (r && r.称呼影响几条 > 0 && !r.称呼已改) setPronounAsk({ n: r.称呼影响几条, to: p, 例子: r.称呼例子 || [] })
-                  else setPronounAsk(null)
-                  load()
-                })
-              },
-            },
-            '存',
-          ),
-          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1 }) }, '记忆里提到你时用哪个字。默认「ta」；设成「她」或「他」就按你设的记。'),
-        ),
-        pronounAsk
-          ? React.createElement(
-              'div',
-              { style: S.askBox },
-              React.createElement(
-                'div',
-                { style: { flex: 1 } },
-                React.createElement('div', null, '已有 ' + pronounAsk.n + ' 条旧记忆里还写着旧的字。要一起改成「' + pronounAsk.to + '」吗？'),
-                (pronounAsk.例子 || []).slice(0, 2).map((e, i) =>
-                  React.createElement('div', { key: i, style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }) }, '　「' + e.旧 + '」→「' + e.新 + '」'),
+        { className: 'fish-module fish-memory memory-page' },
+        onPageChange
+          ? null
+          : h(
+              'nav',
+              { className: 'fish-subnav', 'aria-label': '长期记忆页面' },
+              ...['记忆库', '召回设置', '数据管理'].map((name) =>
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'fish-button' + (memoryPage === name ? ' fish-primary' : ''),
+                    key: name,
+                    'aria-current': memoryPage === name ? 'page' : undefined,
+                    onClick: () => setMemoryPage(name),
+                  },
+                  name,
                 ),
               ),
-              React.createElement(
-                'button',
-                {type: 'button',
-                  style: S.btn,
-                  onClick: () =>
-                    post('/names', { userPronoun: pronounAsk.to, applyToExisting: true }).then(() => {
-                      setPronounAsk(null)
-                      load()
-                    }),
-                },
-                '一起改',
+            ),
+        h(
+          'div',
+          { className: 'memory-page-toolbar' },
+          h(
+            'div',
+            null,
+            h('span', { className: 'fish-kicker' }, 'MEMORY'),
+            h('h2', null, memoryPage),
+            h('p', null, d.工作区?.path || '当前工作区'),
+          ),
+          h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: load }, '刷新'),
+        ),
+        err ? h('div', { className: 'memory-feedback', role: 'alert' }, err) : null,
+        memoryPage === '记忆库'
+          ? h(
+              React.Fragment,
+              null,
+              h(
+                'section',
+                { className: 'fish-card memory-summary' },
+                h(
+                  'div',
+                  null,
+                  h('h3', null, '长期记忆'),
+                  h('p', null, '按 QQ 来源管理记忆，私聊独立，普通群共享，指定群单独隔离。'),
+                ),
+                h(
+                  'div',
+                  { className: 'memory-switch' },
+                  h('button', {
+                    type: 'button',
+                    role: 'switch',
+                    'aria-label': '启用长期记忆',
+                    'aria-checked': d.全局开关 !== false,
+                    disabled: busy,
+                    onClick: async () => {
+                      setBusy(true)
+                      try {
+                        const r = await post('/global', { on: d.全局开关 === false })
+                        if (!r.ok) throw Error(r.error || r.message || '保存失败')
+                        load()
+                      } catch (e) {
+                        告知(e.message)
+                      } finally {
+                        setBusy(false)
+                      }
+                    },
+                  }),
+                  h('span', null, d.全局开关 !== false ? '已开启' : '已关闭'),
+                ),
               ),
-              React.createElement('button', {type: 'button',  style: S.btn, onClick: () => setPronounAsk(null) }, '以后再说'),
+              h(
+                'div',
+                { className: 'memory-stats' },
+                ...[
+                  [libraries.length, '记忆库'],
+                  [libraries.reduce((sum, s) => sum + s.count, 0), '记忆条目'],
+                  [(d.sessions || []).length, '关联入口'],
+                ].map(([value, label]) =>
+                  h('div', { key: label }, h('strong', null, value), h('span', null, label)),
+                ),
+              ),
+              h(
+                'section',
+                { className: 'fish-card memory-libraries' },
+                h(
+                  'div',
+                  { className: 'memory-card-head' },
+                  h(
+                    'div',
+                    null,
+                    h('h3', null, '工作区记忆库'),
+                    h('p', null, '相同存储库合并展示。选择一个库查看记忆，管理各自的来源入口。'),
+                  ),
+                  h(
+                    'button',
+                    { type: 'button', className: 'fish-button', onClick: () => setSettingsOpen(true) },
+                    '范围与称呼',
+                  ),
+                ),
+                !libraries.length
+                  ? h(
+                      'div',
+                      { className: 'memory-empty' },
+                      '当前工作区还没有记忆库。绑定会话并收到消息后，记忆库会显示在这里。',
+                    )
+                  : h(
+                      'div',
+                      { className: 'memory-library-list' },
+                      ...libraries.map((s) =>
+                        h(
+                          'article',
+                          { key: s.storeId || s.id, className: 'memory-library-row' },
+                          h(
+                            'div',
+                            { className: 'memory-library-copy' },
+                            h(
+                              'div',
+                              { className: 'memory-library-title' },
+                              h('strong', null, libraryTitle(s)),
+                              h(
+                                'span',
+                                { className: 'memory-badge' },
+                                s.qq
+                                  ? s.storeId?.endsWith('_shared')
+                                    ? '群共享'
+                                    : s.storeId?.includes('_group_')
+                                      ? '群独立'
+                                      : '私聊独立'
+                                  : d.模式 === 'workspace'
+                                    ? '工作区共享'
+                                    : '会话独立',
+                              ),
+                            ),
+                            h(
+                              'p',
+                              null,
+                              s.count +
+                                ' 条记忆 · ' +
+                                (d.sessions || []).filter((x) => (x.storeId || x.id) === (s.storeId || s.id))
+                                  .length +
+                                ' 个入口 · ' +
+                                (s.lastTrace ? '最近召回 ' + rel(s.lastTrace, now) : '暂无召回记录'),
+                            ),
+                          ),
+                          h(
+                            'div',
+                            { className: 'memory-actions' },
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: 'fish-button fish-primary',
+                                onClick: () => openLibrary(s.id),
+                              },
+                              '查看记忆',
+                            ),
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: 'fish-button',
+                                onClick: () => openLibrary(s.id, 'tools'),
+                              },
+                              '管理',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+              ),
             )
           : null,
-        // ⭐ 1.3.4：**总开关**（管整个插件）+ 下面每个会话自己的开关
-        //   放同一块，是因为它们管的是同一件事（记不记），只是范围不同。
-        React.createElement(
+        h(
           'div',
-          { className: 'qq-memory-card qq-memory-global', style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
-          React.createElement(
-            'button',
-            {type: 'button', role: 'switch', 'aria-checked': d.全局开关 !== false, 'aria-label': '启用长期记忆',
-              style: Object.assign({}, S.btn, {
-                flex: 'none',
-                color: d.全局开关 !== false ? 'var(--fish-success)' : 'inherit',
-                borderColor: d.全局开关 !== false ? 'var(--fish-success)' : 'var(--fish-border)',
-              }),
-              disabled: busy,
-              onClick: () => {
-                setBusy(true)
-                post('/global', { on: d.全局开关 === false })
-                  .then(() => {
-                    setBusy(false)
-                    load()
-                  })
-                  .catch(() => setBusy(false))
-              },
-            },
-            (d.全局开关 !== false ? '● ' : '○ ') + 'remember 工具',
-          ),
-          React.createElement(
-            'div',
-            { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0 }) },
-            d.全局开关 !== false
-              ? '所有会话都能记、也能读。单独不想要哪个，用下面那一行关掉。'
-              : '全关着 —— 哪个会话都不记也不读，工具列表里也不会出现它。',
-          ),
-        ),
-
-        React.createElement('div', { className: 'fish-record qq-memory-card qq-memory-isolation', style: S.条 },
-          React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
-          React.createElement('label', null, '主人 QQ ', React.createElement('input', {
-            'aria-label': '主人 QQ', value: d.qqOwner || '', style: S.inp,
-            onChange: e => setD({ ...d, qqOwner: e.target.value }),
-          })),
-          React.createElement('label', null, ' 隔离群号 ', React.createElement('input', {
-            'aria-label': '隔离群号', value: Array.isArray(d.qqIsolatedGroups) ? d.qqIsolatedGroups.join(',') : d.qqIsolatedGroups || '', style: S.inp,
-            onChange: e => setD({ ...d, qqIsolatedGroups: e.target.value }),
-          })),
-          React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: async () => {
-            setBusy(true)
-            try {
-              const result = await post('/qq-settings', { qqOwner: d.qqOwner, qqIsolatedGroups: Array.isArray(d.qqIsolatedGroups) ? d.qqIsolatedGroups.join(',') : d.qqIsolatedGroups })
-              if (!result.ok) throw new Error(result.error || result.message || '保存失败')
-              load()
-            } catch (e) { setErr(e.message) } finally { setBusy(false) }
-          } }, '保存 QQ 设置'),
-          React.createElement('p', { style: S.dim }, '群号以逗号分隔。其余已绑定群默认共用普通群库。主人仅在可信私聊轮次跨库检索；其他私聊独立。每个聊天仍须独立会话，未绑定群不会接入。切换隔离后旧库保留，可在下方按库管理。'),
-          React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: async () => {
-            setBusy(true)
-            try {
-              const preview = await post('/qq-migrate', {})
-              if (!preview.ok) throw new Error(preview.error || '预览失败')
-              setD(old => ({ ...old, qqMigration: preview }))
-            } catch (e) { setErr(e.message) } finally { setBusy(false) }
-          } }, '预览旧数据迁移'),
-          d.qqMigration ? React.createElement('div', null,
-            React.createElement('pre', { style: { maxHeight: 240, overflow: 'auto', whiteSpace: 'pre-wrap' } }, JSON.stringify(d.qqMigration, null, 2)),
-            React.createElement('button', {type: 'button',  style: S.btn, disabled: busy || !d.qqMigration.preview, onClick: async () => {
-              setBusy(true)
-              try { const result = await post('/qq-migrate', { execute: true }); setD(old => ({ ...old, qqMigration: result })) }
-              catch (e) { setErr(e.message) } finally { setBusy(false) }
-            } }, '备份并迁移可信条目（保留原件）')) : null,
-        ),
-        // ⭐ 1.4.5：记忆按什么归类 —— 按会话 / 按工作区
-        React.createElement(
-          'div',
-          { className: 'qq-memory-card qq-memory-mode', style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
-          React.createElement(
-            'button',
-            {type: 'button',
-              style: Object.assign({}, S.btn, {
-                flex: 'none',
-                color: d.模式 === 'workspace' ? 'var(--fish-success)' : 'inherit',
-                borderColor: d.模式 === 'workspace' ? 'var(--fish-success)' : 'var(--fish-border)',
-              }),
-              disabled: busy,
-              onClick: () => {
-                const 要切 = d.模式 === 'workspace' ? 'session' : 'workspace'
-                if (要切 !== 'workspace') {
-                  // 切回按会话：不涉及合并，直接切
-                  setBusy(true)
-                  post('/mode', { 模式: 要切 }).then(() => { setBusy(false); load() }).catch(() => setBusy(false))
-                  return
-                }
-                // 切成按工作区：先**试算**（每间会话现有几条、并完剩几条），看清楚再决定
-                setBusy(true)
-                post('/merge-workspace', { 试算: true })
-                  .then((j) => {
-                    setBusy(false)
-                    const 报告 = (j && j.报告) || []
-                    if (!j || !j.ok || !报告.length) {
-                      // 没有可并的（都还是空的）→ 直接切
-                      setBusy(true)
-                      post('/mode', { 模式: 要切 }).then(() => { setBusy(false); load() }).catch(() => setBusy(false))
-                      return
-                    }
-                    set并入(报告)
-                  })
-                  .catch(() => setBusy(false))
-              },
-            },
-            (d.模式 === 'workspace' ? '按工作区' : '按会话'),
-          ),
-          React.createElement(
-            'div',
-            { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0 }) },
-            d.模式 === 'workspace'
-              ? '整个工作区共用一个记忆库 —— 新开的会话自动接上，归档旧会话记忆也不会跟着走。'
-              : '每个会话各记各的。会话开久了变卡、要归档换新会话时，切成「按工作区」就接得上了。',
-          ),
-        ),
-        合并预览(),
-        React.createElement('div', { className: 'qq-memory-card qq-memory-libraries' },
-          React.createElement('div', { className: 'qq-bind-group-head' },
-            React.createElement('h3', null, '会话记忆库'),
-            React.createElement('span', { className: 'fish-muted' }, '只显示当前工作区 · ' + (d.sessions || []).length + ' 个'),
-          ),
-        (d.sessions || []).map((s) =>
-          React.createElement(
-            'div',
-            { key: s.id, className: 'fish-library-row qq-memory-row', style: Object.assign({}, S.row, S.条) },
-            React.createElement(
-              'button',
-              {type: 'button', role: 'switch', 'aria-checked': !!s.enabled, 'aria-label': '启用记忆：' + (s.title || s.id),
-                style: Object.assign({}, S.btn, {
-                  flex: 'none',
-                  minWidth: 72,
-                  color: s.enabled ? 'var(--fish-success)' : 'inherit',
-                  borderColor: s.enabled ? 'var(--fish-success)' : 'var(--fish-border)',
-                }),
-                disabled: busy,
-                onClick: () => {
-                  setBusy(true)
-                  post('/toggle', { session: s.id, on: !s.enabled })
-                    .then(() => {
-                      setBusy(false)
-                      load()
-                    })
-                    .catch(() => setBusy(false))
-                },
-              },
-              s.enabled ? '● 开' : '○ 关',
-            ),
-            React.createElement('div', {role: 'button', tabIndex: 0, onKeyDown: e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.currentTarget.click() } },  style: Object.assign({}, S.link, { flex: 1, minWidth: 0, overflowWrap: 'anywhere' }), onClick: () => setOpen(s.id) }, s.title || s.id.slice(0, 24)),
-            s.live ? null : React.createElement('div', { style: Object.assign({}, S.dim, { width: 48, fontSize: 'var(--fish-small)' }) }, '不在线'),
-            React.createElement('div', { style: Object.assign({}, S.dim, { width: 60 }) }, s.count + ' 条'),
-            React.createElement('div', { style: Object.assign({}, S.dim, { width: 90 }) }, s.lastTrace ? rel(s.lastTrace, now) : '—'),
-          ),
-        ),
-        ),
-        React.createElement('p', { className: 'qq-memory-note', style: S.dim }, '点击记忆库名称，查看、编辑记忆和档案。')),
-        React.createElement('div', { hidden: memoryPage !== '语义召回' }, React.createElement(EmbeddingSettings, { notify })),
-        memoryPage === '召回与遗忘'
-          ? React.createElement(
+          { className: 'memory-stack', hidden: memoryPage !== '召回设置' },
+          h(EmbeddingSettings, { notify }),
+          h(
+            'section',
+            { className: 'fish-card' },
+            h(
               'div',
-              null,
-              React.createElement('div', { style: S.dim }, '这些是所有会话共用的。每项都有范围，超出会被收到范围内。'),
-              blocks,
+              { className: 'memory-card-head' },
+              h(
+                'div',
+                null,
+                h('h3', null, '召回与遗忘'),
+                h('p', null, '设置关键词召回、记忆预算与淡忘速度，和语义召回共同生效。'),
+              ),
+            ),
+            ...blocks,
+            h(
+              'div',
+              { className: 'memory-actions memory-save-row' },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'fish-button fish-primary',
+                  disabled: busy,
+                  onClick: () => save(Object.assign({}, params, { pin })),
+                },
+                busy ? '保存中…' : '保存召回设置',
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'fish-button',
+                  disabled: busy,
+                  onClick: () => save({ reset: true }),
+                },
+                '恢复默认',
+              ),
+            ),
+          ),
+        ),
+        memoryPage === '数据管理'
+          ? h(
+              'div',
+              { className: 'memory-stack' },
+              h(
+                'section',
+                { className: 'fish-card' },
+                h(
+                  'div',
+                  { className: 'memory-card-head' },
+                  h(
+                    'div',
+                    null,
+                    h('h3', null, '记忆库操作'),
+                    h('p', null, '先选择目标库，再打开对应工具。每项操作在独立弹窗中完成。'),
+                  ),
+                ),
+                h(
+                  'label',
+                  { className: 'memory-target' },
+                  '目标记忆库',
+                  h(
+                    'select',
+                    {
+                      'aria-label': '目标记忆库',
+                      value: managementTarget || libraries[0]?.id || '',
+                      onChange: (e) => setManagementTarget(e.target.value),
+                    },
+                    !libraries.length ? h('option', { value: '' }, '暂无记忆库') : null,
+                    ...libraries.map((s) => h('option', { key: s.id, value: s.id }, libraryTitle(s))),
+                  ),
+                ),
+                h(
+                  'div',
+                  { className: 'memory-task-grid' },
+                  ...[
+                    ['add', '新增记忆', '手动写入一条事实或约定'],
+                    ['archive', '档案导入与生成', '读取档案文件，或从已有会话生成'],
+                    ['organize', '整理与修复', '扩词、提炼、查重和事实维护'],
+                    ['trash', '回收站', '恢复或清理已收起的记忆'],
+                    ['recall', '召回诊断', '检查命中内容和预算限制'],
+                    ['index', '索引维护', '补齐或重建语义检索索引'],
+                  ].map(([view, title, hint]) =>
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'memory-task',
+                        key: view,
+                        disabled: !libraries.length,
+                        onClick: () => openLibrary(managementTarget || libraries[0].id, view),
+                      },
+                      h('strong', null, title),
+                      h('span', null, hint),
+                    ),
+                  ),
+                ),
+              ),
+              historyImport
+                ? h(
+                    'section',
+                    { className: 'fish-card memory-card-head' },
+                    h(
+                      'div',
+                      null,
+                      h('h3', null, 'QQ 聊天记录导入'),
+                      h('p', null, '从后端或聊天记录文件分段整理记忆，按 QQ 绑定选择目标，支持暂停和恢复任务。'),
+                    ),
+                    h(
+                      'button',
+                      { type: 'button', className: 'fish-button', onClick: () => setHistoryOpen(true) },
+                      '打开导入工具',
+                    ),
+                  )
+                : null,
+              h(
+                'section',
+                { className: 'fish-card memory-isolation' },
+                h(
+                  'div',
+                  { className: 'memory-card-head' },
+                  h(
+                    'div',
+                    null,
+                    h('h3', null, 'QQ 隔离与迁移'),
+                    h('p', null, '指定主人与独立群库。先预览归属，再备份迁移旧数据。'),
+                  ),
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'fish-record qq-memory-card qq-memory-isolation', style: S.条 },
+                  React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
+                  React.createElement(
+                    'label',
+                    null,
+                    '主人 QQ ',
+                    React.createElement('input', {
+                      'aria-label': '主人 QQ',
+                      value: d.qqOwner || '',
+                      style: S.inp,
+                      onChange: (e) => setD({ ...d, qqOwner: e.target.value }),
+                    }),
+                  ),
+                  React.createElement(
+                    'label',
+                    null,
+                    ' 隔离群号 ',
+                    React.createElement('input', {
+                      'aria-label': '隔离群号',
+                      value: Array.isArray(d.qqIsolatedGroups)
+                        ? d.qqIsolatedGroups.join(',')
+                        : d.qqIsolatedGroups || '',
+                      style: S.inp,
+                      onChange: (e) => setD({ ...d, qqIsolatedGroups: e.target.value }),
+                    }),
+                  ),
+                  React.createElement(
+                    'button',
+                    {
+                      type: 'button',
+                      style: S.btn,
+                      disabled: busy,
+                      onClick: async () => {
+                        setBusy(true)
+                        try {
+                          const result = await post('/qq-settings', {
+                            qqOwner: d.qqOwner,
+                            qqIsolatedGroups: Array.isArray(d.qqIsolatedGroups)
+                              ? d.qqIsolatedGroups.join(',')
+                              : d.qqIsolatedGroups,
+                          })
+                          if (!result.ok) throw new Error(result.error || result.message || '保存失败')
+                          load()
+                        } catch (e) {
+                          setErr(e.message)
+                        } finally {
+                          setBusy(false)
+                        }
+                      },
+                    },
+                    '保存 QQ 设置',
+                  ),
+                  React.createElement(
+                    'p',
+                    { style: S.dim },
+                    '群号以逗号分隔。其余已绑定群默认共用普通群库。主人仅在可信私聊轮次跨库检索；其他私聊独立。每个聊天仍须独立会话，未绑定群不会接入。切换隔离后旧库保留，可在下方按库管理。',
+                  ),
+                  React.createElement(
+                    'button',
+                    {
+                      type: 'button',
+                      style: S.btn,
+                      disabled: busy,
+                      onClick: async () => {
+                        setBusy(true)
+                        try {
+                          const preview = await post('/qq-migrate', {})
+                          if (!preview.ok) throw new Error(preview.error || '预览失败')
+                          setD((old) => ({ ...old, qqMigration: preview }))
+                          setMigrationOpen(true)
+                        } catch (e) {
+                          setErr(e.message)
+                        } finally {
+                          setBusy(false)
+                        }
+                      },
+                    },
+                    '预览旧数据迁移',
+                  ),
+                  d.qqMigration && migrationOpen
+                    ? h(
+                        MemoryDialog,
+                        {
+                          title: '旧数据迁移预览',
+                          subtitle: '核对归属后再备份迁移',
+                          active,
+                          onClose: () => setMigrationOpen(false),
+                        },
+                        h(
+                          'div',
+                          { className: 'memory-stats' },
+                          ...[
+                            [d.qqMigration.candidates?.length || 0, '可迁移条目'],
+                            [d.qqMigration.pending?.length || 0, '待人工核对'],
+                            [d.qqMigration.added || 0, '本次已迁移'],
+                          ].map(([value, label]) =>
+                            h('div', { key: label }, h('strong', null, value), h('span', null, label)),
+                          ),
+                        ),
+                        h(
+                          'p',
+                          { className: 'memory-callout' },
+                          '仅迁移来源凭据可核验的条目。原文件先备份，来源不明确的内容保留待核对。',
+                        ),
+                        h(
+                          'section',
+                          { className: 'memory-operation' },
+                          h('h3', null, '目标记忆库'),
+                          ...Object.entries(
+                            (d.qqMigration.candidates || []).reduce((groups, row) => {
+                              groups[row.storeId] = (groups[row.storeId] || 0) + 1
+                              return groups
+                            }, {}),
+                          ).map(([id, count]) =>
+                            h(
+                              'div',
+                              { className: 'memory-source-row', key: id },
+                              h('span', null, id),
+                              h('span', null, count + ' 条'),
+                            ),
+                          ),
+                          !(d.qqMigration.candidates || []).length
+                            ? h('p', { className: 'fish-muted' }, '没有待迁移的可信条目。')
+                            : null,
+                        ),
+                        (d.qqMigration.pending || []).length
+                          ? h(
+                              'section',
+                              { className: 'memory-operation' },
+                              h('h3', null, '需要人工核对'),
+                              ...d.qqMigration.pending.map((row, i) =>
+                                h(
+                                  'div',
+                                  { className: 'memory-feedback', key: i },
+                                  h('strong', null, row.text || row.file),
+                                  h('p', null, row.reason),
+                                ),
+                              ),
+                            )
+                          : null,
+                        h(
+                          'div',
+                          { className: 'memory-actions memory-save-row' },
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'fish-button fish-primary',
+                              disabled:
+                                busy || !d.qqMigration.preview || !(d.qqMigration.candidates || []).length,
+                              onClick: async () => {
+                                setBusy(true)
+                                try {
+                                  const result = await post('/qq-migrate', { execute: true })
+                                  if (!result.ok) throw Error(result.error || '迁移失败')
+                                  setD((old) => ({ ...old, qqMigration: result }))
+                                  告知('迁移完成，原文件已备份', { tone: 'success' })
+                                } catch (e) {
+                                  setErr(e.message)
+                                } finally {
+                                  setBusy(false)
+                                }
+                              },
+                            },
+                            busy ? '正在备份并迁移…' : '备份并迁移可信条目',
+                          ),
+                        ),
+                      )
+                    : null,
+                ),
+              ),
+              h(
+                'p',
+                { className: 'memory-backup-note' },
+                '自动备份会保留上一版及最近 14 天快照。导入、合并与清理沿用原有确认流程。',
+              ),
+            )
+          : null,
+        settingsOpen
+          ? h(
+              MemoryDialog,
+              {
+                title: '范围与称呼',
+                subtitle: '管理会话入口与记忆归属',
+                active,
+                onClose: () => setSettingsOpen(false),
+              },
               React.createElement(
                 'div',
-                { style: { marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' } },
+                { className: 'qq-memory-card qq-memory-name', style: S.nameBox },
+                React.createElement('div', { style: { flex: 'none', width: 132 } }, '用户的称呼'),
+                React.createElement('input', {
+                  'aria-label': 'ta / 她 / 他',
+                  style: Object.assign({}, S.inp, { width: 90 }),
+                  placeholder: 'ta / 她 / 他',
+                  value: pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta',
+                  onChange: (e) => setPronounDraft(e.target.value),
+                }),
                 React.createElement(
                   'button',
-                  {type: 'button',  style: S.btn, disabled: busy, onClick: () => save(Object.assign({}, params, { pin })) },
-                  busy ? '保存中…' : '保存参数',
+                  {
+                    type: 'button',
+                    style: S.btn,
+                    onClick: () => {
+                      const p = pronounDraft !== null ? pronounDraft : d.userPronoun || 'ta'
+                      post('/names', { userPronoun: p }).then((r) => {
+                        setPronounDraft(null)
+                        // 影响到了旧记忆就先问一句，不偷偷改
+                        if (r && r.称呼影响几条 > 0 && !r.称呼已改)
+                          setPronounAsk({ n: r.称呼影响几条, to: p, 例子: r.称呼例子 || [] })
+                        else setPronounAsk(null)
+                        load()
+                      })
+                    },
+                  },
+                  '存',
                 ),
-                React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => save({ reset: true }) }, '恢复默认'),
-                React.createElement('button', {type: 'button',  style: S.btn, disabled: busy, onClick: () => load() }, '刷新'),
+                React.createElement(
+                  'span',
+                  { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', flex: 1 }) },
+                  '记忆里提到你时用哪个字。默认「ta」；设成「她」或「他」就按你设的记。',
+                ),
+              ),
+              pronounAsk
+                ? React.createElement(
+                    'div',
+                    { style: S.askBox },
+                    React.createElement(
+                      'div',
+                      { style: { flex: 1 } },
+                      React.createElement(
+                        'div',
+                        null,
+                        '已有 ' +
+                          pronounAsk.n +
+                          ' 条旧记忆里还写着旧的字。要一起改成「' +
+                          pronounAsk.to +
+                          '」吗？',
+                      ),
+                      (pronounAsk.例子 || []).slice(0, 2).map((e, i) =>
+                        React.createElement(
+                          'div',
+                          {
+                            key: i,
+                            style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)', marginTop: 2 }),
+                          },
+                          '　「' + e.旧 + '」→「' + e.新 + '」',
+                        ),
+                      ),
+                    ),
+                    React.createElement(
+                      'button',
+                      {
+                        type: 'button',
+                        style: S.btn,
+                        onClick: () =>
+                          post('/names', { userPronoun: pronounAsk.to, applyToExisting: true }).then(() => {
+                            setPronounAsk(null)
+                            load()
+                          }),
+                      },
+                      '一起改',
+                    ),
+                    React.createElement(
+                      'button',
+                      { type: 'button', style: S.btn, onClick: () => setPronounAsk(null) },
+                      '以后再说',
+                    ),
+                  )
+                : null,
+              React.createElement(
+                'div',
+                {
+                  className: 'qq-memory-card qq-memory-mode',
+                  style: Object.assign({}, S.row, S.条, { alignItems: 'center' }),
+                },
+                React.createElement(
+                  'button',
+                  {
+                    type: 'button',
+                    style: Object.assign({}, S.btn, {
+                      flex: 'none',
+                      color: d.模式 === 'workspace' ? 'var(--fish-success)' : 'inherit',
+                      borderColor: d.模式 === 'workspace' ? 'var(--fish-success)' : 'var(--fish-border)',
+                    }),
+                    disabled: busy,
+                    onClick: () => {
+                      const 要切 = d.模式 === 'workspace' ? 'session' : 'workspace'
+                      if (要切 !== 'workspace') {
+                        // 切回按会话：不涉及合并，直接切
+                        setBusy(true)
+                        post('/mode', { 模式: 要切 })
+                          .then(() => {
+                            setBusy(false)
+                            load()
+                          })
+                          .catch(() => setBusy(false))
+                        return
+                      }
+                      // 切成按工作区：先**试算**（每间会话现有几条、并完剩几条），看清楚再决定
+                      setBusy(true)
+                      post('/merge-workspace', { 试算: true })
+                        .then((j) => {
+                          setBusy(false)
+                          const 报告 = (j && j.报告) || []
+                          if (!j || !j.ok || !报告.length) {
+                            // 没有可并的（都还是空的）→ 直接切
+                            setBusy(true)
+                            post('/mode', { 模式: 要切 })
+                              .then(() => {
+                                setBusy(false)
+                                load()
+                              })
+                              .catch(() => setBusy(false))
+                            return
+                          }
+                          set并入(报告)
+                        })
+                        .catch(() => setBusy(false))
+                    },
+                  },
+                  d.模式 === 'workspace' ? '按工作区' : '按会话',
+                ),
+                React.createElement(
+                  'div',
+                  { style: Object.assign({}, S.dim, { flex: 1, minWidth: 0 }) },
+                  d.模式 === 'workspace'
+                    ? '整个工作区共用一个记忆库 —— 新开的会话自动接上，归档旧会话记忆也不会跟着走。'
+                    : '每个会话各记各的。会话开久了变卡、要归档换新会话时，切成「按工作区」就接得上了。',
+                ),
+              ),
+              合并预览(),
+              h(
+                'section',
+                { className: 'memory-operation' },
+                h('h3', null, '入口记忆开关'),
+                h(
+                  'p',
+                  { className: 'fish-muted' },
+                  '单独关闭入口会停止该会话的记忆读写，不会删除库中的历史条目。',
+                ),
+                ...(d.sessions || []).map((s) =>
+                  h(
+                    'div',
+                    { className: 'memory-source-row', key: s.id },
+                    h('span', null, s.title || s.id),
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'fish-button',
+                        onClick: () => {
+                          setSettingsOpen(false)
+                          openLibrary(s.id, 'names')
+                        },
+                      },
+                      '称呼设置',
+                    ),
+                    h('input', {
+                      type: 'checkbox',
+                      role: 'switch',
+                      'aria-label': '启用记忆：' + (s.title || s.id),
+                      checked: !!s.enabled,
+                      disabled: busy,
+                      onChange: async (e) => {
+                        const on = e.target.checked
+                        setBusy(true)
+                        try {
+                          const r = await post('/toggle', { session: s.id, on })
+                          if (!r.ok) throw Error(r.error || r.message || '保存失败')
+                          load()
+                        } catch (e) {
+                          告知(e.message)
+                        } finally {
+                          setBusy(false)
+                        }
+                      },
+                    }),
+                  ),
+                ),
               ),
             )
           : null,
-        notes && notes.length
-          ? React.createElement(
-              'div',
-              { style: Object.assign({}, S.warn, { marginTop: 8, fontSize: 'var(--fish-small)', whiteSpace: 'pre-line' }) },
-              '　· ' + notes.join('\n　· '),
+        notes?.length && !open
+          ? h('div', { className: 'memory-feedback', role: 'status' }, notes.join('\n'))
+          : null,
+        historyOpen && historyImport
+          ? h(
+              MemoryDialog,
+              {
+                title: 'QQ 聊天记录导入',
+                subtitle: '按 QQ 绑定导入与恢复任务',
+                active,
+                onClose: () => setHistoryOpen(false),
+              },
+              h('div', { className: 'memory-history-tools' }, historyImport),
             )
           : null,
-
+        详情视图,
       )
+
     }
 
     function apply(ctx) {
@@ -6941,7 +7264,7 @@ moduleLoader.load({
   },
 })
 
-const META = {"name":"dsh-big-flsh-aio","version":"0.3.14","repositoryVersion":"0.3.14","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-12","forkCommit":"f46ec1ce41fb42cb3a110ebdf4c095a5344fd8ab"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.2-2","forkCommit":"6767011c1831e48a864f816d6a78f2c25f9eb7f9"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
+const META = {"name":"dsh-big-flsh-aio","version":"0.3.14","repositoryVersion":"0.3.15","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-12","forkCommit":"f46ec1ce41fb42cb3a110ebdf4c095a5344fd8ab"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.2-2","forkCommit":"6767011c1831e48a864f816d6a78f2c25f9eb7f9"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
 let NativeToast = null
 try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
 
@@ -7015,7 +7338,7 @@ const DESCRIPTIONS = [
 ]
 const submenus = {
   1: ['连接', '绑定', '消息策略', '角色设定', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件'].map(x => [x, x]),
-  2: ['记忆库', '语义召回', '召回与遗忘', '历史导入'].map(x => [x, x]),
+  2: ['记忆库', '召回设置', '数据管理'].map(x => [x, x]),
   3: [['mood', '心情'], ['bind', '会话绑定'], ['judge', '判断与注入'], ['charm', '挂饰']],
 }
 const css = FISH_THEME_CSS
@@ -7890,8 +8213,7 @@ function readSavedLocation() {
       const key = saved.subpage && saved.subpage[id]
       if (typeof key === 'string' && (submenus[id] || []).some(pair => Array.isArray(pair) && pair[0] === key)) sub[id] = key
     }
-    const detail = saved.memoryDetail === true && ['记忆与档案', '语义索引'].includes(saved.memoryPage)
-    return { tab: saved.tab, subpage: sub, memoryDetail: detail, memoryPage: detail ? saved.memoryPage : '记忆与档案' }
+    return { tab: saved.tab, subpage: sub }
   } catch (error) { return null }
 }
 
@@ -7901,8 +8223,6 @@ function Page() {
   const [tab, setTab] = React.useState(initialTab)
   const [visited, setVisited] = React.useState([initialTab])
   const [subpage, setSubpage] = React.useState(savedLocation?.subpage || { 1: '连接', 2: '记忆库', 3: 'mood' })
-  const [memoryDetail, setMemoryDetail] = React.useState(Boolean(savedLocation?.memoryDetail))
-  const [memoryPage, setMemoryPage] = React.useState(savedLocation?.memoryPage || '记忆与档案')
   const [qqStatus, setQQStatus] = React.useState(null)
   const [leavePrompt, setLeavePrompt] = React.useState(false)
   const [leaveBusy, setLeaveBusy] = React.useState(false)
@@ -7933,14 +8253,11 @@ function Page() {
     requestLeave(() => animateChange(() => { setTab(id); setVisited(old => old.includes(id) ? old : [...old, id]) }))
   }
   const selectSubpage = (id, key) => {
-    const current = id === 2 && memoryDetail ? memoryPage : subpage[id]
+    const current = subpage[id]
     if (id === tab && key === current) return
     requestLeave(() => animateChange(() => {
       setTab(id); setVisited(old => old.includes(id) ? old : [...old, id])
-      if (id === 2 && memoryDetail) {
-        if (key === 'back') setMemoryDetail(false)
-        else setMemoryPage(key)
-      } else setSubpage(old => ({ ...old, [id]: key }))
+      setSubpage(old => ({ ...old, [id]: key }))
     }))
   }
   const flashJumpTarget = (id) => {
@@ -8016,10 +8333,10 @@ function Page() {
   React.useEffect(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(LOCATION_KEY, JSON.stringify({ tab, subpage, memoryDetail, memoryPage }))
+        window.localStorage.setItem(LOCATION_KEY, JSON.stringify({ tab, subpage }))
       }
     } catch (error) {}
-  }, [tab, subpage, memoryDetail, memoryPage])
+  }, [tab, subpage])
   React.useEffect(() => {
     if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') return undefined
     const onBeforeUnload = (event) => {
@@ -8055,7 +8372,7 @@ function Page() {
     if (typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(update); observer.observe(nav)
     return () => observer.disconnect()
-  }, [tab, memoryDetail])
+  }, [tab])
   React.useLayoutEffect(() => {
     const node = contentRef.current
     if (!node) return
@@ -8064,11 +8381,11 @@ function Page() {
     enterAnimation.current?.cancel()
     if (node.animate) enterAnimation.current = node.animate([{ opacity: .35, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 260, easing: 'cubic-bezier(.22,1,.36,1)' })
     return () => enterAnimation.current?.cancel()
-  }, [tab, subpage, memoryPage, memoryDetail])
+  }, [tab, subpage])
   const render = [
     () => h(Overview, { navigate, notify: fishNotify }),
     () => h(QQ, { page: subpage[1], onPageChange: key => selectSubpage(1, key), guard: qqGuard, notify: fishNotify, help: fishShowHelp, hideHelp: fishHideHelp, laterHideHelp: fishScheduleHelpHide, confirm: fishAskConfirm, editRole: fishAskText, openRoleWriter: fishOpenRoleWriter, openFileManager }),
-    () => h(Memory, { page: subpage[2], onPageChange: key => selectSubpage(2, key), detailPage: memoryPage, onDetailPageChange: setMemoryPage, detailOpen: memoryDetail, onDetailChange: setMemoryDetail, notify: fishNotify, historyImport: subpage[2] === '历史导入' ? h(QQ, { page: '历史导入', onPageChange: () => {}, embedded: true, notify: fishNotify }) : null }),
+    () => h(Memory, { page: subpage[2], onPageChange: key => selectSubpage(2, key), notify: fishNotify, active: tab === 2, historyImport: h(QQ, { page: '历史导入', onPageChange: () => {}, embedded: true, notify: fishNotify }) }),
     () => h(Mood, { page: subpage[3], onPageChange: key => selectSubpage(3, key), notify: fishNotify }),
     () => h(Speak, { guard: speakGuard, notify: fishNotify }), () => h(Rice, { notify: fishNotify }), () => h(FileManager, { notify: fishNotify }), () => h(RunLog, { notify: fishNotify }), () => h(Updates, { notify: fishNotify }),
   ]
@@ -8110,8 +8427,8 @@ function Page() {
         h('nav', { ref: navRef, className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist', 'aria-orientation': 'vertical' },
           h('span', { ref: highlightRef, className: 'fish-nav-highlight', 'aria-hidden': true }),
           ...tabs.map((label, id) => {
-            const items = id === 2 && memoryDetail ? [['记忆与档案', '记忆与档案'], ['语义索引', '语义索引'], ['back', '返回记忆库']] : submenus[id]
-            const selected = id === 2 && memoryDetail ? memoryPage : subpage[id]
+            const items = submenus[id]
+            const selected = subpage[id]
             return h('div', { key: label, className: 'fish-nav-group' },
               h('button', {
                 type: 'button', role: 'tab', id: 'fish-tab-' + id, 'aria-label': label, 'aria-selected': tab === id, 'aria-controls': 'fish-panel-' + id,
