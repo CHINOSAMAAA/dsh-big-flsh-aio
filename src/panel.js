@@ -1066,7 +1066,12 @@ function Page() {
           h('span', { className: 'fish-brand-text' },
             h('span', { className: 'fish-brand-name' }, '大肥鱼'),
             h('span', { className: 'fish-brand-sub' }, 'QQ陪伴手帐')),
-          h('span', { className: 'fish-version-pin', title: '项目 v' + (versionInfo?.version || META.version) + ' · 仓库 v' + (versionInfo?.repositoryVersion || META.repositoryVersion) }, 'v' + (versionInfo?.version || META.version))),
+          h('button', {
+            type: 'button', className: 'fish-version-pin',
+            title: '项目 v' + (versionInfo?.version || META.version) + ' · 仓库 v' + (versionInfo?.repositoryVersion || META.repositoryVersion) + ' · 查看更新与来源',
+            'aria-label': '查看更新与来源',
+            onClick: () => navigate(UPDATES_TAB),
+          }, 'v' + (versionInfo?.version || META.version))),
         h('nav', { ref: navRef, className: 'fish-nav', 'aria-label': '大肥鱼功能', role: 'tablist', 'aria-orientation': 'vertical' },
           h('span', { ref: highlightRef, className: 'fish-nav-highlight', 'aria-hidden': true }),
           ...tabs.map((label, id) => {
