@@ -7021,6 +7021,23 @@ const submenus = {
 }
 const css = FISH_THEME_CSS
 
+// ── 更新后自动重开插件页：更新会重载插件并关掉页面，用 localStorage 记住“刚更新过” ──
+const REOPEN_KEY = 'big-flsh-aio.reopen-after-update'
+const 标记更新后重开 = () => {
+  try { if (typeof window !== 'undefined') window.localStorage.setItem(REOPEN_KEY, String(Date.now())) } catch {}
+}
+const 清除更新后重开 = () => {
+  try { if (typeof window !== 'undefined') window.localStorage.removeItem(REOPEN_KEY) } catch {}
+}
+const 需要更新后重开 = () => {
+  try {
+    if (typeof window === 'undefined') return false
+    const at = Number(window.localStorage.getItem(REOPEN_KEY) || 0)
+    return at > 0 && Date.now() - at < 5 * 60000
+  } catch { return false }
+}
+let 重开面板 = null
+
 // ── 统一通知：所有模块的临时提示都走 DSH 原生 Toast ─────────
 const FISH_TOAST = { current: null, queue: [], serial: 0, listeners: new Set() }
 function fishNotify(text, options = {}) {
@@ -7567,11 +7584,14 @@ function Updates({ notify } = {}) {
   }
   const install = async () => {
     setBusy(true); tell('正在安装大肥鱼整合包…')
+    标记更新后重开()
     try {
       await request('/dsh-big-flsh-aio/install?channel=' + channel, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
       setUpdate(current => current ? { ...current, hasUpdate: false } : current)
-      tell('安装已完成。请按宿主提示重载或重启 DSH，使新版本生效。', { tone: 'success', holdMs: 7000 })
-    } catch (e) { tell('安装未完成：' + e.message, { holdMs: 7000 }) }
+      tell('安装已完成。更新会重载插件，完成后会自动回到大肥鱼页面。', { tone: 'success', holdMs: 7000 })
+      重开面板?.()
+      if (typeof setTimeout === 'function') setTimeout(() => { 重开面板?.() }, 2000)
+    } catch (e) { 清除更新后重开(); tell('安装未完成：' + e.message, { holdMs: 7000 }) }
     finally { setBusy(false) }
   }
   React.useEffect(() => { void check(false) }, [channel])
@@ -7971,8 +7991,26 @@ return {
   apply(ctx) {
     const slots = ctx.get('slots')
     if (!slots) return
+    重开面板 = () => {
+      try {
+        const layout = ctx.get('layout')
+        if (!layout || typeof layout.selectPanel !== 'function') return false
+        layout.selectPanel(PANEL_ID)
+        return true
+      } catch { return false }
+    }
     slots.inject('sidebar.panellist', () => slots.register({ name: 'sidebar.panellist', id: PANEL_ID, order: 20, label: () => '大肥鱼' }, FishIcon))
-    slots.inject('main', () => slots.register({ name: 'main', key: PANEL_ID }, Page))
+    slots.inject('main', () => {
+      slots.register({ name: 'main', key: PANEL_ID }, Page)
+      if (!需要更新后重开()) return
+      // 更新重载后 layout/面板注册可能比 apply 晚一点就绪，补两次重试。
+      const 打开 = () => { if (重开面板?.()) 清除更新后重开() }
+      打开()
+      if (typeof setTimeout === 'function') {
+        setTimeout(打开, 400)
+        setTimeout(打开, 1500)
+      }
+    })
     slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'big-flsh-update-notice' }, () => h(React.Fragment, null,
       h(NotificationHost),
       h(UpdateNotifier, { open: () => {

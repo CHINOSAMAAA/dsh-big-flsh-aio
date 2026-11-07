@@ -56,6 +56,28 @@ test('整合包只注册一个侧栏和主面板，八个入口直接挂载四�
   assert.ok(overview.includes('"fish-value"},"children":["3"]'))
 })
 
+test('更新后的重开标记会让客户端重新选中大肥鱼面板', () => {
+  let plugin
+  const selected = []
+  const store = new Map([['big-flsh-aio.reopen-after-update', String(Date.now())]])
+  const React = { createElement: (type, props, ...children) => ({ type, props, children }), Fragment: 'fragment', useState: init => [init, () => {}], useEffect() {}, useLayoutEffect() {}, useRef: v => ({ current: v }) }
+  vm.runInNewContext(read('../client.js'), { window: {
+    __ModuleLoader__: { load: ({ factory }) => { plugin = factory(() => React) } },
+    localStorage: {
+      getItem: key => store.has(key) ? store.get(key) : null,
+      setItem: (key, value) => store.set(key, value),
+      removeItem: key => store.delete(key),
+    },
+  } })
+  const services = {
+    slots: { inject: (_, fn) => fn(), register: () => {} },
+    layout: { selectPanel: id => selected.push(id) },
+  }
+  plugin.apply({ get: name => services[name] })
+  assert.deepEqual(selected, ['big-flsh-aio'])
+  assert.equal(store.has('big-flsh-aio.reopen-after-update'), false)
+})
+
 test('作者许可原文完整保留，兼容清单和包内模块版本一致', () => {
   const license = read('../LICENSE')
   assert.equal(license, read('../modules/qq/LICENSE'))
