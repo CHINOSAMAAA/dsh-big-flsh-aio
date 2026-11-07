@@ -3631,7 +3631,8 @@ export function apply(ctx) {
       a.input += i; a.output += o; a.cacheRead += cr; a.cacheWrite += cw
       a.total = a.input + a.output + a.cacheRead + a.cacheWrite
       const p = 单价(model)
-      a.cost += (i * p.input + o * p.output + cr * p.cacheRead + cw * p.cacheWrite) / 1000000
+      // 单价表按 USD/百万 token 维护；页面金额按人民币展示（固定汇率 7.2）。
+      a.cost += (i * p.input + o * p.output + cr * p.cacheRead + cw * p.cacheWrite) / 1000000 * 7.2
     }
     const 天 = new Map()
     const 会话 = []
