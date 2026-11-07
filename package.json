@@ -1,6 +1,6 @@
 {
   "name": "dsh-big-flsh-aio",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "大肥鱼：统一管理 QQ 互通、历史导入、长期记忆、鱼的心情、主动搭话与插件更新。",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Yuuyuko-uu (https://github.com/Yuuyuko-uu)",
@@ -100,8 +100,8 @@
       "commit": "fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb",
       "forkName": "dsh-qq-link-plus",
       "forkUrl": "https://github.com/CHINOSAMAAA/dsh-qq-link-plus",
-      "forkVersion": "1.5.1-10",
-      "forkCommit": "9b43ff8027ffbeb87dccb3bea61c4dcb34dafbe0"
+      "forkVersion": "1.5.1-11",
+      "forkCommit": "4f68ff9df6633afa1648e66b5aa5faf63142e7f2"
     },
     {
       "name": "鱼的记忆",
@@ -136,5 +136,5 @@
     "registry": "https://registry.npmjs.org/",
     "tag": "latest"
   },
-  "repositoryVersion": "0.2.3"
+  "repositoryVersion": "0.2.4"
 }

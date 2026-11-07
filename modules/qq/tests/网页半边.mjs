@@ -497,7 +497,7 @@ try {
   报('工作区选择随配置保存且不提交路径', 工作区保存体?.工作区 === 'home-b' && !工作区保存体?.path)
 } finally { globalThis.fetch = 工作区原fetch }
 
-// 启动开关：先检测，成功才选中；失败使用 DSH notify，并保留配置草稿。
+// 总开关：打开/关闭都直接调用 /power 立即生效，不再依赖保存设置。
 const 启动原fetch = globalThis.fetch
 let 放行启动, 启动结果, 启动请求体, 启动保存次数 = 0
 const 启动提示 = []
@@ -505,12 +505,12 @@ const 渲启动 = () => { 下标 = 0; return 组件({page:'连接',notify:text=>
 const 找启动 = tree => 找控件(tree,n=>n.p['aria-label']==='大肥鱼总开关')[0]
 try {
   globalThis.fetch = async (url, options) => {
-    if (String(url).endsWith('/startup-check')) {
+    if (String(url).endsWith('/power')) {
       启动请求体 = JSON.parse(options.body)
       await new Promise(resolve=>{放行启动=resolve})
       return {json:async()=>启动结果}
     }
-    if (String(url).endsWith('/save')) { 启动保存次数++;return {json:async()=>({ok:false,启动检查失败:true,说:'请先打开目标 DSH 会话'})} }
+    if (String(url).endsWith('/save')) { 启动保存次数++;return {json:async()=>({ok:false,说:'不应调用保存'})} }
     return {json:async()=>初始态}
   }
   状态槽 = [{...初始态,配置:{...初始态.配置,总开关:false,试运行:false,人设:'未保存的角色草稿'}},true,false,'','连接']
@@ -519,16 +519,18 @@ try {
   启动结果 = {ok:false,问题:['关闭试运行','打开目标会话'],说:'大肥鱼暂时无法启动：请关闭试运行并打开目标会话'}
   const 失败任务 = 找启动(启动树).p.onChange({target:{checked:true}})
   启动树 = 渲启动()
-  报('检测中保持关闭并禁止重复点击', 找启动(启动树)?.p.checked === false && 找启动(启动树)?.p.disabled === true)
+  报('切换中保持关闭并禁止重复点击', 找启动(启动树)?.p.checked === false && 找启动(启动树)?.p.disabled === true)
   放行启动();await 失败任务
-  报('检测失败保持关闭并调用 DSH 提示列出操作', 状态槽[0].配置.总开关 === false && 启动提示.some(text=>text.includes('关闭试运行')&&text.includes('打开目标会话')))
-  报('失败保留其他草稿且不自动保存', 状态槽[0].配置.人设 === '未保存的角色草稿' && 状态槽[1] === true && 启动保存次数 === 0)
-  启动结果 = {ok:true,用户:998877,昵称:'测试号',说:'启动检查已通过，请保存设置'}
+  报('启动失败保持关闭并列出操作', 状态槽[0].配置.总开关 === false && 启动提示.some(text=>text.includes('关闭试运行')&&text.includes('打开目标会话')))
+  报('失败保留其他草稿', 状态槽[0].配置.人设 === '未保存的角色草稿' && 状态槽[1] === true && 启动保存次数 === 0)
+  启动结果 = {ok:true,用户:998877,昵称:'测试号',说明:'已启动',配置:{...状态槽[0].配置,总开关:true},说:'大肥鱼已启动'}
   const 成功任务 = 找启动(渲启动()).p.onChange({target:{checked:true}})
   放行启动();await 成功任务
-  报('完整草稿交给后台检查，通过后才选中', 启动请求体?.人设 === '未保存的角色草稿' && 启动请求体?.总开关 === true && 状态槽[0].配置.总开关 === true)
-  await 找按钮(渲启动(),'保存设置').p.onClick()
-  报('保存时复检失败退回关闭且保留草稿', 状态槽[0].配置.总开关 === false && 状态槽[0].配置.人设 === '未保存的角色草稿')
+  报('完整草稿交给后端并立即打开', 启动请求体?.开 === true && 启动请求体?.配置?.人设 === '未保存的角色草稿' && 启动请求体?.配置?.总开关 === true && 状态槽[0].配置?.总开关 === true && 启动保存次数 === 0)
+  启动结果 = {ok:true,配置:{...状态槽[0].配置,总开关:false},说:'大肥鱼已停止'}
+  const 关闭任务 = 找启动(渲启动()).p.onChange({target:{checked:false}})
+  放行启动();await 关闭任务
+  报('关闭立即停止且不需要保存', 启动请求体?.开 === false && 状态槽[0].配置?.总开关 === false && 启动保存次数 === 0)
 } finally { globalThis.fetch = 启动原fetch }
 
 console.log(`\n${挂了 === 0 ? '全部通过 ✅' : `有 ${挂了} 条没过 ❌`}`)

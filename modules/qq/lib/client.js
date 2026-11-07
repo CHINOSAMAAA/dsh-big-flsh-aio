@@ -696,26 +696,22 @@ window.__ModuleLoader__.load({
       const 总开关卡片 = h('div', { style: S.card },
         h('div', { style: { ...S.h, margin: '0 0 8px' } }, '大肥鱼，启动！'),
         行('总开关', 勾(配置.总开关, async v => {
-          if (v && (启动检查中 || 忙)) return
+          if (启动检查中 || 忙) return
           const 校验号 = ++总开关校验.current
-          if (!v) { 设启动检查中(false); 改('总开关', false); return }
-          const 快照 = JSON.stringify(配置)
           设启动检查中(true)
-          const r = await post('/startup-check', { ...配置, 总开关: true })
+          const r = await post('/power', { 开: v, 配置: { ...配置, 总开关: v } })
           if (总开关校验.current !== 校验号) return
           设启动检查中(false)
           if (!r?.ok) {
-            告知(r?.说 || '无法完成启动检查，请确认 DSH 后端正在运行后重试。', { holdMs: 14000 })
+            告知(r?.说 || '总开关切换失败，请确认 DSH 后端正在运行后重试。', { holdMs: 14000 })
             return
           }
-          if (JSON.stringify(最新配置.current) !== 快照) {
-            告知('检查期间配置已修改，请重新开启总开关进行检查。', { holdMs: 8000 })
-            return
-          }
-          改('总开关', true)
+          设态(r)
+          设已存绑定(Array.isArray(r.配置?.绑定) ? r.配置.绑定 : [])
+          设脏(false)
           if (r.用户) 设态(旧 => 旧 ? { ...旧, NapCat状态: { 用户: r.用户, 昵称: r.昵称 } } : 旧)
-          告知(r.说 || '启动检查已通过，请保存设置后启动大肥鱼。', { tone: 'success', holdMs: 6000 })
-        }, '大肥鱼总开关', 启动检查中 || 忙), 启动检查中 ? '正在检查 QQ 连接、聊天映射和 DSH 会话…' : undefined),
+          告知(r.说 || (v ? '大肥鱼已启动' : '大肥鱼已停止'), { tone: 'success', holdMs: v ? 6000 : 3000 })
+        }, '大肥鱼总开关', 启动检查中 || 忙), 启动检查中 ? '正在切换总开关…' : undefined),
         行('绑定工作区', h('select', { 'aria-label': '绑定工作区', style: S.input, value: 配置.工作区 || '', onFocus: 刷新会话, onChange: e => 改('工作区', e.target.value) },
           h('option', { value: '' }, '请选择工作区'),
           配置.工作区 && !(态.工作区列表 || []).some(w => w.id === 配置.工作区) ? h('option', { value: 配置.工作区, disabled: true }, '原绑定工作区已不可用，请重新选择') : null,
