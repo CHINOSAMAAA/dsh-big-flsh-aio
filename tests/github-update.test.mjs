@@ -65,6 +65,44 @@ test('仓库版本没变时，GitHub main 的新提交也会提示更新并安�
   } finally { globalThis.fetch = original; rmSync(home, { recursive: true, force: true }) }
 })
 
+test('宿主拒绝直接读取 ctx.pluginManager 时改走 ctx.get 仍能安装', async () => {
+  const home = mkdtempSync(join(tmpdir(), 'fish-commit-inject-'))
+  const original = globalThis.fetch
+  try {
+    const root = 建安装副本(home, OLD)
+    globalThis.fetch = 装提交(NEW)
+    const installed = []
+    const handlers = {}
+    const services = {
+      pluginManager: { installBundle: async spec => { installed.push(spec); return { applied: true } } },
+      connection: { requestRejection: async () => undefined },
+    }
+    const base = {
+      get: name => services[name],
+      effect: fn => fn(),
+      webServer: { register: route => { handlers[route.path] = route.handler } },
+    }
+    // 模拟宿主 cordis 上下文：未 inject 的服务属性直接抛错，只有 ctx.get 能安全读取。
+    const ctx = new Proxy(base, {
+      get(target, prop, receiver) {
+        if (prop in target) return Reflect.get(target, prop, receiver)
+        throw new Error(`cannot get property "${String(prop)}" without inject`)
+      },
+    })
+    const updater = createSelfUpdate({ packageRoot: root })
+    updater.register(ctx, '/dsh-big-flsh-aio')
+    let code, body
+    await handlers['/dsh-big-flsh-aio/install']({
+      method: 'POST',
+      url: '/dsh-big-flsh-aio/install?channel=github',
+      headers: { host: 'localhost', 'content-type': 'application/json' },
+    }, { writeHead: n => { code = n }, end: text => { body = JSON.parse(text) } })
+    assert.equal(code, 200)
+    assert.equal(body.ok, true)
+    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-flsh-aio#' + NEW])
+  } finally { globalThis.fetch = original; rmSync(home, { recursive: true, force: true }) }
+})
+
 test('远端提交与安装提交一致时保持已是最新', async () => {
   const home = mkdtempSync(join(tmpdir(), 'fish-commit-same-'))
   const original = globalThis.fetch

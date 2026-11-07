@@ -91,7 +91,8 @@ test('统一更新拒绝错误包、无效版本、未鉴权和跨站请求；�
     remote.version = '2.0.0'
     const handlers = {}, installed = []
     let rejection, managerResult = { applied: true }
-    const ctx = { pluginManager: { installBundle: async spec => { installed.push(spec); return managerResult } }, get: () => ({ requestRejection: () => rejection }), effect: fn => fn(), webServer: { register: o => { handlers[o.path] = o.handler } } }
+    const manager = { installBundle: async spec => { installed.push(spec); return managerResult } }
+    const ctx = { pluginManager: manager, get: name => name === 'pluginManager' ? manager : { requestRejection: () => rejection }, effect: fn => fn(), webServer: { register: o => { handlers[o.path] = o.handler } } }
     updater.register(ctx, '/dsh-big-flsh-aio')
     const call = async (path, req = {}) => {
       let code, result

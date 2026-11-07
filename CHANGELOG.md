@@ -2,6 +2,7 @@
 
 ## 未发布（本地修改）
 
+- 修复插件内更新报 `cannot get property "pluginManager" without inject`：未 inject 的服务不能直接读属性，改用宿主给可选服务留的 `ctx.get('pluginManager')`，读不到再兼容旧写法；补回归测试。
 - AIO 升级到 0.2.2；「更新与来源」实际内置版本同步为 QQ Plus `1.5.1-9`、Memory Plus `1.5.2-2`，并更新对应提交。
 - 新增映射自动创建改为真正的 Agent（`ctx.agents.create` + 工作区 cwd + session/title），不再只建不可见的 Session；创建后会出现在工作区并可打开。
 - 修复 GitHub 检查更新漏掉新推送：仓库版本号没变时按当前安装的 main 提交与远端比较，有新提交就提示并可一键安装到该提交；开发副本本地领先远端时显示「本地版本高于仓库版本」，不误报更新。
