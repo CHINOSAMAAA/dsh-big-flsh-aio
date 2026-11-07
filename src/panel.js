@@ -4,7 +4,7 @@ const QQ = components['dsh-qq-link-plus'].Section
 const Memory = components['dsh-fish-memory'].Section
 const Mood = components['dsh-feiyu-mood'].Section
 const Speak = components['dsh-speak-up'].Section
-const PANEL_ID = 'big-flsh-aio'
+const PANEL_ID = 'big-fish-aio'
 const tabs = ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '吃大米饭', '文件管理', '运行日志', '更新与来源']
 const UPDATES_TAB = tabs.length - 1
 const FILE_MANAGER_TAB = tabs.indexOf('文件管理')
@@ -29,7 +29,7 @@ const submenus = {
 const css = FISH_THEME_CSS
 
 // ── 更新后自动重开插件页：更新会重载插件并关掉页面，用 localStorage 记住“刚更新过” ──
-const REOPEN_KEY = 'big-flsh-aio.reopen-after-update'
+const REOPEN_KEY = 'big-fish-aio.reopen-after-update'
 const 标记更新后重开 = () => {
   try { if (typeof window !== 'undefined') window.localStorage.setItem(REOPEN_KEY, String(Date.now())) } catch {}
 }
@@ -743,7 +743,7 @@ function Updates({ notify } = {}) {
   const [channel, setChannel] = React.useState('mirror')
   const check = async (force = true) => {
     setBusy(true)
-    try { setUpdate(await request('/dsh-big-flsh-aio/update?channel=' + channel + (force ? '&refresh=1' : ''))) }
+    try { setUpdate(await request('/dsh-big-fish-aio/update?channel=' + channel + (force ? '&refresh=1' : ''))) }
     catch (e) { setUpdate(null); tell('检查更新失败：' + e.message, { holdMs: 6000 }) }
     finally { setBusy(false) }
   }
@@ -751,7 +751,7 @@ function Updates({ notify } = {}) {
     setBusy(true); tell('正在安装大肥鱼整合包…')
     标记更新后重开()
     try {
-      await request('/dsh-big-flsh-aio/install?channel=' + channel, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+      await request('/dsh-big-fish-aio/install?channel=' + channel, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
       setUpdate(current => current ? { ...current, hasUpdate: false } : current)
       tell('安装已完成。更新会重载插件，完成后会自动回到大肥鱼页面。', { tone: 'success', holdMs: 7000 })
       重开面板?.()
@@ -816,7 +816,7 @@ function Updates({ notify } = {}) {
         h('div', null,
           h('span', { className: 'fish-kicker' }, 'PROVENANCE · 手帐来处'),
           h('h2', null, '原作者、项目来源与版本对应'),
-          h('p', { className: 'fish-source-link' }, link('https://github.com/CHINOSAMAAA/dsh-big-flsh-aio', 'CHINOSAMAAA/dsh-big-flsh-aio ↗'))),
+          h('p', { className: 'fish-source-link' }, link('https://github.com/CHINOSAMAAA/dsh-big-fish-aio', 'CHINOSAMAAA/dsh-big-fish-aio ↗'))),
         h('span', { className: 'fish-section-note' }, '固定记录整合基线，不随上游最新版本变化')),
       h('div', { className: 'fish-table-wrap' }, h('table', { className: 'fish-table' },
         h('thead', null, h('tr', null,
@@ -1002,7 +1002,7 @@ function Page() {
   navigateRef.current = navigate
   React.useEffect(() => {
     let active = true
-    const loadVersion = () => request('/dsh-big-flsh-aio/version')
+    const loadVersion = () => request('/dsh-big-fish-aio/version')
       .then(info => { if (active && info && info.version) setVersionInfo(info) })
       .catch(() => {})
     void loadVersion()
@@ -1175,7 +1175,7 @@ return {
         setTimeout(打开, 1500)
       }
     })
-    slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'big-flsh-update-notice' }, () => h(React.Fragment, null,
+    slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'big-fish-update-notice' }, () => h(React.Fragment, null,
       h(NotificationHost),
       h(UpdateNotifier, { open: () => {
         openUpdatesRequested = true

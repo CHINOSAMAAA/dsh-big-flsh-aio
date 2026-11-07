@@ -21,7 +21,7 @@ for (const native of [true, false]) test(native ? '使用宿主 Toast，后台�
     React: { useState: () => [notice, value => { notice = value }], useEffect: effect => { if (!cleanup) cleanup = effect() } },
     h: (type, props, ...children) => ({ type, props, children }), Date: { now: () => time }, AbortController,
     request: async (url, options) => {
-      calls++; assert.equal(url, '/dsh-big-flsh-aio/update?channel=mirror&refresh=1')
+      calls++; assert.equal(url, '/dsh-big-fish-aio/update?channel=mirror&refresh=1')
       pendingSignal = options.signal
       if (pending) return new Promise(resolve => { pending.resolve = resolve })
       if (failed) throw new Error('网络失败')
@@ -67,11 +67,11 @@ test('版本重设期间不提示升级回历史编号，旧系列可识别新�
   try {
     const create = version => {
       const root = join(home, version); mkdirSync(root)
-      writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'dsh-big-flsh-aio', version }))
+      writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'dsh-big-fish-aio', version }))
       return createSelfUpdate({ packageRoot: root })
     }
     let version = '1.5.1-1'
-    globalThis.fetch = async () => Response.json({ name: 'dsh-big-flsh-aio', version, dist: { integrity: 'sha512-' + 'a'.repeat(86) + '==' } })
+    globalThis.fetch = async () => Response.json({ name: 'dsh-big-fish-aio', version, dist: { integrity: 'sha512-' + 'a'.repeat(86) + '==' } })
     const current = create('0.0.1')
     const oldMirror = await current.check(true)
     assert.equal(oldMirror.hasUpdate, false); assert.equal(oldMirror.legacyRelease, true)

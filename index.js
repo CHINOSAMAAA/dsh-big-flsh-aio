@@ -5,7 +5,7 @@ import * as speak from './modules/speak/lib/host.js'
 import { createSelfUpdate } from './lib/selfupdate.mjs'
 import { fileURLToPath } from 'node:url'
 
-export const name = 'big-flsh-aio'
+export const name = 'big-fish-aio'
 export const inject = [...new Set([...memory.inject, ...qq.inject, ...mood.inject, ...speak.inject])]
 
 export function apply(ctx) {
@@ -14,5 +14,5 @@ export function apply(ctx) {
   ctx.plugin(mood)
   ctx.plugin(speak)
   createSelfUpdate({ packageRoot: fileURLToPath(new URL('.', import.meta.url)) })
-    .register(ctx, '/dsh-big-flsh-aio')
+    .register(ctx, '/dsh-big-fish-aio')
 }

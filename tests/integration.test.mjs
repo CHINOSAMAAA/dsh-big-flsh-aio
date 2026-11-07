@@ -14,7 +14,7 @@ test('整合包只注册一个侧栏和主面板，九个入口直接挂载四�
   const states = [0, [0, 1, 2, 3, 4, 5, 6, 7, 8]]
   const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: init => [index in states ? states[index++] : (index++, init), () => {}], useEffect() {}, useLayoutEffect() {}, useRef: value => ({ current: value }) }
   vm.runInNewContext(read('../client.js'), { window: { __ModuleLoader__: { load: ({ id, factory }) => {
-    assert.equal(id, 'dsh-big-flsh-aio'); plugin = factory(() => React)
+    assert.equal(id, 'dsh-big-fish-aio'); plugin = factory(() => React)
   } } } })
   const registrations = []
   plugin.apply({ get: () => ({ inject: (_, fn) => fn(), register: (slot, component) => registrations.push({ slot, component }) }) })
@@ -59,7 +59,7 @@ test('整合包只注册一个侧栏和主面板，九个入口直接挂载四�
 test('更新后的重开标记会让客户端重新选中大肥鱼面板', () => {
   let plugin
   const selected = []
-  const store = new Map([['big-flsh-aio.reopen-after-update', String(Date.now())]])
+  const store = new Map([['big-fish-aio.reopen-after-update', String(Date.now())]])
   const React = { createElement: (type, props, ...children) => ({ type, props, children }), Fragment: 'fragment', useState: init => [init, () => {}], useEffect() {}, useLayoutEffect() {}, useRef: v => ({ current: v }) }
   vm.runInNewContext(read('../client.js'), { window: {
     __ModuleLoader__: { load: ({ factory }) => { plugin = factory(() => React) } },
@@ -74,8 +74,8 @@ test('更新后的重开标记会让客户端重新选中大肥鱼面板', () =>
     layout: { selectPanel: id => selected.push(id) },
   }
   plugin.apply({ get: name => services[name] })
-  assert.deepEqual(selected, ['big-flsh-aio'])
-  assert.equal(store.has('big-flsh-aio.reopen-after-update'), false)
+  assert.deepEqual(selected, ['big-fish-aio'])
+  assert.equal(store.has('big-fish-aio.reopen-after-update'), false)
 })
 
 test('作者许可原文完整保留，兼容清单和包内模块版本一致', () => {
@@ -102,23 +102,23 @@ test('统一更新拒绝错误包、无效版本、未鉴权和跨站请求；�
   const home = mkdtempSync(join(tmpdir(), 'fish-aio-update-'))
   const originalFetch = globalThis.fetch
   try {
-    const root = join(home, 'node_modules', 'dsh-big-flsh-aio'); mkdirSync(root, { recursive: true })
+    const root = join(home, 'node_modules', 'dsh-big-fish-aio'); mkdirSync(root, { recursive: true })
     writeFileSync(join(root, 'package.json'), read('../package.json'))
     const updater = createSelfUpdate({ packageRoot: root })
     let remote = { name: 'wrong-plugin', version: '99.0.0' }
     globalThis.fetch = async url => ({ ok: true, json: async () => String(url).includes('api.github.com') ? { sha: 'b'.repeat(40) } : remote })
     assert.match((await updater.check(true, 'github')).error, /包名/)
-    remote = { name: 'dsh-big-flsh-aio', version: 'not-semver' }
+    remote = { name: 'dsh-big-fish-aio', version: 'not-semver' }
     assert.match((await updater.check(true, 'github')).error, /SemVer/)
     remote.version = '2.0.0'
     const handlers = {}, installed = []
     let rejection, managerResult = { applied: true }
     const manager = { installBundle: async spec => { installed.push(spec); return managerResult } }
     const ctx = { pluginManager: manager, get: name => name === 'pluginManager' ? manager : { requestRejection: () => rejection }, effect: fn => fn(), webServer: { register: o => { handlers[o.path] = o.handler } } }
-    updater.register(ctx, '/dsh-big-flsh-aio')
+    updater.register(ctx, '/dsh-big-fish-aio')
     const call = async (path, req = {}) => {
       let code, result
-      await handlers['/dsh-big-flsh-aio/' + path]({ method: 'POST', url: '/' + path + '?channel=github', headers: { host: 'localhost', 'content-type': 'application/json' }, ...req }, { writeHead: n => { code = n }, end: s => { result = JSON.parse(s) } })
+      await handlers['/dsh-big-fish-aio/' + path]({ method: 'POST', url: '/' + path + '?channel=github', headers: { host: 'localhost', 'content-type': 'application/json' }, ...req }, { writeHead: n => { code = n }, end: s => { result = JSON.parse(s) } })
       return { code, result }
     }
     rejection = 401; assert.equal((await call('install')).code, 401)
@@ -128,7 +128,7 @@ test('统一更新拒绝错误包、无效版本、未鉴权和跨站请求；�
     assert.equal((await call('install', { headers: { host: 'localhost', 'content-type': 'text/plain' } })).code, 415)
     assert.equal(installed.length, 0)
     assert.equal((await call('install')).result.ok, true)
-    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-flsh-aio#' + 'b'.repeat(40)])
+    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-fish-aio#' + 'b'.repeat(40)])
     managerResult = { applied: false, reason: '宿主拒绝' }
     assert.equal((await call('install')).result.ok, false)
     for (const application of ['failed', 'cancelled', 'overridden']) {
@@ -153,7 +153,7 @@ test('Host 统一加载四个子插件并注册整合包更新路由', async () 
     const plugins = [], routes = []
     host.apply({ plugin: p => plugins.push(p.name), effect: fn => fn(), webServer: { register: route => routes.push(route.path) } })
     assert.deepEqual(plugins, ['memory', 'qq-bridge', 'feiyu-mood', 'speak-up'])
-    assert.deepEqual(routes, ['/dsh-big-flsh-aio/version', '/dsh-big-flsh-aio/update', '/dsh-big-flsh-aio/install'])
+    assert.deepEqual(routes, ['/dsh-big-fish-aio/version', '/dsh-big-fish-aio/update', '/dsh-big-fish-aio/install'])
     assert.ok(host.inject.includes('llm') && host.inject.includes('attachments'))
   } finally { if (previous === undefined) delete process.env.DSH_HOME; else process.env.DSH_HOME = previous; rmSync(home, { recursive: true, force: true }) }
 })
@@ -166,18 +166,18 @@ test('GitHub API 限流时使用 Git 解析本仓库 main，仍校验固定提�
     assert.equal(command, 'git')
     if (args.includes('rev-parse')) return callback(null, 'e'.repeat(40) + '\n', '')
     if (args.includes('merge-base')) return callback(Object.assign(new Error('exit 1'), { stderr: '' }), '', '')
-    assert.deepEqual(args, ['ls-remote', '--exit-code', 'https://github.com/CHINOSAMAAA/dsh-big-flsh-aio.git', 'refs/heads/main'])
+    assert.deepEqual(args, ['ls-remote', '--exit-code', 'https://github.com/CHINOSAMAAA/dsh-big-fish-aio.git', 'refs/heads/main'])
     assert.equal(options.env.GIT_TERMINAL_PROMPT, '0')
     callback(null, sha + '\trefs/heads/main\n')
   })
   globalThis.fetch = async url => {
     requests.push(url)
-    return String(url).includes('api.github.com') ? { ok: false, status: 403 } : { ok: true, json: async () => ({ name: 'dsh-big-flsh-aio', version: '2.0.0' }) }
+    return String(url).includes('api.github.com') ? { ok: false, status: 403 } : { ok: true, json: async () => ({ name: 'dsh-big-fish-aio', version: '2.0.0' }) }
   }
   try {
     const result = await createSelfUpdate({ packageRoot: new URL('../', import.meta.url).pathname }).check(true, 'github')
     assert.equal(result.ok, true)
     assert.equal(result.latestCommit, sha)
-    assert.equal(requests[1], `https://raw.githubusercontent.com/CHINOSAMAAA/dsh-big-flsh-aio/${sha}/package.json`)
+    assert.equal(requests[1], `https://raw.githubusercontent.com/CHINOSAMAAA/dsh-big-fish-aio/${sha}/package.json`)
   } finally { globalThis.fetch = originalFetch }
 })

@@ -75,7 +75,7 @@ test('四模块联调：搭话 → 记忆上下文 → 心情判断与注入 →
       return { raw, json: () => JSON.parse(raw) }
     }
     for (const path of ['/dsh-qq-bridge/state', '/dsh-fish-memory/list', '/dsh-feiyu-mood/state', '/dsh-speak-up/state']) assert.equal((await call(path)).json().ok, true, path)
-    assert.deepEqual([...routes.keys()].filter(p => /\/(update|install)$/.test(p)), ['/dsh-big-flsh-aio/update', '/dsh-big-flsh-aio/install'])
+    assert.deepEqual([...routes.keys()].filter(p => /\/(update|install)$/.test(p)), ['/dsh-big-fish-aio/update', '/dsh-big-fish-aio/install'])
     assert.ok(tools.has('remember') && contexts.has('memory') && contexts.has('feiyu-mood'))
     const remembered = await tools.get('remember').execute({ text: '对方一直喜欢茉莉花茶', importance: 1, tags: ['茉莉花茶'] }, { agent })
     assert.notEqual(remembered.ok, false)

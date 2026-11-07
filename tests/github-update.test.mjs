@@ -8,24 +8,24 @@ import { createSelfUpdate } from '../lib/selfupdate.mjs'
 
 const OLD = 'a'.repeat(40)
 const NEW = 'b'.repeat(40)
-const META = { name: 'dsh-big-flsh-aio', version: '0.0.1', repositoryVersion: '0.1.5' }
+const META = { name: 'dsh-big-fish-aio', version: '0.0.1', repositoryVersion: '0.1.5' }
 
 // 模拟 pnpm 安装到 profile/node_modules 的副本，并在 profile 根写锁文件记录安装提交。
 function 建安装副本(home, commit) {
   const profile = join(home, 'profile')
-  const root = join(profile, 'node_modules', 'dsh-big-flsh-aio')
+  const root = join(profile, 'node_modules', 'dsh-big-fish-aio')
   mkdirSync(root, { recursive: true })
   writeFileSync(join(root, 'package.json'), JSON.stringify({
     ...META,
-    repository: 'https://github.com/CHINOSAMAAA/dsh-big-flsh-aio',
+    repository: 'https://github.com/CHINOSAMAAA/dsh-big-fish-aio',
   }))
   writeFileSync(join(profile, 'pnpm-lock.yaml'), [
     'importers:',
     '  .:',
     '    dependencies:',
-    '      dsh-big-flsh-aio:',
-    '        specifier: github:CHINOSAMAAA/dsh-big-flsh-aio',
-    `        version: https://codeload.github.com/CHINOSAMAAA/dsh-big-flsh-aio/tar.gz/${commit}`,
+    '      dsh-big-fish-aio:',
+    '        specifier: github:CHINOSAMAAA/dsh-big-fish-aio',
+    `        version: https://codeload.github.com/CHINOSAMAAA/dsh-big-fish-aio/tar.gz/${commit}`,
     '',
   ].join('\n'))
   return root
@@ -47,7 +47,7 @@ test('仓库版本没变时，GitHub main 的新提交也会提示更新并安�
     globalThis.fetch = async url => { requests.push(String(url)); return reply(url) }
     const updater = createSelfUpdate({ packageRoot: root })
     const result = await updater.check(true, 'github')
-    assert.match(requests[0], /api\.github\.com\/repos\/CHINOSAMAAA\/dsh-big-flsh-aio\/commits\/main\?t=\d+/)
+    assert.match(requests[0], /api\.github\.com\/repos\/CHINOSAMAAA\/dsh-big-fish-aio\/commits\/main\?t=\d+/)
     assert.equal(result.ok, true)
     assert.equal(result.current, '0.1.5')
     assert.equal(result.latest, '0.1.5')
@@ -61,7 +61,7 @@ test('仓库版本没变时，GitHub main 的新提交也会提示更新并安�
     const installed = []
     const done = await updater.install({ pluginManager: { installBundle: async spec => { installed.push(spec); return { applied: true } } } }, 'github')
     assert.equal(done.ok, true)
-    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-flsh-aio#' + NEW])
+    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-fish-aio#' + NEW])
   } finally { globalThis.fetch = original; rmSync(home, { recursive: true, force: true }) }
 })
 
@@ -90,16 +90,16 @@ test('宿主拒绝直接读取 ctx.pluginManager 时改走 ctx.get 仍能安装'
       },
     })
     const updater = createSelfUpdate({ packageRoot: root })
-    updater.register(ctx, '/dsh-big-flsh-aio')
+    updater.register(ctx, '/dsh-big-fish-aio')
     let code, body
-    await handlers['/dsh-big-flsh-aio/install']({
+    await handlers['/dsh-big-fish-aio/install']({
       method: 'POST',
-      url: '/dsh-big-flsh-aio/install?channel=github',
+      url: '/dsh-big-fish-aio/install?channel=github',
       headers: { host: 'localhost', 'content-type': 'application/json' },
     }, { writeHead: n => { code = n }, end: text => { body = JSON.parse(text) } })
     assert.equal(code, 200)
     assert.equal(body.ok, true)
-    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-flsh-aio#' + NEW])
+    assert.deepEqual(installed, ['github:CHINOSAMAAA/dsh-big-fish-aio#' + NEW])
   } finally { globalThis.fetch = original; rmSync(home, { recursive: true, force: true }) }
 })
 
@@ -188,7 +188,7 @@ test('开发副本本地领先远端时显示 ahead，不误报可更新', async
     mkdirSync(repo)
     writeFileSync(join(repo, 'package.json'), JSON.stringify({
       ...META,
-      repository: 'https://github.com/CHINOSAMAAA/dsh-big-flsh-aio',
+      repository: 'https://github.com/CHINOSAMAAA/dsh-big-fish-aio',
     }))
     const git = args => childProcess.execFileSync('git', ['-C', repo, ...args])
     git(['init', '-q'])

@@ -16,7 +16,7 @@ function UpdateNotifier({ open }) {
       active = controller
       const timeout = setTimeout(() => controller.abort(), 15000)
       try {
-        const result = await request('/dsh-big-flsh-aio/update?channel=mirror&refresh=1', { signal: controller.signal })
+        const result = await request('/dsh-big-fish-aio/update?channel=mirror&refresh=1', { signal: controller.signal })
         if (!stopped && result.hasUpdate && !notified.has(result.latest)) {
           notified.add(result.latest)
           setNotice(result.latest)
