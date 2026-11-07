@@ -7593,10 +7593,10 @@ function Rice({ notify } = {}) {
   }
   React.useEffect(() => { void load() }, [])
   const fmt = (n) => {
-    const v = Number(n) || 0
-    if (v >= 1e8) return (v / 1e8).toFixed(2).replace(/\.?0+$/, '') + ' 亿'
-    if (v >= 1e4) return (v / 1e4).toFixed(1).replace(/\.?0+$/, '') + ' 万'
-    return v.toLocaleString('zh-CN')
+    const v = Math.max(0, Number(n) || 0)
+    if (v >= 1e6) return (v / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M'
+    if (v >= 1e3) return (v / 1e3).toFixed(1).replace(/\.?0+$/, '') + 'K'
+    return Math.round(v).toLocaleString('zh-CN')
   }
   const dayKey = (d) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
   const add = (a, b) => ({ input: a.input + b.input, output: a.output + b.output, cacheRead: a.cacheRead + b.cacheRead, cacheWrite: a.cacheWrite + b.cacheWrite, total: a.total + b.total })
