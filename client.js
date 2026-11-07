@@ -86,9 +86,9 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
   } }, '打开表情包素材库')
   const 素材库弹窗 = h(FishStickerDialog, { open: libraryOpen, onClose: () => { setLibraryOpen(false); setSelected(null) }, title: '表情包素材库' },
     h('div', { className: 'fish-actions' },
-      h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || !!data.tagging?.pending || !data.items.some(x => !x.tags.length), onClick: () => act('/tag', { onlyUntagged: true }) }, '扫描并识别未打标签表情'),
+      h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || !!data.tagging?.pending || !data.items.some(x => !x.tags.length), onClick: () => act('/tag', { onlyUntagged: true }) }, '扫描并识别未分类表情包'),
       h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => load().catch(e => setError(e.message)) }, '刷新素材库')),
-    h('p', { className: 'fish-muted', role: 'status' }, data.tagging?.pending ? '正在处理 ' + data.tagging.pending + ' 张表情，可关闭窗口，任务继续运行。' : '扫描全部素材，只给无标签的图片排队；直接调用 DeepSeek 识别，会产生模型用量。'),
+    h('p', { className: 'fish-muted', role: 'status' }, data.tagging?.pending ? '正在处理 ' + data.tagging.pending + ' 张表情，可关闭窗口，任务继续运行。' : '扫描未分类素材，优先复用已有分类，识别原图格式并重命名文件；直接调用 DeepSeek，会产生模型用量。'),
     h('label', null, '搜索名称、标签和场景 ', h('input', { value: query, onChange: e => setQuery(e.target.value), 'aria-label': '搜索表情' })),
     h('div', { className: 'fish-actions fish-sticker-tags', role: 'group', 'aria-label': '表情标签筛选' }, ...tagGroups.map(tag => h('button', { type: 'button', key: tag.id, className: 'fish-button' + (activeTag === tag.id ? ' fish-primary' : ''), 'aria-pressed': activeTag === tag.id, onClick: () => setCategory(tag.id) }, tag.name + '（' + tag.count + '）'))),
     h('div', { className: 'fish-sticker-grid' }, ...filtered.map(item => h('article', { className: 'fish-sticker-tile', key: item.id },
@@ -157,9 +157,9 @@ function FishStickers({ notify, mode = 'full', onOpenFiles }) {
     data.tagging?.pending ? h('p', { role: 'status', className: 'fish-muted' }, '正在识别 ' + data.tagging.pending + ' 张表情，处理完成后可在素材库中查看。') : null,
     h(FishStickerDialog, { open: libraryOpen, onClose: () => { setLibraryOpen(false); setSelected(null) }, title: '表情包素材库' },
       h('div', { className: 'fish-actions' },
-        h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || !!data.tagging?.pending || !data.items.some(x => !x.tags.length), onClick: () => act('/tag', { onlyUntagged: true }) }, '扫描并识别未打标签表情'),
+        h('button', { type: 'button', className: 'fish-button fish-primary', disabled: busy || !!data.tagging?.pending || !data.items.some(x => !x.tags.length), onClick: () => act('/tag', { onlyUntagged: true }) }, '扫描并识别未分类表情包'),
         h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => load().catch(e => setError(e.message)) }, '刷新素材库')),
-      h('p', { className: 'fish-muted', role: 'status' }, data.tagging?.pending ? '正在处理 ' + data.tagging.pending + ' 张表情，可关闭窗口，任务继续运行。' : '扫描全部素材，只给无标签的图片排队；直接调用 DeepSeek 识别，会产生模型用量。'),
+      h('p', { className: 'fish-muted', role: 'status' }, data.tagging?.pending ? '正在处理 ' + data.tagging.pending + ' 张表情，可关闭窗口，任务继续运行。' : '扫描未分类素材，优先复用已有分类，识别原图格式并重命名文件；直接调用 DeepSeek，会产生模型用量。'),
       h('label', null, '搜索名称、标签和场景 ', h('input', { value: query, onChange: e => setQuery(e.target.value), 'aria-label': '搜索表情' })),
       h('div', { className: 'fish-actions fish-sticker-tags', role: 'group', 'aria-label': '表情标签筛选' }, ...tagGroups.map(tag => h('button', { type: 'button', key: tag.id, className: 'fish-button' + (activeTag === tag.id ? ' fish-primary' : ''), 'aria-pressed': activeTag === tag.id, onClick: () => setCategory(tag.id) }, tag.name + '（' + tag.count + '）'))),
       h('div', { className: 'fish-sticker-grid' }, ...filtered.map(item => h('article', { className: 'fish-sticker-tile', key: item.id },
@@ -228,6 +228,7 @@ function FishStickerCard({ item, busy, act, bindings, categories }) {
   const binding = bindings.find(b => b.会话 === item.scope)
   return h('article', { className: 'qq-bind-detail' },
     h('img', { className: 'fish-sticker-preview-image', src: item.url, alt: item.name }),
+    h('p', { className: 'fish-muted' }, '文件类型 · ' + (item.ext === 'jpg' ? 'JPEG' : item.ext.toUpperCase()) + (item.fileName ? ' · ' + item.fileName : '')),
     h('label', {className:'fish-form-row'}, '分类 ', h('select', { 'aria-label': item.id+' 分类', value:item.categorySource==='manual'?item.category:'',disabled:busy,onChange:e=>act('/edit',{id:item.id,category:e.target.value}) }, h('option',{value:''}, '自动归类 · '+(item.category || '未分类')), ...(categories || []).map(c=>h('option',{key:c,value:c},c)))),
     h('p', { className: 'fish-muted', role: 'status' }, '标签状态：' + ({pending:'等待处理',running:'识别中',complete:'已完成',error:'失败',cancelled:'已取消'}[item.tagStatus] || '未自动标注') + (item.tagError ? ' · '+item.tagError : '')),
     h('button', { type:'button',className:'fish-button',disabled:busy || ['pending','running'].includes(item.tagStatus),onClick:()=>act('/tag',{id:item.id}) }, '识别 / 重试标签'),
@@ -6942,7 +6943,7 @@ moduleLoader.load({
   },
 })
 
-const META = {"name":"dsh-big-flsh-aio","version":"0.3.12","repositoryVersion":"0.3.12","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-12","forkCommit":"f46ec1ce41fb42cb3a110ebdf4c095a5344fd8ab"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.2-2","forkCommit":"6767011c1831e48a864f816d6a78f2c25f9eb7f9"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
+const META = {"name":"dsh-big-flsh-aio","version":"0.3.13","repositoryVersion":"0.3.13","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-12","forkCommit":"f46ec1ce41fb42cb3a110ebdf4c095a5344fd8ab"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.2-2","forkCommit":"6767011c1831e48a864f816d6a78f2c25f9eb7f9"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
 let NativeToast = null
 try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
 

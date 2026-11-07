@@ -1,6 +1,6 @@
 {
   "name": "dsh-big-flsh-aio",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "大肥鱼：统一管理 QQ 互通、历史导入、长期记忆、鱼的心情、主动搭话与插件更新。",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Yuuyuko-uu (https://github.com/Yuuyuko-uu)",
@@ -136,5 +136,5 @@
     "registry": "https://registry.npmjs.org/",
     "tag": "latest"
   },
-  "repositoryVersion": "0.3.12"
+  "repositoryVersion": "0.3.13"
 }
