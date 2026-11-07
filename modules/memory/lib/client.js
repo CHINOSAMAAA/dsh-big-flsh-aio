@@ -448,7 +448,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         }
       }, [load])
 
-      if (err) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, React.createElement('div', { style: S.drop }, '出错了：' + err))
+      if (err) return React.createElement('div', { className: 'fish-module fish-memory qq-memory-page', style: S.wrap }, React.createElement('div', { style: S.drop }, '出错了：' + err))
       if (!d || !params) return React.createElement('div', { className: 'fish-module fish-memory', style: S.wrap }, '加载中…')
 
       const now = Date.now()
@@ -3924,11 +3924,16 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         React.createElement('div', { hidden: memoryPage !== '记忆库' },
         React.createElement(
           'div',
-          { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 8, marginBottom: 10 } },
-          React.createElement('span', { style: { fontSize: 15, fontWeight: 600 } }, '长期记忆'),
-          React.createElement('span', { style: Object.assign({}, S.dim, { fontSize: 'var(--fish-small)' }) }, 'v' + (d.version || '?')),
+          { className: 'fish-toolbar qq-memory-toolbar' },
+          React.createElement('div', { className: 'qq-memory-title' },
+            React.createElement('span', { className: 'fish-kicker' }, 'MEMORY'),
+            React.createElement('strong', null, '长期记忆'),
+            React.createElement('span', { className: 'qq-memory-version' }, 'v' + (d.version || '?')),
+          ),
+          React.createElement('span', { className: 'qq-memory-scope', title: d.工作区 && d.工作区.path || '' },
+            d.工作区 && d.工作区.path ? '仅显示：' + d.工作区.path : '未配置工作区'),
         ),
-        React.createElement('div', { style: Object.assign({}, S.h, { marginTop: 0 }) }, '哪些会话用记忆'),
+        React.createElement('div', { className: 'qq-memory-section-title', style: Object.assign({}, S.h, { marginTop: 0 }) }, '记忆范围'),
         React.createElement(
           'div',
           { style: S.dim },
@@ -3936,7 +3941,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         ),
         React.createElement(
           'div',
-          { style: S.nameBox },
+          { className: 'qq-memory-card qq-memory-name', style: S.nameBox },
           React.createElement('div', { style: { flex: 'none', width: 132 } }, '用户的称呼'),
           React.createElement('input', {'aria-label': 'ta / 她 / 他',
             style: Object.assign({}, S.inp, { width: 90 }),
@@ -3994,7 +3999,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         //   放同一块，是因为它们管的是同一件事（记不记），只是范围不同。
         React.createElement(
           'div',
-          { style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
+          { className: 'qq-memory-card qq-memory-global', style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
           React.createElement(
             'button',
             {type: 'button', role: 'switch', 'aria-checked': d.全局开关 !== false, 'aria-label': '启用长期记忆',
@@ -4025,7 +4030,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           ),
         ),
 
-        React.createElement('div', { className: 'fish-record', style: S.条 },
+        React.createElement('div', { className: 'fish-record qq-memory-card qq-memory-isolation', style: S.条 },
           React.createElement('div', { style: S.h }, 'QQ 记忆隔离'),
           React.createElement('label', null, '主人 QQ ', React.createElement('input', {
             'aria-label': '主人 QQ', value: d.qqOwner || '', style: S.inp,
@@ -4063,7 +4068,7 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
         // ⭐ 1.4.5：记忆按什么归类 —— 按会话 / 按工作区
         React.createElement(
           'div',
-          { style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
+          { className: 'qq-memory-card qq-memory-mode', style: Object.assign({}, S.row, S.条, { alignItems: 'center' }) },
           React.createElement(
             'button',
             {type: 'button',
@@ -4109,10 +4114,15 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
           ),
         ),
         合并预览(),
+        React.createElement('div', { className: 'qq-memory-card qq-memory-libraries' },
+          React.createElement('div', { className: 'qq-bind-group-head' },
+            React.createElement('h3', null, '会话记忆库'),
+            React.createElement('span', { className: 'fish-muted' }, '只显示当前工作区 · ' + (d.sessions || []).length + ' 个'),
+          ),
         (d.sessions || []).map((s) =>
           React.createElement(
             'div',
-            { key: s.id, className: 'fish-library-row', style: Object.assign({}, S.row, S.条) },
+            { key: s.id, className: 'fish-library-row qq-memory-row', style: Object.assign({}, S.row, S.条) },
             React.createElement(
               'button',
               {type: 'button', role: 'switch', 'aria-checked': !!s.enabled, 'aria-label': '启用记忆：' + (s.title || s.id),
@@ -4141,7 +4151,8 @@ const 洗键进度 = { 已: 0, 总: 0, 在跑: false, 干跑: false }
             React.createElement('div', { style: Object.assign({}, S.dim, { width: 90 }) }, s.lastTrace ? rel(s.lastTrace, now) : '—'),
           ),
         ),
-        React.createElement('p', { style: S.dim }, '点击记忆库名称，查看、编辑记忆和档案。')),
+        ),
+        React.createElement('p', { className: 'qq-memory-note', style: S.dim }, '点击记忆库名称，查看、编辑记忆和档案。')),
         React.createElement('div', { hidden: memoryPage !== '语义召回' }, React.createElement(EmbeddingSettings, { notify })),
         memoryPage === '召回与遗忘'
           ? React.createElement(

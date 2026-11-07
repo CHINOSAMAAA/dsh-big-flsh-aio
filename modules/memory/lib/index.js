@@ -4003,8 +4003,43 @@ function 分支来处Of(ctx, sid) {
   return null
 }
 
+function 记忆绑定工作区(ctx) {
+  let id = ''
+  try {
+    const qq = JSON.parse(readFileSync(join(CFG_DIR, 'qq-bridge-config.json'), 'utf8'))
+    id = String(qq && qq.工作区 || '').trim()
+  } catch (error) {}
+  if (!id) return null
+  let path = ''
+  try {
+    const wr = ctx.get('workspaceRegistry')
+    const entity = wr && typeof wr.get === 'function' ? wr.get(id) : null
+    if (entity && entity.path) path = String(entity.path)
+  } catch (error) {}
+  if (!path) {
+    try {
+      const st = JSON.parse(readFileSync(join(CFG_DIR, 'storages', 'workspace.json'), 'utf8'))
+      path = String(st && st.tables && st.tables.workspaces && st.tables.workspaces[id] && st.tables.workspaces[id].path || '')
+    } catch (error) {}
+  }
+  return path ? { id, path, key: 工作区目录名(path) } : { id, path: '', key: '' }
+}
+
+function 会话在绑定工作区(ctx, sid, 工作区) {
+  if (!工作区 || !工作区.key) return true
+  const id = String(sid || '')
+  if (id.startsWith('qq_')) return true
+  if (id.startsWith('ws_')) return id.slice(3) === 工作区.key
+  try {
+    const cwd = ctx.agents.get(id)?.session?.header?.cwd
+    if (cwd) return 工作区目录名(cwd) === 工作区.key
+  } catch (error) {}
+  return 会话的工作区(id) === 工作区.key
+}
+
 function buildMemoryList(ctx) {
-  const out = { ok: true, embedding: embeddingSettings(), sessions: [], policy: null, ghosts: 0, 全局开关: globalOn(), 模式: 读模式(), qqOwner: loadCfg().qqOwner || '', qqIsolatedGroups: loadCfg().qqIsolatedGroups || [] }
+  const 工作区 = 记忆绑定工作区(ctx)
+  const out = { ok: true, embedding: embeddingSettings(), sessions: [], policy: null, ghosts: 0, 全局开关: globalOn(), 模式: 读模式(), qqOwner: loadCfg().qqOwner || '', qqIsolatedGroups: loadCfg().qqIsolatedGroups || [], 工作区: 工作区 ? { id: 工作区.id, path: 工作区.path } : null }
   // ⭐ 1.2.7：设置页显示「全局参数」—— 以前是「碰到的第一个库的参数」，没有库就什么都没有
   try {
     const c0 = loadCfg()
@@ -4023,6 +4058,7 @@ function buildMemoryList(ctx) {
     const liveIds = new Set()
     const push = (x) => {
       if (!x || 归档的.has(String(x))) return
+      if (!会话在绑定工作区(ctx, x, 工作区)) return
       if (ids.indexOf(x) < 0) ids.push(x)
     }
     try {
