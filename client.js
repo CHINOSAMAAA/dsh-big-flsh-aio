@@ -533,7 +533,45 @@ moduleLoader.load({
       return s.length <= 8 ? s : s.slice(-8)
     }
 
-    const 页签们 = ['连接', '绑定', '消息策略', '角色设定', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件']
+    const 页签们 = ['连接', '绑定', '消息策略', '角色设定', '账号与申请', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件']
+
+    function QQAccountState() {
+      const [state, setState] = React.useState(null)
+      const [error, setError] = React.useState('')
+      const refresh = async () => {
+        try {
+          const value = await post('/account/state', {})
+          if (!value?.ok) throw new Error(value?.说 || '读取申请状态失败')
+          setState(value); setError('')
+        } catch (e) { setError(e.message) }
+      }
+      React.useEffect(() => {
+        let active = true
+        const load = async () => {
+          try {
+            const value = await post('/account/state', {})
+            if (!value?.ok) throw new Error(value?.说 || '读取申请状态失败')
+            if (active) { setState(value); setError('') }
+          } catch (e) { if (active) setError(e.message) }
+        }
+        void load()
+        const timer = setInterval(load, 5000)
+        return () => { active = false; clearInterval(timer) }
+      }, [])
+      const labels = { pending: '待主人授权', processing: '处理中或待核验', approved: '已同意', rejected: '已拒绝', expired: '已过期', uncertain: '结果待 QQ 核验' }
+      return h('section', { style: S.card },
+        h('div', { className: 'fish-section-head' }, h('h3', null, '申请与邀请记录'), 按钮('刷新记录', refresh)),
+        h('p', { style: S.dim }, '主人 QQ：' + (state?.owner || '未设置') + ' · 事件通道：' + (state?.channel || '读取中')),
+        state?.setupError ? h('p', { role: 'status' }, state.setupError) : null,
+        error ? h('p', { role: 'alert' }, error) : null,
+        h('p', { style: S.dim }, '主人身份使用长期记忆 → 数据管理中的“主人 QQ”。请绑定该 QQ 的独立私聊，并由主人先发一条消息完成核验。审批询问由机器人直接私聊发送。'),
+        ...(state?.requests || []).slice().reverse().map(item => h('div', { key: item.id, className: 'fish-record', style: { padding: '16px 0', borderTop: '1px solid var(--fish-border)', overflowWrap: 'anywhere' } },
+          h('strong', null, item.kind === 'friend' ? '好友申请 · ' + item.user : '群聊邀请 · ' + item.group),
+          h('p', null, labels[item.status] || item.status, ' · 编号 ', h('code', null, item.id)),
+          item.comment ? h('p', null, '对方留言：', item.comment) : null,
+          item.status === 'pending' ? h('p', { style: S.dim }, item.notifiedAt ? '已询问主人，等待 QQ 私聊确认。' : '等待询问主人。') : null)),
+        state && !state.requests?.length ? h('p', { style: S.dim }, '暂无申请记录。') : null)
+    }
 
     function QQSpaceActions({ 配置, 脏, notify }) {
       const [busy, setBusy] = React.useState(false)
@@ -1195,13 +1233,13 @@ moduleLoader.load({
             '通知通过 OneBot HTTP 上报接收。'
             + '上报地址：'
             + 'http://127.0.0.1:<DSH 端口>' + B + '/notice。'
-            + '仅处理 notice，消息仍通过轮询接收。'),
+            + '申请审批由“账号与申请”单独控制，消息仍通过轮询接收。'),
           行('上报口令（选填）', h('input', {'aria-label': '通知口令',
             style: S.wide,
             value: String(配置.通知口令 || ''),
             placeholder: '留空不校验口令',
             onChange: (e) => 改('通知口令', e.target.value),
-          }), '填写后，上报地址须附带 ?token=口令；留空不校验来源口令。'),
+          }), '填写后，上报地址须附带 ?token=口令。留空时普通通知沿用兼容模式，申请审批上报必须配置口令。'),
         ),
         h('div', { style: S.card },
           h('div', { style: { ...S.h, margin: '0 0 8px' } }, '会话绑定（' + 绑定.length + ' 条）'),
@@ -1567,6 +1605,16 @@ moduleLoader.load({
         '绑定': 分区(绑定提醒, 绑定卡片[1]),
         '消息策略': 分区(消息卡片[1], 消息卡片[2], 绑定卡片[2], 门槛卡片[0]),
         '角色设定': 分区(代写按钮, 绑定卡片[0], 映射角色('私聊'), 映射角色('群')),
+        '账号与申请': 分区(h('section', { style: S.card },
+          h('h2', null, 'QQ 账号操作权限'),
+          h('p', { style: S.dim }, '保存后生效。账号工具仅挂载到主人绑定的大肥鱼私聊，会在执行时校验本轮真实来源；总开关和试运行同时生效。'),
+          行('允许修改个性签名', 勾(配置.允许改签名, v => 改('允许改签名', v), '允许修改个性签名'), '开启后可在主人私聊中让大肥鱼修改机器人自己的 QQ 个性签名。'),
+          行('允许修改 QQ 头像', 勾(配置.允许改头像, v => 改('允许改头像', v), '允许修改 QQ 头像'), '支持图片直链或本地图片，最大 8 MB，使用原图字节上传以兼容 Docker 后端。'),
+          行('好友申请先询问主人', 勾(配置.好友申请审批, v => 改('好友申请审批', v), '好友申请先询问主人'), '收到加机器人为好友的请求后私聊询问主人，只有主人明确同意对应编号后才接受。'),
+          行('群聊邀请先询问主人', 勾(配置.群邀请审批, v => 改('群邀请审批', v), '群聊邀请先询问主人'), '仅处理邀请机器人入群的请求。收到后询问主人，等待对应编号的明确授权。'),
+          h('p', { style: S.dim }, '单独回复“同意申请 编号”或“拒绝申请 编号”，每条授权仅处理一次，收到申请后 24 小时过期。后端结果不确定时请在 QQ 中核查。'),
+          h('p', { style: S.dim }, '申请事件复用已核验账号的自动事件通道，关闭文件接收也能使用。若使用 HTTP 上报，请设置“连接”页的上报口令，并将后端上报地址设为 /dsh-qq-bridge/notice?token=口令。')),
+          h(QQAccountState)),
         '图片与文件': 分区(消息卡片[3], h('section', { style: S.card },
           h('h2', null, 'DSH 生成图片转发'),
           h('p', { style: S.dim }, '仅将绑定 DSH 会话回复中生成的图片自动发送到 QQ。此转发功能不提供手动发送或图片上传。'),
@@ -7264,7 +7312,7 @@ moduleLoader.load({
   },
 })
 
-const META = {"name":"dsh-big-fish-aio","version":"0.3.15","repositoryVersion":"0.3.16","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-12","forkCommit":"f46ec1ce41fb42cb3a110ebdf4c095a5344fd8ab"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.2-2","forkCommit":"6767011c1831e48a864f816d6a78f2c25f9eb7f9"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
+const META = {"name":"dsh-big-fish-aio","version":"0.3.15","repositoryVersion":"0.3.17","upstreamCompatibility":[{"name":"通到 QQ","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-qq-link","version":"1.5.1","commit":"fba7e3ee8ffb3a8f819a7823eb05186cfb782ecb","forkName":"dsh-qq-link-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-qq-link-plus","forkVersion":"1.5.1-12","forkCommit":"f46ec1ce41fb42cb3a110ebdf4c095a5344fd8ab"},{"name":"鱼的记忆","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-fish-memory","version":"1.5.2","commit":"5124cc1fa5a3149e8a68cf1d858e24b5bf2a2eea","forkName":"dsh-fish-memory-plus","forkUrl":"https://github.com/CHINOSAMAAA/dsh-fish-memory-plus","forkVersion":"1.5.2-2","forkCommit":"6767011c1831e48a864f816d6a78f2c25f9eb7f9"},{"name":"鱼的心情","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-feiyu-mood","version":"0.9.0","commit":"02fddcaae0763651ecd65af5f644fe61f19de4bd","modulePath":"modules/mood"},{"name":"主动搭话","author":"Yuuyuko-uu","url":"https://github.com/Yuuyuko-uu/dsh-speak-up","version":"0.3.0","commit":"e3bc6362208c693bb833ecf463ec6a20df4b6419","modulePath":"modules/speak"}]};
 let NativeToast = null
 try { NativeToast = require('@deepseek-ai/dsh-client-ui-primitives').Toast || null } catch {}
 
@@ -7337,7 +7385,7 @@ const DESCRIPTIONS = [
   '看看大肥鱼的来处，也看看有没有换上新衣裳。',
 ]
 const submenus = {
-  1: ['连接', '绑定', '消息策略', '角色设定', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件'].map(x => [x, x]),
+  1: ['连接', '绑定', '消息策略', '角色设定', '账号与申请', '表情包', '语音转写', '语音发送', 'QQ 空间', '图片与文件'].map(x => [x, x]),
   2: ['记忆库', '召回设置', '数据管理'].map(x => [x, x]),
   3: [['mood', '心情'], ['bind', '会话绑定'], ['judge', '判断与注入'], ['charm', '挂饰']],
 }

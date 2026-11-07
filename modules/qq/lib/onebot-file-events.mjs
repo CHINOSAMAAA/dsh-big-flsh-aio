@@ -54,13 +54,15 @@ export async function verifyOneBotSocket(socket, selfId, signal) {
   })
 }
 
-export function createFileEvents({ config, onWake = () => {}, WebSocketImpl = globalThis.WebSocket, discover = dockerOneBotSockets, log = () => {} }) {
+export function createFileEvents({ config, onWake = () => {}, onRequest = () => {}, WebSocketImpl = globalThis.WebSocket, discover = dockerOneBotSockets, log = () => {} }) {
   const queue = new Map()
   let key = '', next = 0, controller = null, socket = null, connecting = false, stopped = false, selfId = '', candidates = [], status = '未连接', socketsTask = null, identityReady = Promise.resolve(), identityDone = () => {}
   const close = () => { controller?.abort(); socket?.close(); socket = null; controller = null; status = '未连接' }
   const accept = event => {
     const cfg = config()
-    if (!cfg.总开关 || !cfg.收文件 || String(event.self_id) !== selfId) return
+    if (!cfg.总开关 || String(event.self_id) !== selfId) return
+    if (event.post_type === 'request') { onRequest(event); return }
+    if (!cfg.收文件) return
     const message = fileEventMessage(event)
     if (!message || String(message.user_id) === selfId) return
     const type = message.group_id ? '群' : '私聊', chat = String(message.group_id || message.user_id)
@@ -155,9 +157,9 @@ export function createFileEvents({ config, onWake = () => {}, WebSocketImpl = gl
   }
   return {
     tick() {
-      const c = config(), fresh = JSON.stringify([c.NapCat, c.令牌, c.总开关, c.收文件, c.绑定?.map(b => [b.类型, b.号码, b.会话, b.开])])
+      const c = config(), fresh = JSON.stringify([c.NapCat, c.令牌, c.总开关, c.收文件, c.好友申请审批, c.群邀请审批, c.绑定?.map(b => [b.类型, b.号码, b.会话, b.开])])
       if (key !== fresh) { key = fresh; close(); queue.clear(); candidates = []; selfId = ''; next = 0 }
-      if (!c.总开关 || !c.收文件) { status = '已关闭'; return }
+      if (!c.总开关 || !(c.收文件 || c.好友申请审批 || c.群邀请审批)) { status = '已关闭'; return }
       if (!socket && !connecting) void connect()
     },
     messages(binding, seen) {

@@ -17,7 +17,8 @@ import { randomUUID, createHash } from 'node:crypto'
 import { spawn, execFileSync } from 'node:child_process'
 import { exclusiveBinding, recordSource, invalidateSource, bindingSource, endpointKey } from './memory-sources.mjs'
 import { registerHistoryImport } from './history-import.mjs'
-import { createStickers, stickerSource } from './stickers.mjs'
+import { createStickers, stickerSource, imageType } from './stickers.mjs'
+import { createAccountOperations } from './account-operations.mjs'
 import { receiveQQFiles, qqFileName } from './inbound-files.mjs'
 import { createFileEvents } from './onebot-file-events.mjs'
 import { createMediaStorage } from './media-storage.mjs'
@@ -127,6 +128,10 @@ const 默认配置 = {
   //   · 空间定时发 = 到点往会话里递一句提醒（说什么由它自己写，这里只定时间）
   //   · 空间看圈开/空间看圈分 = 定时拉一圈好友动态；点赞、评论两个开关管这一圈里做什么
   空间定时发: [],          // [{ 时: 'HH:MM', 权: 1|4|64, 开: true }]，最多 12 条
+  允许改签名: false,
+  允许改头像: false,
+  好友申请审批: false,
+  群邀请审批: false,
   空间浏览开: true,        // 手动「浏览动态与评论」卡片可见性
   空间看圈开: false,
   空间看圈分: 30,          // 5~1440
@@ -536,6 +541,10 @@ export function 归一化(原始) {
     允许发空间动态: 布(混.允许发空间动态, 默认配置.允许发空间动态),
     // ⭐ 1.5.0：空间自动节奏（三个开关一律 === true 才算开，别的值都当关）
     空间定时发,
+    允许改签名: 混.允许改签名 === true,
+    允许改头像: 混.允许改头像 === true,
+    好友申请审批: 混.好友申请审批 === true,
+    群邀请审批: 混.群邀请审批 === true,
     空间浏览开: 混.空间浏览开 !== false,
     空间看圈开: 混.空间看圈开 === true,
     空间看圈分: 数(混.空间看圈分, 默认配置.空间看圈分, 5, 1440),
@@ -1107,6 +1116,45 @@ export function apply(ctx) {
   const sessionTools = createSessionTools({ ctx, log: text => 记账(text) })
   ctx.effect(() => () => sessionTools.dispose(), 'qq-bridge: 会话联网工具')
   const stickers = createStickers({ home: 目录, ctx, workspace, findAgent: id => 找agent(id), log: text => 记账(text) })
+  const account = createAccountOperations({
+    home: 目录, config: 读配置, findAgent: id => 找agent(id), log: text => 记账(text),
+    call: async (config, action, body, signal) => {
+      const result = await 发一个(config.NapCat, action, body, config, signal)
+      if (!result.ok) throw new Error(result.数据?.message || result.数据?.wording || result.数据?.错 || 'QQ 后端操作失败')
+      if (action === 'set_self_longnick' && typeof result.数据.data?.result === 'number' && result.数据.data.result !== 0) {
+        throw new Error(result.数据.data.errMsg || 'QQ 个性签名修改失败')
+      }
+      return result.数据.data
+    },
+    loadAvatar: async (source, session, signal) => {
+      const limit = 8 * 1024 * 1024
+      let bytes
+      if (/^https?:\/\//i.test(source)) {
+        const response = await fetch(source, { signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) })
+        try {
+          if (!response.ok) throw new Error('头像下载失败 HTTP ' + response.status)
+          if (Number(response.headers.get('content-length')) > limit) throw new Error('头像不能超过 8 MB')
+          const chunks = []; let size = 0
+          for await (const chunk of response.body) {
+            size += chunk.length
+            if (size > limit) throw new Error('头像不能超过 8 MB')
+            chunks.push(Buffer.from(chunk))
+          }
+          bytes = Buffer.concat(chunks)
+        } finally { await response.body?.cancel().catch(() => {}) }
+      } else {
+        const file = 找本地图(source, { ...读配置(), 目标会话: session })
+        if (!file || statSync(file).size > limit) throw new Error('头像文件不可用或超过 8 MB')
+        mediaStorage.assertReadable(file, session)
+        bytes = readFileSync(file)
+      }
+      if (bytes.length > limit) throw new Error('头像不能超过 8 MB')
+      imageType(bytes)
+      return 'base64://' + bytes.toString('base64')
+    },
+  })
+  ctx.effect(() => () => account.stop(), 'qq-bridge: 账号操作与申请审批')
+
   /**
    * ⭐ 1.5.0：管理类接口只认「本人」。
    *
@@ -1208,14 +1256,14 @@ export function apply(ctx) {
    */
   const 发送超时毫秒 = 60000
 
-  async function 发一个(base, action, 体, 配置) {
+  async function 发一个(base, action, 体, 配置, signal) {
     try {
       const r = await fetch(`${base}/${action}`, {
         method: 'POST',
         headers: 请求头(配置),
         body: JSON.stringify(体),
         // ⭐ 1.5.0：NapCat 收了请求却不回时，别让这一轮永远挂着（以前没有超时）
-        signal: AbortSignal.timeout(发送超时毫秒),
+        signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(发送超时毫秒)]) : AbortSignal.timeout(发送超时毫秒),
       })
       const j = await r.json()
       const 好 = !!(j && j.status === 'ok' && j.retcode === 0)
@@ -2788,6 +2836,12 @@ export function apply(ctx) {
       }
     } catch (error) { return { ok: false, 说: 'QQ 来源核验失败：' + error.message } }
 
+    account.tick()
+    if (source.messageId) {
+      const decision = await account.handleOwnerReply({ session: 这间, messageId: id, text: 文字 })
+      if (decision) { 已受理?.(); return { ok: true, 说: decision.message } }
+    }
+
     // ── 收图：限量、限重，失败就跳过，不挡住文字 ──
     const 收下 = []
     if (配置.收图 && Array.isArray(图们) && 图们.length) {
@@ -3516,6 +3570,10 @@ export function apply(ctx) {
   }
 
 
+  路线(`${路由前缀}/account/state`, 手动操作(async (req, res) => {
+    回(res, { ...account.view(), channel: 文件事件.status() })
+  }))
+
   // 新增映射时按 QQ 号 / 群号补全名称（显式点击才请求后端）。
   路线(`${路由前缀}/lookup-name`, 手动操作(async (req, res) => {
     const 来 = await 读体(req)
@@ -4014,6 +4072,7 @@ export function apply(ctx) {
   const 开始收消息 = () => {
     if (已停止) return
     文件事件.tick()
+    account.tick()
     if (!读配置().总开关) {
       清补跑()
       当前控制?.abort()
@@ -4048,7 +4107,9 @@ export function apply(ctx) {
     try { if (typeof 补跑定时.unref === 'function') 补跑定时.unref() } catch (error) {}
   }
 
-  const 文件事件 = createFileEvents({ config: 读配置, onWake: () => 快跑一次(300), log: 记账 })
+  const 文件事件 = createFileEvents({ config: 读配置, onWake: () => 快跑一次(300), log: 记账,
+    onRequest: event => { try { account.capture(event); account.tick() } catch (e) { 记账('QQ 申请接收失败：' + e.message) } },
+  })
   const 文件去重键 = (段, 行, 配置) => {
     const id = 段.data?.file_id || 段.data?.id || 段.data?.file || 段.data?.url
     return id ? 'file:' + createHash('sha256').update(JSON.stringify([endpointKey(配置), 行.类型, 行.号码, 行.会话, id])).digest('hex') : ''
@@ -4443,13 +4504,11 @@ export function apply(ctx) {
    *
    * 用法：把 NapCat / SnowLuma 的「HTTP 上报」地址指到
    *   `http://127.0.0.1:<DSH 端口>/dsh-qq-bridge/notice`（口令非空时再加 `?token=xxx`）。
-   *   ⚠ 上报会把**所有**事件都推过来，我们**只认 notice**，其它一律忽略 ——
-   *     不然消息会跟轮询重复，一条话进来两次。
+   *   request 事件单独校验口令并进入申请审批，普通 message 仍交给轮询避免重复。
    */
   const 通知去重 = new Map()   // 事件指纹 -> 时间（只留最近 200 条）
   路线(`${路由前缀}/notice`, async (req, res) => {
     const 配置 = 读配置()
-    if (!配置.收通知) return 回(res, { ok: false, 说: '「收通知」关着，先在设置里打开' })
     const 口令 = String(配置.通知口令 || '').trim()
     if (口令) {
       let 给 = String(((req && req.url) || '').match(/[?&]token=([^&]*)/)?.[1] || (req && req.headers && req.headers['x-token']) || '')
@@ -4457,6 +4516,12 @@ export function apply(ctx) {
       if (给 !== 口令) return 回(res, { ok: false, 说: '口令不对' })
     }
     const 来 = await 读体(req)
+    if (来?.post_type === 'request') {
+      if (!口令) return 回(res, { ok: false, 说: '接收申请上报需要先设置上报口令，或使用自动事件通道' })
+      try { const accepted = account.capture(来); account.tick(); return 回(res, { ok: true, accepted }) }
+      catch (e) { return 回(res, { ok: false, 说: e.message }) }
+    }
+    if (!配置.收通知) return 回(res, { ok: false, 说: '「收通知」关着，先在设置里打开' })
     if (!来 || 来.post_type !== 'notice') {
       // ⭐ 必须明确忽略：HTTP 上报会把 message 事件也推过来，那些轮询已经收了
       return 回(res, { ok: true, 说: '只转 notice 类事件；其它（消息）交给轮询，不重复转' })
