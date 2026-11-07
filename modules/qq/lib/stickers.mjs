@@ -163,12 +163,15 @@ export function createStickers({ home, ctx, workspace = createWorkspaceBinding({
       let out = ''
       for await (const part of llm.stream({ provider: model.provider, model: model.model, system,
         messages: [{ id: randomUUID(), role: 'user', content, source: { kind: 'plugin', plugin: 'qq-stickers' } }],
-        maxTokens: 400, temperature: 0, signal: controller.signal })) {
+        // 短 JSON 任务关闭思考，避免推理占满额度后没有识别正文。
+        maxTokens: image ? 1200 : 400, reasoningEffort: 'off', temperature: 0, signal: controller.signal })) {
         if (part.type === 'text-delta') out += part.text || ''
         if (out.length > 8000) throw new Error('模型输出过长')
         if (controller.signal.aborted) throw new Error('表情分析超时')
-        if (part.type === 'finish' && part.reason?.kind === 'error') throw new Error('表情分析模型请求失败')
+        if (part.type === 'finish' && part.reason?.kind === 'max-tokens') throw new Error('DeepSeek 识别输出达到长度上限，请重试')
+        if (part.type === 'finish' && part.reason?.kind === 'error') throw new Error('表情分析模型请求失败：' + (part.reason.failure?.message || '未知错误'))
       }
+      if (!out.trim()) throw new Error('DeepSeek 未返回识别结果，请重试')
       return JSON.parse(out.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, ''))
     })()
     let timer

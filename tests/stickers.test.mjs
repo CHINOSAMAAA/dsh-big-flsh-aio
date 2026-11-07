@@ -221,3 +221,53 @@ test('原图存入绑定工作区的专用文件夹，旧图迁移保留备份�
   const missing=f.create();assert.match(missing.view().storage.error,/工作区/);assert.throws(()=>missing.add({bytes:Buffer.concat([gif,Buffer.from('new')])}),/工作区/);assert.equal(missing.view().items.length,1)
  }finally{f.close()}
 })
+
+test('扫描直接调用默认 DeepSeek，关闭思考并留足标签输出额度，无需打开会话', async () => {
+ const f=fixture();try {
+  f.ctx.agents.list=()=>[]
+  f.ctx.get=name=>name==='agentDefaultModel'?{currentSelection:()=>({provider:'deepseek-account',model:'deepseek-flash'})}:undefined
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  const item=f.lib.add({bytes:gif})
+  f.ctx.llm.stream=async function*(input){
+   f.requests.push(input)
+   if(input.reasoningEffort!=='off'||input.maxTokens<1000){
+    yield{type:'reasoning-delta',text:'思考耗尽额度'}
+    yield{type:'finish',reason:{kind:'max-tokens'}}
+    return
+   }
+   yield{type:'text-delta',text:JSON.stringify({tags:['挥手'],scenes:['打招呼'],description:'猫猫挥手',category:'问候告别'})}
+   yield{type:'finish',reason:{kind:'stop'}}
+  }
+  f.lib.enqueueTags(undefined,false,true)
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  const current=f.lib.view().items.find(x=>x.id===item.id)
+  assert.equal(current.tagStatus,'complete',current.tagError)
+  assert.deepEqual(current.tags,['挥手'])
+  assert.equal(f.requests.length,1)
+  assert.equal(f.requests[0].provider,'deepseek-account')
+  assert.equal(f.requests[0].sessionId,undefined)
+  assert.equal(f.requests[0].messages.length,1)
+  assert.ok(f.requests[0].messages[0].content.some(x=>x.type==='image'))
+ }finally{f.close()}
+})
+
+test('空正文和输出截断明确报错，保留原图并允许再次扫描成功',async()=>{
+ const f=fixture();try{
+  f.ctx.attachments={async admitPromptContent(content){return content}}
+  const item=f.lib.add({bytes:gif})
+  for(const [kind,expected] of [['stop',/未返回.*结果/],['max-tokens',/长度上限/]]){
+   f.ctx.llm.stream=async function*(){yield{type:'finish',reason:{kind}}}
+   f.lib.enqueueTags(undefined,false,true)
+   for(let i=0;i<40;i++)await new Promise(setImmediate)
+   const current=f.lib.view().items.find(x=>x.id===item.id)
+   assert.equal(current.tagStatus,'error');assert.match(current.tagError,expected)
+   assert.deepEqual(current.tags,[])
+   assert.deepEqual(readFileSync(join(f.pictures,item.id+'.gif')),gif)
+   assert.equal(f.lib.view().tagging.pending,0)
+  }
+  f.ctx.llm.stream=async function*(){yield{type:'text-delta',text:'{"tags":["开心"],"scenes":["庆祝"]}'}}
+  f.lib.enqueueTags(undefined,false,true)
+  for(let i=0;i<40;i++)await new Promise(setImmediate)
+  assert.equal(f.lib.view().items[0].tagStatus,'complete')
+ }finally{f.close()}
+})
