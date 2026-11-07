@@ -3641,6 +3641,7 @@ export function apply(ctx) {
       a.cost += (i * p.input + o * p.output + cr * p.cacheRead + cw * p.input) / 1000000
     }
     const 天 = new Map()
+    const 天会话 = new Map()
     const 会话 = []
     const 今天 = new Date()
     const 今 = [今天.getFullYear(), String(今天.getMonth() + 1).padStart(2, '0'), String(今天.getDate()).padStart(2, '0')].join('-')
@@ -3672,6 +3673,9 @@ export function apply(ctx) {
         const key = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
         if (!天.has(key)) 天.set(key, 空())
         加(天.get(key), e.data.usage, 模型, t)
+        if (!天会话.has(key)) 天会话.set(key, new Map())
+        const 天表 = 天会话.get(key)
+        天表.set(sid, (天表.get(sid) || 0) + (Number(e.data.usage.inputTokens) || 0) + (Number(e.data.usage.outputTokens) || 0) + (Number(e.data.usage.cacheReadTokens) || 0) + (Number(e.data.usage.cacheWriteTokens) || 0))
         if (key === 今) 加(条目.今天, e.data.usage, 模型, t)
       }
       if (!条目.title) { try { 条目.title = String(ctx.sessionTitle?.get(sid)?.title || '') } catch (error) {} }
@@ -3679,7 +3683,13 @@ export function apply(ctx) {
       if (条目.全部.total > 0) 会话.push(条目)
     }
     会话.sort((a, b) => b.今天.total - a.今天.total || b.全部.total - a.全部.total)
-    const days = [...天.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, u]) => ({ date, ...u }))
+    const 会话表 = new Map(会话.map(x => [x.id, x]))
+    const days = [...天.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, u]) => ({
+      date, ...u,
+      sessions: [...((天会话.get(date) || new Map()).entries())].map(([id, total]) => ({
+        id, title: 会话表.get(id)?.title || id.slice(-8), total,
+      })).sort((a, b) => b.total - a.total),
+    }))
     const 全 = 空()
     for (const u of 天.values()) { 全.input += u.input; 全.output += u.output; 全.cacheRead += u.cacheRead; 全.cacheWrite += u.cacheWrite; 全.total += u.total; 全.cost += u.cost }
     return 回(res, { ok: true, 工作区: { path, key: 键 }, 今天: 今, 会话, days, 全部: 全 })

@@ -584,6 +584,7 @@ function Rice({ notify } = {}) {
   const [busy, setBusy] = React.useState(false)
   const [error, setError] = React.useState('')
   const [range, setRange] = React.useState(7)
+  const [tip, setTip] = React.useState(null)
   const load = async () => {
     setBusy(true); setError('')
     try { setData(await request('/dsh-qq-bridge/rice')) }
@@ -637,17 +638,37 @@ function Rice({ notify } = {}) {
     return { W, H, pad, max, pts, line, area }
   }, [series])
   const heat = React.useMemo(() => {
-    const cells = series.map(x => ({ key: x.date, total: x.total }))
-    const max = Math.max(1, ...cells.map(x => x.total))
-    return cells.map(x => ({ ...x, level: x.total <= 0 ? 0 : Math.min(4, Math.ceil(x.total / max * 4)) }))
-  }, [series])
+    const now = new Date()
+    const year = now.getFullYear(), month = now.getMonth()
+    const leading = (new Date(year, month, 1).getDay() + 6) % 7
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const cells = []
+    for (let i = 0; i < leading; i++) cells.push({ key: 'blank-' + i, blank: true })
+    for (let day = 1; day <= daysInMonth; day++) {
+      const key = dayKey(new Date(year, month, day))
+      const x = byDay.get(key)
+      cells.push({ key, total: x?.total || 0, sessions: x?.sessions || [] })
+    }
+    const max = Math.max(1, ...cells.map(x => x.total || 0))
+    return {
+      label: year + '年' + (month + 1) + '月',
+      cells: cells.map(x => x.blank ? x : ({ ...x, level: x.total <= 0 ? 0 : Math.min(4, Math.ceil(x.total / max * 4)) })),
+    }
+  }, [days])
   const sessions = data?.会话 || []
+  const showTip = (event, date) => {
+    const width = typeof window !== 'undefined' ? Math.min(300, window.innerWidth - 28) : 300
+    const height = 250
+    const x = Math.max(10, Math.min((event.clientX || 0) + 14, (typeof window !== 'undefined' ? window.innerWidth : 1200) - width - 10))
+    const y = Math.max(10, Math.min((event.clientY || 0) + 14, (typeof window !== 'undefined' ? window.innerHeight : 900) - height - 10))
+    setTip({ date, x, y })
+  }
+  const tipDay = tip ? byDay.get(tip.date) : null
   return h('div', { className: 'rice-page' },
     h('div', { className: 'fish-toolbar rice-toolbar' },
       h('div', null, h('span', { className: 'fish-kicker' }, 'RICE · 每日用量'), h('h2', null, '吃大米饭')),
       h('div', { className: 'fish-actions' }, h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => { void load() } }, busy ? '读取中…' : '刷新'))),
     h('p', { className: 'fish-muted' }, '只统计当前绑定工作区（' + (data?.工作区?.path || '读取中…') + '）的 DSH 会话 Token。数据来自会话 usage 事件。'),
-    h('p', { className: 'fish-muted rice-rate-note' }, '金额按 DeepSeek 官方人民币价估算：Flash 输入 1/2、缓存 0.02/0.04、输出 4/8；V4 Pro 输入 4.5/9、缓存 0.15/0.30、输出 13.5/27（空闲/高峰，元/百万 token）。高峰按北京时间工作日 9–12、14–18，法定节假日暂按普通日处理。'),
     error ? h('p', { className: 'fish-modal-error', role: 'alert' }, error) : null,
     h('div', { className: 'rice-stats' },
       [['今天', todayTotal], ['近 7 天', sumRange(7)], ['近 30 天', sumRange(30)], ['全部', data?.全部 || zero()]].map(([label, v]) =>
@@ -666,14 +687,23 @@ function Rice({ notify } = {}) {
           [0, 1, 2, 3].map(i => h('line', { key: i, x1: chart.pad, x2: chart.W - chart.pad, y1: chart.pad + i * (chart.H - chart.pad * 2) / 3, y2: chart.pad + i * (chart.H - chart.pad * 2) / 3, className: 'rice-gridline' })),
           chart.area ? h('path', { d: chart.area, className: 'rice-area' }) : null,
           chart.pts.length ? h('polyline', { points: chart.line, className: 'rice-polyline' }) : null,
+          ...chart.pts.map((p, i) => h('circle', {
+            key: 'hit-' + i, cx: p[0], cy: p[1], r: 10, className: 'rice-hit',
+            onMouseEnter: e => showTip(e, series[i].date), onMouseLeave: () => setTip(null),
+          })),
           h('text', { x: chart.pad, y: 18, className: 'rice-axis' }, fmt(chart.max)),
           h('text', { x: chart.W - chart.pad, y: chart.H - 4, textAnchor: 'end', className: 'rice-axis' }, series[series.length - 1]?.date?.slice(5) || ''))
         : h('p', { className: 'fish-muted' }, '还没有 Token 记录。')),
       h('section', { className: 'fish-card rice-heat-card' },
-        h('div', { className: 'fish-section-head' }, h('div', null, h('span', { className: 'fish-kicker' }, 'HEATMAP'), h('h3', null, range ? '近 ' + range + ' 天' : '全部')),
+        h('div', { className: 'fish-section-head' }, h('div', null, h('span', { className: 'fish-kicker' }, 'HEATMAP'), h('h3', null, heat.label)),
           h('span', { className: 'fish-muted rice-heat-legend' }, '少 ', ...[0, 1, 2, 3, 4].map(l => h('i', { key: l, className: 'rice-heat-dot', 'data-level': l })), ' 多')),
-        h('div', { className: 'rice-heat', role: 'img', 'aria-label': 'Token 用量热力图' },
-          ...heat.map(x => h('span', { key: x.key, className: 'rice-heat-cell', 'data-level': x.level, title: x.key + ' · ' + fmt(x.total) }))))),
+        h('div', { className: 'rice-heat', role: 'img', 'aria-label': '本月 Token 用量热力图' },
+          ...heat.cells.map(x => x.blank
+            ? h('span', { key: x.key, className: 'rice-heat-cell rice-heat-blank' })
+            : h('span', {
+                key: x.key, className: 'rice-heat-cell', 'data-level': x.level, title: x.key + ' · ' + fmt(x.total),
+                onMouseEnter: e => showTip(e, x.key), onMouseLeave: () => setTip(null),
+              }))))),
     h('section', { className: 'fish-card rice-table-card' },
       h('div', { className: 'fish-section-head' }, h('div', null, h('span', { className: 'fish-kicker' }, 'SESSIONS'), h('h3', null, '每个会话的用量')), h('span', { className: 'fish-muted' }, sessions.length + ' 个会话')),
       sessions.length ? h('div', { className: 'rice-table-wrap' },
@@ -690,7 +720,20 @@ function Rice({ notify } = {}) {
               h('td', null, money(s.全部?.cost || 0))))
           )
         )
-      ) : h('p', { className: 'fish-muted' }, '这个工作区还没有可统计的会话。')))
+      ) : h('p', { className: 'fish-muted' }, '这个工作区还没有可统计的会话。')),
+    tip ? h('div', { className: 'rice-tooltip', role: 'tooltip', style: { left: tip.x + 'px', top: tip.y + 'px' } },
+      h('div', { className: 'rice-tip-date' }, tip.date),
+      h('div', { className: 'rice-tip-total' }, fmt(tipDay?.total || 0), h('span', null, ' TOKEN')),
+      h('div', { className: 'rice-tip-cost' }, '≈ ' + money(tipDay?.cost || 0)),
+      h('div', { className: 'rice-tip-label' }, '会话细分'),
+      (tipDay?.sessions || []).length
+        ? [...tipDay.sessions].slice(0, 6).map((s, i) => {
+            const pct = tipDay.total ? Math.round(s.total / tipDay.total * 100) : 0
+            return h('div', { key: s.id || i, className: 'rice-tip-row' },
+              h('div', { className: 'rice-tip-row-head' }, h('span', null, s.title || s.id.slice(-8)), h('strong', null, fmt(s.total)), h('em', null, pct + '%')),
+              h('div', { className: 'rice-tip-bar' }, h('i', { style: { width: Math.max(2, pct) + '%' } })))
+          })
+        : h('div', { className: 'rice-tip-empty' }, '当天没有记录')) : null)
 }
 
 function Updates({ notify } = {}) {
