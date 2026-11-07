@@ -15,10 +15,10 @@ test('实际宿主代码 + 模拟 QQ：未点名表情收藏 → 视觉标签分
   mkdirSync(join(home,'storages'));mkdirSync(join(home,'BigFish'));writeFileSync(join(home,'storages/workspace.json'),JSON.stringify({tables:{workspaces:{fish:{path:join(home,'BigFish')}}}}))
   process.env.DSH_HOME=home;writeFileSync(join(home,'qq-bridge-config.json'),JSON.stringify(config));recordSource(home,config,'998877',config.绑定[0],'verified',['123456'])
   const agent={session:{id:sid,snapshotEvents:()=>events},options:{provider:'fake',model:'vision'},async followup(message){turns.push(message);events.push({type:'user/message',data:message})}}
-  const ctx={effect(fn){const off=fn();if(off)cleanups.push(off)},on:()=>()=>{},interval(fn){tick=fn;return()=>{}},webServer:{register(){return()=>{}}},agents:{get:id=>id===sid?agent:undefined},sessions:{flush:async()=>{}},logger:{info(){}},get(name){return name==='connection'?{requestRejection:()=>undefined}:this[name]},attachments:{async admitPromptContent(content){return content}},
+  const ctx={effect(fn){const off=fn();if(off)cleanups.push(off)},on:()=>()=>{},interval(fn){tick=fn;return()=>{}},webServer:{register(){return()=>{}}},agents:{get:id=>id===sid?agent:undefined,list:()=>[agent]},sessions:{flush:async()=>{}},logger:{info(){}},get(name){return name==='connection'?{requestRejection:()=>undefined}:this[name]},attachments:{async admitPromptContent(content){return content}},
    llm:{async *stream(input){modelCalls.push(input);const visual=input.messages[0].content.some(x=>x.type==='image');yield{type:'text-delta',text:JSON.stringify(visual?{tags:['开心','庆祝'],scenes:['考试通过'],category:'开心庆祝'}:{id:picked})}}}}
   globalThis.fetch=async(url,options)=>{const action=String(url).split('/').at(-1);if(action==='send_group_msg')sent.push(JSON.parse(options.body));return Response.json({status:'ok',retcode:0,data:action==='get_login_info'?{user_id:998877,nickname:'fixture'}:action==='get_group_msg_history'?{messages}: {message_id:Math.floor(Math.random()*100000)}})}
-  const lib=createStickers({home,ctx:{},findAgent:()=>agent});lib.settings({autoCollect:true,autoTag:true,autoClassify:true,autoSend:true})
+  const lib=createStickers({home,ctx,findAgent:()=>agent});lib.settings({autoCollect:true,autoTag:true,autoClassify:true,autoSend:true})
   const host=await import('../modules/qq/lib/host.js?sticker-flow');const bridge=host.apply(ctx)
   await tick();const now=Math.floor(Date.now()/1000)
   messages=[{message_id:5001,user_id:123456,time:now+1,message:[{type:'mface',data:{file:'base64://'+gif.toString('base64'),summary:'庆祝'}}]}]

@@ -15,8 +15,9 @@ function fixture() {
   const ctx = { llm: { async *stream(input) { requests.push(input); yield { type: 'text-delta', text: JSON.stringify(result) } } }, get: () => ({ requestRejection: () => undefined }) }
   const agent = { options: { provider: 'fake', model: 'fake' }, session: { snapshotEvents: () => [{ type: 'user/message', data: { source: { kind: 'qq' }, content: [{type:'text',text:'终于考过了'}] } }] } }
   let resolveAgent = () => agent
-  const create = () => createStickers({ home, ctx, findAgent: id => resolveAgent(id), defaultSession: () => 'a', log: x => logs.push(x) })
-  const lib=create();lib.settings({processingSession:'a'})
+  ctx.agents = { list: () => [agent] }
+  const create = () => createStickers({ home, ctx, findAgent: id => resolveAgent(id), log: x => logs.push(x) })
+  const lib=create()
   return { resolve: fn => { resolveAgent = fn }, home, pictures:join(home,'BigFish','表情包'), ctx, agent, requests, logs, lib, create, result: x => { result = x }, close: () => rmSync(home, {recursive:true,force:true}) }
 }
 test('表情原文件、去重、来源隔离、持久保存与元数据更新', () => {
@@ -134,7 +135,7 @@ test('进行中的选图遵守关闭开关；标注遵守手动编辑版本',asy
 })
 
 
-test('素材处理会话使用现有 DeepSeek，旧视觉配置不再改变路由',async()=>{
+test('素材处理直接使用现有 DeepSeek 模型，旧视觉配置不再改变路由',async()=>{
  const f=fixture();try{
   f.agent.options={provider:'deepseek',model:'bound-session-model'}
   f.ctx.attachments={async admitPromptContent(content){return content}}
@@ -143,7 +144,7 @@ test('素材处理会话使用现有 DeepSeek，旧视觉配置不再改变路�
   data.settings={...data.settings,visionProvider:'obsolete-provider',visionModel:'obsolete-model',analysisSession:'obsolete-session'}
   writeFileSync(path,JSON.stringify(data));f.result({tags:['开心'],scenes:['庆祝']});f.lib.enqueueTags(a.id)
   for(let i=0;i<40;i++)await new Promise(setImmediate)
-  assert.equal(f.lib.view().items[0].tagStatus,'complete');assert.equal(f.requests[0].provider,'deepseek');assert.equal(f.requests[0].model,'bound-session-model');assert.equal(f.requests[0].sessionId,'a')
+  assert.equal(f.lib.view().items[0].tagStatus,'complete');assert.equal(f.requests[0].provider,'deepseek');assert.equal(f.requests[0].model,'bound-session-model');assert.equal(f.requests[0].sessionId,undefined)
   assert.ok(f.requests[0].messages[0].content.some(x=>x.type==='image'))
   assert.equal(f.lib.view().settings.visionModel,undefined)
  }finally{f.close()}
@@ -171,12 +172,9 @@ test('扫描只识别未打标签素材，超过 32 张完整排队且重复扫�
 })
 
 
-test('专用会话处理手动导入和扫描，自动命名短标题且保护人工标签，自动收藏仍使用原绑定',async()=>{
+test('表情导入和扫描直接调用 DeepSeek，自动命名短标题且保护人工标签',async()=>{
  const f=fixture();try{
-  const processor={options:{provider:'deepseek',model:'processor-model'}},chat={...f.agent,options:{provider:'deepseek',model:'chat-model'}}
-  f.resolve(id=>id==='processor'?processor:id==='a'?chat:undefined)
-  assert.throws(()=>f.lib.settings({processingSession:'missing'}),/打开/)
-  f.lib.settings({processingSession:'processor'})
+  f.agent.options={provider:'deepseek',model:'direct-model'}
   f.ctx.attachments={async admitPromptContent(content){return content}}
   f.result({tags:['模型标签'],scenes:['安慰朋友'],description:'小猫歪头轻轻挥手并露出笑容很开心',category:'安慰陪伴'})
   const routes=new Map()
@@ -187,21 +185,18 @@ test('专用会话处理手动导入和扫描，自动命名短标题且保护�
   const item=f.lib.view().items[0]
   assert.equal(item.tagStatus,'complete');assert.deepEqual(item.tags,['人工标签']);assert.ok(item.name.startsWith('人工标签-'));assert.ok(Array.from(item.name).length<=23)
   assert.equal(item.category,'安慰陪伴');assert.equal(item.autoName,false)
-  assert.equal(f.requests[0].sessionId,'processor');assert.equal(f.requests[0].model,'processor-model');assert.equal(f.requests[0].messages.length,1)
+  assert.equal(f.requests[0].sessionId,undefined);assert.equal(f.requests[0].model,'direct-model');assert.equal(f.requests[0].messages.length,1)
   assert.deepEqual(f.requests[0].messages[0].content.filter(x=>x.type==='image').length,1)
   const scanned=f.lib.add({bytes:Buffer.concat([gif,Buffer.from('scan')]),scope:'a'})
   await call('/tag',{onlyUntagged:true});for(let i=0;i<40;i++)await new Promise(setImmediate)
-  assert.equal(f.requests[1].sessionId,'processor');assert.equal(f.lib.view().items.find(x=>x.id===scanned.id).tagStatus,'complete')
+  assert.equal(f.lib.view().items.find(x=>x.id===scanned.id).tagStatus,'complete')
   f.lib.settings({autoTag:true});f.lib.add({bytes:Buffer.concat([gif,Buffer.from('auto')]),scope:'a'})
   for(let i=0;i<40;i++)await new Promise(setImmediate)
-  assert.equal(f.requests[2].sessionId,'a');assert.equal(f.requests[2].model,'chat-model')
-  f.lib.settings({autoSend:true});f.result({id:item.id});await f.lib.select('安慰朋友','a');assert.equal(f.requests[3].sessionId,'a')
-  f.lib.settings({processingSession:''})
-  const before=f.lib.view().items.length;await assert.rejects(call('/import',{base64:gif.toString('base64')}),/素材处理会话/);assert.equal(f.lib.view().items.length,before)
+  assert.equal(f.requests.at(-1).sessionId,undefined);assert.equal(f.requests.at(-1).model,'direct-model')
  }finally{f.close()}
 })
 
-test('命名失败保留原图和待处理状态，可在专用会话重试成功',async()=>{
+test('命名失败保留原图和待处理状态，可直接调用模型重试成功',async()=>{
  const f=fixture();try{
   f.ctx.attachments={async admitPromptContent(content){return content}}
   f.result({tags:['开心'],scenes:['庆祝']})
