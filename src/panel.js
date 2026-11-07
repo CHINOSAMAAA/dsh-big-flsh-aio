@@ -5,17 +5,18 @@ const Memory = components['dsh-fish-memory'].Section
 const Mood = components['dsh-feiyu-mood'].Section
 const Speak = components['dsh-speak-up'].Section
 const PANEL_ID = 'big-flsh-aio'
-const tabs = ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '文件管理', '运行日志', '更新与来源']
+const tabs = ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '吃大米饭', '文件管理', '运行日志', '更新与来源']
 const UPDATES_TAB = tabs.length - 1
 const FILE_MANAGER_TAB = tabs.indexOf('文件管理')
-const TAB_ICONS = ['home', 'qq', 'memory', 'mood', 'speak', 'folder', 'log', 'update']
-const TAB_STAMPS = ['封面', '连接', '收藏', '观测', '问候', '归档', '回声', '来处']
+const TAB_ICONS = ['home', 'qq', 'memory', 'mood', 'speak', 'rice', 'folder', 'log', 'update']
+const TAB_STAMPS = ['封面', '连接', '收藏', '观测', '问候', '米粒', '归档', '回声', '来处']
 const DESCRIPTIONS = [
   '',
   '把 QQ 那边的消息接过来，让每段对话都找到自己的位置。',
   '值得留下的事，收进鱼的口袋，想的时候慢慢翻。',
   '今天开心几分？看见情绪的变化，也给它一点平复的时间。',
   '把主动交给恰当的时机。先演练一遍，再决定要不要真的开口。',
+  '看看这个工作区每天吃掉了多少 Token，再决定下一顿怎么喂。',
   '统一管理 QQ 图片、QQ 文件和表情包素材。',
   '看大肥鱼和 QQ 桥在后台说了什么。',
   '看看大肥鱼的来处，也看看有没有换上新衣裳。',
@@ -349,6 +350,7 @@ const ICONS = {
   log: { paths: ['M4 5h16v14H4Z', 'm8 9 3 3-3 3', 'M13 15h4'] },
   heart: { paths: ['M12 20s-7-4.2-7-9.4A3.6 3.6 0 0 1 12 7a3.6 3.6 0 0 1 7 3.6C19 15.8 12 20 12 20Z'] },
   spark: { paths: ['M12 3.2l1.7 5 5 1.7-5 1.7-1.7 5-1.7-5-5-1.7 5-1.7Z', 'M18.8 16.2l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z'] },
+  rice: { paths: ['M4 11h16a8 8 0 0 1-16 0Z', 'M3 21h18', 'M9 8c0-1.5 1-2.5 1-4', 'M15 8c0-1.5 1-2.5 1-4'] },
   pin: { paths: ['M12 21s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z'], dots: [[12, 11, 2]] },
   sparkle: { paths: ['M12 2.5l1.2 3.6 3.6 1.2-3.6 1.2L12 12.1 10.8 8.5 7.2 7.3l3.6-1.2Z'] },
 }
@@ -575,6 +577,113 @@ function Overview({ navigate, notify }) {
           h('figure', { className: 'fish-feature-sticker fish-feature-sticker-small', 'aria-hidden': true },
             h('span', { className: 'fish-tape fish-feature-tape' }),
             h('img', { src: '/dsh-feiyu-mood/sticker-wave.png', alt: '', width: 1254, height: 1254, decoding: 'async' }))))))
+}
+
+function Rice({ notify } = {}) {
+  const [data, setData] = React.useState(null)
+  const [busy, setBusy] = React.useState(false)
+  const [error, setError] = React.useState('')
+  const [range, setRange] = React.useState(7)
+  const load = async () => {
+    setBusy(true); setError('')
+    try { setData(await request('/dsh-qq-bridge/rice')) }
+    catch (e) { setError(e.message); if (typeof notify === 'function') notify('读取 Token 用量失败：' + e.message, { holdMs: 7000 }) }
+    finally { setBusy(false) }
+  }
+  React.useEffect(() => { void load() }, [])
+  const fmt = (n) => {
+    const v = Number(n) || 0
+    if (v >= 1e8) return (v / 1e8).toFixed(2).replace(/\.?0+$/, '') + ' 亿'
+    if (v >= 1e4) return (v / 1e4).toFixed(1).replace(/\.?0+$/, '') + ' 万'
+    return v.toLocaleString('zh-CN')
+  }
+  const dayKey = (d) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
+  const add = (a, b) => ({ input: a.input + b.input, output: a.output + b.output, cacheRead: a.cacheRead + b.cacheRead, cacheWrite: a.cacheWrite + b.cacheWrite, total: a.total + b.total })
+  const zero = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 })
+  const days = data?.days || []
+  const byDay = new Map(days.map(d => [d.date, d]))
+  const today = data?.今天 || dayKey(new Date())
+  const todayTotal = byDay.get(today) || zero()
+  const sumRange = (n) => {
+    if (!n) return data?.全部 || zero()
+    const end = new Date(); const start = new Date(); start.setDate(end.getDate() - n + 1)
+    const from = dayKey(start), to = dayKey(end)
+    let out = zero()
+    for (const d of days) if (d.date >= from && d.date <= to) out = add(out, d)
+    return out
+  }
+  const series = React.useMemo(() => {
+    const end = new Date(); const start = new Date()
+    if (range) start.setDate(end.getDate() - range + 1)
+    else {
+      const first = days[0]?.date
+      if (!first) return []
+      start.setTime(new Date(first + 'T00:00:00').getTime())
+    }
+    const out = []; const d = new Date(start)
+    while (d <= end) { out.push(byDay.get(dayKey(d)) || { date: dayKey(d), ...zero() }); d.setDate(d.getDate() + 1) }
+    return out
+  }, [days, range])
+  const chart = React.useMemo(() => {
+    const W = 760, H = 230, pad = 34
+    const max = Math.max(1, ...series.map(x => x.total))
+    const pts = series.map((x, i) => [pad + (series.length <= 1 ? 0 : i * (W - pad * 2) / (series.length - 1)), H - pad - (x.total / max) * (H - pad * 2)])
+    const line = pts.map(p => p.join(',')).join(' ')
+    const area = pts.length ? ('M' + pts[0][0] + ',' + (H - pad) + ' L' + line.replace(/ /g, ' L') + ' L' + pts[pts.length - 1][0] + ',' + (H - pad) + ' Z') : ''
+    return { W, H, pad, max, pts, line, area }
+  }, [series])
+  const heat = React.useMemo(() => {
+    const cells = series.map(x => ({ key: x.date, total: x.total }))
+    const max = Math.max(1, ...cells.map(x => x.total))
+    return cells.map(x => ({ ...x, level: x.total <= 0 ? 0 : Math.min(4, Math.ceil(x.total / max * 4)) }))
+  }, [series])
+  const sessions = data?.会话 || []
+  return h('div', { className: 'rice-page' },
+    h('div', { className: 'fish-toolbar rice-toolbar' },
+      h('div', null, h('span', { className: 'fish-kicker' }, 'RICE · 每日用量'), h('h2', null, '吃大米饭')),
+      h('div', { className: 'fish-actions' }, h('button', { type: 'button', className: 'fish-button', disabled: busy, onClick: () => { void load() } }, busy ? '读取中…' : '刷新'))),
+    h('p', { className: 'fish-muted' }, '只统计当前绑定工作区（' + (data?.工作区?.path || '读取中…') + '）的 DSH 会话 Token。数据来自会话 usage 事件。'),
+    error ? h('p', { className: 'fish-modal-error', role: 'alert' }, error) : null,
+    h('div', { className: 'rice-stats' },
+      [['今天', todayTotal], ['近 7 天', sumRange(7)], ['近 30 天', sumRange(30)], ['全部', data?.全部 || zero()]].map(([label, v]) =>
+        h('article', { key: label, className: 'fish-card rice-stat' },
+          h('span', { className: 'rice-stat-label' }, label),
+          h('strong', { className: 'rice-stat-value' }, fmt(v.total)),
+          h('span', { className: 'rice-stat-sub' }, '输入 ' + fmt(v.input) + ' · 输出 ' + fmt(v.output)),
+          h('span', { className: 'rice-stat-sub' }, '缓存 ' + fmt(v.cacheRead + v.cacheWrite))))),
+    h('div', { className: 'rice-grid' },
+      h('section', { className: 'fish-card rice-chart-card' },
+        h('div', { className: 'fish-section-head' },
+          h('div', null, h('span', { className: 'fish-kicker' }, 'TREND'), h('h3', null, '用量趋势')),
+          h('div', { className: 'fish-subnav rice-range' }, ...[7, 30, 0].map(n => h('button', { key: n, type: 'button', className: 'fish-button' + (range === n ? ' fish-primary' : ''), onClick: () => setRange(n) }, n ? '近 ' + n + ' 天' : '全部')))),
+        series.length ? h('svg', { className: 'rice-line', viewBox: '0 0 ' + chart.W + ' ' + chart.H, role: 'img', 'aria-label': 'Token 用量趋势' },
+          [0, 1, 2, 3].map(i => h('line', { key: i, x1: chart.pad, x2: chart.W - chart.pad, y1: chart.pad + i * (chart.H - chart.pad * 2) / 3, y2: chart.pad + i * (chart.H - chart.pad * 2) / 3, className: 'rice-gridline' })),
+          chart.area ? h('path', { d: chart.area, className: 'rice-area' }) : null,
+          chart.pts.length ? h('polyline', { points: chart.line, className: 'rice-polyline' }) : null,
+          h('text', { x: chart.pad, y: 18, className: 'rice-axis' }, fmt(chart.max)),
+          h('text', { x: chart.W - chart.pad, y: chart.H - 4, textAnchor: 'end', className: 'rice-axis' }, series[series.length - 1]?.date?.slice(5) || ''))
+        : h('p', { className: 'fish-muted' }, '还没有 Token 记录。')),
+      h('section', { className: 'fish-card rice-heat-card' },
+        h('div', { className: 'fish-section-head' }, h('div', null, h('span', { className: 'fish-kicker' }, 'HEATMAP'), h('h3', null, range ? '近 ' + range + ' 天' : '全部')),
+          h('span', { className: 'fish-muted rice-heat-legend' }, '少 ', ...[0, 1, 2, 3, 4].map(l => h('i', { key: l, className: 'rice-heat-dot', 'data-level': l })), ' 多')),
+        h('div', { className: 'rice-heat', role: 'img', 'aria-label': 'Token 用量热力图' },
+          ...heat.map(x => h('span', { key: x.key, className: 'rice-heat-cell', 'data-level': x.level, title: x.key + ' · ' + fmt(x.total) }))))),
+    h('section', { className: 'fish-card rice-table-card' },
+      h('div', { className: 'fish-section-head' }, h('div', null, h('span', { className: 'fish-kicker' }, 'SESSIONS'), h('h3', null, '每个会话的用量')), h('span', { className: 'fish-muted' }, sessions.length + ' 个会话')),
+      sessions.length ? h('div', { className: 'rice-table-wrap' },
+        h('table', { className: 'rice-table' },
+          h('thead', null, h('tr', null, ...['会话', '今日', '全部', '输入', '输出', '缓存'].map(x => h('th', { key: x }, x)))),
+          h('tbody', null,
+            ...sessions.map(s => h('tr', { key: s.id },
+              h('td', null, h('span', { className: 'rice-session-title' }, s.title || s.id.slice(-12)), h('span', { className: 'rice-session-id' }, s.id.slice(-8))),
+              h('td', null, fmt(s.今天?.total)),
+              h('td', null, fmt(s.全部?.total)),
+              h('td', null, fmt(s.全部?.input)),
+              h('td', null, fmt(s.全部?.output)),
+              h('td', null, fmt((s.全部?.cacheRead || 0) + (s.全部?.cacheWrite || 0)))))
+          )
+        )
+      ) : h('p', { className: 'fish-muted' }, '这个工作区还没有可统计的会话。')))
 }
 
 function Updates({ notify } = {}) {
@@ -919,7 +1028,7 @@ function Page() {
     () => h(QQ, { page: subpage[1], onPageChange: key => selectSubpage(1, key), guard: qqGuard, notify: fishNotify, help: fishShowHelp, hideHelp: fishHideHelp, laterHideHelp: fishScheduleHelpHide, confirm: fishAskConfirm, editRole: fishAskText, openRoleWriter: fishOpenRoleWriter, openFileManager }),
     () => h(Memory, { page: subpage[2], onPageChange: key => selectSubpage(2, key), detailPage: memoryPage, onDetailPageChange: setMemoryPage, detailOpen: memoryDetail, onDetailChange: setMemoryDetail, notify: fishNotify, historyImport: subpage[2] === '历史导入' ? h(QQ, { page: '历史导入', onPageChange: () => {}, embedded: true, notify: fishNotify }) : null }),
     () => h(Mood, { page: subpage[3], onPageChange: key => selectSubpage(3, key), notify: fishNotify }),
-    () => h(Speak, { guard: speakGuard, notify: fishNotify }), () => h(FileManager, { notify: fishNotify }), () => h(RunLog, { notify: fishNotify }), () => h(Updates, { notify: fishNotify }),
+    () => h(Speak, { guard: speakGuard, notify: fishNotify }), () => h(Rice, { notify: fishNotify }), () => h(FileManager, { notify: fishNotify }), () => h(RunLog, { notify: fishNotify }), () => h(Updates, { notify: fishNotify }),
   ]
   const connected = Boolean(qqStatus?.用户 && !qqStatus?.错)
   const connection = !qqStatus ? '正在读取 QQ 连接…' : qqStatus?.错 ? 'QQ 连接读取失败' : connected ? 'QQ 已连接 · ' + (qqStatus.昵称 || '伙伴') : 'QQ 未连接'

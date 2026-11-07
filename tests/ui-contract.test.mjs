@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs'
 const read = name => readFileSync(new URL('../' + name, import.meta.url), 'utf8')
 const walk = node => !node || typeof node !== 'object' ? [] : [node, ...(node.children || []).flat(Infinity).flatMap(walk)]
 
-test('八入口支持图标、键盘切换及已访问面板保留', () => {
+test('九入口支持图标、键盘切换及已访问面板保留', () => {
   const state = [], registrations = []
   let index = 0, plugin
   const React = {
@@ -28,7 +28,7 @@ test('八入口支持图标、键盘切换及已访问面板保留', () => {
   const Page = registrations.find(item => item.slot.name === 'main').Component
   const render = () => { index = 0; return walk(Page()) }
   let tree = render(), tabs = tree.filter(n => n.props?.role === 'tab')
-  assert.deepEqual(tabs.map(t => t.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '文件管理', '运行日志', '更新与来源'])
+  assert.deepEqual(tabs.map(t => t.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '吃大米饭', '文件管理', '运行日志', '更新与来源'])
   const overview = tree.find(n => n.props?.id === 'fish-panel-0').children[0]
   const overviewTree = walk(overview.type(overview.props))
   const welcome = overviewTree.find(n => n.props?.className === 'fish-welcome')
@@ -82,12 +82,12 @@ test('八入口支持图标、键盘切换及已访问面板保留', () => {
     currentTarget: { closest: () => ({ querySelectorAll: () => tabs.map((_, i) => ({ focus() { focused = i } })) }) },
   })
   tree = render()
-  assert.equal(focused, 7)
+  assert.equal(focused, 8)
   assert.equal(prevented, true)
-  assert.equal(tree.find(n => n.props?.id === 'fish-tab-7').props['aria-selected'], true)
+  assert.equal(tree.find(n => n.props?.id === 'fish-tab-8').props['aria-selected'], true)
   assert.equal(tree.filter(n => n.props?.role === 'tabpanel').length, 4)
   assert.equal(tree.find(n => n.props?.id === 'fish-panel-1').props.hidden, true)
-  for (const [key, expected] of [['Home', 0], ['ArrowLeft', 7], ['ArrowRight', 0], ['ArrowDown', 1], ['ArrowUp', 0]]) {
+  for (const [key, expected] of [['Home', 0], ['ArrowLeft', 8], ['ArrowRight', 0], ['ArrowDown', 1], ['ArrowUp', 0]]) {
     tabs = tree.filter(n => n.props?.role === 'tab')
     const active = tabs.find(n => n.props['aria-selected'])
     active.props.onKeyDown({ key, preventDefault() {}, currentTarget: { closest: () => ({ querySelectorAll: () => tabs.map((_, i) => ({ focus() { focused = i } })) }) } })

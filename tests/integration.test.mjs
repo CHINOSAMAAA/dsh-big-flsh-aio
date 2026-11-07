@@ -9,9 +9,9 @@ import { createSelfUpdate } from '../lib/selfupdate.mjs'
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('整合包只注册一个侧栏和主面板，八个入口直接挂载四个模块', () => {
+test('整合包只注册一个侧栏和主面板，九个入口直接挂载四个模块', () => {
   let plugin, index = 0
-  const states = [0, [0, 1, 2, 3, 4, 5, 6, 7]]
+  const states = [0, [0, 1, 2, 3, 4, 5, 6, 7, 8]]
   const React = { createElement: (type, props, ...children) => ({ type, props, children }), useState: init => [index in states ? states[index++] : (index++, init), () => {}], useEffect() {}, useLayoutEffect() {}, useRef: value => ({ current: value }) }
   vm.runInNewContext(read('../client.js'), { window: { __ModuleLoader__: { load: ({ id, factory }) => {
     assert.equal(id, 'dsh-big-flsh-aio'); plugin = factory(() => React)
@@ -24,14 +24,14 @@ test('整合包只注册一个侧栏和主面板，八个入口直接挂载四�
   const nodes = []
   const walk = x => { if (x && typeof x === 'object') { nodes.push(x); for (const c of x.children || []) (Array.isArray(c) ? c : [c]).forEach(walk) } }
   walk(tree)
-  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '文件管理', '运行日志', '更新与来源'])
+  assert.deepEqual(nodes.filter(n => n.props?.role === 'tab').map(n => n.props['aria-label']), ['总览', 'QQ 互通', '长期记忆', '鱼的心情', '主动搭话', '吃大米饭', '文件管理', '运行日志', '更新与来源'])
   const panels = nodes.filter(n => n.props?.role === 'tabpanel')
-  assert.equal(panels.length, 8)
+  assert.equal(panels.length, 9)
   assert.equal(panels[1].children[0].type.name, 'Section')
   assert.equal(panels[2].children[0].type.name, 'Section')
   assert.equal(panels[3].children[0].type.name, 'MoodSection')
   assert.equal(panels[4].children[0].type.name, 'Section')
-  const updates = panels[7].children[0].type
+  const updates = panels[8].children[0].type
   const compatReact = [null, false, '', 'mirror']; index = 0; React.useState = () => [compatReact[index++], () => {}]; React.useEffect = () => {}
   const htmlTree = JSON.stringify(updates())
   const meta = JSON.parse(read('../package.json'))

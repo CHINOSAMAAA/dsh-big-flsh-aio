@@ -4145,3 +4145,188 @@ body[data-ds-dark-theme] .big-fish .fish-button.fish-danger {
     grid-template-columns: minmax(70px, max-content) minmax(0, 1fr);
   }
 }
+
+/* 吃大米饭：当前绑定工作区的 Token 用量 */
+.big-fish .rice-page {
+  display: grid;
+  gap: 14px;
+}
+
+.big-fish .rice-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.big-fish .rice-toolbar h2 {
+  margin: 2px 0 0;
+  font-family: var(--fish-title);
+  font-size: 21px;
+}
+
+.big-fish .rice-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.big-fish .rice-stat {
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+}
+
+.big-fish .rice-stat-label {
+  color: var(--fish-muted);
+  font-size: var(--fish-small);
+}
+
+.big-fish .rice-stat-value {
+  font-family: var(--fish-title);
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.big-fish .rice-stat-sub {
+  color: var(--fish-muted);
+  font-size: 12px;
+}
+
+.big-fish .rice-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
+  gap: 12px;
+}
+
+.big-fish .rice-chart-card,
+.big-fish .rice-heat-card,
+.big-fish .rice-table-card {
+  padding: 16px;
+  min-width: 0;
+}
+
+.big-fish .rice-range {
+  margin: 0;
+  gap: 4px;
+}
+
+.big-fish .rice-range .fish-button {
+  padding: 5px 9px;
+  font-size: 12px;
+}
+
+.big-fish .rice-line {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 12px;
+  overflow: visible;
+}
+
+.big-fish .rice-gridline {
+  stroke: var(--fish-line);
+  stroke-width: 1;
+}
+
+.big-fish .rice-area {
+  fill: color-mix(in srgb, var(--fish-accent) 18%, transparent);
+}
+
+.big-fish .rice-polyline {
+  fill: none;
+  stroke: var(--fish-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.big-fish .rice-axis {
+  fill: var(--fish-muted);
+  font-size: 11px;
+}
+
+.big-fish .rice-heat-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.big-fish .rice-heat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--fish-line);
+}
+
+.big-fish .rice-heat {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 11px);
+  grid-auto-columns: 11px;
+  gap: 3px;
+  margin-top: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.big-fish .rice-heat-cell,
+.big-fish .rice-heat-dot[data-level="0"] { background: var(--fish-line); }
+.big-fish .rice-heat-cell[data-level="1"], .big-fish .rice-heat-dot[data-level="1"] { background: color-mix(in srgb, var(--fish-accent) 28%, var(--fish-line)); }
+.big-fish .rice-heat-cell[data-level="2"], .big-fish .rice-heat-dot[data-level="2"] { background: color-mix(in srgb, var(--fish-accent) 48%, var(--fish-line)); }
+.big-fish .rice-heat-cell[data-level="3"], .big-fish .rice-heat-dot[data-level="3"] { background: color-mix(in srgb, var(--fish-accent) 72%, var(--fish-line)); }
+.big-fish .rice-heat-cell[data-level="4"], .big-fish .rice-heat-dot[data-level="4"] { background: var(--fish-accent); }
+
+.big-fish .rice-heat-cell {
+  border-radius: 2px;
+}
+
+.big-fish .rice-table-wrap {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.big-fish .rice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fish-small);
+}
+
+.big-fish .rice-table th,
+.big-fish .rice-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--fish-line);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.big-fish .rice-table th:first-child,
+.big-fish .rice-table td:first-child {
+  text-align: left;
+}
+
+.big-fish .rice-table th {
+  color: var(--fish-muted);
+  font-weight: 500;
+}
+
+.big-fish .rice-session-title {
+  display: block;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.big-fish .rice-session-id {
+  display: block;
+  color: var(--fish-muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+@media (max-width: 980px) {
+  .big-fish .rice-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .big-fish .rice-grid { grid-template-columns: minmax(0, 1fr); }
+}

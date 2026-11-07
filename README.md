@@ -6,8 +6,8 @@
 
 **QQ 互通 · 长期记忆 · 鱼的心情 · 主动搭话**
 
-![GitHub](https://img.shields.io/badge/GitHub-0.2.4-4b70e2?style=flat-square)
-![npm](https://img.shields.io/badge/npm-0.2.4-cb3837?style=flat-square)
+![GitHub](https://img.shields.io/badge/GitHub-0.3.1-4b70e2?style=flat-square)
+![npm](https://img.shields.io/badge/npm-0.3.1-cb3837?style=flat-square)
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A522-43853d?style=flat-square)
 
 [原作者与来源](#原作者与来源) · [安装方法](#安装方法) · [支持功能](#支持功能)
@@ -44,7 +44,7 @@ dsh-big-flsh-aio@latest
 4. 确认安装并启用，按提示重载或重启 DSH。
 5. 点击左侧栏 **大肥鱼**，配置 QQ 后端、会话绑定，再开启需要的功能。
 
-> **版本说明：**当前项目版本为 `0.2.4`，npm 与 GitHub 仓库使用同一版本号；左侧栏版本号会随项目版本更新。
+> **版本说明：**当前项目版本为 `0.3.1`，npm 与 GitHub 仓库使用同一版本号；左侧栏版本号会随项目版本更新。
 
 <details>
 <summary><strong>npm 连接较慢？使用国内镜像安装包</strong></summary>
@@ -52,10 +52,10 @@ dsh-big-flsh-aio@latest
 在 DSH 同一个安装来源输入框中，改填以下地址：
 
 ```text
-https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-0.2.4.tgz
+https://registry.npmmirror.com/dsh-big-flsh-aio/-/dsh-big-flsh-aio-0.3.1.tgz
 ```
 
-这是 npm `0.2.4` 的国内镜像安装包，无需访问 GitHub。安装后同样重载或重启 DSH。
+这是 npm `0.3.1` 的国内镜像安装包，无需访问 GitHub。安装后同样重载或重启 DSH。
 
 </details>
 

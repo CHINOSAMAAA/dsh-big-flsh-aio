@@ -14,7 +14,7 @@ import { homedir } from 'node:os'
 import { join, dirname, basename, isAbsolute } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { randomUUID, createHash } from 'node:crypto'
-import { spawn } from 'node:child_process'
+import { spawn, execFileSync } from 'node:child_process'
 import { exclusiveBinding, recordSource, invalidateSource, bindingSource, endpointKey } from './memory-sources.mjs'
 import { registerHistoryImport } from './history-import.mjs'
 import { createStickers, stickerSource } from './stickers.mjs'
@@ -3574,6 +3574,67 @@ export function apply(ctx) {
     }
     if (changed) 写配置(当前)
   }
+
+
+  // 吃大米饭：当前绑定工作区的 Token 用量（从 DSH 会话日志里的 usage 事件汇总）。
+  路线(`${路由前缀}/rice`, async (req, res) => {
+    const 配置 = 读配置()
+    let path = ''
+    try { path = workspace.directory() } catch (error) { return 回(res, { ok: false, 说: error.message }) }
+    const 键 = 工作区目录名(path)
+    const 根 = join(目录, 'sessions', 键)
+    const 空 = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 })
+    const 加 = (a, u) => {
+      if (!u || typeof u !== 'object') return
+      a.input += Number(u.inputTokens) || 0
+      a.output += Number(u.outputTokens) || 0
+      a.cacheRead += Number(u.cacheReadTokens) || 0
+      a.cacheWrite += Number(u.cacheWriteTokens) || 0
+      a.total = a.input + a.output + a.cacheRead + a.cacheWrite
+    }
+    const 天 = new Map()
+    const 会话 = []
+    const 今天 = new Date()
+    const 今 = [今天.getFullYear(), String(今天.getMonth() + 1).padStart(2, '0'), String(今天.getDate()).padStart(2, '0')].join('-')
+    let 文件们 = []
+    try { 文件们 = readdirSync(根, { withFileTypes: true }).filter(x => x.isDirectory()).map(x => x.name) } catch (error) {}
+    for (const sid of 文件们) {
+      let 文件 = ''
+      try {
+        const dir = join(根, sid)
+        const names = readdirSync(dir)
+        const hit = names.find(n => n.endsWith('.jsonl.zstd'))
+        if (hit) 文件 = join(dir, hit)
+      } catch (error) {}
+      if (!文件) continue
+      let 文本 = ''
+      try { 文本 = execFileSync('zstd', ['-dc', 文件], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 }) } catch (error) { continue }
+      const 条目 = { id: sid, title: '', 今天: 空(), 全部: 空(), last: 0 }
+      for (const line of 文本.split('\n')) {
+        if (!line) continue
+        let e
+        try { e = JSON.parse(line) } catch (error) { continue }
+        if (e.type === 'session/title' && e.data && e.data.title) 条目.title = String(e.data.title)
+        if (e.type !== 'assistant/message' || !e.data || !e.data.usage) continue
+        const t = Number(e.time) || Number(e.data.time) || Date.now()
+        条目.last = Math.max(条目.last, t)
+        加(条目.全部, e.data.usage)
+        const d = new Date(t)
+        const key = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
+        if (!天.has(key)) 天.set(key, 空())
+        加(天.get(key), e.data.usage)
+        if (key === 今) 加(条目.今天, e.data.usage)
+      }
+      if (!条目.title) { try { 条目.title = String(ctx.sessionTitle?.get(sid)?.title || '') } catch (error) {} }
+      if (!条目.title) 条目.title = sid.slice(-12)
+      if (条目.全部.total > 0) 会话.push(条目)
+    }
+    会话.sort((a, b) => b.今天.total - a.今天.total || b.全部.total - a.全部.total)
+    const days = [...天.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, u]) => ({ date, ...u }))
+    const 全 = 空()
+    for (const u of 天.values()) { 全.input += u.input; 全.output += u.output; 全.cacheRead += u.cacheRead; 全.cacheWrite += u.cacheWrite; 全.total += u.total }
+    return 回(res, { ok: true, 工作区: { path, key: 键 }, 今天: 今, 会话, days, 全部: 全 })
+  })
 
   // 新建映射时在绑定工作区创建真正的 Agent（不是只有 Session），工作区里可见并可直接打开。
   路线(`${路由前缀}/create-session`, 手动操作(async (req, res) => {
